@@ -1,0 +1,73 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash .scripts/fetch.sh)",
+      "Bash(bash .scripts/organize.sh)",
+      "Bash(bash .scripts/*)",
+      "Bash(curl -fsSL https://code.claude.com/docs/*)",
+      "Bash(find . -name *)",
+      "Bash(find * -name *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(wc *)",
+      "Bash(ls *)",
+      "Bash(cat .scripts/fetch.log)",
+      "Bash(cat .scripts/manifest.tsv)",
+      "Bash(awk *)",
+      "Bash(sed -n *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(diff *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout -b *)",
+      "Bash(git push -u origin *)",
+      "Bash(gh pr list*)",
+      "Bash(gh pr view*)",
+      "Bash(gh pr diff*)",
+      "Bash(gh pr checkout*)",
+      "Bash(gh pr create *)",
+      "Bash(gh issue list*)",
+      "Bash(gh repo view*)"
+    ],
+    "deny": [
+      "Bash(git push origin master*)",
+      "Bash(git push origin master)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(rm -rf *)",
+      "Bash(git reset --hard *)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/manifest-changed.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/precommit-check.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

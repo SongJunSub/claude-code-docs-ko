@@ -244,9 +244,9 @@ claude --permission-mode dontAsk
 
 ## bypassPermissions 모드로 모든 검사 건너뛰기
 
-`bypassPermissions` 모드는 권한 프롬프트 및 안전 검사를 비활성화하여 도구 호출이 즉시 실행되도록 합니다. [보호된 경로](#protected-paths)에 대한 쓰기는 여전히 프롬프트하는 유일한 작업입니다. 이 모드는 인터넷 액세스 없이 컨테이너, VM, devcontainer와 같은 격리된 환경에서만 사용합니다. Claude Code가 호스트 시스템에 손상을 줄 수 없습니다.
+`bypassPermissions` 모드는 권한 프롬프트 및 안전 검사를 비활성화하여 도구 호출이 즉시 실행되도록 합니다. [보호된 경로](#protected-paths)에 대한 쓰기는 여전히 프롬프트하는 유일한 작업입니다. 이 모드는 인터넷 액세스 없이 컨테이너, VM, devcontainer와 같은 격리된 환경에서만 사용하십시오. Claude Code가 호스트 시스템에 손상을 줄 수 없습니다.
 
-활성화 플래그 중 하나로 시작한 세션에서 `bypassPermissions`에 들어갈 수 없습니다. 활성화하려면 다시 시작합니다:
+활성화 플래그 중 하나로 시작한 세션에서 `bypassPermissions`에 들어갈 수 없습니다. 활성화하려면 다시 시작하십시오:
 
 ```bash theme={null}
 claude --permission-mode bypassPermissions
@@ -255,7 +255,7 @@ claude --permission-mode bypassPermissions
 `--dangerously-skip-permissions` 플래그는 동등합니다.
 
 <Warning>
-  `bypassPermissions`는 프롬프트 주입 또는 의도하지 않은 작업에 대한 보호를 제공하지 않습니다. 프롬프트 없이 백그라운드 안전 검사를 위해 [자동 모드](#eliminate-prompts-with-auto-mode)를 대신 사용합니다. 관리자는 [관리 설정](/ko/permissions#managed-settings)에서 `permissions.disableBypassPermissionsMode`를 `"disable"`로 설정하여 이 모드를 차단할 수 있습니다.
+  `bypassPermissions`는 프롬프트 주입 또는 의도하지 않은 작업에 대한 보호를 제공하지 않습니다. 프롬프트 없이 백그라운드 안전 검사를 위해 [자동 모드](#eliminate-prompts-with-auto-mode)를 대신 사용하십시오. 관리자는 [관리 설정](/ko/permissions#managed-settings)에서 `permissions.disableBypassPermissionsMode`를 `"disable"`로 설정하여 이 모드를 차단할 수 있습니다.
 </Warning>
 
 ## 보호된 경로

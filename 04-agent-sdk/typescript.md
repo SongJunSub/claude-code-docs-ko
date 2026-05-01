@@ -1375,6 +1375,8 @@ type SyncHookJSONOutput = {
     | {
         hookEventName: "PostToolUse";
         additionalContext?: string;
+        updatedToolOutput?: unknown;
+        /** @deprecated `updatedToolOutput`를 사용하세요. 모든 도구에 대해 작동합니다. */
         updatedMCPToolOutput?: unknown;
       }
     | {

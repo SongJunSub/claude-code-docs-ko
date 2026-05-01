@@ -14,6 +14,8 @@ Claude Code는 설정에 따라 여러 인증 방법을 지원합니다. 개별 
 
 브라우저가 자동으로 열리지 않으면 `c`를 눌러 로그인 URL을 클립보드에 복사한 후 브라우저에 붙여넣습니다.
 
+브라우저에서 로그인 후 리디렉션 대신 로그인 코드를 표시하면 터미널의 `Paste code here if prompted` 프롬프트에 붙여넣습니다.
+
 다음 계정 유형 중 하나로 인증할 수 있습니다:
 
 * **Claude Pro 또는 Max 구독**: Claude.ai 계정으로 로그인합니다. [claude.com/pricing](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_pro_max)에서 구독합니다.
@@ -23,7 +25,7 @@ Claude Code는 설정에 따라 여러 인증 방법을 지원합니다. 개별 
 
 로그아웃하고 다시 인증하려면 Claude Code 프롬프트에서 `/logout`을 입력합니다.
 
-로그인에 문제가 있으면 [인증 문제 해결](/ko/troubleshooting#authentication-issues)을 참조합니다.
+로그인에 문제가 있으면 [인증 문제 해결](/ko/troubleshoot-install#login-and-authentication)을 참조합니다.
 
 ## 팀 인증 설정
 
@@ -111,7 +113,43 @@ Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry를 사용하는 팀의
 
 Claude Code는 인증 자격증명을 안전하게 관리합니다:
 
-* **저장 위치**: macOS에서 자격증명은 암호화된 macOS Keychain에 저장됩니다.
+* **저장 위치**: macOS에서 자격증명은 암호화된 macOS Keychain에 저장됩니다. Linux 및 Windows에서 자격증명은 `~/.claude/.credentials.json`에 저장되거나, 해당 변수가 설정된 경우 `$CLAUDE_CONFIG_DIR` 아래에 저장됩니다. Linux에서 파일은 모드 `0600`으로 작성되며, Windows에서는 사용자 프로필 디렉터리의 액세스 제어를 상속합니다.
 * **지원되는 인증 유형**: Claude.ai 자격증명, Claude API 자격증명, Azure Auth, Bedrock Auth, Vertex Auth.
 * **사용자 정의 자격증명 스크립트**: [`apiKeyHelper`](/ko/settings#available-settings) 설정을 구성하여 API 키를 반환하는 셸 스크립트를 실행할 수 있습니다.
 * **새로고침 간격**: 기본적으로 `apiKeyHelper`는 5분 후 또는 HTTP 401 응답 시 호출됩니다. 사용자 정의 새로고침 간격을 위해 `CLAUDE_CODE_API_KEY_HELPER_TTL_MS` 환경 변수를 설정합니다.
+* **느린 도우미 알림**: `apiKeyHelper`가 키를 반환하는 데 10초 이상 걸리면 Claude Code는 경과 시간을 표시하는 프롬프트 표시줄에 경고 알림을 표시합니다. 이 알림이 정기적으로 표시되면 자격증명 스크립트를 최적화할 수 있는지 확인합니다.
+
+`apiKeyHelper`, `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`은 터미널 CLI 세션에만 적용됩니다. Claude Desktop 및 원격 세션은 OAuth를 독점적으로 사용하며 `apiKeyHelper`를 호출하거나 API 키 환경 변수를 읽지 않습니다.
+
+### 인증 우선순위
+
+여러 자격증명이 있을 때 Claude Code는 다음 순서로 선택합니다:
+
+1. `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, 또는 `CLAUDE_CODE_USE_FOUNDRY`가 설정된 경우 클라우드 제공자 자격증명. 설정은 [타사 통합](/ko/third-party-integrations)을 참조합니다.
+2. `ANTHROPIC_AUTH_TOKEN` 환경 변수. `Authorization: Bearer` 헤더로 전송됩니다. Anthropic API 키 대신 베어러 토큰으로 인증하는 [LLM 게이트웨이 또는 프록시](/ko/llm-gateway)를 통해 라우팅할 때 사용합니다.
+3. `ANTHROPIC_API_KEY` 환경 변수. `X-Api-Key` 헤더로 전송됩니다. [Claude Console](https://platform.claude.com)의 키를 사용하여 Anthropic API에 직접 액세스할 때 사용합니다. 대화형 모드에서는 키를 승인하거나 거부하도록 한 번 프롬프트되며 선택이 기억됩니다. 나중에 변경하려면 `/config`의 "Use custom API key" 토글을 사용합니다. 비대화형 모드(`-p`)에서는 키가 있을 때 항상 사용됩니다.
+4. [`apiKeyHelper`](/ko/settings#available-settings) 스크립트 출력. 자격증명 모음에서 가져온 단기 토큰과 같은 동적 또는 회전 자격증명에 사용합니다.
+5. `CLAUDE_CODE_OAUTH_TOKEN` 환경 변수. [`claude setup-token`](#generate-a-long-lived-token)으로 생성된 장기 OAuth 토큰입니다. 브라우저 로그인을 사용할 수 없는 CI 파이프라인 및 스크립트에 사용합니다.
+6. `/login`의 구독 OAuth 자격증명. Claude Pro, Max, Team, Enterprise 사용자의 기본값입니다.
+
+활성 Claude 구독이 있지만 환경에 `ANTHROPIC_API_KEY`도 설정되어 있으면 승인된 후 API 키가 우선합니다. 키가 비활성화되거나 만료된 조직에 속하면 인증 실패가 발생할 수 있습니다. `unset ANTHROPIC_API_KEY`를 실행하여 구독으로 돌아가고 `/status`를 확인하여 활성 방법을 확인합니다.
+
+[Claude Code on the Web](/ko/claude-code-on-the-web)은 항상 구독 자격증명을 사용합니다. 샌드박스 환경의 `ANTHROPIC_API_KEY` 및 `ANTHROPIC_AUTH_TOKEN`은 이를 재정의하지 않습니다.
+
+### 장기 토큰 생성
+
+CI 파이프라인, 스크립트 또는 대화형 브라우저 로그인을 사용할 수 없는 기타 환경의 경우 `claude setup-token`으로 1년 OAuth 토큰을 생성합니다:
+
+```bash theme={null}
+claude setup-token
+```
+
+명령은 OAuth 인증을 안내하고 터미널에 토큰을 인쇄합니다. 토큰을 어디에도 저장하지 않으므로 복사하여 인증하려는 곳에 `CLAUDE_CODE_OAUTH_TOKEN` 환경 변수로 설정합니다:
+
+```bash theme={null}
+export CLAUDE_CODE_OAUTH_TOKEN=your-token
+```
+
+이 토큰은 Claude 구독으로 인증하며 Pro, Max, Team 또는 Enterprise 플랜이 필요합니다. 추론만으로 범위가 지정되며 [Remote Control](/ko/remote-control) 세션을 설정할 수 없습니다.
+
+[Bare mode](/ko/headless#start-faster-with-bare-mode)는 `CLAUDE_CODE_OAUTH_TOKEN`을 읽지 않습니다. 스크립트가 `--bare`를 전달하면 `ANTHROPIC_API_KEY` 또는 `apiKeyHelper`로 인증합니다.

@@ -132,17 +132,19 @@ set -g mouse on
 
 ## 기본 텍스트 선택 유지
 
-마우스 캡처는 가장 일반적인 마찰 지점이며, 특히 SSH 또는 tmux 내에서 그렇습니다. Claude Code가 마우스 이벤트를 캡처하면 터미널의 기본 선택 시 복사가 작동하지 않습니다. 클릭 및 드래그로 만든 선택은 Claude Code 내부에 있으므로 tmux 복사 모드, Kitty 힌트 및 유사한 도구가 이를 볼 수 없습니다.
+마우스 캡처는 가장 일반적인 마찰 지점이며, 특히 SSH 또는 tmux 내에서 그렇습니다. Claude Code가 마우스 이벤트를 캡처하면 터미널의 기본 선택 시 복사가 작동하지 않습니다. 클릭 및 드래그로 만든 선택은 Claude Code 내부에 있으므로 터미널의 선택 버퍼에 없어서 tmux 복사 모드, Kitty 힌트 및 유사한 도구가 이를 볼 수 없습니다.
 
-Claude Code는 선택을 클립보드에 작성하려고 시도하지만 사용하는 경로는 설정에 따라 다릅니다. tmux 내에서는 tmux 붙여넣기 버퍼에 작성합니다. SSH를 통해서는 일부 터미널이 기본적으로 차단하는 OSC 52 이스케이프 시퀀스로 폴백합니다. Claude Code는 각 복사 후 사용한 경로를 알려주는 토스트를 인쇄합니다.
+Claude Code는 선택을 클립보드에 작성하려고 시도하지만 사용하는 경로는 설정에 따라 다릅니다. tmux 내에서는 tmux 붙여넣기 버퍼에 작성합니다. SSH를 통해서는 일부 터미널이 기본적으로 차단하는 OSC 52 이스케이프 시퀀스로 폴백합니다. iTerm2는 Settings → General → Selection → Applications in terminal may access clipboard를 켤 때까지 차단합니다. Claude Code는 각 복사 후 사용한 경로를 알려주는 토스트를 인쇄합니다.
 
-터미널의 기본 선택에 의존하는 경우 `CLAUDE_CODE_DISABLE_MOUSE=1`을 설정하여 깜빡임 없는 렌더링과 평면 메모리를 유지하면서 마우스 캡처를 거부합니다:
+일회성 기본 선택의 경우 터미널의 바이패스 수정자를 누른 상태에서 클릭 및 드래그합니다: iTerm2에서는 `Option`, 대부분의 Linux 및 Windows 터미널에서는 `Shift`. 수정자는 마우스 이벤트를 Claude Code로 전달하는 대신 터미널이 선택을 직접 처리하도록 지시하므로 `Cmd+C`와 터미널의 다른 복사 단축키가 작동합니다.
+
+기본 선택에 항상 의존하는 경우 `CLAUDE_CODE_DISABLE_MOUSE=1`을 설정하여 깜빡임 없는 렌더링과 평면 메모리를 유지하면서 마우스 캡처를 거부합니다:
 
 ```bash theme={null}
 CLAUDE_CODE_NO_FLICKER=1 CLAUDE_CODE_DISABLE_MOUSE=1 claude
 ```
 
-마우스 캡처가 비활성화되면 `PgUp`, `PgDn`, `Ctrl+Home`, `Ctrl+End`를 사용한 키보드 스크롤이 여전히 작동하고 터미널이 기본적으로 선택을 처리합니다. 클릭하여 커서 위치 지정, 클릭하여 도구 출력 확장, URL 클릭, Claude Code 내에서 휠 스크롤을 잃습니다.
+마우스 캡처가 비활성화되면 `PgUp`, `PgDn`, `Ctrl+Home`, `Ctrl+End`를 사용한 키보드 스크롤이 여전히 작동하고 터미널이 기본적으로 선택을 처리합니다. Claude Code 내에서 클릭하여 커서 위치 지정, 클릭하여 도구 출력 확장, URL 클릭, 휠 스크롤을 잃습니다.
 
 ## 연구 미리보기
 

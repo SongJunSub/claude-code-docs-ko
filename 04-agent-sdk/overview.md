@@ -488,7 +488,7 @@ Claude 플랫폼은 Claude로 구축하는 여러 방법을 제공합니다. Age
 
 <Tabs>
   <Tab title="Agent SDK vs Client SDK">
-    [Anthropic Client SDK](https://platform.claude.com/docs/en/api/client-sdks)는 직접 API 액세스를 제공합니다: 프롬프트를 보내고 도구 실행을 직접 구현합니다. **Agent SDK**는 기본 제공 도구 실행이 있는 Claude를 제공합니다.
+    [Anthropic Client SDK](https://platform.claude.com/docs/ko/api/client-sdks)는 직접 API 액세스를 제공합니다: 프롬프트를 보내고 도구 실행을 직접 구현합니다. **Agent SDK**는 기본 제공 도구 실행이 있는 Claude를 제공합니다.
 
     Client SDK를 사용하면 도구 루프를 구현합니다. Agent SDK를 사용하면 Claude가 처리합니다:
 
@@ -533,6 +533,21 @@ Claude 플랫폼은 Claude로 구축하는 여러 방법을 제공합니다. Age
     | 프로덕션 자동화      | SDK    |
 
     많은 팀이 둘 다 사용합니다: 일일 개발을 위한 CLI, 프로덕션을 위한 SDK. 워크플로우는 둘 사이에서 직접 변환됩니다.
+  </Tab>
+
+  <Tab title="Agent SDK vs Managed Agents">
+    [Managed Agents](https://platform.claude.com/docs/ko/managed-agents/overview)는 호스팅된 REST API입니다: Anthropic이 에이전트와 샌드박스를 실행하고, 애플리케이션이 이벤트를 보내고 결과를 다시 스트리밍합니다. **Agent SDK**는 자신의 프로세스 내에서 에이전트 루프를 실행하는 라이브러리입니다.
+
+    |                | Agent SDK                             | Managed Agents                                       |
+    | -------------- | ------------------------------------- | ---------------------------------------------------- |
+    | **실행 위치**      | 사용자의 프로세스, 사용자의 인프라                   | Anthropic 관리 인프라                                     |
+    | **인터페이스**      | Python 또는 TypeScript 라이브러리            | REST API                                             |
+    | **에이전트 작업 대상** | 사용자의 인프라의 파일                          | 세션당 관리되는 샌드박스                                        |
+    | **세션 상태**      | 파일시스템의 JSONL                          | Anthropic 호스팅 이벤트 로그                                 |
+    | **사용자 정의 도구**  | 프로세스 내 Python 또는 TypeScript 함수        | Claude가 도구를 트리거합니다; 사용자가 실행하고 결과를 반환합니다              |
+    | **최적 용도**      | 로컬 프로토타이핑, 파일시스템 및 서비스에서 직접 작동하는 에이전트 | 샌드박스 또는 세션 인프라를 운영할 필요가 없는 프로덕션 에이전트, 장기 실행 및 비동기 세션 |
+
+    일반적인 경로는 Agent SDK로 로컬에서 프로토타입을 만든 다음 프로덕션을 위해 Managed Agents로 이동하는 것입니다.
   </Tab>
 </Tabs>
 

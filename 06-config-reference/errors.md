@@ -6,7 +6,7 @@
 
 > Claude Code 런타임 오류 메시지를 조회하고 각 오류의 의미와 해결 방법을 확인합니다.
 
-이 페이지에는 Claude Code가 표시하는 런타임 오류와 각 오류에서 복구하는 방법, 그리고 오류 없이 응답이 이상해 보일 때 확인할 사항이 나열되어 있습니다. `command not found` 또는 설정 중 TLS 오류와 같은 설치 오류는 [문제 해결](/ko/troubleshooting)을 참조하십시오.
+이 페이지에는 Claude Code가 표시하는 런타임 오류와 각 오류에서 복구하는 방법, 그리고 오류 없이 응답이 이상해 보일 때 확인할 사항이 나열되어 있습니다. `command not found` 또는 설정 중 TLS 오류와 같은 설치 오류는 [문제 해결](/ko/troubleshoot-install)을 참조하십시오.
 
 이러한 오류 및 복구 명령은 CLI, [데스크톱 앱](/ko/desktop), [웹의 Claude Code](/ko/claude-code-on-the-web)에 모두 적용됩니다. 세 가지 모두 동일한 Claude Code CLI를 래핑하기 때문입니다. 표면별 문제는 해당 표면의 페이지에 있는 문제 해결 섹션을 참조하십시오.
 
@@ -216,7 +216,7 @@ Not logged in · Please run /login
 * 대화형 로그인이 불가능한 CI 또는 자동화의 경우 시작 시 키를 가져오는 [`apiKeyHelper`](/ko/settings#available-settings) 스크립트를 구성합니다.
 * [인증 우선순위](/ko/authentication#authentication-precedence)를 참조하여 여러 자격 증명이 있을 때 어느 것이 우선하는지 이해합니다.
 
-반복적으로 로그인하라는 메시지가 표시되면 시스템 시계 및 macOS Keychain 수정을 위해 [로그인되지 않음 또는 토큰 만료](/ko/troubleshooting#not-logged-in-or-token-expired)를 참조하십시오.
+반복적으로 로그인하라는 메시지가 표시되면 시스템 시계 및 macOS Keychain 수정을 위해 [로그인되지 않음 또는 토큰 만료](/ko/troubleshoot-install#not-logged-in-or-token-expired)를 참조하십시오.
 
 ### Invalid API key
 
@@ -265,8 +265,8 @@ API Error: 401 ... authentication_error
 
 * `/login`을 실행하여 다시 로그인합니다.
 * 동일한 세션 내에서 재인증 후 오류가 반환되면 먼저 `/logout`을 실행하여 저장된 토큰을 완전히 지운 후 `/login`을 실행합니다.
-* 시작 간 반복적인 로그인 프롬프트의 경우 [문제 해결](/ko/troubleshooting#not-logged-in-or-token-expired)의 시스템 시계 및 macOS Keychain 확인을 참조하십시오.
-* `403 Forbidden` 및 OAuth 브라우저 문제를 포함한 기타 오류는 [권한 및 인증](/ko/troubleshooting#permissions-and-authentication)을 참조하십시오.
+* 시작 간 반복적인 로그인 프롬프트의 경우 [문제 해결](/ko/troubleshoot-install#not-logged-in-or-token-expired)의 시스템 시계 및 macOS Keychain 확인을 참조하십시오.
+* `403 Forbidden` 및 OAuth 브라우저 문제를 포함한 기타 오류는 [로그인 및 인증](/ko/troubleshoot-install#login-and-authentication)을 참조하십시오.
 
 ### OAuth scope requirement
 
@@ -443,7 +443,8 @@ There's an issue with the selected model (claude-...). It may not exist or you m
 
 * `/model`을 실행하여 계정에서 사용 가능한 모델 중에서 선택합니다.
 * 전체 버전 ID 대신 `sonnet` 또는 `opus`와 같은 별칭을 사용합니다. 별칭은 최신 릴리스를 추적하므로 오래되지 않습니다. [모델 구성](/ko/model-config)을 참조하십시오.
-* [모델을 찾을 수 없음](/ko/troubleshooting#model-not-found-or-not-accessible)을 참조하여 `--model`, `ANTHROPIC_MODEL`, 설정 파일에서 오래된 ID가 설정된 위치를 찾습니다.
+* 잘못된 모델이 계속 돌아오면 오래된 ID가 어딘가에 설정되어 있습니다. [우선순위 순서](/ko/model-config#setting-your-model)로 확인합니다. `--model` 플래그, `ANTHROPIC_MODEL` 환경 변수, 그 다음 `.claude/settings.local.json`의 `model` 필드, 프로젝트의 `.claude/settings.json`, 그리고 `~/.claude/settings.json`입니다. 오래된 값을 제거하면 Claude Code는 계정 기본값으로 폴백합니다.
+* Vertex AI 배포의 경우 [Vertex AI 문제 해결](/ko/google-vertex-ai#troubleshooting)을 참조하십시오.
 
 ### Claude Opus is not available with the Claude Pro plan
 
@@ -525,7 +526,7 @@ Claude의 답변이 오류 없이 예상보다 덜 유능해 보이면 원인은
 
 * MCP 서버가 연결 또는 인증에 실패함: [MCP](/ko/mcp)
 * 훅 스크립트가 실패했거나 도구를 차단함: [훅 디버그](/ko/hooks#debug-hooks)
-* 설치 중 권한 거부 또는 파일 시스템 오류: [문제 해결](/ko/troubleshooting)
+* 설치 중 권한 거부 또는 파일 시스템 오류: [설치 및 로그인 문제 해결](/ko/troubleshoot-install)
 
 오류가 여기에 나열되지 않았거나 제안된 수정이 도움이 되지 않으면:
 

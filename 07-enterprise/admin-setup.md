@@ -106,15 +106,15 @@ Team, Enterprise, Claude API 및 클라우드 제공자 플랜에서 Anthropic�
 
 ## 확인 및 온보딩
 
-관리 설정을 구성한 후 개발자가 Claude Code 내에서 `/status`를 실행하도록 하세요. 출력에는 `Enterprise managed settings`로 시작하는 줄이 포함되며 그 뒤에 괄호 안의 소스가 `(remote)`, `(plist)`, `(HKLM)`, `(HKCU)` 또는 `(file)` 중 하나입니다. [Verify active settings](/ko/settings#verify-active-settings)를 참조하세요.
+관리 설정을 구성한 후 개발자가 Claude Code 내에서 `/status`를 실행하도록 하세요. 출력에는 `Enterprise managed settings`로 시작하는 줄이 포함되며 그 뒤에 괄호 안의 소스가 `(remote)`, `(plist)`, `(HKLM)`, `(HKCU)` 또는 `(file)` 중 하나입니다. [활성 설정 확인](/ko/settings#verify-active-settings)을 참조하세요.
 
 개발자가 시작하는 데 도움이 되도록 다음 리소스를 공유하세요:
 
-* [Quickstart](/ko/quickstart): 설치부터 프로젝트 작업까지의 첫 세션 안내
-* [Common workflows](/ko/common-workflows): 코드 검토, 리팩토링 및 디버깅과 같은 일상적인 작업의 패턴
+* [빠른 시작](/ko/quickstart): 설치부터 프로젝트 작업까지의 첫 세션 안내
+* [일반적인 워크플로우](/ko/common-workflows): 코드 검토, 리팩토링 및 디버깅과 같은 일상적인 작업의 패턴
 * [Claude 101](https://anthropic.skilljar.com/claude-101) 및 [Claude Code in Action](https://anthropic.skilljar.com/claude-code-in-action): 자기 주도식 Anthropic Academy 과정
 
-로그인 문제의 경우 개발자에게 [authentication troubleshooting](/ko/troubleshooting#authentication-issues)을 참조하도록 안내하세요. 가장 일반적인 해결 방법은 다음과 같습니다:
+로그인 문제의 경우 개발자에게 [인증 문제 해결](/ko/troubleshoot-install#login-and-authentication)을 참조하도록 안내하세요. 가장 일반적인 해결 방법은 다음과 같습니다:
 
 * `/logout`을 실행한 후 `/login`을 실행하여 계정 전환
 * 엔터프라이즈 인증 옵션이 누락된 경우 `claude update` 실행

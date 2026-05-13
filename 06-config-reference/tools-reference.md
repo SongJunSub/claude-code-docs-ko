@@ -95,7 +95,7 @@ Monitor는 [Bash와 동일한 권한 규칙](/ko/permissions#tool-specific-permi
 
 ## PowerShell 도구
 
-PowerShell 도구를 사용하면 Claude는 PowerShell 명령을 기본적으로 실행할 수 있습니다. Windows에서는 이것이 Git Bash를 통해 라우팅하는 대신 PowerShell에서 명령을 실행한다는 의미입니다. 이 도구는 Windows에서 점진적으로 출시되고 있으며 Linux, macOS 및 WSL에서는 옵트인입니다.
+PowerShell 도구를 사용하면 Claude는 PowerShell 명령을 기본적으로 실행할 수 있습니다. Windows에서는 이것이 Git Bash를 통해 라우팅하는 대신 PowerShell에서 명령을 실행한다는 의미입니다. Git Bash가 없는 Windows에서는 도구가 자동으로 활성화됩니다. Git Bash가 설치된 Windows에서는 도구가 점진적으로 출시되고 있습니다. Linux, macOS 및 WSL에서는 도구가 옵트인입니다.
 
 ### PowerShell 도구 활성화
 
@@ -121,13 +121,14 @@ Windows에서 Claude Code는 PowerShell 7+의 경우 `pwsh.exe`를 자동 감지
 * 개별 [command hook](/ko/hooks#command-hook-fields)의 `"shell": "powershell"`: 해당 hook을 PowerShell에서 실행합니다. Hook은 PowerShell을 직접 생성하므로 `CLAUDE_CODE_USE_POWERSHELL_TOOL`에 관계없이 작동합니다.
 * [skill frontmatter](/ko/skills#frontmatter-reference)의 `shell: powershell`: `` !`command` `` 블록을 PowerShell에서 실행합니다. PowerShell 도구가 활성화되어야 합니다.
 
+Bash 도구 섹션에서 설명한 동일한 주 세션 작업 디렉토리 재설정 동작이 PowerShell 명령에 적용되며, `CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR` 환경 변수도 포함됩니다.
+
 ### 미리보기 제한사항
 
 PowerShell 도구는 미리보기 중에 다음과 같은 알려진 제한사항이 있습니다:
 
 * PowerShell 프로필이 로드되지 않습니다
 * Windows에서는 sandboxing이 지원되지 않습니다
-* Windows에서 Claude Code를 시작하려면 Git Bash가 여전히 필요합니다
 
 ## 사용 가능한 도구 확인
 

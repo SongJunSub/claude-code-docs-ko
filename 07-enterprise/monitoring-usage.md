@@ -85,7 +85,7 @@ claude
 | `OTEL_METRIC_EXPORT_INTERVAL`                       | 내보내기 간격 (밀리초 단위, 기본값: 60000)                                                                                                                                                                                                                   | `5000`, `60000`                                                             |
 | `OTEL_LOGS_EXPORT_INTERVAL`                         | 로그 내보내기 간격 (밀리초 단위, 기본값: 5000)                                                                                                                                                                                                                 | `1000`, `10000`                                                             |
 | `OTEL_LOG_USER_PROMPTS`                             | 사용자 프롬프트 콘텐츠 로깅 활성화 (기본값: 비활성화)                                                                                                                                                                                                                | `1`로 활성화                                                                    |
-| `OTEL_LOG_TOOL_DETAILS`                             | 도구 이벤트 및 추적 스팬 속성에서 도구 매개변수 및 입력 인수 로깅 활성화: Bash 명령, MCP 서버 및 도구 이름, 스킬 이름 및 도구 입력. 또한 `OTEL_LOG_TOOL_DETAILS=1`이 설정된 경우 `user_prompt` 이벤트에서 사용자 정의, 플러그인 및 MCP 명령 이름을 활성화합니다 (기본값: 비활성화)                                                      | `1`로 활성화                                                                    |
+| `OTEL_LOG_TOOL_DETAILS`                             | 도구 이벤트 및 추적 스팬 속성에서 도구 매개변수 및 입력 인수 로깅 활성화: Bash 명령, MCP 서버 및 도구 이름, 스킬 이름 및 도구 입력. 또한 `user_prompt` 이벤트에서 사용자 정의, 플러그인 및 MCP 명령 이름을 활성화합니다 (기본값: 비활성화)                                                                                        | `1`로 활성화                                                                    |
 | `OTEL_LOG_TOOL_CONTENT`                             | 스팬 이벤트에서 도구 입력 및 출력 콘텐츠 로깅 활성화 (기본값: 비활성화). [추적](#traces-beta)이 필요합니다. 콘텐츠는 60KB에서 잘립니다                                                                                                                                                        | `1`로 활성화                                                                    |
 | `OTEL_LOG_RAW_API_BODIES`                           | 전체 Anthropic Messages API 요청 및 응답 JSON을 `api_request_body` / `api_response_body` 로그 이벤트로 내보냅니다 (기본값: 비활성화). 본문에는 전체 대화 기록이 포함됩니다. 이를 활성화하면 `OTEL_LOG_USER_PROMPTS`, `OTEL_LOG_TOOL_DETAILS` 및 `OTEL_LOG_TOOL_CONTENT`가 공개할 모든 것에 동의하는 것을 의미합니다 | `1`로 60KB에서 잘린 인라인 본문, 또는 `file:<dir>`로 디스크의 잘리지 않은 본문과 이벤트의 `body_ref` 포인터 |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | 메트릭 시간성 선호도 (기본값: `delta`). 백엔드가 누적 시간성을 예상하는 경우 `cumulative`로 설정                                                                                                                                                                              | `delta`, `cumulative`                                                       |
@@ -154,28 +154,30 @@ Agent SDK 및 `claude -p` 세션에서 `TRACEPARENT`가 환경에 설정되면 `
 
 **`claude_code.llm_request`**
 
-| 속성                       | 설명                                                   | 게이트 대상 |
-| ------------------------ | ---------------------------------------------------- | ------ |
-| `model`                  | 모델 식별자                                               |        |
-| `gen_ai.system`          | 항상 `anthropic`. OpenTelemetry GenAI 의미론적 규칙          |        |
-| `gen_ai.request.model`   | `model`과 동일한 값. OpenTelemetry GenAI 의미론적 규칙          |        |
-| `query_source`           | 요청을 발급한 하위 시스템 (예: `repl_main_thread` 또는 하위 에이전트 이름) |        |
-| `speed`                  | `fast` 또는 `normal`                                   |        |
-| `llm_request.context`    | 부모 스팬에 따라 `interaction`, `tool` 또는 `standalone`      |        |
-| `duration_ms`            | 재시도를 포함한 벽시계 지속 시간                                   |        |
-| `ttft_ms`                | 첫 번째 토큰까지의 시간 (밀리초)                                  |        |
-| `input_tokens`           | API 사용 블록의 입력 토큰 수                                   |        |
-| `output_tokens`          | 출력 토큰 수                                              |        |
-| `cache_read_tokens`      | 프롬프트 캐시에서 읽은 토큰                                      |        |
-| `cache_creation_tokens`  | 프롬프트 캐시에 기록된 토큰                                      |        |
-| `request_id`             | `request-id` 응답 헤더의 Anthropic API 요청 ID              |        |
-| `gen_ai.response.id`     | `request_id`와 동일한 값. OpenTelemetry GenAI 의미론적 규칙     |        |
-| `client_request_id`      | 최종 시도의 클라이언트 생성 `x-client-request-id`                |        |
-| `attempt`                | 이 요청에 대해 수행된 총 시도                                    |        |
-| `success`                | `true` 또는 `false`                                    |        |
-| `status_code`            | 요청이 실패했을 때 HTTP 상태 코드                                |        |
-| `error`                  | 요청이 실패했을 때 오류 메시지                                    |        |
-| `response.has_tool_call` | 응답에 도구 사용 블록이 포함되었을 때 `true`                         |        |
+| 속성                               | 설명                                                                                                         | 게이트 대상 |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------ |
+| `model`                          | 모델 식별자                                                                                                     |        |
+| `gen_ai.system`                  | 항상 `anthropic`. OpenTelemetry GenAI 의미론적 규칙                                                                |        |
+| `gen_ai.request.model`           | `model`과 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                                |        |
+| `query_source`                   | 요청을 발급한 하위 시스템 (예: `repl_main_thread` 또는 하위 에이전트 이름)                                                       |        |
+| `speed`                          | `fast` 또는 `normal`                                                                                         |        |
+| `llm_request.context`            | 부모 스팬에 따라 `interaction`, `tool` 또는 `standalone`                                                            |        |
+| `duration_ms`                    | 재시도를 포함한 벽시계 지속 시간                                                                                         |        |
+| `ttft_ms`                        | 첫 번째 토큰까지의 시간 (밀리초)                                                                                        |        |
+| `input_tokens`                   | API 사용 블록의 입력 토큰 수                                                                                         |        |
+| `output_tokens`                  | 출력 토큰 수                                                                                                    |        |
+| `cache_read_tokens`              | 프롬프트 캐시에서 읽은 토큰                                                                                            |        |
+| `cache_creation_tokens`          | 프롬프트 캐시에 기록된 토큰                                                                                            |        |
+| `request_id`                     | `request-id` 응답 헤더의 Anthropic API 요청 ID                                                                    |        |
+| `gen_ai.response.id`             | `request_id`와 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                           |        |
+| `client_request_id`              | 최종 시도의 클라이언트 생성 `x-client-request-id`                                                                      |        |
+| `attempt`                        | 이 요청에 대해 수행된 총 시도                                                                                          |        |
+| `success`                        | `true` 또는 `false`                                                                                          |        |
+| `status_code`                    | 요청이 실패했을 때 HTTP 상태 코드                                                                                      |        |
+| `error`                          | 요청이 실패했을 때 오류 메시지                                                                                          |        |
+| `response.has_tool_call`         | 응답에 도구 사용 블록이 포함되었을 때 `true`                                                                               |        |
+| `stop_reason`                    | API 응답 `stop_reason` (예: `end_turn`, `tool_use`, `max_tokens`, `stop_sequence`, `pause_turn` 또는 `refusal`) |        |
+| `gen_ai.response.finish_reasons` | `stop_reason`과 동일한 값 (문자열 배열로 래핑됨). OpenTelemetry GenAI 의미론적 규칙                                            |        |
 
 각 재시도 시도는 `attempt` 및 `client_request_id` 속성이 있는 `gen_ai.request.attempt` 스팬 이벤트로도 기록됩니다.
 
@@ -226,7 +228,7 @@ Agent SDK 및 `claude -p` 세션에서 `TRACEPARENT`가 환경에 설정되면 `
 | `num_cancelled`          | 완료 전에 취소된 훅 수                   |                         |
 
 <Note>
-  `new_context`, `system_prompt_preview`, `tool_input` 및 `response.model_output`과 같은 추가 콘텐츠 포함 속성은 상세 베타 추적이 활성화되어 있을 때만 내보내집니다. 이들은 안정적인 스팬 스키마의 일부가 아닙니다.
+  `new_context`, `system_prompt_preview`, `user_system_prompt`, `tool_input` 및 `response.model_output`과 같은 추가 콘텐츠 포함 속성은 상세 베타 추적이 활성화되어 있을 때만 내보내집니다. 이들은 안정적인 스팬 스키마의 일부가 아닙니다. `user_system_prompt`는 추가로 `OTEL_LOG_USER_PROMPTS=1`이 필요합니다. 이는 `systemPrompt` SDK 옵션 또는 `--system-prompt` 및 `--append-system-prompt` 플래그를 통해 제공하는 시스템 프롬프트 텍스트만 포함하며 60KB에서 잘리고 요청당이 아닌 세션당 한 번 내보내집니다.
 </Note>
 
 ### 동적 헤더

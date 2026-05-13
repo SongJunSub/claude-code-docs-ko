@@ -3118,16 +3118,6 @@ class SandboxSettings(TypedDict, total=False):
 | `ignoreViolations`          | [`SandboxIgnoreViolations`](#sandbox-ignore-violations) | `None`  | 무시할 샌드박스 위반을 구성합니다                                                                                                                                                   |
 | `enableWeakerNestedSandbox` | `bool`                                                  | `False` | 호환성을 위해 더 약한 중첩 샌드박스 활성화                                                                                                                                             |
 
-<Note>
-  **파일 시스템 및 네트워크 접근 제한**은 샌드박스 설정을 통해 구성되지 않습니다. 대신 [권한 규칙](/ko/settings#permission-settings)에서 파생됩니다.
-
-  * **파일 시스템 읽기 제한**: 읽기 거부 규칙
-  * **파일 시스템 쓰기 제한**: Edit 허용/거부 규칙
-  * **네트워크 제한**: WebFetch 허용/거부 규칙
-
-  명령 실행 샌드박싱을 위해 샌드박스 설정을 사용하고, 파일 시스템 및 네트워크 접근 제어를 위해 권한 규칙을 사용합니다.
-</Note>
-
 #### 사용 예제
 
 ```python theme={null}
@@ -3156,20 +3146,32 @@ async for message in query(
 
 ```python theme={null}
 class SandboxNetworkConfig(TypedDict, total=False):
-    allowLocalBinding: bool
+    allowedDomains: list[str]
+    deniedDomains: list[str]
+    allowManagedDomainsOnly: bool
     allowUnixSockets: list[str]
     allowAllUnixSockets: bool
+    allowLocalBinding: bool
+    allowMachLookup: list[str]
     httpProxyPort: int
     socksProxyPort: int
 ```
 
-| 속성                    | 타입          | 기본값     | 설명                                       |
-| :-------------------- | :---------- | :------ | :--------------------------------------- |
-| `allowLocalBinding`   | `bool`      | `False` | 프로세스가 로컬 포트에 바인딩하도록 허용 (예: 개발 서버용)       |
-| `allowUnixSockets`    | `list[str]` | `[]`    | 프로세스가 접근할 수 있는 Unix 소켓 경로 (예: Docker 소켓) |
-| `allowAllUnixSockets` | `bool`      | `False` | 모든 Unix 소켓에 대한 접근 허용                     |
-| `httpProxyPort`       | `int`       | `None`  | 네트워크 요청을 위한 HTTP 프록시 포트                  |
-| `socksProxyPort`      | `int`       | `None`  | 네트워크 요청을 위한 SOCKS 프록시 포트                 |
+| 속성                        | 타입          | 기본값     | 설명                                                                                           |
+| :------------------------ | :---------- | :------ | :------------------------------------------------------------------------------------------- |
+| `allowedDomains`          | `list[str]` | `[]`    | 샌드박스된 프로세스가 접근할 수 있는 도메인 이름                                                                  |
+| `deniedDomains`           | `list[str]` | `[]`    | 샌드박스된 프로세스가 접근할 수 없는 도메인 이름입니다. `allowedDomains`보다 우선합니다                                     |
+| `allowManagedDomainsOnly` | `bool`      | `False` | 관리되는 설정만: 관리되는 설정에서 설정되면, 관리되지 않는 설정 소스의 `allowedDomains`를 무시합니다. SDK 옵션을 통해 설정할 때는 효과가 없습니다 |
+| `allowUnixSockets`        | `list[str]` | `[]`    | 프로세스가 접근할 수 있는 Unix 소켓 경로 (예: Docker 소켓)                                                     |
+| `allowAllUnixSockets`     | `bool`      | `False` | 모든 Unix 소켓에 대한 접근 허용                                                                         |
+| `allowLocalBinding`       | `bool`      | `False` | 프로세스가 로컬 포트에 바인딩하도록 허용 (예: 개발 서버용)                                                           |
+| `allowMachLookup`         | `list[str]` | `[]`    | macOS만 해당: 허용할 XPC/Mach 서비스 이름입니다. 후행 와일드카드를 지원합니다                                           |
+| `httpProxyPort`           | `int`       | `None`  | 네트워크 요청을 위한 HTTP 프록시 포트                                                                      |
+| `socksProxyPort`          | `int`       | `None`  | 네트워크 요청을 위한 SOCKS 프록시 포트                                                                     |
+
+<Note>
+  기본 제공 샌드박스 프록시는 요청된 호스트명을 기반으로 네트워크 허용 목록을 적용하며 TLS 트래픽을 종료하거나 검사하지 않으므로, [도메인 프론팅](https://en.wikipedia.org/wiki/Domain_fronting)과 같은 기술이 이를 우회할 수 있습니다. 자세한 내용은 [샌드박싱 보안 제한 사항](/ko/sandboxing#security-limitations)을 참조하고, TLS 종료 프록시 구성은 [안전한 배포](/ko/agent-sdk/secure-deployment#traffic-forwarding)를 참조하십시오.
+</Note>
 
 ### `SandboxIgnoreViolations`
 

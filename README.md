@@ -1,6 +1,6 @@
 # Claude Code 한국어 공식 문서 큐레이션
 
-[Claude Code 공식 문서](https://code.claude.com/docs/ko/overview) 전체(118페이지)를 카테고리별로 정리한 개인용 큐레이션 레포.
+[Claude Code 공식 문서](https://code.claude.com/docs/ko/overview) 전체(131페이지)를 카테고리별로 정리한 개인용 큐레이션 레포.
 
 - **누락 없음**: 공식 문서 모든 페이지를 풀텍스트 마크다운으로 보존
 - **빠른 탐색**: 8개 카테고리 + 카테고리별 README가 "어디에 무엇이 있는지" 안내
@@ -13,14 +13,14 @@
 
 | # | 카테고리 | 페이지 | 한 줄 |
 |---|---|---:|---|
-| 01 | [시작하기](01-getting-started/) | 9 | 설치·로그인·환경 선택·Claude Code 동작 원리 |
-| 02 | [실행 환경 / 인터페이스](02-environments/) | 16 | CLI·VS Code·JetBrains·Desktop·Web·Slack·Chrome·터미널 환경 다듬기 |
+| 01 | [시작하기](01-getting-started/) | 10 | 설치·로그인·환경 선택·Claude Code 동작 원리·설치 트러블슈팅 |
+| 02 | [실행 환경 / 인터페이스](02-environments/) | 18 | CLI·VS Code·JetBrains·Desktop·Web·Slack·Chrome·agent view·deep links |
 | 03 | [Claude Code 확장](03-extending/) | 14 | CLAUDE.md·Skills·Sub-agents·Hooks·MCP·Plugins |
 | 04 | [Agent SDK](04-agent-sdk/) | 29 | Claude Code를 라이브러리로 — Python/TypeScript |
-| 05 | [워크플로우 / 자동화](05-workflows/) | 18 | 일상 작업 패턴·CI 통합·예약/자율 실행·고급 모드(/ultraplan, /ultrareview) |
-| 06 | [설정 / 레퍼런스](06-config-reference/) | 11 | 환경 변수·플래그·권한·도구·에러 사전 |
-| 07 | [엔터프라이즈 / 운영](07-enterprise/) | 16 | Bedrock·Vertex·Foundry·네트워크·보안·비용·컴플라이언스 |
-| 08 | [What's New / 릴리스 노트](08-whats-new/) | 5 | 변경 이력 (영문) |
+| 05 | [워크플로우 / 자동화](05-workflows/) | 20 | 일상 작업·CI 통합·예약/자율 실행·병렬/worktree·고급 모드(/ultraplan, /ultrareview) |
+| 06 | [설정 / 레퍼런스](06-config-reference/) | 12 | 환경 변수·플래그·권한·도구·에러 사전·용어집 |
+| 07 | [엔터프라이즈 / 운영](07-enterprise/) | 19 | Bedrock·Vertex·Foundry·AWS·네트워크·보안·비용·조직 도입 |
+| 08 | [What's New / 릴리스 노트](08-whats-new/) | 9 | 주별 변경 이력 (w13~w19) |
 
 ## 빠른 탐색
 
@@ -39,6 +39,10 @@
 | 클라우드 딥 리뷰 | [`05-workflows/ultrareview.md`](05-workflows/ultrareview.md) |
 | 정기 작업 예약 | [`05-workflows/scheduled-tasks.md`](05-workflows/scheduled-tasks.md) + [`routines.md`](05-workflows/routines.md) |
 | 조건 충족까지 자동 반복 (`/goal`) | [`05-workflows/goal.md`](05-workflows/goal.md) |
+| 병렬 세션 격리(worktree) | [`05-workflows/worktrees.md`](05-workflows/worktrees.md) + [`agents.md`](05-workflows/agents.md) |
+| 여러 세션 한눈에 관리 | [`02-environments/agent-view.md`](02-environments/agent-view.md) |
+| 용어 빠르게 찾기 | [`06-config-reference/glossary.md`](06-config-reference/glossary.md) |
+| 설치/로그인 에러 해결 | [`01-getting-started/troubleshoot-install.md`](01-getting-started/troubleshoot-install.md) |
 | 권한·샌드박스 거는 법 | [`06-config-reference/permissions.md`](06-config-reference/permissions.md) + [`sandboxing.md`](06-config-reference/sandboxing.md) |
 | 환경 변수 / 플래그 찾기 | [`06-config-reference/env-vars.md`](06-config-reference/env-vars.md) + [`cli-reference.md`](06-config-reference/cli-reference.md) |
 | 에러 메시지 의미 찾기 | [`06-config-reference/errors.md`](06-config-reference/errors.md) |
@@ -61,13 +65,13 @@
 
 ## 한국어 / 영어 비율
 
-총 118 페이지 중:
-- 🇰🇷 **한국어 91 페이지** (77%)
-- 🇬🇧 **영어 27 페이지** (23%, 한국어 번역 미제공이라 영문 원문 그대로 보존)
+총 131 페이지 중:
+- 🇰🇷 **한국어 104 페이지** (79%)
+- 🇬🇧 **영어 27 페이지** (21%, 한국어 번역 미제공이라 영문 원문 그대로 보존)
 
 영어로 보존된 페이지는 주로:
 - **Agent SDK** 카테고리 대부분 (15개)
-- **What's New** 전체 (4개)
+- **What's New** 일부 (w13~w15 등 5개, w16부터는 한국어 번역 제공)
 - 일부 부가 페이지 (`voice-dictation`, `desktop-scheduled-tasks`, `context-window`, `github-enterprise-server`)
 
 각 카테고리 README에서 ⓔ 마크로 표시.
@@ -103,17 +107,17 @@ bash .scripts/fetch.sh && bash .scripts/organize.sh
 claude-code-docs-ko/
 ├── README.md                    # 이 파일
 ├── .scripts/
-│   ├── manifest.tsv             # 118개 페이지 → 카테고리 매핑
+│   ├── manifest.tsv             # 131개 페이지 → 카테고리 매핑
 │   ├── fetch.sh                 # 한국어 우선, 영어 fallback 다운로드
 │   └── organize.sh              # 매니페스트 기반 카테고리 정리
-├── 01-getting-started/          # 9 pages
-├── 02-environments/             # 16 pages
+├── 01-getting-started/          # 10 pages
+├── 02-environments/             # 18 pages
 ├── 03-extending/                # 14 pages
 ├── 04-agent-sdk/                # 29 pages
-├── 05-workflows/                # 18 pages
-├── 06-config-reference/         # 11 pages
-├── 07-enterprise/               # 16 pages
-└── 08-whats-new/                # 5 pages (영문)
+├── 05-workflows/                # 20 pages
+├── 06-config-reference/         # 12 pages
+├── 07-enterprise/               # 19 pages
+└── 08-whats-new/                # 9 pages (일부 영문)
 ```
 
 ## 라이선스

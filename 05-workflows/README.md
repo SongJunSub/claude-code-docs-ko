@@ -34,13 +34,19 @@ Claude Code로 실제 일을 어떻게 굴릴지에 대한 카테고리. 일상 
 | [desktop-scheduled-tasks](desktop-scheduled-tasks.md) ⓔ | 데스크톱 예약 작업 (일일 코드 리뷰·의존성 감사·모닝 브리핑) |
 | [routines](routines.md) | cron/API/GitHub 이벤트 트리거 routine — Anthropic 관리 인프라 |
 
+### 병렬 / 격리 실행
+| 페이지 | 한 줄 |
+|---|---|
+| [agent-teams](agent-teams.md) | 여러 Claude Code 인스턴스를 팀으로 조율 |
+| [agents](agents.md) | 동시에 여러 작업을 처리하는 방식 비교 (subagent·agent view·agent teams·worktree) |
+| [worktrees](worktrees.md) | git worktree로 병렬 세션 격리 (`--worktree`, 서브에이전트 격리, `.worktreeinclude`) |
+
 ### 고급 모드
 | 페이지 | 한 줄 |
 |---|---|
 | [ultraplan](ultraplan.md) | CLI에서 plan 시작 → 웹에서 작성 → 원격/터미널 실행 |
 | [ultrareview](ultrareview.md) | `/ultrareview`로 클라우드에서 멀티 에이전트 딥 코드 리뷰 |
 | [headless](headless.md) | Agent SDK로 CLI/Python/TypeScript에서 프로그래밍 방식 실행 |
-| [agent-teams](agent-teams.md) | 여러 Claude Code 인스턴스를 팀으로 조율 |
 | [checkpointing](checkpointing.md) | 편집·대화 추적, 되돌리기, 요약하여 세션 상태 관리 |
 | [fast-mode](fast-mode.md) | Opus 4.6 빠른 응답 토글 |
 

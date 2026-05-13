@@ -17,6 +17,7 @@
 | [admin-setup](admin-setup.md) | 관리자 배포 결정 맵 (API provider·관리 설정·정책·사용 모니터링·데이터 처리) |
 | [third-party-integrations](third-party-integrations.md) | 엔터프라이즈 배포 요구사항을 위한 외부 서비스 통합 |
 | [amazon-bedrock](amazon-bedrock.md) | Amazon Bedrock 설정·IAM·트러블슈팅 |
+| [claude-platform-on-aws](claude-platform-on-aws.md) | AWS 인증·IAM·AWS Marketplace 빌링으로 Anthropic 운영 Claude API 사용 |
 | [google-vertex-ai](google-vertex-ai.md) | Google Vertex AI 설정 |
 | [microsoft-foundry](microsoft-foundry.md) | Microsoft Foundry 설정 |
 | [github-enterprise-server](github-enterprise-server.md) ⓔ | 자가 호스팅 GHES 연결 (web·code review·마켓플레이스) |
@@ -38,5 +39,11 @@
 | [analytics](analytics.md) | 팀 사용량 메트릭·채택률·엔지니어링 속도 측정 |
 | [monitoring-usage](monitoring-usage.md) | OpenTelemetry로 사용량 모니터링 |
 | [costs](costs.md) | 토큰 사용 추적·팀 지출 한도·비용 절감 (context 관리·모델 선택·thinking 설정·전처리 hook) |
+
+### 조직 도입 / 홍보
+| 페이지 | 한 줄 |
+|---|---|
+| [champion-kit](champion-kit.md) | 사내에서 Claude Code를 옹호하는 엔지니어용 플레이북 (공유 내용·Q&A·30일 도입 가이드) |
+| [communications-kit](communications-kit.md) | 조직 롤아웃을 위한 출시 공지·드립 캠페인 메시지·FAQ 응답 자료 |
 
 > ⓔ = 영어 원문

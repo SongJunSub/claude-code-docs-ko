@@ -26,6 +26,8 @@ Claude Code를 어디서, 어떻게 띄울지에 관한 카테고리. CLI 외에
 | [channels](channels.md) | MCP 서버에서 webhook·알림·메시지를 세션에 푸시 |
 | [channels-reference](channels-reference.md) | Channel 계약 레퍼런스 (capability, notification, reply tool, sender gating) |
 | [remote-control](remote-control.md) | 휴대폰·태블릿·브라우저에서 로컬 세션 이어가기 |
+| [agent-view](agent-view.md) | 여러 Claude Code 세션을 한 화면에서 디스패치·관리 (입력 필요한 세션 표시) |
+| [deep-links](deep-links.md) | `claude-cli://` URL로 runbook·알림·대시보드에서 클릭 한 번에 세션 시작 |
 
 ### 터미널 환경 다듬기
 | 페이지 | 한 줄 |

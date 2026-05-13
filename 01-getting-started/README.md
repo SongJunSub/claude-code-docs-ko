@@ -14,6 +14,7 @@ Claude Code를 처음 접하거나, 환경을 새로 셋업할 때 보는 카테
 | [overview](overview.md) | Claude Code 전체 개요 — 터미널/IDE/Desktop/Web/JetBrains 어디서 무엇을 할 수 있는지 |
 | [quickstart](quickstart.md) | 첫 코드베이스 탐색부터 수정 커밋까지 빠른 시작 |
 | [setup](setup.md) | 시스템 요구사항, 플랫폼별 설치, 버전 관리, 제거 |
+| [troubleshoot-install](troubleshoot-install.md) | command not found·PATH·권한·네트워크·인증 등 설치/로그인 에러 해결 |
 | [authentication](authentication.md) | 개인/팀/조직 단위 로그인 및 인증 구성 |
 | [desktop-quickstart](desktop-quickstart.md) | 데스크톱 앱 설치 및 첫 세션 |
 | [web-quickstart](web-quickstart.md) | 브라우저·모바일에서 시작 (claude.ai/code) |

@@ -1,7 +1,7 @@
 # CLAUDE.md — Claude Code 한국어 문서 큐레이션 레포
 
 ## 이 레포의 정체
-- **목적**: [code.claude.com/docs/ko](https://code.claude.com/docs/ko/overview)의 모든 페이지(118개)를 카테고리별로 풀텍스트 보존하는 개인 큐레이션
+- **목적**: [code.claude.com/docs/ko](https://code.claude.com/docs/ko/overview)의 모든 페이지(131개)를 카테고리별로 풀텍스트 보존하는 개인 큐레이션
 - **운영 모드**: 매월 1일 09:00 KST에 [routine](https://claude.ai/code/routines/trig_01KLXu6PZJF3khuCAEbT33nz)이 자동으로 fetch → organize → 변경 있으면 PR 생성
 - **우선순위**: 한국어 원문 > 영어 fallback (한국어 번역이 없으면 영어 보존)
 
@@ -21,14 +21,14 @@ claude-code-docs-ko/
 │   ├── fetch.sh              # 한국어 우선, 영어 fallback 다운로드
 │   ├── organize.sh           # manifest 기반 카테고리 정리
 │   └── fetch.log             # 다운로드 로그 (gitignore)
-├── 01-getting-started/       # 9 pages
-├── 02-environments/          # 16 pages
+├── 01-getting-started/       # 10 pages
+├── 02-environments/          # 18 pages
 ├── 03-extending/             # 14 pages
 ├── 04-agent-sdk/             # 29 pages
-├── 05-workflows/             # 18 pages
-├── 06-config-reference/      # 11 pages
-├── 07-enterprise/            # 16 pages
-└── 08-whats-new/             # 5 pages (영문)
+├── 05-workflows/             # 20 pages
+├── 06-config-reference/      # 12 pages
+├── 07-enterprise/            # 19 pages
+└── 08-whats-new/             # 9 pages (일부 영문)
 ```
 
 ## 카테고리 8개의 의도
@@ -52,7 +52,7 @@ claude-code-docs-ko/
 - 탭(`\t`)으로 구분
 - `slug`: docs 사이트의 경로 (예: `overview`, `agent-sdk/quickstart`, `whats-new/2026-w15`)
 - `category`: 위 8개 폴더 이름 정확히
-- 118줄, 추가/제거 시 정렬은 카테고리 순으로 유지
+- 131줄, 추가/제거 시 정렬은 카테고리 순으로 유지
 
 ## README 작성 컨벤션
 
@@ -111,13 +111,13 @@ claude-code-docs-ko/
 |---|---|
 | `bash .scripts/fetch.sh` | 모든 페이지 다운로드 (병렬) |
 | `bash .scripts/organize.sh` | 매니페스트 기반 카테고리 정리 |
-| `find . -name "*.md" -not -path "./.git/*" \| wc -l` | 전체 .md 카운트 (정상값: 127 = 118 페이지 + 8 카테고리 README + 1 루트) |
+| `find . -name "*.md" -not -path "./.git/*" \| wc -l` | 전체 .md 카운트 (정상값: 140 = 131 페이지 + 8 카테고리 README + 1 루트) |
 | `gh pr list --base master` | 월간 sync routine이 만든 PR 목록 |
 
 ## 검증 체크리스트 (커밋 전)
 - [ ] `.md` 카운트가 카테고리 README들의 페이지 수 합과 일치
 - [ ] 빈 파일(0 byte) 없음: `find . -name "*.md" -size 0`
-- [ ] 매니페스트 줄 수 = 118 (페이지 추가 시 변경)
+- [ ] 매니페스트 줄 수 = 131 (페이지 추가 시 변경)
 - [ ] 카테고리 README의 ⓔ 표시가 실제 영어 fallback 페이지와 일치
 
 ## 참조

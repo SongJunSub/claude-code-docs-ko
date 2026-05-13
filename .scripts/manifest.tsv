@@ -1,6 +1,7 @@
 overview	01-getting-started
 quickstart	01-getting-started
 setup	01-getting-started
+troubleshoot-install	01-getting-started
 authentication	01-getting-started
 desktop-quickstart	01-getting-started
 web-quickstart	01-getting-started
@@ -21,6 +22,8 @@ keybindings	02-environments
 voice-dictation	02-environments
 computer-use	02-environments
 remote-control	02-environments
+agent-view	02-environments
+deep-links	02-environments
 channels	02-environments
 channels-reference	02-environments
 memory	03-extending
@@ -79,6 +82,8 @@ ultraplan	05-workflows
 ultrareview	05-workflows
 headless	05-workflows
 agent-teams	05-workflows
+agents	05-workflows
+worktrees	05-workflows
 checkpointing	05-workflows
 fast-mode	05-workflows
 context-window	05-workflows
@@ -95,8 +100,10 @@ errors	06-config-reference
 auto-mode-config	06-config-reference
 sandboxing	06-config-reference
 server-managed-settings	06-config-reference
+glossary	06-config-reference
 admin-setup	07-enterprise
 amazon-bedrock	07-enterprise
+claude-platform-on-aws	07-enterprise
 google-vertex-ai	07-enterprise
 microsoft-foundry	07-enterprise
 github-enterprise-server	07-enterprise
@@ -111,8 +118,14 @@ security	07-enterprise
 legal-and-compliance	07-enterprise
 data-usage	07-enterprise
 zero-data-retention	07-enterprise
+champion-kit	07-enterprise
+communications-kit	07-enterprise
 changelog	08-whats-new
 whats-new/index	08-whats-new
 whats-new/2026-w13	08-whats-new
 whats-new/2026-w14	08-whats-new
 whats-new/2026-w15	08-whats-new
+whats-new/2026-w16	08-whats-new
+whats-new/2026-w17	08-whats-new
+whats-new/2026-w18	08-whats-new
+whats-new/2026-w19	08-whats-new

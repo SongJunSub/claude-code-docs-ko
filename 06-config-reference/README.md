@@ -25,6 +25,7 @@
 | [auto-mode-config](auto-mode-config.md) | auto mode classifier 설정 (신뢰 repo/bucket/domain·환경 컨텍스트·차단/허용) |
 | [sandboxing](sandboxing.md) | 샌드박스 bash 도구의 파일시스템·네트워크 격리 |
 | [server-managed-settings](server-managed-settings.md) | 디바이스 관리 인프라 없이 서버 전달 설정으로 조직 중앙 구성 |
+| [glossary](glossary.md) | agentic loop·compaction·CLAUDE.md·hooks·subagents·MCP 등 핵심 용어 정의 |
 
 ## 자주 찾는 항목
 - **권한을 한 번 허용하고 싶다** → `permissions` + `permission-modes`

@@ -26,10 +26,11 @@ Claude Code로 실제 일을 어떻게 굴릴지에 대한 카테고리. 일상 
 | [github-actions](github-actions.md) | Claude Code GitHub Actions로 워크플로우 통합 |
 | [gitlab-ci-cd](gitlab-ci-cd.md) | GitLab CI/CD 통합 |
 
-### 예약 / 자동 실행
+### 예약 / 자율 실행
 | 페이지 | 한 줄 |
 |---|---|
 | [scheduled-tasks](scheduled-tasks.md) | `/loop`과 cron 도구로 프롬프트 반복 실행 |
+| [goal](goal.md) | `/goal`로 완료 조건을 설정하면 충족될 때까지 턴 자동 반복 |
 | [desktop-scheduled-tasks](desktop-scheduled-tasks.md) ⓔ | 데스크톱 예약 작업 (일일 코드 리뷰·의존성 감사·모닝 브리핑) |
 | [routines](routines.md) | cron/API/GitHub 이벤트 트리거 routine — Anthropic 관리 인프라 |
 

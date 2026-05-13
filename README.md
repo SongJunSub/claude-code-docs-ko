@@ -1,6 +1,6 @@
 # Claude Code 한국어 공식 문서 큐레이션
 
-[Claude Code 공식 문서](https://code.claude.com/docs/ko/overview) 전체(117페이지)를 카테고리별로 정리한 개인용 큐레이션 레포.
+[Claude Code 공식 문서](https://code.claude.com/docs/ko/overview) 전체(118페이지)를 카테고리별로 정리한 개인용 큐레이션 레포.
 
 - **누락 없음**: 공식 문서 모든 페이지를 풀텍스트 마크다운으로 보존
 - **빠른 탐색**: 8개 카테고리 + 카테고리별 README가 "어디에 무엇이 있는지" 안내
@@ -17,7 +17,7 @@
 | 02 | [실행 환경 / 인터페이스](02-environments/) | 16 | CLI·VS Code·JetBrains·Desktop·Web·Slack·Chrome·터미널 환경 다듬기 |
 | 03 | [Claude Code 확장](03-extending/) | 14 | CLAUDE.md·Skills·Sub-agents·Hooks·MCP·Plugins |
 | 04 | [Agent SDK](04-agent-sdk/) | 29 | Claude Code를 라이브러리로 — Python/TypeScript |
-| 05 | [워크플로우 / 자동화](05-workflows/) | 17 | 일상 작업 패턴·CI 통합·예약 실행·고급 모드(/ultraplan, /ultrareview) |
+| 05 | [워크플로우 / 자동화](05-workflows/) | 18 | 일상 작업 패턴·CI 통합·예약/자율 실행·고급 모드(/ultraplan, /ultrareview) |
 | 06 | [설정 / 레퍼런스](06-config-reference/) | 11 | 환경 변수·플래그·권한·도구·에러 사전 |
 | 07 | [엔터프라이즈 / 운영](07-enterprise/) | 16 | Bedrock·Vertex·Foundry·네트워크·보안·비용·컴플라이언스 |
 | 08 | [What's New / 릴리스 노트](08-whats-new/) | 5 | 변경 이력 (영문) |
@@ -38,6 +38,7 @@
 | PR 자동 리뷰 | [`05-workflows/code-review.md`](05-workflows/code-review.md) + [`github-actions.md`](05-workflows/github-actions.md) |
 | 클라우드 딥 리뷰 | [`05-workflows/ultrareview.md`](05-workflows/ultrareview.md) |
 | 정기 작업 예약 | [`05-workflows/scheduled-tasks.md`](05-workflows/scheduled-tasks.md) + [`routines.md`](05-workflows/routines.md) |
+| 조건 충족까지 자동 반복 (`/goal`) | [`05-workflows/goal.md`](05-workflows/goal.md) |
 | 권한·샌드박스 거는 법 | [`06-config-reference/permissions.md`](06-config-reference/permissions.md) + [`sandboxing.md`](06-config-reference/sandboxing.md) |
 | 환경 변수 / 플래그 찾기 | [`06-config-reference/env-vars.md`](06-config-reference/env-vars.md) + [`cli-reference.md`](06-config-reference/cli-reference.md) |
 | 에러 메시지 의미 찾기 | [`06-config-reference/errors.md`](06-config-reference/errors.md) |
@@ -60,8 +61,8 @@
 
 ## 한국어 / 영어 비율
 
-총 117 페이지 중:
-- 🇰🇷 **한국어 90 페이지** (77%)
+총 118 페이지 중:
+- 🇰🇷 **한국어 91 페이지** (77%)
 - 🇬🇧 **영어 27 페이지** (23%, 한국어 번역 미제공이라 영문 원문 그대로 보존)
 
 영어로 보존된 페이지는 주로:
@@ -102,14 +103,14 @@ bash .scripts/fetch.sh && bash .scripts/organize.sh
 claude-code-docs-ko/
 ├── README.md                    # 이 파일
 ├── .scripts/
-│   ├── manifest.tsv             # 117개 페이지 → 카테고리 매핑
+│   ├── manifest.tsv             # 118개 페이지 → 카테고리 매핑
 │   ├── fetch.sh                 # 한국어 우선, 영어 fallback 다운로드
 │   └── organize.sh              # 매니페스트 기반 카테고리 정리
 ├── 01-getting-started/          # 9 pages
 ├── 02-environments/             # 16 pages
 ├── 03-extending/                # 14 pages
 ├── 04-agent-sdk/                # 29 pages
-├── 05-workflows/                # 17 pages
+├── 05-workflows/                # 18 pages
 ├── 06-config-reference/         # 11 pages
 ├── 07-enterprise/               # 16 pages
 └── 08-whats-new/                # 5 pages (영문)

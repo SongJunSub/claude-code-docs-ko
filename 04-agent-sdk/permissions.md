@@ -2,59 +2,60 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Configure permissions
+# 권한 구성
 
-> Control how your agent uses tools with permission modes, hooks, and declarative allow/deny rules.
+> 권한 모드, 훅, 선언적 허용/거부 규칙을 사용하여 에이전트가 도구를 사용하는 방식을 제어합니다.
 
-The Claude Agent SDK provides permission controls to manage how Claude uses tools. Use permission modes and rules to define what's allowed automatically, and the [`canUseTool` callback](/en/agent-sdk/user-input) to handle everything else at runtime.
+Claude Agent SDK는 Claude가 도구를 사용하는 방식을 관리하기 위한 권한 제어를 제공합니다. 권한 모드와 규칙을 사용하여 자동으로 허용되는 항목을 정의하고, [`canUseTool` 콜백](/ko/agent-sdk/user-input)을 사용하여 런타임에 나머지 모든 항목을 처리합니다.
 
 <Note>
-  This page covers permission modes and rules. To build interactive approval flows where users approve or deny tool requests at runtime, see [Handle approvals and user input](/en/agent-sdk/user-input).
+  이 페이지는 권한 모드와 규칙을 다룹니다. 사용자가 런타임에 도구 요청을 승인하거나 거부하는 대화형 승인 흐름을 구축하려면 [승인 및 사용자 입력 처리](/ko/agent-sdk/user-input)를 참조하세요.
 </Note>
 
-## How permissions are evaluated
+## 권한 평가 방식
 
-When Claude requests a tool, the SDK checks permissions in this order:
+Claude가 도구를 요청할 때 SDK는 다음 순서로 권한을 확인합니다:
 
 <Steps>
-  <Step title="Hooks">
-    Run [hooks](/en/agent-sdk/hooks) first, which can allow, deny, or continue to the next step
+  <Step title="훅">
+    먼저 [훅](/ko/agent-sdk/hooks)을 실행합니다. 훅은 호출을 완전히 거부하거나 통과시킬 수 있습니다. `allow`를 반환하는 훅은 아래의 거부 및 요청 규칙을 건너뛰지 않습니다. 훅 결과와 관계없이 이러한 규칙들이 평가됩니다.
   </Step>
 
-  <Step title="Deny rules">
-    Check `deny` rules (from `disallowed_tools` and [settings.json](/en/settings#permission-settings)). If a deny rule matches, the tool is blocked, even in `bypassPermissions` mode.
+  <Step title="거부 규칙">
+    `deny` 규칙(`disallowed_tools` 및 [settings.json](/ko/settings#permission-settings)에서)을 확인합니다. 거부 규칙이 일치하면 `bypassPermissions` 모드에서도 도구가 차단됩니다. `Bash`와 같은 단순 이름의 거부 규칙은 이 평가가 시작되기 전에 Claude의 컨텍스트에서 도구를 제거하므로 `Bash(rm *)`와 같은 범위가 지정된 규칙만 이 단계에서 확인됩니다.
   </Step>
 
-  <Step title="Permission mode">
-    Apply the active [permission mode](#permission-modes). `bypassPermissions` approves everything that reaches this step. `acceptEdits` approves file operations. Other modes fall through.
+  <Step title="권한 모드">
+    활성 [권한 모드](#permission-modes)를 적용합니다. `bypassPermissions`는 이 단계에 도달한 모든 항목을 승인합니다. `acceptEdits`는 파일 작업을 승인합니다. 다른 모드는 통과합니다.
   </Step>
 
-  <Step title="Allow rules">
-    Check `allow` rules (from `allowed_tools` and settings.json). If a rule matches, the tool is approved.
+  <Step title="허용 규칙">
+    `allow` 규칙(`allowed_tools` 및 settings.json에서)을 확인합니다. 규칙이 일치하면 도구가 승인됩니다.
   </Step>
 
-  <Step title="canUseTool callback">
-    If not resolved by any of the above, call your [`canUseTool` callback](/en/agent-sdk/user-input) for a decision. In `dontAsk` mode, this step is skipped and the tool is denied.
+  <Step title="canUseTool 콜백">
+    위의 어느 것으로도 해결되지 않으면 결정을 위해 [`canUseTool` 콜백](/ko/agent-sdk/user-input)을 호출합니다. `dontAsk` 모드에서는 이 단계를 건너뛰고 도구가 거부됩니다.
   </Step>
 </Steps>
 
-<img src="https://mintcdn.com/claude-code/gvy2DIUELtNA8qD3/images/agent-sdk/permissions-flow.svg?fit=max&auto=format&n=gvy2DIUELtNA8qD3&q=85&s=0ccd63043a9ffc2a34d863602e043f72" alt="Permission evaluation flow diagram" width="920" height="260" data-path="images/agent-sdk/permissions-flow.svg" />
+<img src="https://mintcdn.com/claude-code/FEspvVUyRuaWjm0s/images/agent-sdk/permissions-flow.svg?fit=max&auto=format&n=FEspvVUyRuaWjm0s&q=85&s=a1759b0cf4541281a9fdd8f5348228e8" alt="권한 평가 흐름 다이어그램" width="920" height="260" data-path="images/agent-sdk/permissions-flow.svg" />
 
-This page focuses on **allow and deny rules** and **permission modes**. For the other steps:
+이 페이지는 **허용 및 거부 규칙**과 **권한 모드**에 중점을 둡니다. 다른 단계의 경우:
 
-* **Hooks:** run custom code to allow, deny, or modify tool requests. See [Control execution with hooks](/en/agent-sdk/hooks).
-* **canUseTool callback:** prompt users for approval at runtime. See [Handle approvals and user input](/en/agent-sdk/user-input).
+* **훅:** 도구 요청을 허용, 거부 또는 수정하는 사용자 정의 코드를 실행합니다. [훅으로 실행 제어](/ko/agent-sdk/hooks)를 참조하세요.
+* **canUseTool 콜백:** 런타임에 사용자에게 승인을 요청합니다. [승인 및 사용자 입력 처리](/ko/agent-sdk/user-input)를 참조하세요.
 
-## Allow and deny rules
+## 허용 및 거부 규칙
 
-`allowed_tools` and `disallowed_tools` (TypeScript: `allowedTools` / `disallowedTools`) add entries to the allow and deny rule lists in the evaluation flow above. They control whether a tool call is approved, not whether the tool is available to Claude.
+`allowed_tools` 및 `disallowed_tools`(TypeScript: `allowedTools` / `disallowedTools`)는 위의 평가 흐름에서 허용 및 거부 규칙 목록에 항목을 추가합니다. 허용 규칙은 승인에만 영향을 미칩니다. `allowed_tools`에 나열되지 않은 도구는 여전히 Claude에서 사용 가능하며 권한 모드로 통과합니다. 거부 규칙은 도구의 이름을 지정하는지 또는 도구 내의 패턴을 범위로 지정하는지에 따라 다르게 동작합니다.
 
-| Option                           | Effect                                                                                                                           |
-| :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `allowed_tools=["Read", "Grep"]` | `Read` and `Grep` are auto-approved. Tools not listed here still exist and fall through to the permission mode and `canUseTool`. |
-| `disallowed_tools=["Bash"]`      | `Bash` is always denied. Deny rules are checked first and hold in every permission mode, including `bypassPermissions`.          |
+| 옵션                                | 효과                                                                                                           |
+| :-------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| `allowed_tools=["Read", "Grep"]`  | `Read` 및 `Grep`은 자동으로 승인됩니다. 여기에 나열되지 않은 도구는 여전히 존재하며 권한 모드 및 `canUseTool`로 통과합니다.                           |
+| `disallowed_tools=["Bash"]`       | `Bash` 도구 정의가 요청에서 제거됩니다. Claude는 도구를 보지 못하며 시도할 수 없습니다.                                                     |
+| `disallowed_tools=["Bash(rm *)"]` | `Bash`는 계속 사용 가능합니다. `rm *`과 일치하는 호출은 `bypassPermissions`를 포함한 모든 권한 모드에서 거부됩니다. 다른 `Bash` 호출은 권한 모드로 통과합니다. |
 
-For a locked-down agent, pair `allowedTools` with `permissionMode: "dontAsk"`. Listed tools are approved; anything else is denied outright instead of prompting:
+잠금된 에이전트의 경우 `allowedTools`를 `permissionMode: "dontAsk"`와 쌍으로 사용합니다. 나열된 도구는 승인되고 다른 모든 항목은 프롬프트 대신 완전히 거부됩니다:
 
 ```typescript theme={null}
 const options = {
@@ -64,39 +65,39 @@ const options = {
 ```
 
 <Warning>
-  **`allowed_tools` does not constrain `bypassPermissions`.** `allowed_tools` only pre-approves the tools you list. Unlisted tools are not matched by any allow rule and fall through to the permission mode, where `bypassPermissions` approves them. Setting `allowed_tools=["Read"]` alongside `permission_mode="bypassPermissions"` still approves every tool, including `Bash`, `Write`, and `Edit`. If you need `bypassPermissions` but want specific tools blocked, use `disallowed_tools`.
+  **`allowed_tools`는 `bypassPermissions`를 제한하지 않습니다.** `allowed_tools`는 나열한 도구만 사전 승인합니다. 나열되지 않은 도구는 허용 규칙과 일치하지 않으며 권한 모드로 통과하며, 여기서 `bypassPermissions`는 이를 승인합니다. `allowed_tools=["Read"]`를 `permission_mode="bypassPermissions"`와 함께 설정하면 `Bash`, `Write`, `Edit`을 포함한 모든 도구가 여전히 승인됩니다. `bypassPermissions`가 필요하지만 특정 도구를 차단하려면 `disallowed_tools`를 사용합니다.
 </Warning>
 
-You can also configure allow, deny, and ask rules declaratively in `.claude/settings.json`. These rules are read when the `project` setting source is enabled, which it is for default `query()` options. If you set `setting_sources` (TypeScript: `settingSources`) explicitly, include `"project"` for them to apply. See [Permission settings](/en/settings#permission-settings) for the rule syntax.
+`.claude/settings.json`에서 허용, 거부 및 요청 규칙을 선언적으로 구성할 수도 있습니다. 이러한 규칙은 `project` 설정 소스가 활성화될 때 읽혀지며, 기본 `query()` 옵션에 대해 활성화됩니다. `setting_sources`(TypeScript: `settingSources`)를 명시적으로 설정하면 적용되도록 `"project"`를 포함합니다. 규칙 구문은 [권한 설정](/ko/settings#permission-settings)을 참조하세요.
 
-## Permission modes
+## 권한 모드
 
-Permission modes provide global control over how Claude uses tools. You can set the permission mode when calling `query()` or change it dynamically during streaming sessions.
+권한 모드는 Claude가 도구를 사용하는 방식에 대한 전역 제어를 제공합니다. `query()`를 호출할 때 권한 모드를 설정하거나 스트리밍 세션 중에 동적으로 변경할 수 있습니다.
 
-### Available modes
+### 사용 가능한 모드
 
-The SDK supports these permission modes:
+SDK는 다음 권한 모드를 지원합니다:
 
-| Mode                     | Description                  | Tool behavior                                                                                                                                 |
-| :----------------------- | :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| `default`                | Standard permission behavior | No auto-approvals; unmatched tools trigger your `canUseTool` callback                                                                         |
-| `dontAsk`                | Deny instead of prompting    | Anything not pre-approved by `allowed_tools` or rules is denied; `canUseTool` is never called                                                 |
-| `acceptEdits`            | Auto-accept file edits       | File edits and [filesystem operations](#accept-edits-mode-acceptedits) (`mkdir`, `rm`, `mv`, etc.) are automatically approved                 |
-| `bypassPermissions`      | Bypass all permission checks | All tools run without permission prompts (use with caution)                                                                                   |
-| `plan`                   | Planning mode                | No tool execution; Claude plans without making changes                                                                                        |
-| `auto` (TypeScript only) | Model-classified approvals   | A model classifier approves or denies each tool call. See [Auto mode](/en/permission-modes#eliminate-prompts-with-auto-mode) for availability |
+| 모드                     | 설명          | 도구 동작                                                                                                    |
+| :--------------------- | :---------- | :------------------------------------------------------------------------------------------------------- |
+| `default`              | 표준 권한 동작    | 자동 승인 없음; 일치하지 않는 도구는 `canUseTool` 콜백을 트리거합니다                                                            |
+| `dontAsk`              | 프롬프트 대신 거부  | `allowed_tools` 또는 규칙으로 사전 승인되지 않은 항목은 거부됩니다; `canUseTool`은 호출되지 않습니다                                    |
+| `acceptEdits`          | 파일 편집 자동 수락 | 파일 편집 및 [파일 시스템 작업](#accept-edits-mode-acceptedits)(`mkdir`, `rm`, `mv` 등)이 자동으로 승인됩니다                   |
+| `bypassPermissions`    | 모든 권한 확인 무시 | 모든 도구는 권한 프롬프트 없이 실행됩니다(주의해서 사용)                                                                         |
+| `plan`                 | 계획 모드       | 읽기 전용 도구가 실행되고 Claude는 소스 파일을 편집하지 않고 분석 및 계획합니다                                                         |
+| `auto`(TypeScript만 해당) | 모델 분류 승인    | 모델 분류기가 각 도구 호출을 승인하거나 거부합니다. 가용성은 [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 참조하세요 |
 
 <Warning>
-  **Subagent inheritance:** When the parent uses `bypassPermissions`, `acceptEdits`, or `auto`, all subagents inherit that mode and it cannot be overridden per subagent. Subagents may have different system prompts and less constrained behavior than your main agent, so inheriting `bypassPermissions` grants them full, autonomous system access without any approval prompts.
+  **하위 에이전트 상속:** 부모가 `bypassPermissions`, `acceptEdits` 또는 `auto`를 사용할 때 모든 하위 에이전트는 해당 모드를 상속하며 하위 에이전트별로 재정의할 수 없습니다. 하위 에이전트는 주 에이전트와 다른 시스템 프롬프트와 덜 제한된 동작을 가질 수 있으므로 `bypassPermissions`를 상속하면 승인 프롬프트 없이 전체 자율 시스템 액세스 권한이 부여됩니다.
 </Warning>
 
-### Set permission mode
+### 권한 모드 설정
 
-You can set the permission mode once when starting a query, or change it dynamically while the session is active.
+쿼리를 시작할 때 권한 모드를 한 번 설정하거나 세션이 활성화된 동안 동적으로 변경할 수 있습니다.
 
 <Tabs>
-  <Tab title="At query time">
-    Pass `permission_mode` (Python) or `permissionMode` (TypeScript) when creating a query. This mode applies for the entire session unless changed dynamically.
+  <Tab title="쿼리 시간에">
+    쿼리를 생성할 때 `permission_mode`(Python) 또는 `permissionMode`(TypeScript)를 전달합니다. 이 모드는 동적으로 변경되지 않는 한 전체 세션에 적용됩니다.
 
     <CodeGroup>
       ```python Python theme={null}
@@ -139,30 +140,30 @@ You can set the permission mode once when starting a query, or change it dynamic
     </CodeGroup>
   </Tab>
 
-  <Tab title="During streaming">
-    Call `set_permission_mode()` (Python) or `setPermissionMode()` (TypeScript) to change the mode mid-session. The new mode takes effect immediately for all subsequent tool requests. This lets you start restrictive and loosen permissions as trust builds, for example switching to `acceptEdits` after reviewing Claude's initial approach.
+  <Tab title="스트리밍 중">
+    `set_permission_mode()`(Python) 또는 `setPermissionMode()`(TypeScript)를 호출하여 세션 중간에 모드를 변경합니다. 새 모드는 모든 후속 도구 요청에 즉시 적용됩니다. 이를 통해 제한적으로 시작하여 신뢰가 구축됨에 따라 권한을 완화할 수 있습니다. 예를 들어 Claude의 초기 접근 방식을 검토한 후 `acceptEdits`로 전환할 수 있습니다.
 
     <CodeGroup>
       ```python Python theme={null}
       import asyncio
-      from claude_agent_sdk import query, ClaudeAgentOptions
+      from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
 
 
       async def main():
-          q = query(
-              prompt="Help me refactor this code",
+          async with ClaudeSDKClient(
               options=ClaudeAgentOptions(
                   permission_mode="default",  # Start in default mode
-              ),
-          )
+              )
+          ) as client:
+              await client.query("Help me refactor this code")
 
-          # Change mode dynamically mid-session
-          await q.set_permission_mode("acceptEdits")
+              # Change mode dynamically mid-session
+              await client.set_permission_mode("acceptEdits")
 
-          # Process messages with the new permission mode
-          async for message in q:
-              if hasattr(message, "result"):
-                  print(message.result)
+              # Process messages with the new permission mode
+              async for message in client.receive_response():
+                  if hasattr(message, "result"):
+                      print(message.result)
 
 
       asyncio.run(main())
@@ -196,47 +197,47 @@ You can set the permission mode once when starting a query, or change it dynamic
   </Tab>
 </Tabs>
 
-### Mode details
+### 모드 세부 정보
 
-#### Accept edits mode (`acceptEdits`)
+#### 편집 수락 모드(`acceptEdits`)
 
-Auto-approves file operations so Claude can edit code without prompting. Other tools (like Bash commands that aren't filesystem operations) still require normal permissions.
+Claude가 프롬프트 없이 코드를 편집할 수 있도록 파일 작업을 자동으로 승인합니다. 다른 도구(예: 파일 시스템 작업이 아닌 Bash 명령)는 여전히 일반 권한이 필요합니다.
 
-**Auto-approved operations:**
+**자동 승인 작업:**
 
-* File edits (Edit, Write tools)
-* Filesystem commands: `mkdir`, `touch`, `rm`, `rmdir`, `mv`, `cp`, `sed`
+* 파일 편집(Edit, Write 도구)
+* 파일 시스템 명령: `mkdir`, `touch`, `rm`, `rmdir`, `mv`, `cp`, `sed`
 
-Both apply only to paths inside the working directory or `additionalDirectories`. Paths outside that scope and writes to protected paths still prompt.
+둘 다 작업 디렉토리 또는 `additionalDirectories` 내의 경로에만 적용됩니다. 해당 범위 외의 경로 및 보호된 경로에 대한 쓰기는 여전히 프롬프트합니다.
 
-**Use when:** you trust Claude's edits and want faster iteration, such as during prototyping or when working in an isolated directory.
+**사용 시기:** Claude의 편집을 신뢰하고 프로토타이핑 중이거나 격리된 디렉토리에서 작업할 때와 같이 더 빠른 반복을 원할 때입니다.
 
-#### Don't ask mode (`dontAsk`)
+#### 요청 안 함 모드(`dontAsk`)
 
-Converts any permission prompt into a denial. Tools pre-approved by `allowed_tools`, `settings.json` allow rules, or a hook run as normal. Everything else is denied without calling `canUseTool`.
+모든 권한 프롬프트를 거부로 변환합니다. `allowed_tools`, `settings.json` 허용 규칙 또는 훅으로 사전 승인된 도구는 정상적으로 실행됩니다. 다른 모든 항목은 `canUseTool`을 호출하지 않고 거부됩니다.
 
-**Use when:** you want a fixed, explicit tool surface for a headless agent and prefer a hard deny over silent reliance on `canUseTool` being absent.
+**사용 시기:** 헤드리스 에이전트에 대해 고정된 명시적 도구 표면을 원하고 `canUseTool`이 없을 때의 자동 거부보다 하드 거부를 선호할 때입니다.
 
-#### Bypass permissions mode (`bypassPermissions`)
+#### 권한 무시 모드(`bypassPermissions`)
 
-Auto-approves all tool uses without prompts. Hooks still execute and can block operations if needed.
+프롬프트 없이 모든 도구 사용을 자동으로 승인합니다. 훅은 여전히 실행되며 필요한 경우 작업을 차단할 수 있습니다.
 
 <Warning>
-  Use with extreme caution. Claude has full system access in this mode. Only use in controlled environments where you trust all possible operations.
+  극도의 주의를 기울여 사용하세요. Claude는 이 모드에서 전체 시스템 액세스 권한을 가집니다. 모든 가능한 작업을 신뢰하는 제어된 환경에서만 사용하세요.
 
-  `allowed_tools` does not constrain this mode. Every tool is approved, not just the ones you listed. Deny rules (`disallowed_tools`), explicit `ask` rules, and hooks are evaluated before the mode check and can still block a tool.
+  `allowed_tools`는 이 모드를 제한하지 않습니다. 나열한 도구뿐만 아니라 모든 도구가 승인됩니다. 거부 규칙(`disallowed_tools`), 명시적 `ask` 규칙 및 훅은 모드 확인 전에 평가되며 여전히 도구를 차단할 수 있습니다.
 </Warning>
 
-#### Plan mode (`plan`)
+#### 계획 모드(`plan`)
 
-Prevents tool execution entirely. Claude can analyze code and create plans but cannot make changes. Claude may use `AskUserQuestion` to clarify requirements before finalizing the plan. See [Handle approvals and user input](/en/agent-sdk/user-input#handle-clarifying-questions) for handling these prompts.
+Claude를 읽기 전용 도구로 제한합니다. Claude는 파일을 읽고 읽기 전용 셸 명령을 실행하여 코드베이스를 탐색할 수 있지만 소스 파일을 편집하지 않습니다. Claude는 계획을 최종화하기 전에 요구 사항을 명확히 하기 위해 `AskUserQuestion`을 사용할 수 있습니다. 이러한 프롬프트 처리는 [승인 및 사용자 입력 처리](/ko/agent-sdk/user-input#handle-clarifying-questions)를 참조하세요.
 
-**Use when:** you want Claude to propose changes without executing them, such as during code review or when you need to approve changes before they're made.
+**사용 시기:** Claude가 변경 사항을 실행하지 않고 제안하기를 원할 때, 예를 들어 코드 검토 중이거나 변경 사항이 적용되기 전에 승인해야 할 때입니다.
 
-## Related resources
+## 관련 리소스
 
-For the other steps in the permission evaluation flow:
+권한 평가 흐름의 다른 단계의 경우:
 
-* [Handle approvals and user input](/en/agent-sdk/user-input): interactive approval prompts and clarifying questions
-* [Hooks guide](/en/agent-sdk/hooks): run custom code at key points in the agent lifecycle
-* [Permission rules](/en/settings#permission-settings): declarative allow/deny rules in `settings.json`
+* [승인 및 사용자 입력 처리](/ko/agent-sdk/user-input): 대화형 승인 프롬프트 및 명확히 하는 질문
+* [훅 가이드](/ko/agent-sdk/hooks): 에이전트 수명 주기의 주요 지점에서 사용자 정의 코드 실행
+* [권한 규칙](/ko/settings#permission-settings): `settings.json`의 선언적 허용/거부 규칙

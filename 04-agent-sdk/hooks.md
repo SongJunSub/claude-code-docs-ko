@@ -24,7 +24,7 @@
   </Step>
 
   <Step title="SDK가 등록된 훅을 수집합니다">
-    SDK는 해당 이벤트 유형에 대해 등록된 훅을 확인합니다. 여기에는 `options.hooks`에 전달하는 콜백 훅과 해당 [`settingSources`](/ko/agent-sdk/typescript#setting-source) 또는 [`setting_sources`](/ko/agent-sdk/python#setting-source) 항목이 활성화된 경우 설정 파일의 셸 명령 훅이 포함되며, 기본 `query()` 옵션에서는 활성화됩니다.
+    SDK는 해당 이벤트 유형에 대해 등록된 훅을 확인합니다. 여기에는 `options.hooks`에 전달하는 콜백 훅과 해당 [`settingSources`](/ko/agent-sdk/typescript#settingSources) 또는 [`setting_sources`](/ko/agent-sdk/python#setting_sources) 항목이 활성화된 경우 설정 파일의 셸 명령 훅이 포함되며, 기본 `query()` 옵션에서는 활성화됩니다.
   </Step>
 
   <Step title="매처가 실행할 훅을 필터링합니다">
@@ -40,7 +40,7 @@
   </Step>
 </Steps>
 
-다음 예제는 이러한 단계를 함께 보여줍니다. `PreToolUse` 훅(단계 1)을 `"Write|Edit"` 매처(단계 3)로 등록하므로 콜백은 파일 쓰기 도구에만 발생합니다. 트리거되면 콜백은 도구의 입력(단계 4)을 받고 파일 경로가 `.env` 파일을 대상으로 하는지 확인한 후 `permissionDecision: "deny"`를 반환하여 작업을 차단합니다(단계 5).
+다음 예제는 이러한 단계를 함께 보여줍니다. `PreToolUse` 훅(단계 1)을 `"Write|Edit"` 매처(단계 3)로 등록하므로 콜백은 파일 쓰기 도구에만 발생합니다. 트리거되면 콜백은 도구의 입력(단계 4)을 받고 파일 경로가 `.env` 파일을 대상으로 하는지 확인한 후 `permissionDecision: "deny"`를 반환하여 작업을 차단합니다(단계 5):
 
 <CodeGroup>
   ```python Python theme={null}
@@ -144,27 +144,28 @@
 
 SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다. 일부 훅은 두 SDK 모두에서 사용 가능하지만 다른 훅은 TypeScript 전용입니다.
 
-| 훅 이벤트                | Python SDK | TypeScript SDK | 트리거되는 조건                               | 사용 사례 예                              |
-| -------------------- | ---------- | -------------- | -------------------------------------- | ------------------------------------ |
-| `PreToolUse`         | 예          | 예              | 도구 호출 요청(차단 또는 수정 가능)                  | 위험한 셸 명령 차단                          |
-| `PostToolUse`        | 예          | 예              | 도구 실행 결과                               | 모든 파일 변경 사항을 감사 추적에 기록               |
-| `PostToolUseFailure` | 예          | 예              | 도구 실행 실패                               | 도구 오류 처리 또는 기록                       |
-| `PostToolBatch`      | 아니오        | 예              | 전체 도구 호출 배치가 해결되며, 다음 모델 호출 전에 배치당 한 번 | 전체 배치에 대해 한 번 규칙 주입                  |
-| `UserPromptSubmit`   | 예          | 예              | 사용자 프롬프트 제출                            | 프롬프트에 추가 컨텍스트 주입                     |
-| `Stop`               | 예          | 예              | 에이전트 실행 중지                             | 종료 전 세션 상태 저장                        |
-| `SubagentStart`      | 예          | 예              | 서브에이전트 초기화                             | 병렬 작업 생성 추적                          |
-| `SubagentStop`       | 예          | 예              | 서브에이전트 완료                              | 병렬 작업의 결과 집계                         |
-| `PreCompact`         | 예          | 예              | 대화 압축 요청                               | 요약 전에 전체 기록 보관                       |
-| `PermissionRequest`  | 예          | 예              | 권한 대화가 표시될 예정                          | 사용자 정의 권한 처리                         |
-| `SessionStart`       | 아니오        | 예              | 세션 초기화                                 | 로깅 및 원격 측정 초기화                       |
-| `SessionEnd`         | 아니오        | 예              | 세션 종료                                  | 임시 리소스 정리                            |
-| `Notification`       | 예          | 예              | 에이전트 상태 메시지                            | 에이전트 상태 업데이트를 Slack 또는 PagerDuty로 전송 |
-| `Setup`              | 아니오        | 예              | 세션 설정/유지 관리                            | 초기화 작업 실행                            |
-| `TeammateIdle`       | 아니오        | 예              | 팀원이 유휴 상태가 됨                           | 작업 재할당 또는 알림                         |
-| `TaskCompleted`      | 아니오        | 예              | 백그라운드 작업 완료                            | 병렬 작업의 결과 집계                         |
-| `ConfigChange`       | 아니오        | 예              | 구성 파일 변경                               | 동적으로 설정 다시 로드                        |
-| `WorktreeCreate`     | 아니오        | 예              | Git worktree 생성                        | 격리된 작업 공간 추적                         |
-| `WorktreeRemove`     | 아니오        | 예              | Git worktree 제거                        | 작업 공간 리소스 정리                         |
+| 훅 이벤트                | Python SDK | TypeScript SDK | 트리거되는 조건                                          | 사용 사례 예                              |
+| -------------------- | ---------- | -------------- | ------------------------------------------------- | ------------------------------------ |
+| `PreToolUse`         | 예          | 예              | 도구 호출 요청(차단 또는 수정 가능)                             | 위험한 셸 명령 차단                          |
+| `PostToolUse`        | 예          | 예              | 도구 실행 결과                                          | 모든 파일 변경 사항을 감사 추적에 기록               |
+| `PostToolUseFailure` | 예          | 예              | 도구 실행 실패                                          | 도구 오류 처리 또는 기록                       |
+| `PostToolBatch`      | 아니오        | 예              | 전체 도구 호출 배치가 해결되며, 다음 모델 호출 전에 배치당 한 번            | 전체 배치에 대해 한 번 규칙 주입                  |
+| `UserPromptSubmit`   | 예          | 예              | 사용자 프롬프트 제출                                       | 프롬프트에 추가 컨텍스트 주입                     |
+| `MessageDisplay`     | 아니오        | 예              | 텍스트가 포함된 어시스턴트 메시지가 완료되며, 전체 메시지 텍스트와 함께 메시지당 한 번 | 기록을 변경하지 않고 표시된 텍스트를 수정하거나 재포맷       |
+| `Stop`               | 예          | 예              | 에이전트 실행 중지                                        | 종료 전 세션 상태 저장                        |
+| `SubagentStart`      | 예          | 예              | 서브에이전트 초기화                                        | 병렬 작업 생성 추적                          |
+| `SubagentStop`       | 예          | 예              | 서브에이전트 완료                                         | 병렬 작업의 결과 집계                         |
+| `PreCompact`         | 예          | 예              | 대화 압축 요청                                          | 요약 전에 전체 기록 보관                       |
+| `PermissionRequest`  | 예          | 예              | 권한 대화가 표시될 예정                                     | 사용자 정의 권한 처리                         |
+| `SessionStart`       | 아니오        | 예              | 세션 초기화                                            | 로깅 및 원격 측정 초기화                       |
+| `SessionEnd`         | 아니오        | 예              | 세션 종료                                             | 임시 리소스 정리                            |
+| `Notification`       | 예          | 예              | 에이전트 상태 메시지                                       | 에이전트 상태 업데이트를 Slack 또는 PagerDuty로 전송 |
+| `Setup`              | 아니오        | 예              | 세션 설정/유지 관리                                       | 초기화 작업 실행                            |
+| `TeammateIdle`       | 아니오        | 예              | 팀원이 유휴 상태가 됨                                      | 작업 재할당 또는 알림                         |
+| `TaskCompleted`      | 아니오        | 예              | 백그라운드 작업 완료                                       | 병렬 작업의 결과 집계                         |
+| `ConfigChange`       | 아니오        | 예              | 구성 파일 변경                                          | 동적으로 설정 다시 로드                        |
+| `WorktreeCreate`     | 아니오        | 예              | Git worktree 생성                                   | 격리된 작업 공간 추적                         |
+| `WorktreeRemove`     | 아니오        | 예              | Git worktree 제거                                   | 작업 공간 리소스 정리                         |
 
 ## 훅 구성
 
@@ -225,7 +226,7 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 
 모든 훅 콜백은 세 가지 인수를 받습니다.
 
-* **입력 데이터:** 이벤트 세부 정보를 포함하는 입력된 객체입니다. 각 훅 유형은 자체 입력 형태를 가집니다(예: `PreToolUseHookInput`은 `tool_name`과 `tool_input`을 포함하고, `NotificationHookInput`은 `message`를 포함합니다). [TypeScript](/ko/agent-sdk/typescript#hook-input) 및 [Python](/ko/agent-sdk/python#hook-input) SDK 참조에서 전체 타입 정의를 참조하세요.
+* **입력 데이터:** 이벤트 세부 정보를 포함하는 입력된 객체입니다. 각 훅 유형은 자체 입력 형태를 가집니다(예: `PreToolUseHookInput`은 `tool_name`과 `tool_input`을 포함하고, `NotificationHookInput`은 `message`를 포함합니다). [TypeScript](/ko/agent-sdk/typescript#hookinput) 및 [Python](/ko/agent-sdk/python#hookinput) SDK 참조에서 전체 타입 정의를 참조하세요.
   * 모든 훅 입력은 `session_id`, `cwd`, `hook_event_name`을 공유합니다.
   * `agent_id`와 `agent_type`은 훅이 서브에이전트 내에서 발생할 때 채워집니다. TypeScript에서는 기본 훅 입력에 있으며 모든 훅 유형에서 사용 가능합니다. Python에서는 `PreToolUse`, `PostToolUse`, `PostToolUseFailure`에만 있습니다.
 * **도구 사용 ID** (`str | None` / `string | undefined`): 동일한 도구 호출에 대해 `PreToolUse` 및 `PostToolUse` 이벤트를 연결합니다.
@@ -236,9 +237,9 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 콜백은 두 가지 필드 범주를 포함하는 객체를 반환합니다.
 
 * **최상위 필드**는 대화를 제어합니다. `systemMessage`는 모델에 표시되는 메시지를 대화에 주입하고, `continue`(Python에서는 `continue_`)는 이 훅 후에 에이전트가 계속 실행되는지 여부를 결정합니다.
-* \*\*`hookSpecificOutput`\*\*은 현재 작업을 제어합니다. 내부의 필드는 훅 이벤트 유형에 따라 다릅니다. `PreToolUse` 훅의 경우 `permissionDecision`(`"allow"`, `"deny"`, 또는 `"ask"`), `permissionDecisionReason`, `updatedInput`을 설정하는 곳입니다. TypeScript SDK에서 `permissionDecision`은 또한 `"defer"`를 수락하여 쿼리를 종료하고 [나중에 재개](/ko/hooks#defer-a-tool-call-for-later)합니다. 이 값은 Python SDK에서 사용할 수 없습니다. `PostToolUse` 훅의 경우 `additionalContext`를 설정하여 도구 결과에 정보를 추가할 수 있습니다.
+* \*\*`hookSpecificOutput`\*\*은 현재 작업을 제어합니다. 내부의 필드는 훅 이벤트 유형에 따라 다릅니다. `PreToolUse` 훅의 경우 `permissionDecision`(`"allow"`, `"deny"`, `"ask"`, 또는 `"defer"`), `permissionDecisionReason`, `updatedInput`을 설정하는 곳입니다. `"defer"`를 반환하면 쿼리가 종료되어 [나중에 재개](/ko/hooks#defer-a-tool-call-for-later)할 수 있습니다. `PostToolUse` 훅의 경우 `additionalContext`를 설정하여 도구 결과에 정보를 추가하거나 `updatedToolOutput`을 설정하여 Claude가 보기 전에 도구의 출력을 완전히 바꿀 수 있습니다.
 
-변경 없이 작업을 허용하려면 `{}`를 반환합니다. SDK 콜백 훅은 [Claude Code 셸 명령 훅](/ko/hooks#json-output)과 동일한 JSON 출력 형식을 사용하며, 이는 모든 필드와 이벤트별 옵션을 문서화합니다. SDK 타입 정의는 [TypeScript](/ko/agent-sdk/typescript#sync-hook-json-output) 및 [Python](/ko/agent-sdk/python#sync-hook-json-output) SDK 참조를 참조하세요.
+변경 없이 작업을 허용하려면 `{}`를 반환합니다. SDK 콜백 훅은 [Claude Code 셸 명령 훅](/ko/hooks#json-output)과 동일한 JSON 출력 형식을 사용하며, 이는 모든 필드와 이벤트별 옵션을 문서화합니다. SDK 타입 정의는 [TypeScript](/ko/agent-sdk/typescript#synchookjsonoutput) 및 [Python](/ko/agent-sdk/python#synchookjsonoutput) SDK 참조를 참조하세요.
 
 <Note>
   여러 훅 또는 권한 규칙이 적용되는 경우 **deny**는 **defer**보다 우선하고, **defer**는 **ask**보다 우선하고, **ask**는 **allow**보다 우선합니다. 훅이 `deny`를 반환하면 다른 훅에 관계없이 작업이 차단됩니다.
@@ -326,12 +327,16 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 </CodeGroup>
 
 <Note>
-  `updatedInput`을 사용할 때는 `permissionDecision: 'allow'`도 포함해야 합니다. 항상 원본 `tool_input`을 변경하지 않고 새 객체를 반환합니다.
+  `updatedInput`을 사용할 때는 수정된 입력을 자동 승인하기 위해 `permissionDecision: 'allow'`를 포함하거나 사용자에게 표시하기 위해 `permissionDecision: 'ask'`를 포함해야 합니다. `'defer'`를 사용하면 `updatedInput`은 무시됩니다. 항상 원본 `tool_input`을 변경하지 않고 새 객체를 반환합니다.
 </Note>
 
 ### 컨텍스트 추가 및 도구 차단
 
-이 예제는 `/etc` 디렉토리에 쓰려는 모든 시도를 차단하고 두 개의 출력 필드를 함께 사용합니다. `permissionDecision: 'deny'`는 도구 호출을 중지하고, `systemMessage`는 대화에 미리 알림을 주입하여 에이전트가 작업이 차단된 이유에 대한 컨텍스트를 받고 재시도를 피합니다.
+이 예제는 `/etc` 디렉토리에 쓰려는 시도를 차단하고 모델과 사용자 모두에게 이유를 설명합니다.
+
+* `permissionDecision: 'deny'`는 도구 호출을 중지합니다.
+* `permissionDecisionReason`은 모델에 이유를 알려주므로 재시도를 피합니다.
+* `systemMessage`는 사용자에게 발생한 상황을 보여줍니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -340,7 +345,7 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 
       if file_path.startswith("/etc"):
           return {
-              # 최상위 필드: 대화에 지침을 주입합니다
+              # 최상위 필드: 사용자에게 표시되는 메시지
               "systemMessage": "Remember: system directories like /etc are protected.",
               # hookSpecificOutput: 작업을 차단합니다
               "hookSpecificOutput": {
@@ -360,7 +365,7 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 
     if (filePath?.startsWith("/etc")) {
       return {
-        // 최상위 필드: 대화에 지침을 주입합니다
+        // 최상위 필드: 사용자에게 표시되는 메시지
         systemMessage: "Remember: system directories like /etc are protected.",
         // hookSpecificOutput: 작업을 차단합니다
         hookSpecificOutput: {
@@ -417,19 +422,20 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
   ```
 </CodeGroup>
 
-### 여러 훅 연결
+### 여러 훅 등록
 
-훅은 배열에 나타나는 순서대로 실행됩니다. 각 훅을 단일 책임에 집중하고 복잡한 로직을 위해 여러 훅을 연결합니다.
+이벤트가 발생하면 일치하는 모든 훅이 병렬로 실행됩니다. 권한 결정의 경우 가장 제한적인 결과가 우선합니다. 단일 `deny`는 다른 훅이 반환하는 것에 관계없이 도구 호출을 차단합니다. 완료 순서가 비결정적이므로 다른 훅이 먼저 실행되었다고 가정하지 않고 각 훅이 독립적으로 작동하도록 작성합니다.
+
+아래 예제는 모든 도구 호출에 대해 세 가지 독립적인 확인을 등록합니다.
 
 <CodeGroup>
   ```python Python theme={null}
   options = ClaudeAgentOptions(
       hooks={
           "PreToolUse": [
-              HookMatcher(hooks=[rate_limiter]),  # 첫 번째: 속도 제한 확인
-              HookMatcher(hooks=[authorization_check]),  # 두 번째: 권한 확인
-              HookMatcher(hooks=[input_sanitizer]),  # 세 번째: 입력 정제
-              HookMatcher(hooks=[audit_logger]),  # 마지막: 작업 기록
+              HookMatcher(hooks=[authorization_check]),
+              HookMatcher(hooks=[input_validator]),
+              HookMatcher(hooks=[audit_logger]),
           ]
       }
   )
@@ -439,10 +445,9 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
   const options = {
     hooks: {
       PreToolUse: [
-        { hooks: [rateLimiter] }, // 첫 번째: 속도 제한 확인
-        { hooks: [authorizationCheck] }, // 두 번째: 권한 확인
-        { hooks: [inputSanitizer] }, // 세 번째: 입력 정제
-        { hooks: [auditLogger] } // 마지막: 작업 기록
+        { hooks: [authorizationCheck] },
+        { hooks: [inputValidator] },
+        { hooks: [auditLogger] }
       ]
     }
   };
@@ -489,7 +494,7 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 
 ### 서브에이전트 활동 추적
 
-`SubagentStop` 훅을 사용하여 서브에이전트가 작업을 완료할 때를 모니터링합니다. [TypeScript](/ko/agent-sdk/typescript#hook-input) 및 [Python](/ko/agent-sdk/python#hook-input) SDK 참조에서 전체 입력 타입을 참조하세요. 이 예제는 서브에이전트가 완료될 때마다 요약을 기록합니다.
+`SubagentStop` 훅을 사용하여 서브에이전트가 작업을 완료할 때를 모니터링합니다. [TypeScript](/ko/agent-sdk/typescript#hookinput) 및 [Python](/ko/agent-sdk/python#hookinput) SDK 참조에서 전체 입력 타입을 참조하세요. 이 예제는 서브에이전트가 완료될 때마다 요약을 기록합니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -621,7 +626,7 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 
 ### Slack으로 알림 전달
 
-`Notification` 훅을 사용하여 에이전트에서 시스템 알림을 받고 외부 서비스로 전달합니다. 알림은 특정 이벤트 유형에 대해 발생합니다. `permission_prompt`(Claude가 권한 필요), `idle_prompt`(Claude가 입력 대기 중), `auth_success`(인증 완료), `elicitation_dialog`(Claude가 사용자에게 프롬프트 중). 각 알림에는 인간이 읽을 수 있는 설명이 있는 `message` 필드와 선택적으로 `title`이 포함됩니다.
+`Notification` 훅을 사용하여 에이전트에서 시스템 알림을 받고 외부 서비스로 전달합니다. 알림은 특정 이벤트 유형에 대해 발생합니다. `permission_prompt`(Claude가 권한 필요), `idle_prompt`(Claude가 입력 대기 중), `auth_success`(인증 완료), `elicitation_dialog`(Claude가 사용자에게 프롬프트 중), `elicitation_response`(사용자가 유도 질문에 답함), `elicitation_complete`(유도 질문이 종료됨). 각 알림에는 인간이 읽을 수 있는 설명이 있는 `message` 필드와 선택적으로 `title`이 포함됩니다.
 
 이 예제는 모든 알림을 Slack 채널로 전달합니다. [Slack 수신 웹훅 URL](https://api.slack.com/messaging/webhooks)이 필요하며, 이는 Slack 작업 공간에 앱을 추가하고 수신 웹훅을 활성화하여 생성합니다.
 
@@ -727,11 +732,11 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 * 매처 패턴이 도구 이름과 정확히 일치하는지 확인합니다.
 * 훅이 `options.hooks`의 올바른 이벤트 유형 아래에 있는지 확인합니다.
 * `Stop` 및 `SubagentStop` 같은 도구가 아닌 훅의 경우 매처는 다른 필드와 일치합니다([매처 패턴](/ko/hooks#matcher-patterns) 참조).
-* 에이전트가 [`max_turns`](/ko/agent-sdk/python#claude-agent-options) 제한에 도달하면 훅이 발생하지 않을 수 있습니다. 세션이 훅을 실행하기 전에 종료되기 때문입니다.
+* 에이전트가 [`max_turns`](/ko/agent-sdk/python#claudeagentoptions) 제한에 도달하면 훅이 발생하지 않을 수 있습니다. 세션이 훅을 실행하기 전에 종료되기 때문입니다.
 
 ### 매처가 예상대로 필터링하지 않음
 
-매처는 **도구 이름**만 일치하며, 파일 경로나 다른 인수는 일치하지 않습니다. 파일 경로로 필터링하려면 훅 내에서 `tool_input.file_path`를 확인합니다.
+매처는 **도구 이름**만 일치하며, 파일 경로나 다른 인수는 일치하지 않습니다. 파일 경로로 필터링하려면 훅 내에서 `tool_input.file_path`를 확인합니다:
 
 ```typescript theme={null}
 const myHook: HookCallback = async (input, toolUseID, { signal }) => {
@@ -757,7 +762,7 @@ const myHook: HookCallback = async (input, toolUseID, { signal }) => {
 
 ### 수정된 입력이 적용되지 않음
 
-* `updatedInput`이 최상위 수준이 아닌 `hookSpecificOutput` 내부에 있는지 확인합니다.
+* `updatedInput`이 최상위 수준이 아닌 `hookSpecificOutput` 내부에 있는지 확인합니다:
 
   ```typescript theme={null}
   return {
@@ -769,13 +774,13 @@ const myHook: HookCallback = async (input, toolUseID, { signal }) => {
   };
   ```
 
-* 입력 수정이 적용되려면 `permissionDecision: 'allow'`도 반환해야 합니다.
+* 입력 수정이 적용되려면 `permissionDecision: 'allow'` 또는 `'ask'`도 반환해야 합니다.
 
 * `hookSpecificOutput`에 `hookEventName`을 포함하여 출력이 어떤 훅 유형에 대한 것인지 식별합니다.
 
 ### Python에서 세션 훅을 사용할 수 없음
 
-`SessionStart` 및 `SessionEnd`는 TypeScript에서 SDK 콜백 훅으로 등록할 수 있지만 Python SDK에서는 사용할 수 없습니다(`HookEvent`는 이를 생략합니다). Python에서는 설정 파일(예: `.claude/settings.json`)에 정의된 [셸 명령 훅](/ko/hooks#hook-events)으로만 사용 가능합니다. SDK 애플리케이션에서 셸 명령 훅을 로드하려면 [`setting_sources`](/ko/agent-sdk/python#setting-source) 또는 [`settingSources`](/ko/agent-sdk/typescript#setting-source)를 사용하여 적절한 설정 소스를 포함합니다.
+`SessionStart` 및 `SessionEnd`는 TypeScript에서 SDK 콜백 훅으로 등록할 수 있지만 Python SDK에서는 사용할 수 없습니다(`HookEvent`는 이를 생략합니다). Python에서는 설정 파일(예: `.claude/settings.json`)에 정의된 [셸 명령 훅](/ko/hooks#hook-events)으로만 사용 가능합니다. SDK 애플리케이션에서 셸 명령 훅을 로드하려면 [`setting_sources`](/ko/agent-sdk/python#settingsource) 또는 [`settingSources`](/ko/agent-sdk/typescript#settingsource)를 사용하여 적절한 설정 소스를 포함합니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -807,7 +812,9 @@ Python SDK 콜백으로 초기화 로직을 실행하려면 `client.receive_resp
 
 ### systemMessage가 출력에 나타나지 않음
 
-`systemMessage` 필드는 모델이 보는 대화에 컨텍스트를 추가하지만 모든 SDK 출력 모드에 나타나지 않을 수 있습니다. 훅 결정을 애플리케이션에 표시해야 하면 별도로 기록하거나 전용 출력 채널을 사용합니다.
+`systemMessage` 필드는 사용자에게 메시지를 표시합니다. 기본적으로 SDK는 메시지 스트림에서 훅 출력을 표시하지 않으므로 `includeHookEvents`(`Python에서는 include_hook_events`)를 설정하지 않으면 메시지가 나타나지 않을 수 있습니다. 대신 모델에 컨텍스트를 전달하려면 [`additionalContext`](/ko/hooks#add-context-for-claude)를 반환합니다.
+
+훅 결정을 애플리케이션에 안정적으로 표시해야 하면 별도로 기록하거나 전용 출력 채널을 사용합니다.
 
 ## 관련 리소스
 

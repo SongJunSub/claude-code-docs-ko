@@ -7,7 +7,7 @@
 > 웹훅, 알림, 채팅 메시지를 Claude Code 세션으로 푸시하는 MCP 서버를 구축합니다. 채널 계약 참조: 기능 선언, 알림 이벤트, 회신 도구, 발신자 게이팅, 권한 릴레이.
 
 <Note>
-  채널은 [연구 미리보기](/ko/channels#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. claude.ai 로그인이 필요합니다. 콘솔 및 API 키 인증은 지원되지 않습니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](/ko/channels#enterprise-controls)해야 합니다.
+  채널은 [연구 미리보기](/ko/channels#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](/ko/channels#enterprise-controls)해야 합니다.
 </Note>
 
 채널은 Claude Code 세션으로 이벤트를 푸시하는 MCP 서버이므로 Claude는 터미널 외부에서 발생하는 일에 반응할 수 있습니다.
@@ -20,7 +20,7 @@
 * [필요한 것](#what-you-need): 요구 사항 및 일반 단계
 * [예: 웹훅 수신기 구축](#example-build-a-webhook-receiver): 최소 단방향 연습
 * [서버 옵션](#server-options): 생성자 필드
-* [알림 형식](#notification-format): 이벤트 페이로드
+* [알림 형식](#notification-format): 이벤트 페이로드 및 전달 동작
 * [회신 도구 노출](#expose-a-reply-tool): Claude가 메시지를 다시 보낼 수 있도록 함
 * [인바운드 메시지 게이팅](#gate-inbound-messages): 프롬프트 주입을 방지하기 위한 발신자 확인
 * [권한 프롬프트 릴레이](#relay-permission-prompts): 도구 승인 프롬프트를 원격 채널로 전달
@@ -138,7 +138,7 @@
 
     Claude Code가 시작되면 MCP 구성을 읽고 `webhook.ts`를 서브프로세스로 생성하며 구성한 포트(이 예제에서는 8788)에서 HTTP 리스너가 자동으로 시작됩니다. 서버를 직접 실행할 필요가 없습니다.
 
-    "조직 정책에 의해 차단됨"이 표시되면 팀 또는 엔터프라이즈 관리자가 먼저 [채널을 활성화](/ko/channels#enterprise-controls)해야 합니다.
+    "조직 정책에 의해 차단됨"이 표시되면 조직 관리자가 먼저 [채널을 활성화](/ko/channels#enterprise-controls)해야 합니다.
 
     별도의 터미널에서 HTTP POST를 메시지와 함께 서버로 보내 웹훅을 시뮬레이션합니다. 이 예제는 CI 실패 알림을 포트 8788로 보냅니다 (또는 구성한 포트):
 
@@ -240,6 +240,12 @@ await mcp.notification({
 build failed on main: https://ci.example.com/run/1234
 </channel>
 ```
+
+알림은 승인되지 않습니다. `mcp.notification()`의 `await`는 메시지가 전송으로 기록될 때 해결되며, Claude가 처리했을 때가 아닙니다. 세션이 채널로 서버를 로드하지 않았거나 조직 정책이 이를 차단한 경우 이벤트는 서버로 반환된 오류 없이 자동으로 삭제됩니다.
+
+전달 확인이 필요한 경우 서버에서 이벤트 상태를 추적하고 Claude가 상태를 다시 보고하기 위해 호출할 수 있는 [회신 도구](#expose-a-reply-tool)를 노출합니다.
+
+이벤트는 세션으로 큐에 들어가고 순서대로 처리됩니다. Claude가 바쁜 동안 여러 알림이 도착하면 다음 턴에 함께 전달되고 Claude는 이들을 그룹으로 처리합니다. 독립적인 이벤트 스트림을 동시에 처리하려면 별도의 세션을 실행합니다.
 
 ## 회신 도구 노출
 
@@ -739,7 +745,7 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 
 채널을 설치 가능하고 공유 가능하게 하려면 [플러그인](/ko/plugins)으로 래핑하고 [마켓플레이스](/ko/plugin-marketplaces)에 게시합니다. 사용자는 `/plugin install`로 설치한 다음 `--channels plugin:<name>@<marketplace>`로 세션별로 활성화합니다.
 
-자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 추가되려면 [공식 마켓플레이스에 제출](/ko/plugins#submit-your-plugin-to-the-official-marketplace)합니다. 채널 플러그인은 승인되기 전에 보안 검토를 거칩니다. 팀 및 엔터프라이즈 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
+자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 공식 마켓플레이스에 추가되려면 [공식 마켓플레이스에 제출](/ko/plugins#submit-your-plugin-to-the-official-marketplace)합니다. 채널 플러그인은 승인되기 전에 보안 검토를 거칩니다. 팀 및 엔터프라이즈 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
 
 ## 참고 항목
 

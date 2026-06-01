@@ -26,7 +26,8 @@ Agent SDK를 사용하여 코드를 읽고, 버그를 찾고, 수동 개입 없�
     이 빠른 시작을 위한 새 디렉토리를 생성합니다:
 
     ```bash theme={null}
-    mkdir my-agent && cd my-agent
+    mkdir my-agent
+    cd my-agent
     ```
 
     자신의 프로젝트의 경우 모든 폴더에서 SDK를 실행할 수 있습니다. 기본적으로 해당 디렉토리 및 하위 디렉토리의 파일에 액세스할 수 있습니다.
@@ -43,20 +44,34 @@ Agent SDK를 사용하여 코드를 읽고, 버그를 찾고, 수동 개입 없�
       </Tab>
 
       <Tab title="Python (uv)">
-        [uv Python 패키지 관리자](https://docs.astral.sh/uv/)는 가상 환경을 자동으로 처리하는 빠른 Python 패키지 관리자입니다:
+        [uv](https://docs.astral.sh/uv/)는 가상 환경을 자동으로 처리하는 빠른 Python 패키지 관리자입니다:
 
         ```bash theme={null}
-        uv init && uv add claude-agent-sdk
+        uv init
+        uv add claude-agent-sdk
         ```
       </Tab>
 
       <Tab title="Python (pip)">
-        먼저 가상 환경을 생성한 다음 설치합니다:
+        가상 환경을 생성하고 활성화한 다음 패키지를 설치합니다.
+
+        macOS 또는 Linux에서:
 
         ```bash theme={null}
-        python3 -m venv .venv && source .venv/bin/activate
-        pip3 install claude-agent-sdk
+        python3 -m venv .venv
+        source .venv/bin/activate
+        pip install claude-agent-sdk
         ```
+
+        Windows에서:
+
+        ```powershell theme={null}
+        py -m venv .venv
+        .venv\Scripts\Activate.ps1
+        pip install claude-agent-sdk
+        ```
+
+        PowerShell이 실행 정책 오류로 `Activate.ps1`을 차단하는 경우 먼저 `Set-ExecutionPolicy -Scope Process RemoteSigned`를 실행합니다.
       </Tab>
     </Tabs>
 
@@ -75,10 +90,11 @@ Agent SDK를 사용하여 코드를 읽고, 버그를 찾고, 수동 개입 없�
     SDK는 또한 타사 API 공급자를 통한 인증을 지원합니다:
 
     * **Amazon Bedrock**: `CLAUDE_CODE_USE_BEDROCK=1` 환경 변수를 설정하고 AWS 자격 증명을 구성합니다
+    * **Claude Platform on AWS**: `CLAUDE_CODE_USE_ANTHROPIC_AWS=1` 및 `ANTHROPIC_AWS_WORKSPACE_ID`를 설정한 다음 AWS 자격 증명을 구성합니다
     * **Google Vertex AI**: `CLAUDE_CODE_USE_VERTEX=1` 환경 변수를 설정하고 Google Cloud 자격 증명을 구성합니다
     * **Microsoft Azure**: `CLAUDE_CODE_USE_FOUNDRY=1` 환경 변수를 설정하고 Azure 자격 증명을 구성합니다
 
-    [Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai) 또는 [Azure AI Foundry](/ko/microsoft-foundry)의 설정 가이드를 참조하여 자세한 내용을 확인합니다.
+    [Bedrock](/ko/amazon-bedrock), [Claude Platform on AWS](/ko/claude-platform-on-aws), [Vertex AI](/ko/google-vertex-ai) 또는 [Azure AI Foundry](/ko/microsoft-foundry)의 설정 가이드를 참조하여 자세한 내용을 확인합니다.
 
     <Note>
       이전에 승인되지 않은 경우 Anthropic은 타사 개발자가 claude.ai 로그인 또는 Claude Agent SDK를 기반으로 구축된 에이전트를 포함한 제품에 대한 속도 제한을 제공하는 것을 허용하지 않습니다. 대신 이 문서에 설명된 API 키 인증 방법을 사용하십시오.
@@ -122,7 +138,7 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
       async for message in query(
           prompt="Review utils.py for bugs that would cause crashes. Fix any issues you find.",
           options=ClaudeAgentOptions(
-              allowed_tools=["Read", "Edit", "Glob"],  # Tools Claude can use
+              allowed_tools=["Read", "Edit", "Glob"],  # Auto-approve these tools
               permission_mode="acceptEdits",  # Auto-approve file edits
           ),
       ):
@@ -147,7 +163,7 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
   for await (const message of query({
     prompt: "Review utils.py for bugs that would cause crashes. Fix any issues you find.",
     options: {
-      allowedTools: ["Read", "Edit", "Glob"], // Tools Claude can use
+      allowedTools: ["Read", "Edit", "Glob"], // Auto-approve these tools
       permissionMode: "acceptEdits" // Auto-approve file edits
     }
   })) {
@@ -173,7 +189,7 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
 
 2. **`prompt`**: Claude가 수행할 작업입니다. Claude는 작업을 기반으로 사용할 도구를 파악합니다.
 
-3. **`options`**: 에이전트의 구성입니다. 이 예제는 `allowedTools`를 사용하여 `Read`, `Edit` 및 `Glob`을 사전 승인하고 `permissionMode: "acceptEdits"`를 사용하여 파일 변경을 자동 승인합니다. 다른 옵션에는 `systemPrompt`, `mcpServers` 등이 포함됩니다. [Python](/ko/agent-sdk/python#claude-agent-options) 또는 [TypeScript](/ko/agent-sdk/typescript#options)의 모든 옵션을 참조합니다.
+3. **`options`**: 에이전트의 구성입니다. 이 예제는 `allowedTools`를 사용하여 `Read`, `Edit` 및 `Glob`을 사전 승인하고 `permissionMode: "acceptEdits"`를 사용하여 파일 변경을 자동 승인합니다. 다른 옵션에는 `systemPrompt`, `mcpServers` 등이 포함됩니다. [Python](/ko/agent-sdk/python#claudeagentoptions) 또는 [TypeScript](/ko/agent-sdk/typescript#options)의 모든 옵션을 참조합니다.
 
 `async for` 루프는 Claude가 생각하고, 도구를 호출하고, 결과를 관찰하고, 다음에 할 일을 결정할 때 계속 실행됩니다. 각 반복은 메시지를 생성합니다: Claude의 추론, 도구 호출, 도구 결과 또는 최종 결과입니다. SDK는 오케스트레이션(도구 실행, 컨텍스트 관리, 재시도)을 처리하므로 스트림을 사용하기만 하면 됩니다. Claude가 작업을 완료하거나 오류가 발생하면 루프가 종료됩니다.
 

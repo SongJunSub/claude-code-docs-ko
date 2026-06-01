@@ -2,43 +2,45 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Give Claude custom tools
+# Claude에 사용자 정의 도구 제공
 
-> Define custom tools with the Claude Agent SDK's in-process MCP server so Claude can call your functions, hit your APIs, and perform domain-specific operations.
+> Claude Agent SDK의 인프로세스 MCP 서버로 사용자 정의 도구를 정의하여 Claude가 함수를 호출하고, API를 사용하며, 도메인별 작업을 수행할 수 있도록 합니다.
 
-Custom tools extend the Agent SDK by letting you define your own functions that Claude can call during a conversation. Using the SDK's in-process MCP server, you can give Claude access to databases, external APIs, domain-specific logic, or any other capability your application needs.
+사용자 정의 도구는 Claude가 대화 중에 호출할 수 있는 자신의 함수를 정의하도록 하여 Agent SDK를 확장합니다. SDK의 인프로세스 MCP 서버를 사용하면 Claude에 데이터베이스, 외부 API, 도메인별 로직 또는 애플리케이션에 필요한 다른 기능에 대한 액세스 권한을 부여할 수 있습니다.
 
-This guide covers how to define tools with input schemas and handlers, bundle them into an MCP server, pass them to `query`, and control which tools Claude can access. It also covers error handling, tool annotations, and returning non-text content like images.
+이 가이드에서는 입력 스키마 및 핸들러를 사용하여 도구를 정의하고, 이를 MCP 서버로 번들링하고, `query`에 전달하며, Claude가 액세스할 수 있는 도구를 제어하는 방법을 다룹니다. 또한 오류 처리, 도구 주석, 이미지와 같은 비텍스트 콘텐츠 반환에 대해서도 다룹니다.
 
-## Quick reference
+## 빠른 참조
 
-| If you want to...                            | Do this                                                                                                                                                                                                       |
-| :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Define a tool                                | Use [`@tool`](/en/agent-sdk/python#tool) (Python) or [`tool()`](/en/agent-sdk/typescript#tool) (TypeScript) with a name, description, schema, and handler. See [Create a custom tool](#create-a-custom-tool). |
-| Register a tool with Claude                  | Wrap in `create_sdk_mcp_server` / `createSdkMcpServer` and pass to `mcpServers` in `query()`. See [Call a custom tool](#call-a-custom-tool).                                                                  |
-| Pre-approve a tool                           | Add to your allowed tools. See [Configure allowed tools](#configure-allowed-tools).                                                                                                                           |
-| Remove a built-in tool from Claude's context | Pass a `tools` array listing only the built-ins you want. See [Configure allowed tools](#configure-allowed-tools).                                                                                            |
-| Let Claude call tools in parallel            | Set `readOnlyHint: true` on tools with no side effects. See [Add tool annotations](#add-tool-annotations).                                                                                                    |
-| Handle errors without stopping the loop      | Return `isError: true` instead of throwing. See [Handle errors](#handle-errors).                                                                                                                              |
-| Return images or files                       | Use `image` or `resource` blocks in the content array. See [Return images and resources](#return-images-and-resources).                                                                                       |
-| Scale to many tools                          | Use [tool search](/en/agent-sdk/tool-search) to load tools on demand.                                                                                                                                         |
+| 원하는 작업                     | 수행 방법                                                                                                                                                                                  |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 도구 정의                      | 이름, 설명, 스키마 및 핸들러를 사용하여 [`@tool`](/ko/agent-sdk/python#tool) (Python) 또는 [`tool()`](/ko/agent-sdk/typescript#tool) (TypeScript)을 사용합니다. [사용자 정의 도구 만들기](#create-a-custom-tool)를 참조하세요. |
+| Claude에 도구 등록              | `create_sdk_mcp_server` / `createSdkMcpServer`로 래핑하고 `query()`의 `mcpServers`에 전달합니다. [사용자 정의 도구 호출](#call-a-custom-tool)을 참조하세요.                                                       |
+| 도구 사전 승인                   | 허용된 도구에 추가합니다. [허용된 도구 구성](#configure-allowed-tools)을 참조하세요.                                                                                                                           |
+| Claude의 컨텍스트에서 기본 제공 도구 제거 | 원하는 기본 제공 도구만 나열하는 `tools` 배열을 전달합니다. [허용된 도구 구성](#configure-allowed-tools)을 참조하세요.                                                                                                    |
+| Claude가 도구를 병렬로 호출하도록 허용   | 부작용이 없는 도구에 `readOnlyHint: true`를 설정합니다. [도구 주석 추가](#add-tool-annotations)를 참조하세요.                                                                                                     |
+| 루프를 중지하지 않고 오류 처리          | 예외를 발생시키는 대신 `isError: true`를 반환합니다. [오류 처리](#handle-errors)를 참조하세요.                                                                                                                   |
+| 이미지 또는 파일 반환               | 콘텐츠 배열에서 `image` 또는 `resource` 블록을 사용합니다. [이미지 및 리소스 반환](#return-images-and-resources)을 참조하세요.                                                                                         |
+| 머신 판독 가능한 JSON 결과 반환       | 결과에 `structuredContent`를 설정합니다. [구조화된 데이터 반환](#return-structured-data)을 참조하세요.                                                                                                         |
+| 많은 도구로 확장                  | [도구 검색](/ko/agent-sdk/tool-search)을 사용하여 필요에 따라 도구를 로드합니다.                                                                                                                             |
 
-## Create a custom tool
+## 사용자 정의 도구 만들기
 
-A tool is defined by four parts, passed as arguments to the [`tool()`](/en/agent-sdk/typescript#tool) helper in TypeScript or the [`@tool`](/en/agent-sdk/python#tool) decorator in Python:
+도구는 TypeScript의 [`tool()`](/ko/agent-sdk/typescript#tool) 헬퍼 또는 Python의 [`@tool`](/ko/agent-sdk/python#tool) 데코레이터에 인수로 전달되는 네 부분으로 정의됩니다:
 
-* **Name:** a unique identifier Claude uses to call the tool.
-* **Description:** what the tool does. Claude reads this to decide when to call it.
-* **Input schema:** the arguments Claude must provide. In TypeScript this is always a [Zod schema](https://zod.dev/), and the handler's `args` are typed from it automatically. In Python this is a dict mapping names to types, like `{"latitude": float}`, which the SDK converts to JSON Schema for you. The Python decorator also accepts a full [JSON Schema](https://json-schema.org/understanding-json-schema/about) dict directly when you need enums, ranges, optional fields, or nested objects.
-* **Handler:** the async function that runs when Claude calls the tool. It receives the validated arguments and must return an object with:
-  * `content` (required): an array of result blocks, each with a `type` of `"text"`, `"image"`, or `"resource"`. See [Return images and resources](#return-images-and-resources) for non-text blocks.
-  * `isError` (optional): set to `true` to signal a tool failure so Claude can react to it. See [Handle errors](#handle-errors).
+* **이름:** Claude가 도구를 호출하는 데 사용하는 고유 식별자입니다.
+* **설명:** 도구가 수행하는 작업입니다. Claude는 이를 읽고 도구를 호출할 시기를 결정합니다.
+* **입력 스키마:** Claude가 제공해야 하는 인수입니다. TypeScript에서는 항상 [Zod 스키마](https://zod.dev/)이며, 핸들러의 `args`는 자동으로 입력됩니다. Python에서는 `{"latitude": float}`와 같이 이름을 유형에 매핑하는 딕셔너리이며, SDK가 JSON Schema로 변환합니다. Python 데코레이터는 열거형, 범위, 선택적 필드 또는 중첩된 객체가 필요할 때 전체 [JSON Schema](https://json-schema.org/understanding-json-schema/about) 딕셔너리도 허용합니다.
+* **핸들러:** Claude가 도구를 호출할 때 실행되는 비동기 함수입니다. 검증된 인수를 받고 다음을 포함하는 객체를 반환해야 합니다:
+  * `content` (필수): 각각 `"text"`, `"image"` 또는 `"resource"`의 `type`을 가진 결과 블록의 배열입니다. 비텍스트 블록은 [이미지 및 리소스 반환](#return-images-and-resources)을 참조하세요.
+  * `structuredContent` (선택사항): 머신 판독 가능한 데이터로 결과를 보유하는 JSON 객체이며, `content`와 함께 반환됩니다. [구조화된 데이터 반환](#return-structured-data)을 참조하세요.
+  * `isError` (선택사항): Claude가 반응할 수 있도록 도구 실패를 신호하려면 `true`로 설정합니다. [오류 처리](#handle-errors)를 참조하세요.
 
-After defining a tool, wrap it in a server with [`createSdkMcpServer`](/en/agent-sdk/typescript#create-sdk-mcp-server) (TypeScript) or [`create_sdk_mcp_server`](/en/agent-sdk/python#create-sdk-mcp-server) (Python). The server runs in-process inside your application, not as a separate process.
+도구를 정의한 후 [`createSdkMcpServer`](/ko/agent-sdk/typescript#createsdkmcpserver) (TypeScript) 또는 [`create_sdk_mcp_server`](/ko/agent-sdk/python#create_sdk_mcp_server) (Python)를 사용하여 서버로 래핑합니다. 서버는 별도의 프로세스가 아닌 애플리케이션 내에서 인프로세스로 실행됩니다.
 
-### Weather tool example
+### 날씨 도구 예제
 
-This example defines a `get_temperature` tool and wraps it in an MCP server. It only sets up the tool; to pass it to `query` and run it, see [Call a custom tool](#call-a-custom-tool) below.
+이 예제는 `get_temperature` 도구를 정의하고 MCP 서버로 래핑합니다. 도구만 설정합니다. `query`에 전달하고 실행하려면 아래의 [사용자 정의 도구 호출](#call-a-custom-tool)을 참조하세요.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -47,7 +49,7 @@ This example defines a `get_temperature` tool and wraps it in an MCP server. It 
   from claude_agent_sdk import tool, create_sdk_mcp_server
 
 
-  # Define a tool: name, description, input schema, handler
+  # 도구 정의: 이름, 설명, 입력 스키마, 핸들러
   @tool(
       "get_temperature",
       "Get the current temperature at a location",
@@ -66,7 +68,7 @@ This example defines a `get_temperature` tool and wraps it in an MCP server. It 
           )
           data = response.json()
 
-      # Return a content array - Claude sees this as the tool result
+      # 콘텐츠 배열 반환 - Claude는 이를 도구 결과로 봅니다
       return {
           "content": [
               {
@@ -77,7 +79,7 @@ This example defines a `get_temperature` tool and wraps it in an MCP server. It 
       }
 
 
-  # Wrap the tool in an in-process MCP server
+  # 도구를 인프로세스 MCP 서버로 래핑합니다
   weather_server = create_sdk_mcp_server(
       name="weather",
       version="1.0.0",
@@ -89,29 +91,29 @@ This example defines a `get_temperature` tool and wraps it in an MCP server. It 
   import { tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk";
   import { z } from "zod";
 
-  // Define a tool: name, description, input schema, handler
+  // 도구 정의: 이름, 설명, 입력 스키마, 핸들러
   const getTemperature = tool(
     "get_temperature",
     "Get the current temperature at a location",
     {
-      latitude: z.number().describe("Latitude coordinate"), // .describe() adds a field description Claude sees
+      latitude: z.number().describe("Latitude coordinate"), // .describe()는 Claude가 보는 필드 설명을 추가합니다
       longitude: z.number().describe("Longitude coordinate")
     },
     async (args) => {
-      // args is typed from the schema: { latitude: number; longitude: number }
+      // args는 스키마에서 입력됩니다: { latitude: number; longitude: number }
       const response = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${args.latitude}&longitude=${args.longitude}&current=temperature_2m&temperature_unit=fahrenheit`
       );
       const data: any = await response.json();
 
-      // Return a content array - Claude sees this as the tool result
+      // 콘텐츠 배열 반환 - Claude는 이를 도구 결과로 봅니다
       return {
         content: [{ type: "text", text: `Temperature: ${data.current.temperature_2m}°F` }]
       };
     }
   );
 
-  // Wrap the tool in an in-process MCP server
+  // 도구를 인프로세스 MCP 서버로 래핑합니다
   const weatherServer = createSdkMcpServer({
     name: "weather",
     version: "1.0.0",
@@ -120,17 +122,17 @@ This example defines a `get_temperature` tool and wraps it in an MCP server. It 
   ```
 </CodeGroup>
 
-See the [`tool()`](/en/agent-sdk/typescript#tool) TypeScript reference or the [`@tool`](/en/agent-sdk/python#tool) Python reference for full parameter details, including JSON Schema input formats and return value structure.
+전체 매개변수 세부 정보, JSON Schema 입력 형식 및 반환 값 구조를 포함하여 [`tool()`](/ko/agent-sdk/typescript#tool) TypeScript 참조 또는 [`@tool`](/ko/agent-sdk/python#tool) Python 참조를 참조하세요.
 
 <Tip>
-  To make a parameter optional: in TypeScript, add `.default()` to the Zod field. In Python, the dict schema treats every key as required, so leave the parameter out of the schema, mention it in the description string, and read it with `args.get()` in the handler. The [`get_precipitation_chance` tool below](#add-more-tools) shows both patterns.
+  매개변수를 선택사항으로 만들려면: TypeScript에서 Zod 필드에 `.default()`를 추가합니다. Python에서 딕셔너리 스키마는 모든 키를 필수로 취급하므로 스키마에서 매개변수를 생략하고, 설명 문자열에서 언급하고, 핸들러에서 `args.get()`으로 읽습니다. 아래의 [`get_precipitation_chance` 도구](#add-more-tools)는 두 패턴을 모두 보여줍니다.
 </Tip>
 
-### Call a custom tool
+### 사용자 정의 도구 호출
 
-Pass the MCP server you created to `query` via the `mcpServers` option. The key in `mcpServers` becomes the `{server_name}` segment in each tool's fully qualified name: `mcp__{server_name}__{tool_name}`. List that name in `allowedTools` so the tool runs without a permission prompt.
+`mcpServers` 옵션을 통해 생성한 MCP 서버를 `query`에 전달합니다. `mcpServers`의 키는 각 도구의 정규화된 이름에서 `{server_name}` 세그먼트가 됩니다: `mcp__{server_name}__{tool_name}`. 도구가 권한 프롬프트 없이 실행되도록 `allowedTools`에 해당 이름을 나열합니다.
 
-These snippets reuse the `weatherServer` from the [example above](#weather-tool-example) to ask Claude what the weather is in a specific location.
+이 스니펫은 [위의 예제](#weather-tool-example)의 `weatherServer`를 재사용하여 Claude에 특정 위치의 날씨를 묻습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -148,7 +150,7 @@ These snippets reuse the `weatherServer` from the [example above](#weather-tool-
           prompt="What's the temperature in San Francisco?",
           options=options,
       ):
-          # ResultMessage is the final message after all tool calls complete
+          # ResultMessage는 모든 도구 호출이 완료된 후의 최종 메시지입니다
           if isinstance(message, ResultMessage) and message.subtype == "success":
               print(message.result)
 
@@ -166,7 +168,7 @@ These snippets reuse the `weatherServer` from the [example above](#weather-tool-
       allowedTools: ["mcp__weather__get_temperature"]
     }
   })) {
-    // "result" is the final message after all tool calls complete
+    // "result"는 모든 도구 호출이 완료된 후의 최종 메시지입니다
     if (message.type === "result" && message.subtype === "success") {
       console.log(message.result);
     }
@@ -174,15 +176,15 @@ These snippets reuse the `weatherServer` from the [example above](#weather-tool-
   ```
 </CodeGroup>
 
-### Add more tools
+### 더 많은 도구 추가
 
-A server holds as many tools as you list in its `tools` array. With more than one tool on a server, you can list each one in `allowedTools` individually or use the wildcard `mcp__weather__*` to cover every tool the server exposes.
+서버는 `tools` 배열에 나열한 만큼 많은 도구를 보유합니다. 서버에 둘 이상의 도구가 있으면 `allowedTools`에서 각각을 개별적으로 나열하거나 와일드카드 `mcp__weather__*`를 사용하여 서버가 노출하는 모든 도구를 포함할 수 있습니다.
 
-The example below adds a second tool, `get_precipitation_chance`, to the `weatherServer` from the [weather tool example](#weather-tool-example) and rebuilds it with both tools in the array.
+아래 예제는 [날씨 도구 예제](#weather-tool-example)의 `weatherServer`에 두 번째 도구인 `get_precipitation_chance`를 추가하고 배열의 두 도구로 다시 빌드합니다.
 
 <CodeGroup>
   ```python Python theme={null}
-  # Define a second tool for the same server
+  # 동일한 서버에 대한 두 번째 도구 정의
   @tool(
       "get_precipitation_chance",
       "Get the hourly precipitation probability for a location. "
@@ -190,7 +192,7 @@ The example below adds a second tool, `get_precipitation_chance`, to the `weathe
       {"latitude": float, "longitude": float},
   )
   async def get_precipitation_chance(args: dict[str, Any]) -> dict[str, Any]:
-      # 'hours' isn't in the schema - read it with .get() to make it optional
+      # 'hours'는 스키마에 없습니다 - .get()으로 읽어서 선택사항으로 만듭니다
       hours = args.get("hours", 12)
       async with httpx.AsyncClient() as client:
           response = await client.get(
@@ -215,7 +217,7 @@ The example below adds a second tool, `get_precipitation_chance`, to the `weathe
       }
 
 
-  # Rebuild the server with both tools in the array
+  # 배열의 두 도구로 서버를 다시 빌드합니다
   weather_server = create_sdk_mcp_server(
       name="weather",
       version="1.0.0",
@@ -224,7 +226,7 @@ The example below adds a second tool, `get_precipitation_chance`, to the `weathe
   ```
 
   ```typescript TypeScript theme={null}
-  // Define a second tool for the same server
+  // 동일한 서버에 대한 두 번째 도구 정의
   const getPrecipitationChance = tool(
     "get_precipitation_chance",
     "Get the hourly precipitation probability for a location",
@@ -236,7 +238,7 @@ The example below adds a second tool, `get_precipitation_chance`, to the `weathe
         .int()
         .min(1)
         .max(24)
-        .default(12) // .default() makes the parameter optional
+        .default(12) // .default()는 매개변수를 선택사항으로 만듭니다
         .describe("How many hours of forecast to return")
     },
     async (args) => {
@@ -252,7 +254,7 @@ The example below adds a second tool, `get_precipitation_chance`, to the `weathe
     }
   );
 
-  // Rebuild the server with both tools in the array
+  // 배열의 두 도구로 서버를 다시 빌드합니다
   const weatherServer = createSdkMcpServer({
     name: "weather",
     version: "1.0.0",
@@ -261,22 +263,22 @@ The example below adds a second tool, `get_precipitation_chance`, to the `weathe
   ```
 </CodeGroup>
 
-Every tool in this array consumes context window space on every turn. If you're defining dozens of tools, see [tool search](/en/agent-sdk/tool-search) to load them on demand instead.
+이 배열의 모든 도구는 매 턴마다 컨텍스트 윈도우 공간을 소비합니다. 수십 개의 도구를 정의하는 경우 [도구 검색](/ko/agent-sdk/tool-search)을 참조하여 필요할 때 로드합니다.
 
-### Add tool annotations
+### 도구 주석 추가
 
-[Tool annotations](https://modelcontextprotocol.io/docs/concepts/tools#tool-annotations) are optional metadata describing how a tool behaves. Pass them as the fifth argument to `tool()` helper in TypeScript or via the `annotations` keyword argument for the `@tool` decorator in Python. All hint fields are Booleans.
+[도구 주석](https://modelcontextprotocol.io/docs/concepts/tools#tool-annotations)은 도구의 동작을 설명하는 선택적 메타데이터입니다. TypeScript의 `tool()` 헬퍼에 다섯 번째 인수로 전달하거나 Python의 `@tool` 데코레이터에 대해 `annotations` 키워드 인수를 통해 전달합니다. 모든 힌트 필드는 부울입니다.
 
-| Field             | Default | Meaning                                                                                                               |
-| :---------------- | :------ | :-------------------------------------------------------------------------------------------------------------------- |
-| `readOnlyHint`    | `false` | Tool does not modify its environment. Controls whether the tool can be called in parallel with other read-only tools. |
-| `destructiveHint` | `true`  | Tool may perform destructive updates. Informational only.                                                             |
-| `idempotentHint`  | `false` | Repeated calls with the same arguments have no additional effect. Informational only.                                 |
-| `openWorldHint`   | `true`  | Tool reaches systems outside your process. Informational only.                                                        |
+| 필드                | 기본값     | 의미                                                           |
+| :---------------- | :------ | :----------------------------------------------------------- |
+| `readOnlyHint`    | `false` | 도구는 환경을 수정하지 않습니다. 도구를 다른 읽기 전용 도구와 병렬로 호출할 수 있는지 여부를 제어합니다. |
+| `destructiveHint` | `true`  | 도구는 파괴적인 업데이트를 수행할 수 있습니다. 정보 제공용입니다.                        |
+| `idempotentHint`  | `false` | 동일한 인수로 반복 호출해도 추가 효과가 없습니다. 정보 제공용입니다.                      |
+| `openWorldHint`   | `true`  | 도구는 프로세스 외부의 시스템에 도달합니다. 정보 제공용입니다.                          |
 
-Annotations are metadata, not enforcement. A tool marked `readOnlyHint: true` can still write to disk if that's what the handler does. Keep the annotation accurate to the handler.
+주석은 메타데이터이지 강제 사항이 아닙니다. `readOnlyHint: true`로 표시된 도구도 핸들러가 수행하는 경우 디스크에 쓸 수 있습니다. 주석을 핸들러에 정확하게 유지합니다.
 
-This example adds `readOnlyHint` to the `get_temperature` tool from the [weather tool example](#weather-tool-example).
+이 예제는 [날씨 도구 예제](#weather-tool-example)의 `get_temperature` 도구에 `readOnlyHint`를 추가합니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -289,7 +291,7 @@ This example adds `readOnlyHint` to the `get_temperature` tool from the [weather
       {"latitude": float, "longitude": float},
       annotations=ToolAnnotations(
           readOnlyHint=True
-      ),  # Lets Claude batch this with other read-only calls
+      ),  # Claude가 이를 다른 읽기 전용 호출과 일괄 처리하도록 합니다
   )
   async def get_temperature(args):
       return {"content": [{"type": "text", "text": "..."}]}
@@ -301,47 +303,47 @@ This example adds `readOnlyHint` to the `get_temperature` tool from the [weather
     "Get the current temperature at a location",
     { latitude: z.number(), longitude: z.number() },
     async (args) => ({ content: [{ type: "text", text: `...` }] }),
-    { annotations: { readOnlyHint: true } } // Lets Claude batch this with other read-only calls
+    { annotations: { readOnlyHint: true } } // Claude가 이를 다른 읽기 전용 호출과 일괄 처리하도록 합니다
   );
   ```
 </CodeGroup>
 
-See `ToolAnnotations` in the [TypeScript](/en/agent-sdk/typescript#tool-annotations) or [Python](/en/agent-sdk/python#tool-annotations) reference.
+[TypeScript](/ko/agent-sdk/typescript#toolannotations) 또는 [Python](/ko/agent-sdk/python#toolannotations) 참조에서 `ToolAnnotations`를 참조하세요.
 
-## Control tool access
+## 도구 액세스 제어
 
-The [weather tool example](#weather-tool-example) registered a server and listed tools in `allowedTools`. This section covers how tool names are constructed and how to scope access when you have multiple tools or want to restrict built-ins.
+[날씨 도구 예제](#weather-tool-example)는 서버를 등록하고 `allowedTools`에 도구를 나열했습니다. 이 섹션에서는 도구 이름이 구성되는 방식과 여러 도구가 있거나 기본 제공 도구를 제한하려는 경우 액세스 범위를 지정하는 방법을 다룹니다.
 
-### Tool name format
+### 도구 이름 형식
 
-When MCP tools are exposed to Claude, their names follow a specific format:
+MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
 
-* Pattern: `mcp__{server_name}__{tool_name}`
-* Example: A tool named `get_temperature` in server `weather` becomes `mcp__weather__get_temperature`
+* 패턴: `mcp__{server_name}__{tool_name}`
+* 예제: `weather` 서버의 `get_temperature`라는 도구는 `mcp__weather__get_temperature`가 됩니다
 
-### Configure allowed tools
+### 허용된 도구 구성
 
-The `tools` option and the allowed/disallowed lists operate on separate layers. `tools` controls which built-in tools appear in Claude's context. Allowed and disallowed tool lists control whether calls are approved or denied once Claude attempts them.
+`tools` 옵션과 허용/거부 목록은 두 가지 계층에 영향을 미칩니다. 가용성은 도구가 Claude의 컨텍스트에 나타나는지 여부를 제어하고, 권한은 Claude가 호출을 시도한 후 호출이 승인되는지 여부를 제어합니다. `tools`와 단순 이름 `disallowedTools` 항목은 가용성을 변경합니다. `allowedTools`와 범위가 지정된 `disallowedTools` 규칙은 권한만 변경합니다.
 
-| Option                    | Layer        | Effect                                                                                                                                            |
-| :------------------------ | :----------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `tools: ["Read", "Grep"]` | Availability | Only the listed built-ins are in Claude's context. Unlisted built-ins are removed. MCP tools are unaffected.                                      |
-| `tools: []`               | Availability | All built-ins are removed. Claude can only use your MCP tools.                                                                                    |
-| allowed tools             | Permission   | Listed tools run without a permission prompt. Unlisted tools remain available; calls go through the [permission flow](/en/agent-sdk/permissions). |
-| disallowed tools          | Permission   | Every call to a listed tool is denied. The tool stays in Claude's context, so Claude may still attempt it before the call is rejected.            |
+| 옵션                        | 계층  | 효과                                                                                                                                    |
+| :------------------------ | :-- | :------------------------------------------------------------------------------------------------------------------------------------ |
+| `tools: ["Read", "Grep"]` | 가용성 | 나열된 기본 제공 도구만 Claude의 컨텍스트에 있습니다. 나열되지 않은 기본 제공 도구는 제거됩니다. MCP 도구는 영향을 받지 않습니다.                                                       |
+| `tools: []`               | 가용성 | 모든 기본 제공 도구가 제거됩니다. Claude는 MCP 도구만 사용할 수 있습니다.                                                                                       |
+| 허용된 도구                    | 권한  | 나열된 도구는 권한 프롬프트 없이 실행됩니다. 나열되지 않은 도구는 계속 사용 가능합니다. 호출은 [권한 흐름](/ko/agent-sdk/permissions)을 거칩니다.                                      |
+| 거부된 도구                    | 둘 다 | `"Bash"`와 같은 단순 도구 이름은 도구를 Claude의 컨텍스트에서 제거하며, `tools`에서 생략하는 것과 동일합니다. `"Bash(rm *)"` 같은 범위가 지정된 규칙은 도구를 컨텍스트에 남겨두고 일치하는 호출만 거부합니다. |
 
-To limit which built-ins Claude can use, prefer `tools` over disallowed tools. Omitting a tool from `tools` removes it from context so Claude never attempts it; listing it in `disallowedTools` (Python: `disallowed_tools`) blocks the call but leaves the tool visible, so Claude may waste a turn trying it. See [Configure permissions](/en/agent-sdk/permissions) for the full evaluation order.
+기본 제공 도구를 완전히 제거하려면 `tools`에서 생략하거나 `disallowedTools`(Python: `disallowed_tools`)에 단순 이름을 나열합니다. 둘 다 도구를 컨텍스트 밖으로 유지하므로 Claude는 시도하지 않습니다. 범위가 지정된 `disallowedTools` 규칙은 일치하는 호출을 차단하지만 도구를 표시하므로 Claude는 시도하는 데 턴을 낭비할 수 있습니다. 전체 평가 순서는 [권한 구성](/ko/agent-sdk/permissions)을 참조하세요.
 
-## Handle errors
+## 오류 처리
 
-How your handler reports errors determines whether the agent loop continues or stops:
+핸들러가 오류를 보고하는 방식에 따라 에이전트 루프가 계속되는지 중지되는지가 결정됩니다:
 
-| What happens                                                                             | Result                                                                                                           |
-| :--------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
-| Handler throws an uncaught exception                                                     | Agent loop stops. Claude never sees the error, and the `query` call fails.                                       |
-| Handler catches the error and returns `isError: true` (TS) / `"is_error": True` (Python) | Agent loop continues. Claude sees the error as data and can retry, try a different tool, or explain the failure. |
+| 발생하는 상황                                                                 | 결과                                                                        |
+| :---------------------------------------------------------------------- | :------------------------------------------------------------------------ |
+| 핸들러가 포착되지 않은 예외를 발생시킵니다                                                 | 에이전트 루프가 중지됩니다. Claude는 오류를 보지 못하고 `query` 호출이 실패합니다.                     |
+| 핸들러가 오류를 포착하고 `isError: true` (TS) / `"is_error": True` (Python)를 반환합니다 | 에이전트 루프가 계속됩니다. Claude는 오류를 데이터로 보고 재시도하거나, 다른 도구를 시도하거나, 실패를 설명할 수 있습니다. |
 
-The example below catches two kinds of failures inside the handler instead of letting them throw. A non-200 HTTP status is caught from the response and returned as an error result. A network error or invalid JSON is caught by the surrounding `try/except` (Python) or `try/catch` (TypeScript) and also returned as an error result. In both cases the handler returns normally and the agent loop continues.
+아래 예제는 핸들러 내에서 두 가지 종류의 실패를 포착합니다. 0이 아닌 HTTP 상태는 응답에서 포착되어 오류 결과로 반환됩니다. 네트워크 오류 또는 잘못된 JSON은 주변 `try/except` (Python) 또는 `try/catch` (TypeScript)로 포착되어 오류 결과로도 반환됩니다. 두 경우 모두 핸들러는 정상적으로 반환되고 에이전트 루프가 계속됩니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -353,15 +355,15 @@ The example below catches two kinds of failures inside the handler instead of le
   @tool(
       "fetch_data",
       "Fetch data from an API",
-      {"endpoint": str},  # Simple schema
+      {"endpoint": str},  # 간단한 스키마
   )
   async def fetch_data(args: dict[str, Any]) -> dict[str, Any]:
       try:
           async with httpx.AsyncClient() as client:
               response = await client.get(args["endpoint"])
               if response.status_code != 200:
-                  # Return the failure as a tool result so Claude can react to it.
-                  # is_error marks this as a failed call rather than odd-looking data.
+                  # Claude가 반응할 수 있도록 실패를 도구 결과로 반환합니다.
+                  # is_error는 이를 실패한 호출로 표시하지 않으면 이상한 데이터로 표시합니다.
                   return {
                       "content": [
                           {
@@ -375,8 +377,8 @@ The example below catches two kinds of failures inside the handler instead of le
               data = response.json()
               return {"content": [{"type": "text", "text": json.dumps(data, indent=2)}]}
       except Exception as e:
-          # Catching here keeps the agent loop alive. An uncaught exception
-          # would end the whole query() call.
+          # 여기서 포착하면 에이전트 루프가 살아있습니다. 포착되지 않은 예외는
+          # 전체 query() 호출을 종료합니다.
           return {
               "content": [{"type": "text", "text": f"Failed to fetch data: {str(e)}"}],
               "is_error": True,
@@ -395,8 +397,8 @@ The example below catches two kinds of failures inside the handler instead of le
         const response = await fetch(args.endpoint);
 
         if (!response.ok) {
-          // Return the failure as a tool result so Claude can react to it.
-          // isError marks this as a failed call rather than odd-looking data.
+          // Claude가 반응할 수 있도록 실패를 도구 결과로 반환합니다.
+          // isError는 이를 실패한 호출로 표시하지 않으면 이상한 데이터로 표시합니다.
           return {
             content: [
               {
@@ -418,8 +420,8 @@ The example below catches two kinds of failures inside the handler instead of le
           ]
         };
       } catch (error) {
-        // Catching here keeps the agent loop alive. An uncaught throw
-        // would end the whole query() call.
+        // 여기서 포착하면 에이전트 루프가 살아있습니다. 포착되지 않은 throw는
+        // 전체 query() 호출을 종료합니다.
         return {
           content: [
             {
@@ -435,19 +437,19 @@ The example below catches two kinds of failures inside the handler instead of le
   ```
 </CodeGroup>
 
-## Return images and resources
+## 이미지 및 리소스 반환
 
-The `content` array in a tool result accepts `text`, `image`, and `resource` blocks. You can mix them in the same response.
+도구 결과의 `content` 배열은 `text`, `image` 및 `resource` 블록을 허용합니다. 동일한 응답에서 이들을 혼합할 수 있습니다.
 
-### Images
+### 이미지
 
-An image block carries the image bytes inline, encoded as base64. There is no URL field. To return an image that lives at a URL, fetch it in the handler, read the response bytes, and base64-encode them before returning. The result is processed as visual input.
+이미지 블록은 이미지 바이트를 base64로 인코딩하여 인라인으로 전달합니다. URL 필드가 없습니다. URL에 있는 이미지를 반환하려면 핸들러에서 가져오고, 응답 바이트를 읽고, 반환하기 전에 base64로 인코딩합니다. 결과는 시각적 입력으로 처리됩니다.
 
-| Field      | Type      | Notes                                                                      |
-| :--------- | :-------- | :------------------------------------------------------------------------- |
-| `type`     | `"image"` |                                                                            |
-| `data`     | `string`  | Base64-encoded bytes. Raw base64 only, no `data:image/...;base64,` prefix  |
-| `mimeType` | `string`  | Required. For example `image/png`, `image/jpeg`, `image/webp`, `image/gif` |
+| 필드         | 유형        | 참고                                                              |
+| :--------- | :-------- | :-------------------------------------------------------------- |
+| `type`     | `"image"` |                                                                 |
+| `data`     | `string`  | Base64로 인코딩된 바이트입니다. `data:image/...;base64,` 접두사 없이 원본 base64만 |
+| `mimeType` | `string`  | 필수입니다. 예: `image/png`, `image/jpeg`, `image/webp`, `image/gif`  |
 
 <CodeGroup>
   ```python Python theme={null}
@@ -455,10 +457,10 @@ An image block carries the image bytes inline, encoded as base64. There is no UR
   import httpx
 
 
-  # Define a tool that fetches an image from a URL and returns it to Claude
+  # URL에서 이미지를 가져와 Claude에 반환하는 도구를 정의합니다
   @tool("fetch_image", "Fetch an image from a URL and return it to Claude", {"url": str})
   async def fetch_image(args):
-      async with httpx.AsyncClient() as client:  # Fetch the image bytes
+      async with httpx.AsyncClient() as client:  # 이미지 바이트를 가져옵니다
           response = await client.get(args["url"])
 
       return {
@@ -467,10 +469,10 @@ An image block carries the image bytes inline, encoded as base64. There is no UR
                   "type": "image",
                   "data": base64.b64encode(response.content).decode(
                       "ascii"
-                  ),  # Base64-encode the raw bytes
+                  ),  # 원본 바이트를 base64로 인코딩합니다
                   "mimeType": response.headers.get(
                       "content-type", "image/png"
-                  ),  # Read MIME type from the response
+                  ),  # 응답에서 MIME 유형을 읽습니다
               }
           ]
       }
@@ -484,15 +486,15 @@ An image block carries the image bytes inline, encoded as base64. There is no UR
       url: z.string().url()
     },
     async (args) => {
-      const response = await fetch(args.url); // Fetch the image bytes
-      const buffer = Buffer.from(await response.arrayBuffer()); // Read into a Buffer for base64 encoding
+      const response = await fetch(args.url); // 이미지 바이트를 가져옵니다
+      const buffer = Buffer.from(await response.arrayBuffer()); // base64 인코딩을 위해 버퍼로 읽습니다
       const mimeType = response.headers.get("content-type") ?? "image/png";
 
       return {
         content: [
           {
             type: "image",
-            data: buffer.toString("base64"), // Base64-encode the raw bytes
+            data: buffer.toString("base64"), // 원본 바이트를 base64로 인코딩합니다
             mimeType
           }
         ]
@@ -502,19 +504,19 @@ An image block carries the image bytes inline, encoded as base64. There is no UR
   ```
 </CodeGroup>
 
-### Resources
+### 리소스
 
-A resource block embeds a piece of content identified by a URI. The URI is a label for Claude to reference; the actual content rides in the block's `text` or `blob` field. Use this when your tool produces something that makes sense to address by name later, such as a generated file or a record from an external system.
+리소스 블록은 URI로 식별되는 콘텐츠 조각을 포함합니다. URI는 Claude가 참조할 레이블입니다. 실제 콘텐츠는 블록의 `text` 또는 `blob` 필드에 있습니다. 도구가 나중에 이름으로 주소를 지정하는 것이 합리적인 것을 생성할 때 사용합니다. 예를 들어 생성된 파일 또는 외부 시스템의 레코드입니다.
 
-| Field               | Type         | Notes                                                       |
-| :------------------ | :----------- | :---------------------------------------------------------- |
-| `type`              | `"resource"` |                                                             |
-| `resource.uri`      | `string`     | Identifier for the content. Any URI scheme                  |
-| `resource.text`     | `string`     | The content, if it's text. Provide this or `blob`, not both |
-| `resource.blob`     | `string`     | The content base64-encoded, if it's binary                  |
-| `resource.mimeType` | `string`     | Optional                                                    |
+| 필드                  | 유형           | 참고                                           |
+| :------------------ | :----------- | :------------------------------------------- |
+| `type`              | `"resource"` |                                              |
+| `resource.uri`      | `string`     | 콘텐츠의 식별자입니다. 모든 URI 스키마                      |
+| `resource.text`     | `string`     | 텍스트인 경우 콘텐츠입니다. `blob` 대신 이것을 제공하되 둘 다는 아닙니다 |
+| `resource.blob`     | `string`     | 바이너리인 경우 base64로 인코딩된 콘텐츠입니다                 |
+| `resource.mimeType` | `string`     | 선택사항                                         |
 
-This example shows a resource block returned from inside a tool handler. The URI `file:///tmp/report.md` is a label that Claude can reference later; the SDK does not read from that path.
+이 예제는 도구 핸들러 내에서 반환된 리소스 블록을 보여줍니다. URI `file:///tmp/report.md`는 Claude가 나중에 참조할 수 있는 레이블입니다. SDK는 해당 경로에서 읽지 않습니다.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
@@ -523,9 +525,9 @@ This example shows a resource block returned from inside a tool handler. The URI
       {
         type: "resource",
         resource: {
-          uri: "file:///tmp/report.md", // Label for Claude to reference, not a path the SDK reads
+          uri: "file:///tmp/report.md", // Claude가 참조할 레이블이지 SDK가 읽는 경로가 아닙니다
           mimeType: "text/markdown",
-          text: "# Report\n..." // The actual content, inline
+          text: "# Report\n..." // 실제 콘텐츠, 인라인
         }
       }
     ]
@@ -538,9 +540,9 @@ This example shows a resource block returned from inside a tool handler. The URI
           {
               "type": "resource",
               "resource": {
-                  "uri": "file:///tmp/report.md",  # Label for Claude to reference, not a path the SDK reads
+                  "uri": "file:///tmp/report.md",  # Claude가 참조할 레이블이지 SDK가 읽는 경로가 아닙니다
                   "mimeType": "text/markdown",
-                  "text": "# Report\n...",  # The actual content, inline
+                  "text": "# Report\n...",  # 실제 콘텐츠, 인라인
               },
           }
       ]
@@ -548,16 +550,43 @@ This example shows a resource block returned from inside a tool handler. The URI
   ```
 </CodeGroup>
 
-These block shapes come from the MCP `CallToolResult` type. See the [MCP specification](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#tool-result) for the full definition.
+이 블록 모양은 MCP `CallToolResult` 유형에서 나옵니다. 전체 정의는 [MCP 사양](https://modelcontextprotocol.io/specification/2025-06-18/server/tools#tool-result)을 참조하세요.
 
-## Example: unit converter
+## 구조화된 데이터 반환
 
-This tool converts values between units of length, temperature, and weight. A user can ask "convert 100 kilometers to miles" or "what is 72°F in Celsius," and Claude picks the right unit type and units from the request.
+`structuredContent`는 `content` 배열과 별개인 결과의 선택적 JSON 객체입니다. 이를 사용하여 텍스트 문자열이나 이미지에서 구문 분석하는 대신 Claude가 정확한 필드로 읽을 수 있는 원본 값을 반환합니다.
 
-It demonstrates two patterns:
+`structuredContent`가 설정되면 Claude는 JSON과 `content`의 모든 이미지 또는 리소스 블록을 받습니다. `content`의 텍스트 블록은 구조화된 데이터를 복제한다고 가정하므로 전달되지 않습니다. 아래 예제는 차트를 이미지 블록으로 렌더링하고 동일한 핸들러에서 `structuredContent`의 뒤에 있는 데이터 포인트를 반환합니다.
 
-* **Enum schemas:** `unit_type` is constrained to a fixed set of values. In TypeScript, use `z.enum()`. In Python, the dict schema doesn't support enums, so the full JSON Schema dict is required.
-* **Unsupported input handling:** when a conversion pair isn't found, the handler returns `isError: true` so Claude can tell the user what went wrong rather than treating a failure as a normal result.
+```typescript TypeScript theme={null}
+return {
+  content: [
+    {
+      type: "image",
+      data: chartPngBuffer.toString("base64"),
+      mimeType: "image/png"
+    }
+  ],
+  structuredContent: {
+    series: "temperature_2m",
+    unit: "fahrenheit",
+    points: [62.1, 63.4, 65.0, 64.2]
+  }
+};
+```
+
+<Note>
+  Python `@tool` 데코레이터는 핸들러의 반환 딕셔너리에서 `content` 및 `is_error`만 전달합니다. Python에서 `structuredContent`를 반환하려면 인프로세스 SDK 서버 대신 [독립형 MCP 서버](/ko/agent-sdk/mcp)를 실행합니다.
+</Note>
+
+## 예제: 단위 변환기
+
+이 도구는 길이, 온도 및 무게 단위 간에 값을 변환합니다. 사용자는 "100킬로미터를 마일로 변환" 또는 "72°F는 섭씨온도로 몇 도인가"라고 물을 수 있으며, Claude는 요청에서 올바른 단위 유형과 단위를 선택합니다.
+
+두 가지 패턴을 보여줍니다:
+
+* **열거형 스키마:** `unit_type`은 고정된 값 집합으로 제한됩니다. TypeScript에서 `z.enum()`을 사용합니다. Python에서 딕셔너리 스키마는 열거형을 지원하지 않으므로 전체 JSON Schema 딕셔너리가 필요합니다.
+* **지원되지 않는 입력 처리:** 변환 쌍을 찾을 수 없으면 핸들러는 `isError: true`를 반환하므로 Claude는 실패를 정상 결과로 취급하는 대신 사용자에게 무엇이 잘못되었는지 알릴 수 있습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -565,8 +594,8 @@ It demonstrates two patterns:
   from claude_agent_sdk import tool, create_sdk_mcp_server
 
 
-  # z.enum() in TypeScript becomes an "enum" constraint in JSON Schema.
-  # The dict schema has no equivalent, so full JSON Schema is required.
+  # TypeScript의 z.enum()은 JSON Schema의 "enum" 제약이 됩니다.
+  # 딕셔너리 스키마는 동등한 것이 없으므로 전체 JSON Schema가 필요합니다.
   @tool(
       "convert_units",
       "Convert a value from one unit to another",
@@ -716,7 +745,7 @@ It demonstrates two patterns:
   ```
 </CodeGroup>
 
-Once the server is defined, pass it to `query` the same way as the weather example. This example sends three different prompts in a loop to show the same tool handling different unit types. For each response, it inspects `AssistantMessage` objects (which contain the tool calls Claude made during that turn) and prints each `ToolUseBlock` before printing the final `ResultMessage` text. This lets you see when Claude is using the tool versus answering from its own knowledge.
+서버가 정의되면 날씨 예제와 동일한 방식으로 `query`에 전달합니다. 이 예제는 루프에서 세 가지 다른 프롬프트를 보내 동일한 도구가 다양한 단위 유형을 처리하는 것을 보여줍니다. 각 응답에 대해 `AssistantMessage` 객체(Claude가 해당 턴 중에 수행한 도구 호출을 포함)를 검사하고 각 `ToolUseBlock`을 인쇄한 후 최종 `ResultMessage` 텍스트를 인쇄합니다. 이를 통해 Claude가 도구를 사용하는 시기와 자신의 지식에서 답변하는 시기를 볼 수 있습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -786,19 +815,19 @@ Once the server is defined, pass it to `query` the same way as the weather examp
   ```
 </CodeGroup>
 
-## Next steps
+## 다음 단계
 
-Custom tools wrap async functions in a standard interface. You can mix the patterns on this page in the same server: a single server can hold a database tool, an API gateway tool, and an image renderer alongside each other.
+사용자 정의 도구는 비동기 함수를 표준 인터페이스로 래핑합니다. 동일한 서버에서 이 페이지의 패턴을 혼합할 수 있습니다: 단일 서버는 데이터베이스 도구, API 게이트웨이 도구 및 이미지 렌더러를 함께 보유할 수 있습니다.
 
-From here:
+여기서:
 
-* If your server grows to dozens of tools, see [tool search](/en/agent-sdk/tool-search) to defer loading them until Claude needs them.
-* To connect to external MCP servers (filesystem, GitHub, Slack) instead of building your own, see [Connect MCP servers](/en/agent-sdk/mcp).
-* To control which tools run automatically versus requiring approval, see [Configure permissions](/en/agent-sdk/permissions).
+* 서버가 수십 개의 도구로 증가하면 [도구 검색](/ko/agent-sdk/tool-search)을 참조하여 Claude가 필요할 때까지 로드를 연기합니다.
+* 자신의 도구를 빌드하는 대신 외부 MCP 서버(파일 시스템, GitHub, Slack)에 연결하려면 [MCP 서버 연결](/ko/agent-sdk/mcp)을 참조하세요.
+* 어떤 도구가 자동으로 실행되는지 대 승인이 필요한지 제어하려면 [권한 구성](/ko/agent-sdk/permissions)을 참조하세요.
 
-## Related documentation
+## 관련 문서
 
-* [TypeScript SDK Reference](/en/agent-sdk/typescript)
-* [Python SDK Reference](/en/agent-sdk/python)
-* [MCP Documentation](https://modelcontextprotocol.io)
-* [SDK Overview](/en/agent-sdk/overview)
+* [TypeScript SDK 참조](/ko/agent-sdk/typescript)
+* [Python SDK 참조](/ko/agent-sdk/python)
+* [MCP 문서](https://modelcontextprotocol.io)
+* [SDK 개요](/ko/agent-sdk/overview)

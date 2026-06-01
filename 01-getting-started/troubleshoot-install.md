@@ -16,7 +16,8 @@
 | :------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------- |
 | `command not found: claude` 또는 `'claude' is not recognized`                                 | [PATH 수정](#command-not-found-claude-after-installation)                                        |
 | `syntax error near unexpected token '<'`                                                    | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                     |
-| `curl: (56) Failure writing output to destination`                                          | [연결성 확인 또는 대체 설치 프로그램 사용](#curl-56-failure-writing-output-to-destination)                      |
+| `curl: (22) The requested URL returned error: 403`                                          | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                     |
+| `curl: (23)` 또는 `curl: (56) Failure writing output to destination`                          | [연결성 확인 또는 대체 설치 프로그램 사용](#curl-56-failure-writing-output-to-destination)                      |
 | Linux에서 설치 중 `Killed`                                                                       | [저메모리 서버에 스왑 공간 추가](#install-killed-on-low-memory-linux-servers)                               |
 | `TLS connect error` 또는 `SSL/TLS secure channel`                                             | [CA 인증서 업데이트](#tls-or-ssl-connection-errors)                                                   |
 | `Failed to fetch version` 또는 다운로드 서버에 도달할 수 없음                                              | [네트워크 및 프록시 설정 확인](#check-network-connectivity)                                                |
@@ -298,7 +299,15 @@ PowerShell에서 동일한 문제는 다음과 같이 나타납니다:
 Invoke-Expression: Missing argument in parameter list.
 ```
 
-이는 설치 URL이 설치 스크립트 대신 HTML 페이지를 반환했음을 의미합니다. HTML 페이지에 "App unavailable in region"이 표시되면 Claude Code는 귀국에서 사용할 수 없습니다. [지원되는 국가](https://www.anthropic.com/supported-countries)를 참조하세요.
+요청이 라우팅된 방식에 따라 대신 HTML 본문이 없는 403이 표시될 수 있습니다:
+
+```text theme={null}
+curl: (22) The requested URL returned error: 403
+```
+
+이 모든 것은 설치 URL이 설치 스크립트 대신 HTML 페이지 또는 오류 상태를 반환했음을 의미합니다. HTML 페이지에 "App unavailable in region"이 표시되면 Claude Code는 귀국에서 사용할 수 없습니다. [지원되는 국가](https://www.anthropic.com/supported-countries)를 참조하세요.
+
+본문이 없는 단순 403은 종종 동일한 원인을 가지지만 회사 프록시 또는 방화벽이 다운로드를 차단하는 것에서 비롯될 수도 있습니다. 지원되는 국가에 있는데도 여전히 403이 표시되면 아래의 대체 설치 프로그램을 시도하기 전에 [네트워크 연결 확인](#check-network-connectivity)을 진행하세요. 대체 설치 프로그램도 동일한 호스트에 도달하기 때문입니다.
 
 그렇지 않으면 네트워크 문제, 지역 라우팅 또는 일시적인 서비스 중단으로 인해 발생할 수 있습니다.
 
@@ -335,7 +344,7 @@ Invoke-Expression: Missing argument in parameter list.
 
 ### `curl: (56) Failure writing output to destination`
 
-`curl ... | bash` 명령은 스크립트를 다운로드하고 Bash에 파이프하여 실행합니다. 이 오류는 스크립트 다운로드가 완료되기 전에 연결이 끊어졌음을 의미합니다. 일반적인 원인은 네트워크 중단, 다운로드가 중간에 차단되거나 시스템 리소스 제한입니다.
+`curl ... | bash` 명령은 스크립트를 다운로드하고 Bash에 파이프하여 실행합니다. 이 오류와 관련된 `curl: (23) Failure writing output to destination`은 Bash가 완전한 스크립트를 받지 못했음을 의미합니다. 종료 코드 56은 다운로드 자체가 중단되었음을 나타내고 종료 코드 23은 curl이 받은 것을 파이프에 쓸 수 없었음을 나타내며, 일반적으로 Bash가 조기에 종료되었기 때문입니다.
 
 **해결책:**
 
@@ -527,12 +536,11 @@ Claude Desktop을 최신 버전으로 업데이트하여 이 문제를 해결하
 
 ### Windows에서 Claude Code는 Git for Windows(Bash용) 또는 PowerShell 필요
 
-Claude Code의 네이티브 Windows 버전은 최소 하나의 셸이 필요합니다: Bash용 [Git for Windows](https://git-scm.com/downloads/win) 또는 PowerShell. 둘 다 찾을 수 없으면 이 오류가 시작 시 나타납니다. PowerShell만 찾으면 Claude Code는 Bash 대신 PowerShell 도구를 사용합니다.
+Git for Windows는 선택 사항입니다. Claude Code는 Git Bash가 없을 때 [PowerShell 도구](/ko/tools-reference#powershell-tool)를 사용하므로 이 오류는 어느 셸도 찾을 수 없음을 의미합니다.
 
-**둘 다 설치되지 않은 경우** 하나를 설치하세요:
+**PowerShell이 PATH에서 누락된 경우** 기본 위치는 `C:\Windows\System32\WindowsPowerShell\v1.0\`입니다. 해당 디렉토리를 `PATH`에 추가하거나 `pwsh`를 제공하는 [PowerShell 7](https://aka.ms/powershell)을 설치하세요.
 
-* Git for Windows: [git-scm.com/downloads/win](https://git-scm.com/downloads/win)에서 다운로드하세요. 설정 중에 "Add to PATH"를 선택하세요. 설치 후 터미널을 다시 시작하세요.
-* PowerShell 7: [aka.ms/powershell](https://aka.ms/powershell)에서 다운로드하세요.
+**Git for Windows를 설치하려면** [git-scm.com/downloads/win](https://git-scm.com/downloads/win)에서 다운로드하세요. 설정 중에 "Add to PATH"를 선택하세요. 설치 후 터미널을 다시 시작하세요. 설치하면 Bash 도구가 활성화되어 Bash 기반 스크립트 및 도구로 작업할 때 유용합니다.
 
 **Git이 이미 설치되어 있지만** Claude Code가 찾을 수 없으면 [settings.json 파일](/ko/settings)에서 경로를 설정하세요:
 

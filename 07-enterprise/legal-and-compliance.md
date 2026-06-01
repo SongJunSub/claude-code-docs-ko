@@ -6,6 +6,10 @@
 
 > Claude Code의 법률 계약, 규정 준수 인증 및 보안 정보입니다.
 
+<Note>
+  Starting June 15, 2026, Agent SDK and `claude -p` usage on subscription plans will draw from a new monthly Agent SDK credit, separate from your interactive usage limits. See [Use the Claude Agent SDK with your Claude plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) for details.
+</Note>
+
 ## 법률 계약
 
 ### 라이선스
@@ -17,7 +21,7 @@ Claude Code의 사용은 다음의 적용을 받습니다:
 
 ### 상용 계약
 
-Claude API를 직접 사용하든(1P) AWS Bedrock 또는 Google Vertex를 통해 접근하든(3P), 기존 상용 계약이 Claude Code 사용에 적용되며, 달리 상호 합의하지 않는 한 그러합니다.
+Claude API를 직접 사용하든(1P) Amazon Bedrock 또는 Google Vertex를 통해 접근하든(3P), 기존 상용 계약이 Claude Code 사용에 적용되며, 달리 상호 합의하지 않는 한 그러합니다.
 
 ## 규정 준수
 

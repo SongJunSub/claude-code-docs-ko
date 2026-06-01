@@ -2,11 +2,11 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Claude Code Desktop 사용하기
+# Desktop 애플리케이션
 
 > Claude Code Desktop을 더 활용하기: Git 격리를 통한 병렬 세션, 드래그 앤 드롭 패널 레이아웃, 통합 터미널 및 파일 편집기, 사이드 채팅, 컴퓨터 사용, 휴대폰에서 Dispatch 세션 전송, 시각적 diff 검토, 앱 미리보기, PR 모니터링, 커넥터, 엔터프라이즈 구성.
 
-Claude Desktop 앱 내의 Code 탭을 사용하면 터미널 대신 그래픽 인터페이스를 통해 Claude Code를 사용할 수 있습니다.
+Claude Desktop 앱에는 세 개의 탭이 있습니다: 대화를 위한 **Chat**, [Dispatch 및 더 긴 에이전트 작업](https://claude.com/product/cowork)을 위한 **Cowork**, 소프트웨어 개발을 위한 **Code**입니다. 이 페이지는 Code 탭에 대한 참고 자료입니다.
 
 <CardGroup cols={2}>
   <Card title="Download for macOS" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
@@ -18,29 +18,21 @@ Claude Desktop 앱 내의 Code 탭을 사용하면 터미널 대신 그래픽 �
   </Card>
 </CardGroup>
 
-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
+For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
 
-설치 후 Claude를 실행하고, 로그인한 다음 **Code** 탭을 클릭합니다. 첫 번째 세션의 전체 안내는 [시작하기 가이드](/ko/desktop-quickstart)를 참조하세요.
+설치 후 Claude를 실행하고, 로그인한 다음 **Code** 탭을 클릭합니다. Windows에서 처음 열 때는 [Git for Windows](https://git-scm.com/downloads/win)가 설치되어 있어야 하며, 설치 후 앱을 다시 시작합니다. 첫 번째 세션의 전체 안내는 [시작하기 가이드](/ko/desktop-quickstart)를 참조하세요.
 
-Desktop은 표준 Claude Code 경험 위에 다음과 같은 기능을 추가합니다:
+Code 탭에서 각 대화는 **세션**입니다: 자신의 채팅 기록, 프로젝트 폴더, 코드 변경 사항을 가지고 있으며, 다른 세션과는 독립적입니다. 사이드바에는 세션이 나열되어 있으며 여러 세션을 병렬로 실행할 수 있습니다. 세션 내에서 다음을 수행할 수 있습니다:
 
-* [병렬 세션](#work-in-parallel-with-sessions) (자동 Git worktree 격리 포함)
-* [드래그 앤 드롭 레이아웃](#arrange-your-workspace) (통합 터미널, 파일 편집기, 미리보기 패널 포함)
-* [사이드 채팅](#ask-a-side-question-without-derailing-the-session) (메인 스레드에 영향을 주지 않고 분기)
-* [시각적 diff 검토](#review-changes-with-diff-view) (인라인 댓글 포함)
-* [라이브 앱 미리보기](#preview-your-app) (개발 서버, HTML 파일, PDF 포함)
-* [컴퓨터 사용](#let-claude-use-your-computer) (macOS 및 Windows에서 앱을 열고 화면 제어)
-* [GitHub PR 모니터링](#monitor-pull-request-status) (자동 수정, 자동 병합, 자동 아카이브 포함)
-* [Dispatch](#sessions-from-dispatch) 통합: 휴대폰에서 작업을 보내고 여기서 세션을 받습니다
-* [예약된 작업](/ko/desktop-scheduled-tasks) (Claude를 반복 일정으로 실행)
-* [커넥터](#connect-external-tools) (GitHub, Slack, Linear 등)
-* 로컬, [SSH](#ssh-sessions), [클라우드](#run-long-running-tasks-remotely) 환경
+* [diff를 검토하고 댓글 달기](#review-changes-with-diff-view), 그 다음 [CI를 통해 결과 PR 모니터링](#monitor-pull-request-status)
+* [실행 중인 앱 미리보기](#preview-your-app) (Claude가 자신의 변경 사항을 확인하는 동안 내장 브라우저에서)
+* [패널 정렬](#arrange-your-workspace) (채팅, diff, 미리보기, 터미널, 파일 편집기를 나란히 배치)
+* [세션을 벗어나지 않고 부가 질문 하기](#ask-a-side-question-without-derailing-the-session) (세션의 컨텍스트를 사용하되 벗어나지 않음)
+* [외부 도구 연결](#connect-external-tools) (GitHub, Slack, Linear 등)
+* Claude가 [앱을 열고 화면을 제어](#let-claude-use-your-computer)하도록 허용
+* 머신에서, [클라우드](#run-long-running-tasks-remotely)에서, 또는 [SSH](#ssh-sessions)를 통해 실행
 
-<Note>
-  이 페이지에서 설명하는 워크스페이스 레이아웃, 터미널, 파일 편집기, 사이드 채팅, 보기 모드에는 Claude Desktop v1.2581.0 이상이 필요합니다. macOS에서 **Claude → Check for Updates**를 클릭하거나 Windows에서 **Help → Check for Updates**를 클릭하여 업데이트합니다.
-</Note>
-
-이 페이지는 [코드 작업](#work-with-code), [워크스페이스 정렬](#arrange-your-workspace), [컴퓨터 사용](#let-claude-use-your-computer), [세션 관리](#manage-sessions), [Claude Code 확장](#extend-claude-code), [구성](#environment-configuration)을 다룹니다. 또한 [CLI 비교](#coming-from-the-cli)와 [문제 해결](#troubleshooting)도 포함되어 있습니다.
+[예약된 반복 작업](/ko/desktop-scheduled-tasks), [키보드 단축키](#keyboard-shortcuts), 또는 [휴대폰에서 작업 전송](#sessions-from-dispatch)에 대해서는 연결된 페이지 및 섹션을 참조하세요. 이미 터미널 기반 CLI를 사용 중이라면, [CLI 비교](#coming-from-the-cli)에서 어떤 것이 이월되는지 확인하세요.
 
 ## 세션 시작하기
 
@@ -59,9 +51,9 @@ Claude에게 올바른 컨텍스트를 제공하고, 자동으로 수행할 작�
 
 ### 프롬프트 상자 사용하기
 
-Claude가 수행할 작업을 입력하고 **Enter**를 눌러 보냅니다. Claude는 프로젝트 파일을 읽고, 변경 사항을 만들고, [권한 모드](#choose-a-permission-mode)에 따라 명령을 실행합니다. 언제든지 Claude를 중단할 수 있습니다: 중지 버튼을 클릭하거나 수정 사항을 입력하고 **Enter**를 누릅니다. Claude는 작업을 중지하고 입력에 따라 조정합니다.
+Claude가 수행할 작업을 입력하고 **Enter**를 눌러 보냅니다. Claude는 프로젝트 파일을 읽고, 변경 사항을 만들고, [권한 모드](#choose-a-permission-mode)에 따라 명령을 실행합니다. 언제든지 Claude를 중단할 수 있습니다: 중지 버튼을 클릭하여 즉시 중단하거나, 수정 사항을 입력하고 **Enter**를 눌러 실행 중인 작업을 중지하지 않고 보냅니다. Claude는 현재 작업이 완료되면 수정 사항을 읽고 다음 단계 전에 조정합니다.
 
-프롬프트 상자 옆의 **+** 버튼을 클릭하면 파일 첨부, [skills](#use-skills), [커넥터](#connect-external-tools), [플러그인](#install-plugins)에 액세스할 수 있습니다.
+프롬프트 상자 옆의 **+** 버튼을 클릭하면 파일 첨부, [skills](#use-skills), [connectors](#connect-external-tools), [plugins](#install-plugins)에 액세스할 수 있습니다.
 
 ### 프롬프트에 파일 및 컨텍스트 추가하기
 
@@ -74,15 +66,19 @@ Claude가 수행할 작업을 입력하고 **Enter**를 눌러 보냅니다. Cla
 
 권한 모드는 세션 중에 Claude가 가질 자율성을 제어합니다: 파일 편집, 명령 실행 또는 둘 다 전에 묻는지 여부입니다. 전송 버튼 옆의 모드 선택기를 사용하여 언제든지 모드를 전환할 수 있습니다. Claude가 수행하는 작업을 정확히 보기 위해 권한 요청으로 시작한 다음, 편하면 자동 수락 편집 또는 Plan mode로 이동합니다.
 
-| 모드            | 설정 키                | 동작                                                                                                                                                                                                                                                                                                                |
-| ------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **권한 요청**     | `default`           | Claude는 파일을 편집하거나 명령을 실행하기 전에 요청합니다. diff를 보고 각 변경 사항을 수락하거나 거부할 수 있습니다. 새 사용자에게 권장됩니다.                                                                                                                                                                                                                           |
-| **자동 수락 편집**  | `acceptEdits`       | Claude는 파일 편집을 자동으로 수락하고 `mkdir`, `touch`, `mv`와 같은 일반적인 파일시스템 명령을 자동으로 수락하지만 다른 터미널 명령 실행 전에는 여전히 요청합니다. 파일 변경을 신뢰하고 더 빠른 반복을 원할 때 사용합니다.                                                                                                                                                                        |
-| **Plan mode** | `plan`              | Claude는 파일을 읽고 명령을 실행하여 탐색한 다음 소스 코드를 편집하지 않고 계획을 제안합니다. 먼저 접근 방식을 검토하려는 복잡한 작업에 좋습니다.                                                                                                                                                                                                                            |
-| **Auto**      | `auto`              | Claude는 요청과의 정렬을 확인하는 백그라운드 안전 검사를 통해 모든 작업을 실행합니다. 감시를 유지하면서 권한 프롬프트를 줄입니다. 현재 연구 미리보기입니다. Max, Team, Enterprise, API 계획에서 사용 가능합니다. Team, Enterprise, API 계획에서 Claude Sonnet 4.6, Opus 4.6, Opus 4.7이 필요합니다. Max 계획에서는 Claude Opus 4.7만 필요합니다. Pro 계획 또는 타사 공급자에서는 사용할 수 없습니다. Settings → Claude Code에서 활성화합니다. |
-| **권한 무시**     | `bypassPermissions` | Claude는 권한 프롬프트 없이 실행되며, CLI의 `--dangerously-skip-permissions`와 동일합니다. Settings → Claude Code의 "권한 무시 모드 허용"에서 활성화합니다. 샌드박스 컨테이너 또는 VM에서만 사용합니다. 엔터프라이즈 관리자는 이 옵션을 비활성화할 수 있습니다.                                                                                                                                  |
+| 모드            | 설정 키                | 동작                                                                                                                                                                               |
+| ------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **권한 요청**     | `default`           | Claude는 파일을 편집하거나 명령을 실행하기 전에 요청합니다. diff를 보고 각 변경 사항을 수락하거나 거부할 수 있습니다. 새 사용자에게 권장됩니다.                                                                                          |
+| **자동 수락 편집**  | `acceptEdits`       | Claude는 파일 편집을 자동으로 수락하고 `mkdir`, `touch`, `mv`와 같은 일반적인 파일시스템 명령을 자동으로 수락하지만 다른 터미널 명령 실행 전에는 여전히 요청합니다. 파일 변경을 신뢰하고 더 빠른 반복을 원할 때 사용합니다.                                       |
+| **Plan mode** | `plan`              | Claude는 파일을 읽고 명령을 실행하여 탐색한 다음 소스 코드를 편집하지 않고 계획을 제안합니다. 먼저 접근 방식을 검토하려는 복잡한 작업에 좋습니다.                                                                                           |
+| **Auto**      | `auto`              | Claude는 요청과의 정렬을 확인하는 백그라운드 안전 검사를 통해 모든 작업을 실행합니다. 감시를 유지하면서 권한 프롬프트를 줄입니다. Settings → Claude Code에서 활성화합니다. [가용성 요구 사항](#auto-mode-availability)을 아래에서 참조하세요.                  |
+| **권한 무시**     | `bypassPermissions` | Claude는 권한 프롬프트 없이 실행되며, CLI의 `--dangerously-skip-permissions`와 동일합니다. Settings → Claude Code의 "권한 무시 모드 허용"에서 활성화합니다. 샌드박스 컨테이너 또는 VM에서만 사용합니다. 엔터프라이즈 관리자는 이 옵션을 비활성화할 수 있습니다. |
 
 `dontAsk` 권한 모드는 [CLI](/ko/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)에서만 사용 가능합니다.
+
+<span id="auto-mode-availability" />
+
+Auto mode는 Anthropic API의 모든 사용자에게 제공되는 연구 미리보기입니다. 타사 공급자에서는 사용할 수 없습니다. Claude Opus 4.6 이상 또는 Sonnet 4.6이 필요합니다.
 
 <Tip title="모범 사례">
   복잡한 작업을 Plan mode에서 시작하여 Claude가 변경하기 전에 접근 방식을 매핑하도록 합니다. 계획을 승인한 후 자동 수락 편집 또는 권한 요청으로 전환하여 실행합니다. 이 워크플로우에 대한 자세한 내용은 [먼저 탐색, 그 다음 계획, 그 다음 코드](/ko/best-practices#explore-first-then-plan-then-code)를 참조하세요.
@@ -96,13 +92,15 @@ Claude가 수행할 작업을 입력하고 **Enter**를 눌러 보냅니다. Cla
 
 Claude는 개발 서버를 시작하고 임베드된 브라우저를 열어 변경 사항을 확인할 수 있습니다. 이는 프론트엔드 웹 앱뿐만 아니라 백엔드 서버에도 작동합니다: Claude는 API 엔드포인트를 테스트하고, 서버 로그를 보고, 발견한 문제를 반복할 수 있습니다. 대부분의 경우 Claude는 프로젝트 파일을 편집한 후 자동으로 서버를 시작합니다. 언제든지 Claude에게 미리보기를 요청할 수도 있습니다. 기본적으로 Claude는 모든 편집 후 [자동으로 변경 사항을 확인](#auto-verify-changes)합니다.
 
+미리보기 패널은 프로젝트의 정적 HTML 파일, PDF, 이미지 및 비디오도 열 수 있습니다. 채팅에서 HTML, PDF, 이미지 또는 비디오 경로를 클릭하여 미리보기에서 엽니다.
+
 미리보기 패널에서 다음을 수행할 수 있습니다:
 
-* 임베드된 브라우저에서 실행 중인 앱과 직접 상호작용
+* 임베드된 브라우저에서 실행 중인 앱과 직접 상호작용합니다
 * Claude가 자동으로 자신의 변경 사항을 확인하는 것을 봅니다: 스크린샷을 찍고, DOM을 검사하고, 요소를 클릭하고, 양식을 채우고, 발견한 문제를 수정합니다
-* 세션 도구 모음의 **Preview** 드롭다운에서 서버 시작 또는 중지
-* **Persist sessions**을 드롭다운에서 선택하여 서버 재시작 시 쿠키 및 로컬 스토리지를 유지하므로 개발 중에 다시 로그인할 필요가 없습니다
-* 서버 구성을 편집하거나 모든 서버를 한 번에 중지
+* 세션 도구 모음의 **Preview** 드롭다운에서 서버를 시작하거나 중지합니다
+* 드롭다운에서 **Persist sessions**을 선택하여 서버 재시작 시 쿠키 및 로컬 스토리지를 유지하므로 개발 중에 다시 로그인할 필요가 없습니다
+* 서버 구성을 편집하거나 모든 서버를 한 번에 중지합니다
 
 Claude는 프로젝트를 기반으로 초기 서버 구성을 만듭니다. 앱이 사용자 정의 개발 명령을 사용하는 경우 `.claude/launch.json`을 편집하여 설정과 일치시킵니다. 전체 참조는 [미리보기 서버 구성](#configure-preview-servers)을 참조하세요.
 
@@ -142,15 +140,19 @@ CI 상태 표시줄의 **Auto-fix** 및 **Auto-merge** 토글을 사용하여 �
 
 ## 워크스페이스 정렬하기
 
-데스크톱 앱은 모든 레이아웃으로 정렬할 수 있는 패널을 중심으로 구축되어 있습니다: 채팅, diff, 미리보기, 터미널, 파일, 계획, 작업, 서브에이전트. 패널을 헤더로 드래그하여 위치를 변경하거나 패널 가장자리를 드래그하여 크기를 조정합니다. macOS에서 \*\*Cmd+\\\*\*를 누르거나 Windows에서 \*\*Ctrl+\\\*\*를 눌러 포커스된 패널을 닫습니다. 세션 도구 모음의 **Views** 메뉴에서 추가 패널을 엽니다.
+Code 탭은 모든 레이아웃으로 정렬할 수 있는 패널을 중심으로 구축되어 있습니다: 채팅, diff, 미리보기, 터미널, 파일, 계획, 작업, 서브에이전트. 패널을 헤더로 드래그하여 위치를 변경하거나 패널 가장자리를 드래그하여 크기를 조정합니다. macOS에서 \*\*Cmd+\\\*\*를 누르거나 Windows에서 \*\*Ctrl+\\\*\*를 눌러 포커스된 패널을 닫습니다. 세션 도구 모음의 **Views** 메뉴에서 추가 패널을 엽니다.
+
+<Note>
+  이 섹션의 패널 레이아웃, 터미널, 파일 편집기, 보기 모드는 Claude Desktop v1.2581.0 이상이 필요합니다. macOS에서 **Claude → Check for Updates**를 열거나 Windows에서 **Help → Check for Updates**를 열어 업데이트합니다.
+</Note>
 
 ### 터미널에서 명령 실행하기
 
-통합 터미널을 사용하면 다른 앱으로 전환하지 않고 세션과 함께 명령을 실행할 수 있습니다. **Views** 메뉴에서 열거나 macOS 또는 Windows에서 \*\*Ctrl+\`\*\*를 누릅니다. 터미널은 세션의 작업 디렉토리에서 열리고 Claude와 동일한 환경을 공유하므로 `npm test` 또는 `git status`와 같은 명령은 Claude가 편집하는 것과 동일한 파일을 봅니다. 터미널은 로컬 세션에서만 사용 가능합니다.
+통합 터미널을 사용하면 다른 앱으로 전환하지 않고 세션과 함께 명령을 실행할 수 있습니다. **Views** 메뉴에서 열거나 macOS 또는 Windows에서 \*\*Ctrl+\`\*\*를 누릅니다. 터미널은 세션의 작업 디렉토리에서 열리고 Claude와 동일한 환경을 공유하므로 `npm test` 또는 `git status`와 같은 명령은 Claude가 편집하는 것과 동일한 파일을 봅니다. 두 번째 터미널 탭을 열려면 터미널 패널 헤더의 \*\*+\*\*를 클릭하거나 채팅의 폴더를 마우스 오른쪽 버튼으로 클릭하여 **Open in terminal**을 선택합니다. 터미널은 로컬 세션에서만 사용 가능합니다.
 
 ### 파일 열기 및 편집하기
 
-채팅 또는 diff 뷰어의 파일 경로를 클릭하여 파일 패널에서 엽니다. HTML, PDF, 이미지 경로는 대신 [미리보기 패널](#preview-your-app)에서 열립니다. 스팟 편집을 하고 **Save**를 클릭하여 다시 작성합니다. 파일이 열린 이후 디스크에서 변경되었으면 패널이 경고하고 재정의하거나 버립니다. **Discard**를 클릭하여 편집을 되돌리거나 패널 헤더의 경로를 클릭하여 절대 경로를 복사합니다.
+채팅 또는 diff 뷰어의 파일 경로를 클릭하여 파일 패널에서 엽니다. HTML, PDF, 이미지, 비디오 경로는 대신 [미리보기 패널](#preview-your-app)에서 열립니다. 스팟 편집을 하고 **Save**를 클릭하여 다시 작성합니다. 파일이 열린 이후 디스크에서 변경되었으면 패널이 경고하고 재정의하거나 버립니다. **Discard**를 클릭하여 편집을 되돌리거나 패널 헤더의 경로를 클릭하여 절대 경로를 복사합니다.
 
 파일 패널은 로컬 및 SSH 세션에서 사용 가능합니다. 원격 세션의 경우 Claude에게 변경을 요청합니다.
 
@@ -280,17 +282,21 @@ Terminal, Finder 또는 File Explorer, System Settings 또는 Settings와 같이
 
 ### 세션으로 병렬 작업하기
 
-사이드바에서 **+ New session**을 클릭하거나 macOS에서 **Cmd+N**을 누르거나 Windows에서 **Ctrl+N**을 눌러 여러 작업을 병렬로 작업합니다. **Ctrl+Tab** 및 **Ctrl+Shift+Tab**을 눌러 사이드바의 세션을 순환합니다. Git 저장소의 경우 각 세션은 [Git worktrees](/ko/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees)를 사용하여 프로젝트의 자신의 격리된 복사본을 가져오므로 한 세션의 변경 사항이 커밋할 때까지 다른 세션에 영향을 주지 않습니다.
+사이드바에서 **+ New session**을 클릭하거나 macOS에서 **Cmd+N**을 누르거나 Windows에서 **Ctrl+N**을 눌러 여러 작업을 병렬로 작업합니다. **Ctrl+Tab** 및 **Ctrl+Shift+Tab**을 눌러 사이드바의 세션을 순환합니다. Git 저장소의 경우 각 세션은 [Git worktrees](/ko/worktrees)를 사용하여 프로젝트의 자신의 격리된 복사본을 가져오므로 한 세션의 변경 사항이 커밋할 때까지 다른 세션에 영향을 주지 않습니다.
+
+두 세션을 동시에 보려면 macOS에서 **Cmd**를 누르거나 Windows에서 **Ctrl**을 누르고 사이드바의 세션을 클릭합니다. 세션이 이미 열려 있는 창 옆에 두 번째 창에서 열립니다. 분할이 활성화되어 있는 동안 다른 사이드바 세션을 클릭하면 포커스가 있는 창을 바꿉니다. macOS에서 \*\*Cmd+\\\*\*를 누르거나 Windows에서 \*\*Ctrl+\\\*\*를 눌러 포커스된 창을 닫고 단일 세션으로 돌아갑니다.
 
 Worktrees는 기본적으로 `<project-root>/.claude/worktrees/`에 저장됩니다. Settings → Claude Code의 "Worktree location"에서 사용자 정의 디렉토리로 변경할 수 있습니다. 또한 모든 worktree 브랜치 이름 앞에 추가되는 브랜치 접두사를 설정할 수 있으며, 이는 Claude가 만든 브랜치를 정리하는 데 유용합니다. 완료되면 사이드바의 세션 위에 마우스를 올리고 아카이브 아이콘을 클릭하여 worktree를 제거합니다. PR이 병합되거나 닫힌 후 세션이 자동으로 아카이브되도록 하려면 Settings → Claude Code에서 **Auto-archive after PR merge or close**를 켭니다. 자동 아카이브는 실행을 완료한 로컬 세션에만 적용됩니다.
 
-gitignored 파일 (예: `.env`)을 새 worktrees에 포함하려면 프로젝트 루트에 [`.worktreeinclude` 파일](/ko/common-workflows#copy-gitignored-files-to-worktrees)을 만듭니다.
+gitignored 파일 (예: `.env`)을 새 worktrees에 포함하려면 프로젝트 루트에 [`.worktreeinclude` 파일](/ko/worktrees#copy-gitignored-files-into-worktrees)을 만듭니다.
 
 <Note>
-  세션 격리에는 [Git](https://git-scm.com/downloads)이 필요합니다. 대부분의 Mac에는 기본적으로 Git이 포함되어 있습니다. Terminal에서 `git --version`을 실행하여 확인합니다. Windows에서는 Code 탭이 작동하려면 Git이 필요합니다: [Windows용 Git 다운로드](https://git-scm.com/downloads/win), 설치 및 앱 재시작. Git 오류가 발생하면 Cowork 세션을 시도하여 설정을 문제 해결하세요.
+  세션 격리에는 [Git](https://git-scm.com/downloads)이 필요합니다. 대부분의 Mac에는 기본적으로 Git이 포함되어 있습니다. Terminal에서 `git --version`을 실행하여 확인합니다. Windows에서는 Code 탭이 작동하려면 Git이 필요합니다: [Windows용 Git 다운로드](https://git-scm.com/downloads/win), 설치 및 앱 재시작. Git 오류가 발생하면 [Cowork 탭](https://claude.com/product/cowork)에서 Claude에게 설정을 문제 해결하도록 요청하세요.
 </Note>
 
 사이드바 상단의 컨트롤을 사용하여 상태, 프로젝트 또는 환경별로 세션을 필터링하고 프로젝트별로 세션을 그룹화합니다. 세션 이름을 바꾸려면 활성 세션 상단의 도구 모음에서 세션 제목을 클릭합니다. 컨텍스트 사용량을 확인하려면 [사용량 확인](#check-usage)을 참조하세요. 컨텍스트가 가득 차면 Claude는 자동으로 대화를 요약하고 계속 작업합니다. `/compact`를 입력하여 요약을 더 일찍 트리거하고 컨텍스트 공간을 확보할 수도 있습니다. [컨텍스트 윈도우](/ko/how-claude-code-works#the-context-window)에서 압축이 작동하는 방식에 대한 자세한 내용을 참조하세요.
+
+데스크톱 앱은 Code 세션이 작업을 완료하고 현재 해당 세션을 보고 있지 않을 때 OS 알림을 보냅니다.
 
 ### 세션을 벗어나지 않고 옆 질문 하기
 
@@ -300,7 +306,7 @@ macOS에서 \*\*Cmd+;\*\*를 누르거나 Windows에서 \*\*Ctrl+;\*\*를 누르
 
 ### 백그라운드 작업 보기
 
-작업 패널은 현재 세션 내에서 실행 중인 백그라운드 작업을 표시합니다: 서브에이전트, 백그라운드 셸 명령, 워크플로우. **Views** 메뉴에서 열거나 레이아웃으로 드래그합니다.
+작업 패널은 현재 세션 내에서 실행 중인 백그라운드 작업을 표시합니다: 서브에이전트, 백그라운드 셸 명령, [동적 워크플로우](/ko/workflows). **Views** 메뉴에서 열거나 레이아웃으로 드래그합니다.
 
 모든 항목을 클릭하여 서브에이전트 패널에서 출력을 보거나 중지합니다. 다른 세션이 수행하는 작업을 보려면 [사이드바](#work-in-parallel-with-sessions)를 사용합니다.
 
@@ -335,7 +341,7 @@ Dispatch는 터미널에서 멀리 떨어져 있을 때 Claude와 작업하는 �
 
 ## Claude Code 확장하기
 
-외부 서비스를 연결하고, 재사용 가능한 워크플로우를 추가하고, Claude의 동작을 사용자 정의하고, 미리보기 서버를 구성합니다.
+외부 서비스를 연결하고, 재사용 가능한 워크플로우를 추가하고, Claude의 동작을 사용자 정의하고, 미리보기 서버를 구성합니다. 한 곳에서 커넥터, skills, 플러그인을 관리하려면 사이드바에서 **Customize**를 클릭합니다.
 
 ### 외부 도구 연결하기
 
@@ -506,15 +512,15 @@ Claude가 다른 포트를 선택하면 할당된 포트를 `PORT` 환경 변수
 
 * **Local**: 머신에서 실행되며 파일에 직접 액세스합니다
 * **Remote**: Anthropic의 클라우드 인프라에서 실행됩니다. 앱을 닫아도 세션이 계속됩니다.
-* **SSH**: SSH를 통해 연결하는 원격 머신 (예: 자신의 서버, 클라우드 VM 또는 개발 컨테이너)에서 실행됩니다
+* **SSH**: SSH를 통해 연결하는 원격 머신(예: 자신의 서버, 클라우드 VM 또는 개발 컨테이너)에서 실행됩니다
 
 ### 로컬 세션
 
-데스크톱 앱이 항상 전체 셸 환경을 상속하지는 않습니다. macOS에서 Dock 또는 Finder에서 앱을 실행하면 `~/.zshrc` 또는 `~/.bashrc`와 같은 셸 프로필을 읽어 `PATH` 및 고정된 Claude Code 변수 집합을 추출하지만 거기에 내보낸 다른 변수는 선택되지 않습니다. Windows에서 앱은 사용자 및 시스템 환경 변수를 상속하지만 PowerShell 프로필을 읽지 않습니다.
+데스크톱 앱이 항상 전체 셸 환경을 상속하지는 않습니다. macOS에서 Dock 또는 Finder에서 앱을 실행하면 `~/.zshrc` 또는 `~/.bashrc`와 같은 셸 프로필을 읽어 `PATH` 및 고정된 Claude Code 변수 집합을 추출하지만, 거기에 내보낸 다른 변수는 선택되지 않습니다. Windows에서 앱은 사용자 및 시스템 환경 변수를 상속하지만 PowerShell 프로필을 읽지 않습니다.
 
 로컬 세션 및 개발 서버에 대한 환경 변수를 설정하려면 프롬프트 상자의 환경 드롭다운을 열고 **Local** 위에 마우스를 올린 다음 기어 아이콘을 클릭하여 로컬 환경 편집기를 엽니다. 여기에 저장한 변수는 머신에 암호화되어 저장되며 시작하는 모든 로컬 세션 및 미리보기 서버에 적용됩니다. `~/.claude/settings.json` 파일의 `env` 키에 변수를 추가할 수도 있습니다. 단, 이는 Claude 세션에만 도달하고 개발 서버에는 도달하지 않습니다. 지원되는 변수의 전체 목록은 [환경 변수](/ko/env-vars)를 참조하세요.
 
-[Extended thinking](/ko/common-workflows#use-extended-thinking-thinking-mode)은 기본적으로 활성화되어 있으며, 복잡한 추론 작업의 성능을 향상시키지만 추가 토큰을 사용합니다. 생각을 완전히 비활성화하려면 로컬 환경 편집기에서 `MAX_THINKING_TOKENS`을 `0`으로 설정합니다. [적응형 추론](/ko/model-config#adjust-effort-level)이 있는 모델에서는 적응형 추론이 생각 깊이를 제어하기 때문에 다른 `MAX_THINKING_TOKENS` 값은 무시됩니다. Opus 4.6 및 Sonnet 4.6에서는 `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`을 `1`로 설정하여 고정 생각 예산을 사용합니다. Opus 4.7은 항상 적응형 추론을 사용하며 고정 예산 모드가 없습니다.
+[Extended thinking](/ko/model-config#extended-thinking)은 기본적으로 활성화되어 있으며, 복잡한 추론 작업의 성능을 향상시키지만 추가 토큰을 사용합니다. 생각을 완전히 비활성화하려면 로컬 환경 편집기에서 `MAX_THINKING_TOKENS`을 `0`으로 설정합니다. [적응형 추론](/ko/model-config#adjust-effort-level)이 있는 모델에서는 적응형 추론이 생각 깊이를 제어하기 때문에 다른 `MAX_THINKING_TOKENS` 값은 무시됩니다. Opus 4.6 및 Sonnet 4.6에서는 `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`을 `1`로 설정하여 고정 생각 예산을 사용합니다. Opus 4.7 이상은 항상 적응형 추론을 사용하며 고정 예산 모드가 없습니다.
 
 ### 원격 세션
 
@@ -535,7 +541,7 @@ SSH 연결을 추가하려면 세션을 시작하기 전에 환경 드롭다운�
 
 추가되면 연결이 환경 드롭다운에 나타납니다. 이를 선택하여 해당 머신에서 세션을 시작합니다. Claude는 원격 머신에서 파일 및 도구에 액세스하여 실행됩니다.
 
-원격 머신은 Linux 또는 macOS를 실행해야 하며 Claude Code를 설치해야 합니다. 연결되면 SSH 세션은 권한 모드, 커넥터, 플러그인, MCP 서버를 지원합니다.
+원격 머신은 Linux 또는 macOS를 실행해야 합니다. 데스크톱은 처음 연결할 때 원격 머신에 Claude Code를 자동으로 설치합니다. 연결되면 SSH 세션은 권한 모드, 커넥터, 플러그인 및 MCP 서버를 지원합니다.
 
 #### 팀을 위해 SSH 연결을 미리 구성합니다
 
@@ -560,6 +566,22 @@ SSH 연결을 추가하려면 세션을 시작하기 전에 환경 드롭다운�
 
 각 항목에는 `id`, `name`, `sshHost`가 필요합니다. `sshPort`, `sshIdentityFile`, `startDirectory` 필드는 선택 사항입니다. 사용자는 자신의 `~/.claude/settings.json`에 `sshConfigs`를 추가할 수도 있습니다. 이는 대화 상자를 통해 추가된 연결이 저장되는 위치입니다.
 
+#### SSH 호스트 연결을 제한하여 사용자가 연결할 수 있는 호스트를 제한합니다
+
+관리자는 [관리되는 설정](/ko/settings#settings-precedence) 파일에 `sshHostAllowlist`를 추가하여 Desktop의 SSH 세션을 승인된 호스트 집합으로 제한할 수 있습니다. 설정되면 사용자는 확인된 호스트명이 패턴 중 하나와 일치하는 호스트에만 연결할 수 있습니다. SSH 세션을 완전히 비활성화하려면 빈 배열로 설정합니다.
+
+다음 예제는 `devboxes.example.com` 아래의 모든 호스트 및 단일 명명된 bastion 호스트에 대한 연결을 허용합니다:
+
+```json theme={null}
+{
+  "sshHostAllowlist": ["*.devboxes.example.com", "bastion.example.com"]
+}
+```
+
+패턴은 대소문자를 구분하지 않습니다. `*`는 모든 호스트와 일치하고, `*.example.com`은 `example.com` 및 모든 하위 도메인과 일치합니다. 다른 모든 것은 정확한 일치입니다. 검사는 `ssh -G`를 통한 `~/.ssh/config` 확인 후 호스트명에 대해 실행되므로 `Host` 별칭 및 `ProxyCommand`/`ProxyJump` 항목은 확인된 `HostName`이 일치하는 한 허용됩니다.
+
+`sshHostAllowlist`는 관리되는 설정에서만 읽혀집니다. 사용자 또는 프로젝트 설정의 값은 무시됩니다. Claude Desktop 앱만 이 설정을 인식합니다. Claude Code CLI 및 IDE 확장은 이를 읽지 않으며, Bash 도구를 통해 실행되는 `ssh` 명령을 제한하지 않습니다. 이는 Desktop 앱이 연결하는 호스트를 제어하며, 네트워크 송신을 제어하지 않으므로 하드 경계가 필요한 경우 조직의 네트워크 또는 제로 트러스트 제어와 함께 사용합니다.
+
 ## 엔터프라이즈 구성
 
 Team 또는 Enterprise 계획의 조직은 관리 콘솔 컨트롤, 관리 설정 파일, 장치 관리 정책을 통해 데스크톱 앱 동작을 관리할 수 있습니다.
@@ -577,16 +599,18 @@ Team 또는 Enterprise 계획의 조직은 관리 콘솔 컨트롤, 관리 설�
 
 관리 설정은 프로젝트 및 사용자 설정을 재정의하고 Desktop이 CLI 세션을 생성할 때 적용됩니다. 조직의 [관리 설정](/ko/settings#settings-precedence) 파일에서 이러한 키를 설정하거나 관리 콘솔을 통해 원격으로 푸시할 수 있습니다.
 
-| 키                                          | 설명                                                                                                                                                         |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `permissions.disableBypassPermissionsMode` | 사용자가 권한 무시 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다.                                                                                                          |
-| `disableAutoMode`                          | 사용자가 [Auto](/ko/permission-modes#eliminate-prompts-with-auto-mode) 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다. 모드 선택기에서 Auto를 제거합니다. `permissions` 아래에서도 허용됩니다. |
-| `autoMode`                                 | 조직 전체에서 auto mode 분류기가 신뢰하고 차단하는 것을 사용자 정의합니다. [auto mode 구성](/ko/auto-mode-config)을 참조하세요.                                                                |
-| `sshConfigs`                               | 환경 드롭다운에 나타나는 [SSH 연결](#pre-configure-ssh-connections-for-your-team)을 사전 구성합니다. 사용자는 관리 연결을 편집하거나 삭제할 수 없습니다.                                              |
+| 키                                          | 설명                                                                                                                                                                                        |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `permissions.disableBypassPermissionsMode` | 사용자가 권한 무시 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다.                                                                                                                                         |
+| `disableAutoMode`                          | 사용자가 [Auto](/ko/permission-modes#eliminate-prompts-with-auto-mode) 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다. 모드 선택기에서 Auto를 제거합니다. `permissions` 아래에서도 허용됩니다.                                |
+| `autoMode`                                 | 조직 전체에서 auto mode 분류기가 신뢰하고 차단하는 것을 사용자 정의합니다. [auto mode 구성](/ko/auto-mode-config)을 참조하세요.                                                                                               |
+| `sshConfigs`                               | 환경 드롭다운에 나타나는 [SSH 연결](#pre-configure-ssh-connections-for-your-team)을 사전 구성합니다. 사용자는 관리 연결을 편집하거나 삭제할 수 없습니다.                                                                             |
+| `sshHostAllowlist`                         | [SSH 세션](#restrict-which-ssh-hosts-users-can-connect-to)을 확인된 호스트명이 이러한 패턴 중 하나와 일치하는 호스트로 제한합니다. 빈 배열은 SSH 세션을 비활성화합니다. 관리 설정에서만 읽습니다.                                                   |
+| `managedMcpServers`                        | 타사 배포에서 모든 사용자에게 MCP 서버 구성을 푸시합니다. 각 항목은 `"http"`, `"sse"`, 또는 `"stdio"`의 전송, 연결 세부 정보, 그리고 선택적으로 해당 서버의 어떤 도구를 사용자가 호출할 수 있는지 제한하는 `toolPolicy` 맵을 지정합니다. 타사(3P) Desktop 배포에서만 사용 가능합니다. |
+
+각 머신의 디스크에 배포된 관리 설정 파일은 Desktop 세션에 적용됩니다. 관리 콘솔을 통해 원격으로 푸시된 관리 설정은 현재 CLI 및 IDE 세션에만 도달하므로, Desktop 배포의 경우 MDM을 통해 파일을 배포하거나 위의 [관리 콘솔 컨트롤](#admin-console-controls)을 사용합니다.
 
 `permissions.disableBypassPermissionsMode` 및 `disableAutoMode`는 사용자 및 프로젝트 설정에서도 작동하지만 관리 설정에 배치하면 사용자가 재정의하지 못하도록 방지합니다. `autoMode`는 사용자 설정, `.claude/settings.local.json`, 관리 설정에서 읽혀지지만 체크인된 `.claude/settings.json`에서는 읽혀지지 않습니다: 복제된 저장소는 자신의 분류기 규칙을 주입할 수 없습니다. `allowManagedPermissionRulesOnly` 및 `allowManagedHooksOnly`를 포함한 관리 전용 설정의 전체 목록은 [관리 전용 설정](/ko/permissions#managed-only-settings)을 참조하세요.
-
-관리 콘솔을 통해 업로드된 원격 관리 설정은 현재 CLI 및 IDE 세션에만 적용됩니다. Desktop 특정 제한의 경우 위의 관리 콘솔 컨트롤을 사용합니다.
 
 ### 장치 관리 정책
 
@@ -618,7 +642,7 @@ Desktop은 엔터프라이즈 배포 도구를 통해 배포할 수 있습니다
 
 이미 Claude Code CLI를 사용하는 경우 Desktop은 그래픽 인터페이스를 사용하여 동일한 기본 엔진을 실행합니다. 동일한 머신에서 동일한 프로젝트에서도 동시에 둘 다 실행할 수 있습니다. 각각은 별도의 세션 기록을 유지하지만 CLAUDE.md 파일을 통해 구성 및 프로젝트 메모리를 공유합니다.
 
-CLI 세션을 Desktop으로 이동하려면 터미널에서 `/desktop`을 실행합니다. Claude는 세션을 저장하고 데스크톱 앱에서 열고 CLI를 종료합니다. 이 명령은 macOS 및 Windows에서만 사용 가능합니다.
+CLI 세션을 Desktop으로 이동하려면 터미널에서 `/desktop`을 실행합니다. Claude는 세션을 저장하고 데스크톱 앱에서 열고 CLI를 종료합니다. 이 명령은 Claude 구독으로 로그인했을 때 macOS 및 Windows에서 사용 가능합니다. API 키 인증이나 Bedrock, Vertex 또는 Foundry에서는 사용할 수 없습니다.
 
 <Tip>
   Desktop vs CLI를 사용할 때: 병렬 세션을 한 창에서 관리하거나, 패널을 나란히 정렬하거나, 변경 사항을 시각적으로 검토하려고 할 때 Desktop을 사용합니다. 스크립팅, 자동화, 터미널 워크플로우를 선호할 때 CLI를 사용합니다.
@@ -635,9 +659,9 @@ CLI 세션을 Desktop으로 이동하려면 터미널에서 `/desktop`을 실행
 | `--permission-mode`                   | 전송 버튼 옆의 모드 선택기                                                                            |
 | `--dangerously-skip-permissions`      | 권한 무시 모드. Settings → Claude Code → "권한 무시 모드 허용"에서 활성화합니다. 엔터프라이즈 관리자는 이 설정을 비활성화할 수 있습니다. |
 | `--add-dir`                           | 원격 세션에서 **+** 버튼으로 여러 저장소 추가                                                               |
-| `--allowedTools`, `--disallowedTools` | Desktop에서 사용할 수 없음                                                                         |
-| `--verbose`                           | [Verbose 보기 모드](#switch-view-modes) (Transcript view 드롭다운)                                 |
-| `--print`, `--output-format`          | 사용할 수 없음. Desktop은 대화형만 가능합니다.                                                             |
+| `--allowedTools`, `--disallowedTools` | 세션별 동등물이 없습니다. [설정 파일](/ko/settings)의 권한 규칙이 여전히 적용됩니다.                                    |
+| `--verbose`                           | [Verbose 보기 모드](#switch-view-modes) (Transcript 보기 드롭다운)                                   |
+| `--print`, `--output-format`          | 사용할 수 없습니다. Desktop은 대화형만 가능합니다.                                                           |
 | `ANTHROPIC_MODEL` env var             | 전송 버튼 옆의 모델 드롭다운                                                                           |
 | `MAX_THINKING_TOKENS` env var         | 로컬 환경 편집기에서 설정합니다. [환경 구성](#environment-configuration)을 참조하세요.                             |
 
@@ -679,10 +703,11 @@ Desktop과 CLI는 동일한 구성 파일을 읽으므로 설정이 이월됩니
 
 다음 기능은 CLI 또는 VS Code 확장에서만 사용 가능합니다:
 
-* **Third-party providers**: Desktop은 Anthropic의 API에 직접 연결됩니다. 대신 Bedrock, Vertex 또는 Foundry와 함께 [CLI](/ko/quickstart)를 사용합니다.
-* **Linux**: 데스크톱 앱은 macOS 및 Windows에서만 사용 가능합니다.
+* **Third-party providers**: Desktop은 Anthropic의 API에 기본적으로 연결됩니다. 엔터프라이즈 배포는 [관리 설정](https://support.claude.com/en/articles/12622667-enterprise-configuration)을 통해 Vertex AI 및 게이트웨이 공급자를 구성할 수 있습니다. Bedrock 또는 Foundry의 경우 [CLI](/ko/quickstart)를 사용합니다.
+* **Linux**: 데스크톱 앱은 macOS 및 Windows에서만 사용 가능합니다. Linux에서는 [CLI](/ko/quickstart)를 사용합니다.
 * **Inline code suggestions**: Desktop은 자동 완성 스타일 제안을 제공하지 않습니다. 대화형 프롬프트 및 명시적 코드 변경을 통해 작동합니다.
 * **Agent teams**: 다중 에이전트 오케스트레이션은 [CLI](/ko/agent-teams) 및 [Agent SDK](/ko/headless)를 통해 사용 가능하며 Desktop에서는 사용할 수 없습니다.
+* **Terminal-dialog commands**: `/permissions`, `/config`, `/agents`, `/doctor`와 같이 터미널에서 대화형 패널을 여는 기본 제공 명령은 Code 탭에서 사용할 수 없으며 `isn't available in this environment`로 응답합니다. [설정 파일](/ko/settings)을 직접 편집하여 권한 규칙 및 구성을 관리하거나 독립 실행형 CLI에서 명령을 실행합니다.
 
 ## 문제 해결
 

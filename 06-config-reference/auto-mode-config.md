@@ -8,6 +8,10 @@
 
 [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 사용하면 Claude Code가 각 도구 호출을 분류기를 통해 라우팅하여 권한 프롬프트 없이 실행될 수 있습니다. 분류기는 되돌릴 수 없거나 파괴적이거나 환경 외부를 대상으로 하는 모든 것을 차단합니다. `autoMode` 설정 블록을 사용하여 분류기에 조직이 신뢰하는 저장소, 버킷 및 도메인을 알려주면, 분류기가 일상적인 내부 작업 차단을 중지합니다.
 
+<Note>
+  자동 모드는 Anthropic API의 모든 사용자가 사용할 수 있습니다. Bedrock, Vertex 또는 Foundry에서는 사용할 수 없습니다. Claude Code가 계정에서 자동 모드를 사용할 수 없다고 보고하는 경우, [전체 요구사항](/ko/permission-modes#eliminate-prompts-with-auto-mode)을 확인하세요. 여기에는 지원되는 모델과 Team 및 Enterprise 플랜의 관리자 활성화도 포함됩니다.
+</Note>
+
 기본적으로 분류기는 작업 디렉토리와 현재 저장소의 구성된 원격 저장소만 신뢰합니다. 회사의 소스 제어 조직에 푸시하거나 팀 클라우드 버킷에 쓰기와 같은 작업은 `autoMode.environment`에 추가할 때까지 차단됩니다.
 
 자동 모드를 활성화하는 방법과 기본적으로 차단되는 항목에 대해서는 [권한 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 참조하세요. 이 페이지는 구성 참조입니다.
@@ -35,7 +39,7 @@
 
 분류기는 `.claude/settings.json`의 공유 프로젝트 설정에서 `autoMode`를 읽지 않으므로, 체크인된 저장소는 자체 허용 규칙을 주입할 수 없습니다.
 
-각 범위의 항목이 결합됩니다. 개발자는 개인 항목으로 `environment`, `allow` 및 `soft_deny`를 확장할 수 있지만 관리 설정이 제공하는 항목을 제거할 수 없습니다. 허용 규칙이 분류기 내의 차단 규칙에 대한 예외로 작동하기 때문에, 개발자가 추가한 `allow` 항목은 조직의 `soft_deny` 항목을 재정의할 수 있습니다. 조합은 가산적이며, 하드 정책 경계가 아닙니다.
+각 범위의 항목이 결합됩니다. 개발자는 개인 항목으로 `environment`, `allow`, `soft_deny`, `hard_deny`를 확장할 수 있지만 관리 설정이 제공하는 항목을 제거할 수 없습니다. 허용 규칙이 분류기 내의 차단 규칙에 대한 예외로 작동하기 때문에, 개발자가 추가한 `allow` 항목은 조직의 `soft_deny` 항목을 재정의할 수 있습니다. 조합은 가산적이며, 하드 정책 경계가 아닙니다.
 
 <Note>
   분류기는 [권한 시스템](/ko/permissions) 이후에 실행되는 두 번째 게이트입니다. 사용자 의도나 분류기 구성에 관계없이 절대 실행되어서는 안 되는 작업의 경우, 관리 설정에서 `permissions.deny`를 사용하세요. 이는 분류기가 참조되기 전에 작업을 차단하며 재정의될 수 없습니다.
@@ -95,17 +99,18 @@
 
 ## 차단 및 허용 규칙 재정의
 
-두 개의 추가 필드를 사용하여 분류기의 기본 제공 규칙 목록을 바꿀 수 있습니다: `autoMode.soft_deny`는 차단되는 항목을 제어하고, `autoMode.allow`는 적용되는 예외를 제어합니다. 각각은 자연어 규칙으로 읽히는 산문 설명의 배열입니다. `autoMode.deny` 필드는 없습니다. 의도에 관계없이 작업을 하드 블록하려면 분류기 이전에 실행되는 [`permissions.deny`](/ko/permissions)를 사용하세요.
+세 개의 추가 필드를 사용하여 분류기의 기본 제공 규칙 목록을 바꿀 수 있습니다: `autoMode.hard_deny`는 무조건적인 보안 경계를 위한 것이고, `autoMode.soft_deny`는 사용자 의도로 해제할 수 있는 파괴적인 작업을 위한 것이며, `autoMode.allow`는 예외를 위한 것입니다. 각각은 자연어 규칙으로 읽히는 산문 설명의 배열입니다. 분류기 이전에 실행되는 도구 패턴 기반의 하드 블록의 경우 [`permissions.deny`](/ko/permissions)를 사용하세요.
 
-분류기 내에서 우선순위는 세 가지 계층으로 작동합니다:
+분류기 내에서 우선순위는 네 가지 계층으로 작동합니다:
 
-* `soft_deny` 규칙이 먼저 차단합니다
-* `allow` 규칙이 일치하는 차단을 예외로 재정의합니다
-* 명시적 사용자 의도가 둘 다 재정의합니다: 사용자의 메시지가 Claude가 수행하려는 정확한 작업을 직접적이고 구체적으로 설명하면, `soft_deny` 규칙이 일치하더라도 분류기가 이를 허용합니다
+* `hard_deny` 규칙은 무조건적으로 차단합니다. 사용자 의도와 `allow` 예외는 적용되지 않습니다.
+* `soft_deny` 규칙이 다음으로 차단합니다. 사용자 의도와 `allow` 예외가 이를 재정의할 수 있습니다.
+* `allow` 규칙이 일치하는 `soft_deny` 규칙을 예외로 재정의합니다.
+* 명시적 사용자 의도가 나머지 소프트 블록을 재정의합니다: 사용자의 메시지가 Claude가 수행하려는 정확한 작업을 직접적이고 구체적으로 설명하면, `soft_deny` 규칙이 일치하더라도 분류기가 이를 허용합니다.
 
 일반적인 요청은 명시적 의도로 계산되지 않습니다. Claude에게 "저장소를 정리해 달라"고 요청하는 것은 강제 푸시를 승인하지 않지만, "이 브랜치를 강제 푸시해 달라"고 요청하는 것은 승인합니다.
 
-기본 규칙을 유지하면서 자신의 규칙을 추가하려면 배열에 리터럴 문자열 `"$defaults"`를 포함하세요. 기본 규칙이 해당 위치에 삽입되므로, 사용자 정의 규칙이 앞이나 뒤에 올 수 있으며, 릴리스 전반에 걸쳐 기본 제공 목록이 변경되면서 업데이트를 계속 상속받습니다.
+느슨하게 하려면, 분류기가 기본 예외가 다루지 않는 일상적인 패턴을 반복적으로 플래그할 때 `allow`에 추가하세요. 더 엄격하게 하려면, 기본값이 놓친 환경에 특정한 파괴적 위험에 대해 `soft_deny`에 추가하거나, 절대 넘어서는 안 되는 보안 경계에 대해 `hard_deny`에 추가하세요. 기본 제공 규칙을 유지하면서 자신의 규칙을 추가하려면 배열에 리터럴 문자열 `"$defaults"`를 포함하세요. 기본 규칙이 해당 위치에 삽입되므로, 사용자 정의 규칙이 앞이나 뒤에 올 수 있으며, 릴리스 전반에 걸쳐 기본 제공 목록이 변경되면서 업데이트를 계속 상속받습니다.
 
 ```json theme={null}
 {
@@ -123,22 +128,26 @@
       "$defaults",
       "Never run database migrations outside the migrations CLI, even against dev databases",
       "Never modify files under infra/terraform/prod/: production infrastructure changes go through the review workflow"
+    ],
+    "hard_deny": [
+      "$defaults",
+      "Never send repository contents to third-party code-review APIs"
     ]
   }
 }
 ```
 
 <Danger>
-  `environment`, `allow` 또는 `soft_deny` 중 하나를 `"$defaults"` 없이 설정하면 해당 섹션의 전체 기본 목록이 바뀝니다. 단일 항목으로 `soft_deny`를 설정하고 `"$defaults"`를 생략하면 모든 기본 제공 차단 규칙이 버려집니다: 강제 푸시, 데이터 유출, `curl | bash`, 프로덕션 배포 및 기타 모든 기본 차단 규칙이 허용됩니다. `"$defaults"`를 생략하는 것은 목록의 전체 소유권을 가질 의도가 있을 때만 하세요. 이 경우 `claude auto-mode defaults`를 실행하여 기본 제공 규칙을 인쇄하고, 설정 파일에 복사한 다음, 각 규칙을 자신의 파이프라인 및 위험 허용도와 비교하여 검토하세요.
+  `environment`, `allow`, `soft_deny` 또는 `hard_deny` 중 하나를 `"$defaults"` 없이 설정하면 해당 섹션의 전체 기본 목록이 바뀝니다. `"$defaults"`가 없는 `soft_deny` 배열은 강제 푸시, `curl | bash`, 프로덕션 배포를 포함한 모든 기본 제공 소프트 블록 규칙을 버립니다. `"$defaults"`가 없는 `hard_deny` 배열은 기본 제공 데이터 유출 및 안전 검사 우회 규칙을 버립니다.
 </Danger>
 
-각 섹션은 독립적으로 평가되므로, `environment`만 설정하면 기본 `allow` 및 `soft_deny` 목록은 그대로 유지됩니다.
+각 섹션은 독립적으로 평가되므로, `environment`만 설정하면 기본 `allow`, `soft_deny` 및 `hard_deny` 목록은 그대로 유지됩니다. `"$defaults"`를 생략하는 것은 목록의 전체 소유권을 가질 의도가 있을 때만 하세요. 이 경우 `claude auto-mode defaults`를 실행하여 기본 제공 규칙을 인쇄하고, 설정 파일에 복사한 다음, 각 규칙을 자신의 파이프라인 및 위험 허용도와 비교하여 검토하세요.
 
 ## 기본값 및 유효한 구성 검사
 
 세 가지 CLI 하위 명령이 구성을 검사하고 유효성을 검사하는 데 도움이 됩니다.
 
-기본 제공 `environment`, `allow` 및 `soft_deny` 규칙을 JSON으로 인쇄합니다:
+기본 제공 `environment`, `allow`, `soft_deny` 및 `hard_deny` 규칙을 JSON으로 인쇄합니다:
 
 ```bash theme={null}
 claude auto-mode defaults
@@ -150,7 +159,7 @@ claude auto-mode defaults
 claude auto-mode config
 ```
 
-사용자 정의 `allow` 및 `soft_deny` 규칙에 대한 AI 피드백을 받습니다:
+사용자 정의 `allow`, `soft_deny` 및 `hard_deny` 규칙에 대한 AI 피드백을 받습니다:
 
 ```bash theme={null}
 claude auto-mode critique

@@ -18,35 +18,42 @@
 
 터미널에 표시되는 메시지를 아래 섹션과 일치시킵니다.
 
-| 메시지                                                                                  | 섹션                                                                                   |
-| :----------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
-| `API Error: 500 ... Internal server error`                                           | [서버 오류](#api-error-500-internal-server-error)                                        |
-| `API Error: Repeated 529 Overloaded errors`                                          | [서버 오류](#api-error-repeated-529-overloaded-errors)                                   |
-| `Request timed out`                                                                  | [서버 오류](#request-timed-out) 또는 메시지에 인터넷 연결이 언급된 경우 [네트워크](#unable-to-connect-to-api) |
-| `<model> is temporarily unavailable, so auto mode cannot determine the safety of...` | [서버 오류](#auto-mode-cannot-determine-the-safety-of-an-action)                         |
-| `You've hit your session limit` / `You've hit your weekly limit`                     | [사용 제한](#youve-hit-your-session-limit)                                               |
-| `Server is temporarily limiting requests`                                            | [사용 제한](#server-is-temporarily-limiting-requests)                                    |
-| `Request rejected (429)`                                                             | [사용 제한](#request-rejected-429)                                                       |
-| `Credit balance is too low`                                                          | [사용 제한](#credit-balance-is-too-low)                                                  |
-| `Not logged in · Please run /login`                                                  | [인증](#not-logged-in)                                                                 |
-| `Invalid API key`                                                                    | [인증](#invalid-api-key)                                                               |
-| `This organization has been disabled`                                                | [인증](#this-organization-has-been-disabled)                                           |
-| `OAuth token revoked` / `OAuth token has expired`                                    | [인증](#oauth-token-revoked-or-expired)                                                |
-| `does not meet scope requirement user:profile`                                       | [인증](#oauth-scope-requirement)                                                       |
-| `Unable to connect to API`                                                           | [네트워크](#unable-to-connect-to-api)                                                    |
-| `SSL certificate verification failed`                                                | [네트워크](#ssl-certificate-errors)                                                      |
-| `Prompt is too long`                                                                 | [요청 오류](#prompt-is-too-long)                                                         |
-| `Error during compaction: Conversation too long`                                     | [요청 오류](#error-during-compaction-conversation-too-long)                              |
-| `Request too large`                                                                  | [요청 오류](#request-too-large)                                                          |
-| `Image was too large`                                                                | [요청 오류](#image-was-too-large)                                                        |
-| `PDF too large` / `PDF is password protected`                                        | [요청 오류](#pdf-errors)                                                                 |
-| `Extra inputs are not permitted`                                                     | [요청 오류](#extra-inputs-are-not-permitted)                                             |
-| `There's an issue with the selected model`                                           | [요청 오류](#theres-an-issue-with-the-selected-model)                                    |
-| `Claude Opus is not available with the Claude Pro plan`                              | [요청 오류](#claude-opus-is-not-available-with-the-claude-pro-plan)                      |
-| `thinking.type.enabled is not supported for this model`                              | [요청 오류](#thinking-type-enabled-is-not-supported-for-this-model)                      |
-| `max_tokens must be greater than thinking.budget_tokens`                             | [요청 오류](#thinking-budget-exceeds-output-limit)                                       |
-| `API Error: 400 due to tool use concurrency issues`                                  | [요청 오류](#tool-use-or-thinking-block-mismatch)                                        |
-| 응답 품질이 평소보다 낮아 보임                                                                    | [응답 품질](#responses-seem-lower-quality-than-usual)                                    |
+| 메시지                                                                                           | 섹션                                                                                    |
+| :-------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------ |
+| `API Error: 500 Internal server error`                                                        | [서버 오류](#api-error-500-internal-server-error)                                         |
+| `API Error: Repeated 529 Overloaded errors`                                                   | [서버 오류](#api-error-repeated-529-overloaded-errors)                                    |
+| `Request timed out`                                                                           | [서버 오류](#request-timed-out), 또는 메시지에 인터넷 연결이 언급된 경우 [네트워크](#unable-to-connect-to-api) |
+| `<model> is temporarily unavailable, so auto mode cannot determine the safety of...`          | [서버 오류](#auto-mode-cannot-determine-the-safety-of-an-action)                          |
+| `Auto mode could not evaluate this action and is blocking it for safety`                      | [서버 오류](#auto-mode-cannot-determine-the-safety-of-an-action)                          |
+| `Auto mode classifier transcript exceeded context window`                                     | [서버 오류](#auto-mode-cannot-determine-the-safety-of-an-action)                          |
+| `You've hit your session limit` / `You've hit your weekly limit`                              | [사용 제한](#youve-hit-your-session-limit)                                                |
+| `Server is temporarily limiting requests`                                                     | [사용 제한](#server-is-temporarily-limiting-requests)                                     |
+| `Request rejected (429)`                                                                      | [사용 제한](#request-rejected-429)                                                        |
+| `Credit balance is too low`                                                                   | [사용 제한](#credit-balance-is-too-low)                                                   |
+| `Not logged in · Please run /login`                                                           | [인증](#not-logged-in)                                                                  |
+| `Invalid API key`                                                                             | [인증](#invalid-api-key)                                                                |
+| `This organization has been disabled`                                                         | [인증](#this-organization-has-been-disabled)                                            |
+| `Your organization has disabled Claude subscription access`                                   | [인증](#your-organization-has-disabled-claude-subscription-access)                      |
+| `Routines are disabled by your organization's policy`                                         | [인증](#routines-are-disabled-by-your-organizations-policy)                             |
+| `OAuth token revoked` / `OAuth token has expired`                                             | [인증](#oauth-token-revoked-or-expired)                                                 |
+| `does not meet scope requirement user:profile`                                                | [인증](#oauth-scope-requirement)                                                        |
+| `Unable to connect to API`                                                                    | [네트워크](#unable-to-connect-to-api)                                                     |
+| `SSL certificate verification failed`                                                         | [네트워크](#ssl-certificate-errors)                                                       |
+| `403` with `x-deny-reason: host_not_allowed` in a cloud or routine session                    | [네트워크](#host-not-allowed-in-a-cloud-session)                                          |
+| `Prompt is too long`                                                                          | [요청 오류](#prompt-is-too-long)                                                          |
+| `Error during compaction: Conversation too long`                                              | [요청 오류](#error-during-compaction-conversation-too-long)                               |
+| `Request too large`                                                                           | [요청 오류](#request-too-large)                                                           |
+| `Image was too large`                                                                         | [요청 오류](#image-was-too-large)                                                         |
+| `Unable to resize image`                                                                      | [요청 오류](#unable-to-resize-image)                                                      |
+| `PDF too large` / `PDF is password protected`                                                 | [요청 오류](#pdf-errors)                                                                  |
+| `Extra inputs are not permitted`                                                              | [요청 오류](#extra-inputs-are-not-permitted)                                              |
+| `There's an issue with the selected model`                                                    | [요청 오류](#theres-an-issue-with-the-selected-model)                                     |
+| `Claude Opus is not available with the Claude Pro plan`                                       | [요청 오류](#claude-opus-is-not-available-with-the-claude-pro-plan)                       |
+| `thinking.type.enabled is not supported for this model`                                       | [요청 오류](#thinking-type-enabled-is-not-supported-for-this-model)                       |
+| `max_tokens must be greater than thinking.budget_tokens`                                      | [요청 오류](#thinking-budget-exceeds-output-limit)                                        |
+| `API Error: 400 due to tool use concurrency issues`                                           | [요청 오류](#tool-use-or-thinking-block-mismatch)                                         |
+| `Claude Code is unable to respond to this request, which appears to violate our Usage Policy` | [요청 오류](#usage-policy-refusal)                                                        |
+| 응답 품질이 평소보다 낮아 보임                                                                             | [응답 품질](#responses-seem-lower-quality-than-usual)                                     |
 
 ## 자동 재시도
 
@@ -61,37 +68,39 @@ Claude Code는 오류를 표시하기 전에 일시적 오류를 재시도합니
 
 ## 서버 오류
 
-이러한 오류는 계정이나 요청이 아닌 Anthropic 인프라에서 발생합니다.
+이러한 오류는 계정이나 요청이 아닌 추론 제공자에서 발생합니다. Anthropic API의 경우 Anthropic 인프라를 의미합니다. Bedrock, Vertex AI, Foundry 또는 사용자 정의 게이트웨이의 경우 해당 제공자의 인프라를 의미합니다.
 
 ### API Error: 500 Internal server error
 
-Claude Code는 모든 5xx 상태에 대해 원본 API 응답 본문을 표시합니다. 아래 예제는 500 응답을 보여줍니다.
+Claude Code는 모든 5xx 응답에 대해 상태 코드와 API의 오류 메시지를 표시합니다. 아래 예제는 Anthropic API의 500 응답을 보여줍니다.
 
 ```text theme={null}
-API Error: 500 {"type":"error","error":{"type":"api_error","message":"Internal server error"}} · check status.claude.com
+API Error: 500 Internal server error. This is a server-side issue, usually temporary — try again in a moment. If it persists, check https://status.claude.com.
 ```
+
+뒤따르는 문장은 서비스 상태를 확인할 위치를 나타내며 제공자에 따라 다릅니다. Bedrock, Vertex AI 및 Foundry 구성은 해당 제공자의 서비스 상태를 나타냅니다. 사용자 정의 `ANTHROPIC_BASE_URL`은 게이트웨이 호스트를 나타냅니다.
 
 이는 API 내부의 예기치 않은 오류를 나타냅니다. 프롬프트, 설정 또는 계정으로 인한 것이 아닙니다.
 
 **할 일:**
 
-* [status.claude.com](https://status.claude.com)에서 활성 인시던트 확인
+* [status.claude.com](https://status.claude.com) 또는 메시지에 나열된 제공자 상태 페이지에서 활성 인시던트 확인
 * 1분 기다린 후 메시지를 다시 보냅니다. 원본 메시지는 여전히 대화에 있으므로 긴 프롬프트의 경우 전체를 다시 붙여넣는 대신 `try again`을 입력할 수 있습니다.
-* 게시된 인시던트가 없는데도 오류가 지속되면 `/feedback`을 실행하여 Anthropic이 요청 세부 정보로 조사할 수 있도록 합니다. 제공자에서 `/feedback`을 사용할 수 없는 경우 [오류 보고](#report-an-error)를 참조하십시오.
+* 게시된 인시던트가 없는데도 오류가 지속되면 `/feedback`을 실행하여 Anthropic이 요청 세부 정보로 조사할 수 있도록 합니다. 환경에서 `/feedback`을 사용할 수 없는 경우 [오류 보고](#report-an-error)를 참조하십시오.
 
 ### API Error: Repeated 529 Overloaded errors
 
 API가 모든 사용자에게 일시적으로 용량이 가득 찼습니다. Claude Code는 이 메시지를 표시하기 전에 이미 여러 번 재시도했습니다.
 
 ```text theme={null}
-API Error: Repeated 529 Overloaded errors · check status.claude.com
+API Error: Repeated 529 Overloaded errors. The API is at capacity — this is usually temporary. Try again in a moment. If it persists, check https://status.claude.com.
 ```
 
-529는 사용 제한이 아니며 할당량에 대해 계산되지 않습니다.
+뒤따르는 문장은 500 오류와 동일한 방식으로 제공자에 따라 다릅니다. 529는 사용 제한이 아니며 할당량에 대해 계산되지 않습니다.
 
 **할 일:**
 
-* [status.claude.com](https://status.claude.com)에서 용량 공지 확인
+* [status.claude.com](https://status.claude.com) 또는 메시지에 나열된 제공자 상태 페이지에서 용량 공지 확인
 * 몇 분 후 다시 시도
 * `/model`을 실행하고 다른 모델로 전환하여 계속 작업합니다. 용량은 모델별로 추적되기 때문입니다. Claude Code는 한 모델이 특히 높은 부하를 받을 때 이를 수행하도록 프롬프트합니다. 예를 들어 `Opus is experiencing high load, please use /model to switch to Sonnet`.
 
@@ -114,13 +123,15 @@ Request timed out
 
 ### Auto mode cannot determine the safety of an action
 
-[자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)가 작업을 분류하는 데 사용하는 모델이 과부하 상태이므로 자동 모드가 확인 없이 승인하는 대신 작업을 차단했습니다.
+[자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)가 작업을 분류하는 데 사용하는 모델이 결정을 생성할 수 없어서 자동 모드가 작업을 자동으로 승인하지 않았습니다. 표시되는 메시지는 분류기가 실패한 이유에 따라 다릅니다.
+
+작업 디렉토리 내의 읽기, 검색 및 편집은 분류기를 건너뛰므로 이러한 모든 경우에 계속 작동합니다.
+
+분류기 모델이 과부하 상태일 때:
 
 ```text theme={null}
 <model> is temporarily unavailable, so auto mode cannot determine the safety of <tool> right now. Wait briefly and then try this action again.
 ```
-
-작업 디렉토리 내의 읽기, 검색 및 편집은 분류기를 건너뛰므로 중단 중에도 계속 작동합니다.
 
 **할 일:**
 
@@ -128,11 +139,35 @@ Request timed out
 * 재시도가 계속 실패하면 읽기 전용 작업을 계속하고 나중에 차단된 작업으로 돌아갑니다.
 * 이는 일시적이며 [자동 모드 적격성](/ko/permission-modes#eliminate-prompts-with-auto-mode)과 무관합니다. 설정을 변경할 필요가 없습니다.
 
+분류기가 구문 분석할 수 없는 응답을 반환했을 때:
+
+```text theme={null}
+Auto mode could not evaluate this action and is blocking it for safety — run with --debug for details
+```
+
+**할 일:**
+
+* 작업을 재시도합니다. 일반적으로 다음 시도에서 성공합니다.
+* `claude --debug`를 실행하고 작업을 반복하여 디버그 로그에서 기본 분류기 응답을 확인합니다.
+
+대화가 분류기의 컨텍스트 윈도우보다 커졌을 때:
+
+```text theme={null}
+Auto mode classifier transcript exceeded context window — falling back to manual approval (try /compact to reduce conversation size)
+```
+
+대화형 세션에서 자동 모드는 해당 작업에 대해 일반 권한 프롬프트로 폴백하므로 수동으로 승인하거나 거부할 수 있습니다. [비대화형 모드](/ko/headless)에서는 트랜스크립트만 증가하고 재시도가 성공할 수 없기 때문에 실행이 중단됩니다.
+
+**할 일:**
+
+* 나타나는 프롬프트에서 작업을 승인하거나 거부합니다.
+* `/compact`를 실행하여 대화 크기를 줄여서 후속 작업이 분류기 윈도우에 맞도록 합니다.
+
 ## 사용 제한
 
 이러한 오류는 계정 또는 플랜에 연결된 할당량에 도달했음을 의미합니다. 이는 모든 사람에게 영향을 미치는 [서버 오류](#server-errors)와는 다릅니다.
 
-### You've hit your session limit
+### 세션 제한에 도달했습니다
 
 구독 플랜에는 롤링 사용 허용량이 포함됩니다. 소진되면 다음 메시지 중 하나가 표시됩니다.
 
@@ -148,12 +183,12 @@ Claude Code는 메시지에 표시된 재설정 시간까지 추가 요청을 �
 
 * 오류에 표시된 재설정 시간을 기다립니다.
 * `/usage`를 실행하여 플랜 제한 및 재설정 시간을 확인합니다.
-* `/extra-usage`를 실행하여 Pro 및 Max에서 추가 사용을 구매하거나 Team 및 Enterprise에서 관리자에게 요청합니다. [유료 플랜에 대한 추가 사용](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)을 참조하여 청구 방식을 확인하십시오.
+* `/usage-credits`를 실행하여 Pro 및 Max에서 추가 사용을 구매하거나 Team 및 Enterprise에서 관리자에게 요청합니다. [유료 플랜에 대한 사용 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)을 참조하여 청구 방식을 확인하십시오.
 * 더 높은 기본 제한을 위해 플랜을 업그레이드하려면 [claude.com/pricing](https://claude.com/pricing)을 참조하십시오.
 
 제한에 도달하기 전에 남은 허용량을 확인하려면 `rate_limits` 필드를 [사용자 정의 상태 줄](/ko/statusline#rate-limit-usage)에 추가하거나 데스크톱 앱에서 모델 선택기 옆의 [사용 링](/ko/desktop#check-usage)을 클릭합니다.
 
-### Server is temporarily limiting requests
+### 서버가 일시적으로 요청을 제한 중입니다
 
 API가 플랜 할당량과 무관한 단기 스로틀을 적용했습니다.
 
@@ -168,22 +203,24 @@ API Error: Server is temporarily limiting requests (not your usage limit)
 * 잠시 기다린 후 다시 시도합니다.
 * 지속되면 [status.claude.com](https://status.claude.com)을 확인합니다.
 
-### Request rejected (429)
+### 요청 거부됨 (429)
 
 API 키, Amazon Bedrock 프로젝트 또는 Google Vertex AI 프로젝트에 대해 구성된 속도 제한에 도달했습니다.
 
 ```text theme={null}
-API Error: Request rejected (429) · this may be a temporary capacity issue
+API Error: Request rejected (429) · this may be a temporary capacity issue. If it persists, check https://status.claude.com.
 ```
+
+뒤따르는 문장은 서비스 상태를 확인할 위치를 나타내며 제공자에 따라 다릅니다. Bedrock, Vertex AI 및 Foundry 구성은 Anthropic 상태 페이지 대신 해당 제공자의 서비스 상태를 나타냅니다. 사용자 정의 `ANTHROPIC_BASE_URL`은 게이트웨이 호스트를 나타냅니다.
 
 **할 일:**
 
 * `/status`를 실행하고 활성 자격 증명이 예상한 것인지 확인합니다. 환경의 잘못된 `ANTHROPIC_API_KEY`가 구독 대신 저가형 키를 통해 요청을 라우팅할 수 있습니다.
 * 제공자 콘솔에서 활성 제한을 확인하고 필요한 경우 더 높은 계층을 요청합니다.
-* Anthropic API 키의 경우 [속도 제한 참조](https://platform.claude.com/docs/en/api/rate-limits)에서 계층이 작동하는 방식과 워크스페이스별 상한을 설정하는 방법을 참조하십시오.
+* Anthropic API 키의 경우 [속도 제한 참조](https://platform.claude.com/docs/ko/api/rate-limits)에서 계층이 작동하는 방식과 워크스페이스별 상한을 설정하는 방법을 참조하십시오.
 * 동시성 감소: [`CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY`](/ko/env-vars)를 낮추고, 많은 병렬 서브에이전트 실행을 피하거나, 대량 스크립팅 실행을 위해 `/model`로 더 작은 모델로 전환합니다.
 
-### Credit balance is too low
+### 크레딧 잔액이 너무 낮습니다
 
 Console 조직이 선불 크레딧을 모두 사용했습니다.
 
@@ -251,6 +288,37 @@ API Error: 400 ... This organization has been disabled.
 * 그 후 `/status`를 실행하여 활성 자격 증명이 구독인지 확인합니다.
 * 환경 변수가 설정되지 않았는데도 오류가 지속되면 비활성화된 조직이 `/login`에 연결된 것입니다. 지원팀에 문의하거나 다른 계정으로 로그인합니다.
 
+### Your organization has disabled Claude subscription access
+
+Claude 조직이 구독 로그인으로 Claude Code에 로그인하는 것을 허용하지 않습니다. 동일한 계정으로 `/login`을 다시 실행하면 동일한 오류가 반환됩니다.
+
+```text theme={null}
+Your organization has disabled Claude subscription access for Claude Code · Use an Anthropic API key instead, or ask your admin to enable access
+```
+
+이는 서버 측 조직 설정이므로 로컬 설정, 환경 변수 또는 CLI 플래그에서 재정의할 수 없습니다. Agent SDK 및 `-p` 비대화형 모드는 이를 `oauth_org_not_allowed` 오류 코드로 표시합니다.
+
+**할 일:**
+
+* 관리자에게 조직에 대해 Claude Code 액세스를 활성화하도록 요청합니다.
+* 구독 대신 Console API 키로 인증합니다. 설정은 [Claude Console 인증](/ko/authentication#claude-console-authentication)을 참조하십시오.
+* 관리자이고 액세스를 활성화하는 옵션이 보이지 않으면 [Anthropic 지원](https://support.claude.com)에 문의합니다.
+
+### Routines are disabled by your organization's policy
+
+팀 또는 엔터프라이즈 관리자가 조직 수준에서 루틴을 비활성화했습니다. 오류는 `/schedule` 및 claude.ai/code의 [Routines](/ko/routines) UI에서 루틴을 생성하거나 실행하려고 할 때 나타납니다.
+
+```text theme={null}
+Routines are disabled by your organization's policy.
+```
+
+이는 서버 측 설정이므로 로컬 설정, 환경 변수 또는 CLI 플래그에서 재정의할 수 없습니다.
+
+**할 일:**
+
+* 관리자에게 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)에서 **Routines** 토글을 활성화하도록 요청합니다.
+* 조직 수준의 루틴이 필요하지 않은 일회성 예약 작업의 경우 [예약된 작업](/ko/scheduled-tasks)을 참조하십시오.
+
 ### OAuth token revoked or expired
 
 저장된 로그인이 더 이상 유효하지 않습니다. 취소된 토큰은 어디서나 로그아웃했거나 관리자가 액세스를 제거했음을 의미합니다. 만료된 토큰은 자동 새로 고침이 세션 중에 실패했음을 의미합니다.
@@ -282,7 +350,7 @@ OAuth token does not meet scope requirement: user:profile
 
 ## 네트워크 및 연결 오류
 
-이러한 오류는 Claude Code가 API에 전혀 도달할 수 없음을 의미합니다. 거의 항상 Anthropic 인프라가 아닌 로컬 네트워크, 프록시 또는 방화벽에서 발생합니다.
+이러한 오류는 Claude Code의 네트워크 요청이 목적지에 도달하지 못했음을 의미합니다. 일반적으로 로컬 네트워크, 프록시 또는 방화벽, 또는 클라우드 환경의 네트워크 정책에서 발생합니다.
 
 ### Unable to connect to API
 
@@ -307,7 +375,7 @@ Request timed out. Check your internet connection and proxy settings
 * 방화벽이 [네트워크 액세스 요구 사항](/ko/network-config#network-access-requirements)에 나열된 호스트를 허용하는지 확인합니다.
 * 간헐적 오류는 [자동으로 재시도](#automatic-retries)됩니다. 지속적인 오류는 로컬 네트워크 문제를 나타냅니다.
 
-`curl`이 성공하지만 Claude Code가 여전히 실패하면 원인은 일반적으로 네트워크 자체가 아닌 Node.js와 네트워크 사이의 무언가입니다.
+`curl`이 성공하지만 Claude Code가 여전히 실패하면 원인은 일반적으로 네트워크 자체가 아닌 런타임과 네트워크 사이의 무언가입니다.
 
 * Linux 및 WSL에서 `/etc/resolv.conf`에서 도달할 수 없는 네임서버를 확인합니다. 특히 WSL은 호스트에서 손상된 리졸버를 상속할 수 있습니다.
 * macOS에서 연결이 끊어지거나 제거된 VPN 클라이언트는 터널 인터페이스 또는 라우팅 규칙을 남길 수 있습니다. `ifconfig`에서 오래된 `utun` 인터페이스를 확인하고 시스템 설정에서 VPN의 네트워크 확장을 제거합니다.
@@ -315,7 +383,7 @@ Request timed out. Check your internet connection and proxy settings
 
 ### SSL certificate errors
 
-네트워크의 프록시 또는 보안 어플라이언스가 자체 인증서로 TLS 트래픽을 가로채고 있으며 Node.js가 이를 신뢰하지 않습니다.
+네트워크의 프록시 또는 보안 어플라이언스가 자체 인증서로 TLS 트래픽을 가로채고 있으며 Claude Code가 이를 신뢰하지 않습니다.
 
 ```text theme={null}
 Unable to connect to API: SSL certificate verification failed. Check your proxy or corporate SSL certificates
@@ -324,9 +392,30 @@ Unable to connect to API: Self-signed certificate detected
 
 **할 일:**
 
-* 조직의 CA 번들을 내보내고 `NODE_EXTRA_CA_CERTS=/path/to/ca-bundle.pem`으로 Node를 가리킵니다.
+* 조직의 CA 번들을 내보내고 `NODE_EXTRA_CA_CERTS=/path/to/ca-bundle.pem`으로 Claude Code를 가리킵니다.
 * 전체 설정 지침은 [네트워크 구성](/ko/network-config#custom-ca-certificates)을 참조하십시오.
 * 인증서 검증을 완전히 비활성화하는 `NODE_TLS_REJECT_UNAUTHORIZED=0`을 설정하지 마십시오.
+
+### Host not allowed in a cloud session
+
+클라우드 세션 또는 루틴의 아웃바운드 HTTP 요청이 환경의 네트워크 정책에 의해 차단되었습니다.
+
+```text theme={null}
+HTTP 403
+x-deny-reason: host_not_allowed
+```
+
+대상의 실제 인증서와 일치하지 않는 TLS 인증서도 표시될 수 있습니다. 클라우드 환경은 아웃바운드 트래픽을 네트워크 정책을 적용하는 프록시를 통해 라우팅하므로 인증서 불일치는 대상이 아닌 프록시가 연결을 종료했음을 의미합니다.
+
+이것은 클라이언트 측 네트워크 문제가 아닙니다. 클라우드 세션 및 [루틴](/ko/routines)은 아웃바운드 트래픽이 환경의 허용 목록으로 필터링되는 샌드박스 환경 내에서 실행됩니다. **기본** 환경은 **신뢰할 수 있는** 액세스를 사용하며, 이는 패키지 레지스트리, 클라우드 공급자 API, 컨테이너 레지스트리 및 일반적인 개발 도메인의 [기본 허용 목록](/ko/claude-code-on-the-web#default-allowed-domains)을 허용하지만 다른 모든 것은 차단합니다.
+
+**할 일:**
+
+* 루틴을 편집하기 위해 열거나 클라우드 세션을 시작합니다. **기본**과 같은 환경 이름을 표시하는 클라우드 아이콘을 선택하여 선택기를 엽니다. 환경 위에 마우스를 올리고 설정 아이콘을 클릭합니다.
+* **클라우드 환경 업데이트** 대화 상자에서 **네트워크 액세스**를 **신뢰할 수 있는**에서 **사용자 정의**로 변경한 다음 차단된 도메인을 **허용된 도메인**에 추가합니다. 한 줄에 하나의 도메인을 입력합니다. **일반적인 패키지 관리자의 기본 목록도 포함**을 확인하여 사용자 정의 도메인과 함께 [기본 허용 목록](/ko/claude-code-on-the-web#default-allowed-domains)을 유지합니다. 제한 없는 액세스를 원하면 대신 **전체**를 선택합니다.
+* **변경 사항 저장**을 클릭합니다. 다음 실행은 업데이트된 허용 목록을 사용합니다.
+
+액세스 수준 및 기본 허용 목록은 [네트워크 액세스](/ko/claude-code-on-the-web#network-access)를 참조하십시오. 로컬 CLI 세션은 이 정책의 영향을 받지 않습니다.
 
 ## 요청 오류
 
@@ -399,6 +488,24 @@ API Error: 400 ... image dimensions exceed max allowed size
 * 붙여넣기 전에 이미지 크기를 조정합니다. API는 단일 이미지의 경우 가장 긴 가장자리에서 최대 8000픽셀을 허용하거나 많은 이미지가 컨텍스트에 있을 때 2000픽셀을 허용합니다.
 * 전체 화면 대신 관련 영역의 더 타이트한 스크린샷을 찍습니다.
 
+### Unable to resize image
+
+Claude Code가 API로 보내기 전에 첨부된 이미지를 축소할 수 없습니다.
+
+```text theme={null}
+Unable to resize image — image processing is unavailable and dimensions could not be read from the file header. Please convert the image to PNG, JPEG, GIF, or WebP.
+Unable to resize image — dimensions exceed the 2000x2000px limit and image processing failed. Please resize the image to reduce its pixel dimensions.
+Unable to resize image (… raw, … base64). The image exceeds the … API limit and compression failed. Please resize the image manually or use a smaller image.
+Unable to resize image — could not verify image dimensions are within the 2000x2000px API limit.
+```
+
+Claude Code는 일반적으로 큰 이미지를 자동으로 축소합니다. 이러한 오류는 네이티브 이미지 프로세서가 로드되지 않았거나 오류를 반환했으므로 이미지를 API 제한 내에 맞게 축소할 수 없음을 의미합니다.
+
+**할 일:**
+
+* 메시지가 이미지를 변환하도록 요청하면 PNG, JPEG, GIF 또는 WebP로 변환하고 다시 첨부합니다. Claude Code는 이미지 프로세서 없이 이러한 형식의 치수를 확인할 수 있습니다.
+* 메시지가 치수 또는 크기 제한을 보고하면 첨부하기 전에 이미지를 해당 제한 아래로 크기 조정하거나 다시 압축합니다.
+
 ### PDF errors
 
 첨부한 PDF를 처리할 수 없습니다.
@@ -462,7 +569,7 @@ Claude Opus is not available with the Claude Pro plan · Select a different mode
 
 ### thinking.type.enabled is not supported for this model
 
-Claude Code 버전이 Opus 4.7의 최소값보다 오래되었습니다. CLI가 모델이 더 이상 허용하지 않는 생각 구성을 보냈습니다.
+Claude Code 버전이 Opus 4.7 또는 Opus 4.8의 최소값보다 오래되었습니다. CLI가 모델이 더 이상 허용하지 않는 생각 구성을 보냈습니다.
 
 ```text theme={null}
 API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use "thinking.type.adaptive" and "output_config.effort" to control thinking behavior.
@@ -470,7 +577,7 @@ API Error: 400 ... "thinking.type.enabled" is not supported for this model. Use 
 
 **할 일:**
 
-* `claude update`를 실행하여 v2.1.111 이상으로 업그레이드한 후 Claude Code를 다시 시작합니다.
+* `claude update`를 실행하고 Claude Code를 다시 시작합니다. Opus 4.7은 v2.1.111 이상이 필요합니다. Opus 4.8은 v2.1.154 이상이 필요합니다.
 * 업그레이드할 수 없으면 `/model`을 실행하고 Opus 4.6 또는 Sonnet을 선택합니다.
 * Agent SDK에서 이를 맞으면 [SDK 문제 해결](/ko/agent-sdk/quickstart#troubleshooting)을 참조하십시오.
 
@@ -487,7 +594,7 @@ Claude Code는 Anthropic API에서 이러한 값을 자동으로 조정합니다
 **할 일:**
 
 * `MAX_THINKING_TOKENS`를 낮추거나 [`CLAUDE_CODE_MAX_OUTPUT_TOKENS`](/ko/env-vars)를 생각 예산 위로 높입니다.
-* [확장 생각](/ko/common-workflows#use-extended-thinking-thinking-mode)을 참조하여 예산이 출력 길이와 어떻게 상호 작용하는지 확인합니다.
+* [확장 생각](/ko/model-config#extended-thinking)을 참조하여 예산이 출력 길이와 어떻게 상호 작용하는지 확인합니다.
 
 ### Tool use or thinking block mismatch
 
@@ -503,7 +610,24 @@ API Error: 400 ... thinking blocks ... cannot be modified
 
 **할 일:**
 
+* {/* max-version: 2.1.155 */}Opus 4.7 또는 Opus 4.8을 사용하는 경우 먼저 `claude update`를 실행합니다. v2.1.156 이전 버전은 정상적인 도구 사용 중에 이 오류를 트리거할 수 있으며 `/rewind`는 이를 지우지 않습니다.
 * `/rewind`를 실행하거나 Esc를 두 번 눌러 손상된 턴 전의 체크포인트로 뒤로 이동하고 거기서 계속합니다. [체크포인팅](/ko/checkpointing)을 참조하여 체크포인트가 생성되고 복원되는 방식을 확인합니다.
+
+### Usage Policy refusal
+
+API가 대화의 내용이 [사용 정책](https://www.anthropic.com/legal/aup) 확인을 트리거했기 때문에 응답을 거부했습니다. 메시지에는 거부가 잘못되었다고 생각하는 경우 지원팀에 인용할 수 있는 요청 ID가 포함됩니다.
+
+```text theme={null}
+API Error: Claude Code is unable to respond to this request, which appears to violate our Usage Policy (https://www.anthropic.com/legal/aup). Please double press esc to edit your last message or start a new session for Claude Code to assist with a different task.
+```
+
+확인은 최신 프롬프트뿐만 아니라 전체 대화를 평가하므로 동일한 세션에서 새 메시지를 보내면 일반적으로 동일한 거부를 다시 트리거합니다. `--continue` 또는 `--resume`으로 세션을 종료하고 다시 열 때도 마찬가지입니다. 디스크의 기록에 여전히 트리거 콘텐츠가 포함되어 있기 때문입니다.
+
+**할 일:**
+
+* Esc를 두 번 누르거나 `/rewind`를 실행하여 거부를 트리거한 턴 전의 체크포인트로 뒤로 이동한 후 다시 표현하거나 다른 접근 방식을 시도합니다. [체크포인팅](/ko/checkpointing)을 참조하십시오.
+* 어느 턴이 원인인지 식별할 수 없으면 `/clear`를 실행하여 동일한 프로젝트에서 새 대화를 시작합니다. 이전 대화는 디스크에 보존되며 `/resume`에서 사용 가능합니다.
+* [비대화형 모드](/ko/headless)(`-p`)에서는 되감기를 사용할 수 없으므로 다시 표현된 프롬프트로 다시 시도하거나 `--continue` 없이 새 세션을 시작합니다.
 
 ## 응답 품질이 평소보다 낮아 보임
 
@@ -530,7 +654,7 @@ Claude의 답변이 오류 없이 예상보다 덜 유능해 보이면 원인은
 
 오류가 여기에 나열되지 않았거나 제안된 수정이 도움이 되지 않으면:
 
-* Claude Code 내에서 `/feedback`을 실행하여 기록 및 설명을 Anthropic에 보냅니다. 명령은 미리 채워진 GitHub 문제를 열 수도 있습니다. 피드백은 Bedrock, Vertex AI, Foundry 배포에서 사용할 수 없습니다.
+* Claude Code 내에서 `/feedback`을 실행하여 기록 및 설명을 Anthropic에 보냅니다. 명령은 미리 채워진 GitHub 문제를 열 수도 있습니다. Bedrock, Vertex AI, Foundry 및 기타 타사 제공자에서 `/feedback`은 Anthropic 계정 담당자에게 보낼 수 있는 로컬 아카이브를 저장합니다.
 * `/doctor`를 실행하여 로컬 구성 문제를 확인합니다.
 * [status.claude.com](https://status.claude.com)에서 활성 인시던트를 확인합니다.
 * GitHub의 [기존 문제](https://github.com/anthropics/claude-code/issues)를 검색합니다.

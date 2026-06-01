@@ -9,11 +9,11 @@
 Claude Code GitHub Actions는 GitHub 워크플로우에 AI 기반 자동화를 제공합니다. PR이나 이슈에서 간단한 `@claude` 멘션으로 Claude가 코드를 분석하고, 풀 리퀘스트를 생성하고, 기능을 구현하고, 버그를 수정할 수 있습니다. 모두 프로젝트의 표준을 따르면서 말입니다. 트리거 없이 모든 PR에 자동으로 게시되는 리뷰의 경우 [GitHub Code Review](/ko/code-review)를 참조하십시오.
 
 <Note>
-  Claude Code GitHub Actions는 [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)를 기반으로 구축되어 있으며, 이를 통해 Claude Code를 애플리케이션에 프로그래밍 방식으로 통합할 수 있습니다. SDK를 사용하여 GitHub Actions를 넘어서는 사용자 정의 자동화 워크플로우를 구축할 수 있습니다.
+  Claude Code GitHub Actions는 [Claude Agent SDK](/ko/agent-sdk/overview)를 기반으로 구축되어 있으며, 이를 통해 Claude Code를 애플리케이션에 프로그래밍 방식으로 통합할 수 있습니다. SDK를 사용하여 GitHub Actions를 넘어서는 사용자 정의 자동화 워크플로우를 구축할 수 있습니다.
 </Note>
 
 <Info>
-  **Claude Opus 4.6을 이제 사용할 수 있습니다.** Claude Code GitHub Actions는 기본적으로 Sonnet을 사용합니다. Opus 4.6을 사용하려면 [모델 파라미터](#breaking-changes-reference)를 `claude-opus-4-6`을 사용하도록 구성하십시오.
+  **Claude Opus 4.7을 이제 사용할 수 있습니다.** Claude Code GitHub Actions는 기본적으로 Sonnet을 사용합니다. Opus 4.7을 사용하려면 [모델 파라미터](#breaking-changes-reference)를 `claude-opus-4-7`을 사용하도록 구성하십시오.
 </Info>
 
 ## Claude Code GitHub Actions를 사용하는 이유는 무엇입니까?
@@ -45,7 +45,7 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
 <Note>
   * GitHub 앱을 설치하고 시크릿을 추가하려면 저장소 관리자여야 합니다
   * GitHub 앱은 Contents, Issues 및 Pull requests에 대한 읽기 및 쓰기 권한을 요청합니다
-  * 이 빠른 시작 방법은 직접 Claude API 사용자만 사용할 수 있습니다. AWS Bedrock 또는 Google Vertex AI를 사용 중인 경우 [AWS Bedrock & Google Vertex AI 사용](#using-with-aws-bedrock-%26-google-vertex-ai) 섹션을 참조하십시오.
+  * 이 빠른 시작 방법은 직접 Claude API 사용자만 사용할 수 있습니다. Amazon Bedrock 또는 Google Vertex AI를 사용 중인 경우 [Amazon Bedrock & Google Vertex AI 사용](#using-with-amazon-bedrock-%26-google-vertex-ai) 섹션을 참조하십시오.
 </Note>
 
 ## 수동 설정
@@ -156,6 +156,13 @@ jobs:
 
 ### skills 사용
 
+`prompt` 입력은 [skill](/ko/skills) 호출뿐만 아니라 일반 텍스트도 허용합니다:
+
+* 저장소의 `.claude/skills/` 디렉토리에 있는 skill의 경우, 작업 단계 전에 `actions/checkout`을 실행하고 `/skill-name`을 전달합니다.
+* 플러그인에 패키징된 skill의 경우, `plugin_marketplaces` 및 `plugins` 입력으로 플러그인을 설치하고 네임스페이스가 지정된 `/plugin-name:skill-name`을 전달합니다.
+
+다음 워크플로우는 `code-review` 플러그인을 설치하고 각 새로운 또는 업데이트된 pull request에서 해당 skill을 실행합니다:
+
 ```yaml theme={null}
 name: Code Review
 on:
@@ -168,8 +175,9 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          prompt: "Review this pull request for code quality, correctness, and security. Analyze the diff, then post your findings as review comments."
-          claude_args: "--max-turns 5"
+          plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
+          plugins: "code-review@claude-code-plugins"
+          prompt: "/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
 ```
 
 ### 프롬프트를 사용한 사용자 정의 자동화
@@ -274,7 +282,7 @@ Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
   이슈 또는 PR 댓글에 응답할 때 Claude는 자동으로 @claude 멘션에 응답합니다. 다른 이벤트의 경우 `prompt` 파라미터를 사용하여 지침을 제공합니다.
 </Tip>
 
-## AWS Bedrock & Google Vertex AI 사용
+## Amazon Bedrock & Google Vertex AI 사용
 
 엔터프라이즈 환경의 경우 자신의 클라우드 인프라와 함께 Claude Code GitHub Actions를 사용할 수 있습니다. 이 접근 방식은 동일한 기능을 유지하면서 데이터 거주지 및 청구에 대한 제어를 제공합니다.
 
@@ -289,7 +297,7 @@ Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
 3. 필요한 권한이 있는 서비스 계정
 4. GitHub 앱(권장) 또는 기본 GITHUB\_TOKEN 사용
 
-#### AWS Bedrock의 경우:
+#### Amazon Bedrock의 경우:
 
 1. Amazon Bedrock이 활성화된 AWS 계정
 2. AWS에서 구성된 GitHub OIDC Identity Provider
@@ -340,7 +348,7 @@ Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
     클라우드 공급자를 선택하고 안전한 인증을 설정합니다:
 
     <AccordionGroup>
-      <Accordion title="AWS Bedrock">
+      <Accordion title="Amazon Bedrock">
         **자격 증명을 저장하지 않고 GitHub Actions가 안전하게 인증할 수 있도록 AWS를 구성합니다.**
 
         > **보안 참고**: 저장소별 구성을 사용하고 최소 필요 권한만 부여합니다.
@@ -439,7 +447,7 @@ Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
        * `APP_ID`: GitHub 앱의 ID
        * `APP_PRIVATE_KEY`: 개인 키 (.pem) 내용
 
-    #### AWS Bedrock의 경우
+    #### Amazon Bedrock의 경우
 
     1. **AWS 인증의 경우**:
        * `AWS_ROLE_TO_ASSUME`
@@ -450,13 +458,13 @@ Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
   </Step>
 
   <Step title="워크플로우 파일 생성">
-    클라우드 공급자와 통합되는 GitHub Actions 워크플로우 파일을 생성합니다. 아래 예제는 AWS Bedrock 및 Google Vertex AI 모두에 대한 완전한 구성을 보여줍니다:
+    클라우드 공급자와 통합되는 GitHub Actions 워크플로우 파일을 생성합니다. 아래 예제는 Amazon Bedrock 및 Google Vertex AI 모두에 대한 완전한 구성을 보여줍니다:
 
     <AccordionGroup>
-      <Accordion title="AWS Bedrock 워크플로우">
+      <Accordion title="Amazon Bedrock 워크플로우">
         **필수 조건:**
 
-        * AWS Bedrock 액세스가 Claude 모델 권한으로 활성화됨
+        * Amazon Bedrock 액세스가 Claude 모델 권한으로 활성화됨
         * GitHub가 AWS에서 OIDC ID 공급자로 구성됨
         * GitHub Actions를 신뢰하는 Bedrock 권한이 있는 IAM 역할
 
@@ -621,15 +629,17 @@ API 키가 유효하고 충분한 권한이 있는지 확인합니다. Bedrock/V
 
 Claude Code Action v1은 단순화된 구성을 사용합니다:
 
-| 파라미터                | 설명                                               | 필수    |
-| ------------------- | ------------------------------------------------ | ----- |
-| `prompt`            | Claude에 대한 지침 (일반 텍스트 또는 [skill](/ko/skills) 이름) | 아니오\* |
-| `claude_args`       | Claude Code에 전달된 CLI 인수                          | 아니오   |
-| `anthropic_api_key` | Claude API 키                                     | 예\*\* |
-| `github_token`      | API 액세스용 GitHub 토큰                               | 아니오   |
-| `trigger_phrase`    | 사용자 정의 트리거 구문 (기본값: "@claude")                   | 아니오   |
-| `use_bedrock`       | Claude API 대신 AWS Bedrock 사용                     | 아니오   |
-| `use_vertex`        | Claude API 대신 Google Vertex AI 사용                | 아니오   |
+| 파라미터                  | 설명                                               | 필수    |
+| --------------------- | ------------------------------------------------ | ----- |
+| `prompt`              | Claude에 대한 지침 (일반 텍스트 또는 [skill](/ko/skills) 이름) | 아니오\* |
+| `claude_args`         | Claude Code에 전달된 CLI 인수                          | 아니오   |
+| `plugin_marketplaces` | 플러그인 마켓플레이스 Git URL의 줄 바꿈으로 구분된 목록               | 아니오   |
+| `plugins`             | 실행 전에 설치할 플러그인 이름의 줄 바꿈으로 구분된 목록                 | 아니오   |
+| `anthropic_api_key`   | Claude API 키                                     | 예\*\* |
+| `github_token`        | API 액세스용 GitHub 토큰                               | 아니오   |
+| `trigger_phrase`      | 사용자 정의 트리거 구문 (기본값: "@claude")                   | 아니오   |
+| `use_bedrock`         | Claude API 대신 Amazon Bedrock 사용                  | 아니오   |
+| `use_vertex`          | Claude API 대신 Google Vertex AI 사용                | 아니오   |
 
 \*프롬프트는 선택 사항입니다. 이슈/PR 댓글에서 생략하면 Claude는 트리거 구문에 응답합니다\
 \*\*직접 Claude API에 필수이며, Bedrock/Vertex에는 필수가 아닙니다

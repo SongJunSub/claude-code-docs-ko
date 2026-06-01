@@ -14,7 +14,7 @@ Agent SDK는 Claude Code와 동일한 기반 위에 구축되어 있으므로, S
 
 ## settingSources로 파일시스템 설정 제어하기
 
-설정 소스 옵션(Python의 [`setting_sources`](/ko/agent-sdk/python#claude-agent-options), TypeScript의 [`settingSources`](/ko/agent-sdk/typescript#setting-source))은 SDK가 로드하는 파일시스템 기반 설정을 제어합니다. 특정 소스를 선택하려면 명시적 목록을 전달하거나, 사용자, 프로젝트 및 로컬 설정을 비활성화하려면 빈 배열을 전달합니다.
+설정 소스 옵션(Python의 [`setting_sources`](/ko/agent-sdk/python#claudeagentoptions), TypeScript의 [`settingSources`](/ko/agent-sdk/typescript#settingsource))은 SDK가 로드하는 파일시스템 기반 설정을 제어합니다. 특정 소스를 선택하려면 명시적 목록을 전달하거나, 사용자, 프로젝트 및 로컬 설정을 비활성화하려면 빈 배열을 전달합니다.
 
 이 예제는 `settingSources`를 `["user", "project"]`로 설정하여 사용자 수준 및 프로젝트 수준 설정을 모두 로드합니다:
 
@@ -65,17 +65,17 @@ Agent SDK는 Claude Code와 동일한 기반 위에 구축되어 있으므로, S
   ```
 </CodeGroup>
 
-각 소스는 특정 위치에서 설정을 로드합니다. 여기서 `<cwd>`는 `cwd` 옵션을 통해 전달하는 작업 디렉토리입니다(설정되지 않은 경우 프로세스의 현재 디렉토리). 전체 타입 정의는 [`SettingSource`](/ko/agent-sdk/typescript#setting-source)(TypeScript) 또는 [`SettingSource`](/ko/agent-sdk/python#setting-source)(Python)을 참조하세요.
+각 소스는 특정 위치에서 설정을 로드합니다. 여기서 `<cwd>`는 `cwd` 옵션을 통해 전달하는 작업 디렉토리이거나, 설정되지 않은 경우 프로세스의 현재 디렉토리입니다. 전체 타입 정의는 [`SettingSource`](/ko/agent-sdk/typescript#settingsource)(TypeScript) 또는 [`SettingSource`](/ko/agent-sdk/python#settingsource)(Python)을 참조하세요.
 
-| 소스          | 로드되는 항목                                                                     | 위치                                                                              |
-| :---------- | :-------------------------------------------------------------------------- | :------------------------------------------------------------------------------ |
-| `"project"` | 프로젝트 CLAUDE.md, `.claude/rules/*.md`, 프로젝트 스킬, 프로젝트 훅, 프로젝트 `settings.json` | `<cwd>/.claude/` 및 파일시스템 루트까지의 각 상위 디렉토리(`.claude/`를 찾거나 더 이상 상위 디렉토리가 없을 때 중지) |
-| `"user"`    | 사용자 CLAUDE.md, `~/.claude/rules/*.md`, 사용자 스킬, 사용자 설정                       | `~/.claude/`                                                                    |
-| `"local"`   | CLAUDE.local.md(gitignored), `.claude/settings.local.json`                  | `<cwd>/`                                                                        |
+| 소스          | 로드되는 항목                                                                     | 위치                                                                                                                           |
+| :---------- | :-------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
+| `"project"` | 프로젝트 CLAUDE.md, `.claude/rules/*.md`, 프로젝트 스킬, 프로젝트 훅, 프로젝트 `settings.json` | `<cwd>/.claude/` (`settings.json` 및 훅의 경우); `<cwd>` 및 모든 상위 디렉토리(CLAUDE.md 및 규칙의 경우); `<cwd>` 및 저장소 루트까지의 모든 상위 디렉토리(스킬의 경우) |
+| `"user"`    | 사용자 CLAUDE.md, `~/.claude/rules/*.md`, 사용자 스킬, 사용자 설정                       | `~/.claude/`                                                                                                                 |
+| `"local"`   | CLAUDE.local.md, `.claude/settings.local.json`                              | `<cwd>/.claude/` (`settings.local.json`의 경우); `<cwd>` 및 모든 상위 디렉토리(CLAUDE.local.md의 경우)                                      |
 
 `settingSources`를 생략하는 것은 `["user", "project", "local"]`과 동일합니다.
 
-`cwd` 옵션은 SDK가 프로젝트 설정을 찾는 위치를 결정합니다. `cwd` 또는 그 상위 디렉토리 중 어느 것도 `.claude/` 폴더를 포함하지 않으면 프로젝트 수준 기능이 로드되지 않습니다.
+`cwd` 옵션은 SDK가 프로젝트 수준 입력을 찾는 위치를 결정합니다. CLAUDE.md와 규칙은 `<cwd>`와 모든 상위 디렉토리에서 로드됩니다. 스킬은 `<cwd>`와 저장소 루트까지의 모든 상위 디렉토리에서 로드됩니다. 프로젝트 `settings.json`과 훅은 `<cwd>/.claude/`에서만 로드되며 상위 디렉토리 폴백이 없습니다.
 
 ### settingSources가 제어하지 않는 것
 
@@ -97,15 +97,15 @@ Agent SDK는 Claude Code와 동일한 기반 위에 구축되어 있으므로, S
 
 ### CLAUDE.md 로드 위치
 
-| 수준             | 위치                                             | 로드 시기                                                               |
-| :------------- | :--------------------------------------------- | :------------------------------------------------------------------ |
-| 프로젝트(루트)       | `<cwd>/CLAUDE.md` 또는 `<cwd>/.claude/CLAUDE.md` | `settingSources`에 `"project"` 포함                                    |
-| 프로젝트 규칙        | `<cwd>/.claude/rules/*.md`                     | `settingSources`에 `"project"` 포함                                    |
-| 프로젝트(상위 디렉토리)  | `cwd` 위의 디렉토리에 있는 `CLAUDE.md` 파일               | `settingSources`에 `"project"` 포함, 세션 시작 시 로드                        |
-| 프로젝트(하위 디렉토리)  | `cwd`의 하위 디렉토리에 있는 `CLAUDE.md` 파일              | `settingSources`에 `"project"` 포함, 에이전트가 해당 서브트리의 파일을 읽을 때 필요에 따라 로드 |
-| 로컬(gitignored) | `<cwd>/CLAUDE.local.md`                        | `settingSources`에 `"local"` 포함                                      |
-| 사용자            | `~/.claude/CLAUDE.md`                          | `settingSources`에 `"user"` 포함                                       |
-| 사용자 규칙         | `~/.claude/rules/*.md`                         | `settingSources`에 `"user"` 포함                                       |
+| 수준            | 위치                                                            | 로드 시기                                                               |
+| :------------ | :------------------------------------------------------------ | :------------------------------------------------------------------ |
+| 프로젝트(루트)      | `<cwd>/CLAUDE.md` 또는 `<cwd>/.claude/CLAUDE.md`                | `settingSources`에 `"project"` 포함                                    |
+| 프로젝트 규칙       | `<cwd>/.claude/rules/*.md` 및 모든 상위 디렉토리의 `.claude/rules/*.md` | `settingSources`에 `"project"` 포함                                    |
+| 프로젝트(상위 디렉토리) | `cwd` 위의 디렉토리에 있는 `CLAUDE.md` 파일                              | `settingSources`에 `"project"` 포함, 세션 시작 시 로드                        |
+| 프로젝트(하위 디렉토리) | `cwd`의 하위 디렉토리에 있는 `CLAUDE.md` 파일                             | `settingSources`에 `"project"` 포함, 에이전트가 해당 서브트리의 파일을 읽을 때 필요에 따라 로드 |
+| 로컬            | `<cwd>/CLAUDE.local.md` 및 모든 상위 디렉토리의 `CLAUDE.local.md`       | `settingSources`에 `"local"` 포함                                      |
+| 사용자           | `~/.claude/CLAUDE.md`                                         | `settingSources`에 `"user"` 포함                                       |
+| 사용자 규칙        | `~/.claude/rules/*.md`                                        | `settingSources`에 `"user"` 포함                                       |
 
 모든 수준은 누적됩니다: 프로젝트 및 사용자 CLAUDE.md 파일이 모두 존재하면 에이전트는 둘 다 봅니다. 수준 간에 하드 우선순위 규칙은 없습니다. 지침이 충돌하면 결과는 Claude가 해석하는 방식에 따라 달라집니다. 충돌하지 않는 규칙을 작성하거나 더 구체적인 파일에서 명시적으로 우선순위를 명시합니다("이 프로젝트 지침은 충돌하는 모든 사용자 수준 기본값을 재정의합니다").
 
@@ -119,7 +119,7 @@ CLAUDE.md 콘텐츠를 구조화하고 구성하는 방법은 [Claude의 메모�
 
 스킬은 에이전트에 전문 지식과 호출 가능한 워크플로우를 제공하는 마크다운 파일입니다. `CLAUDE.md`(모든 세션에서 로드)와 달리 스킬은 필요에 따라 로드됩니다. 에이전트는 시작 시 스킬 설명을 받고 관련이 있을 때 전체 콘텐츠를 로드합니다.
 
-스킬은 `settingSources`를 통해 파일시스템에서 발견됩니다. 기본 옵션을 사용하면 사용자 및 프로젝트 스킬이 자동으로 로드됩니다. `allowedTools`를 지정하지 않으면 `Skill` 도구가 기본적으로 활성화됩니다. `allowedTools` 허용 목록을 사용하는 경우 `"Skill"`을 명시적으로 포함합니다.
+스킬은 `settingSources`를 통해 파일시스템에서 발견됩니다. `query()`에서 `skills` 옵션을 생략하면 발견된 사용자 및 프로젝트 스킬이 활성화되고 Skill 도구를 사용할 수 있으며, CLI 동작과 일치합니다. 활성화된 스킬을 제어하려면 `skills`를 `"all"`, 스킬 이름 목록 또는 모두 비활성화하려면 `[]`로 전달합니다. SDK는 `skills`가 설정되면 Skill 도구를 자동으로 활성화하므로 `allowedTools`에 추가할 필요가 없습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -131,7 +131,8 @@ CLAUDE.md 콘텐츠를 구조화하고 구성하는 방법은 [Claude의 메모�
       prompt="Review this PR using our code review checklist",
       options=ClaudeAgentOptions(
           setting_sources=["user", "project"],
-          allowed_tools=["Skill", "Read", "Grep", "Glob"],
+          skills="all",
+          allowed_tools=["Read", "Grep", "Glob"],
       ),
   ):
       if isinstance(message, ResultMessage) and message.subtype == "success":
@@ -147,7 +148,8 @@ CLAUDE.md 콘텐츠를 구조화하고 구성하는 방법은 [Claude의 메모�
     prompt: "Review this PR using our code review checklist",
     options: {
       settingSources: ["user", "project"],
-      allowedTools: ["Skill", "Read", "Grep", "Glob"]
+      skills: "all",
+      allowedTools: ["Read", "Grep", "Glob"]
     }
   })) {
     if (message.type === "result" && message.subtype === "success") {
@@ -257,21 +259,21 @@ SDK는 훅을 정의하는 두 가지 방법을 지원하며, 이들은 나란�
 
 Agent SDK는 에이전트의 동작을 확장하는 여러 방법에 접근할 수 있게 합니다. 어느 것을 사용할지 확실하지 않으면 이 표는 일반적인 목표를 올바른 접근 방식에 매핑합니다.
 
-| 원하는 것                                             | 사용                                   | SDK 표면                                                                          |
-| :------------------------------------------------ | :----------------------------------- | :------------------------------------------------------------------------------ |
-| 에이전트가 항상 따르는 프로젝트 규칙 설정                           | [CLAUDE.md](/ko/memory)              | `settingSources: ["project"]`가 자동으로 로드                                          |
-| 에이전트가 관련이 있을 때 로드하는 참고 자료 제공                      | [스킬](/ko/agent-sdk/skills)           | `settingSources` + `allowedTools: ["Skill"]`                                    |
-| 재사용 가능한 워크플로우 실행(배포, 검토, 릴리스)                     | [사용자 호출 가능 스킬](/ko/agent-sdk/skills) | `settingSources` + `allowedTools: ["Skill"]`                                    |
-| 격리된 하위 작업을 새로운 컨텍스트에 위임(연구, 검토)                   | [하위 에이전트](/ko/agent-sdk/subagents)   | `agents` 매개변수 + `allowedTools: ["Agent"]`                                       |
-| 공유 작업 목록 및 직접 에이전트 간 메시징으로 여러 Claude Code 인스턴스 조정 | [에이전트 팀](/ko/agent-teams)            | SDK 옵션을 통해 직접 구성되지 않습니다. 에이전트 팀은 한 세션이 팀 리더로 작동하여 독립적인 팀원 간의 작업을 조정하는 CLI 기능입니다 |
-| 도구 호출에서 결정론적 로직 실행(감사, 차단, 변환)                    | [훅](/ko/agent-sdk/hooks)             | 콜백이 있는 `hooks` 매개변수 또는 `settingSources`를 통해 로드된 셸 스크립트                          |
-| Claude에 외부 서비스에 대한 구조화된 도구 접근 제공                  | [MCP](/ko/agent-sdk/mcp)             | `mcpServers` 매개변수                                                               |
+| 원하는 것                                             | 사용                                            | SDK 표면                                                                          |
+| :------------------------------------------------ | :-------------------------------------------- | :------------------------------------------------------------------------------ |
+| 에이전트가 항상 따르는 프로젝트 규칙 설정                           | [CLAUDE.md](/ko/memory)                       | `settingSources: ["project"]`가 자동으로 로드합니다                                       |
+| 에이전트가 관련이 있을 때 로드하는 참고 자료 제공                      | [Skills](/ko/agent-sdk/skills)                | `settingSources` + `skills` 옵션                                                  |
+| 재사용 가능한 워크플로우 실행(배포, 검토, 릴리스)                     | [User-invocable skills](/ko/agent-sdk/skills) | `settingSources` + `skills` 옵션                                                  |
+| 격리된 하위 작업을 새로운 컨텍스트에 위임(연구, 검토)                   | [Subagents](/ko/agent-sdk/subagents)          | `agents` 매개변수 + `allowedTools: ["Agent"]`                                       |
+| 공유 작업 목록 및 직접 에이전트 간 메시징으로 여러 Claude Code 인스턴스 조정 | [Agent teams](/ko/agent-teams)                | SDK 옵션을 통해 직접 구성되지 않습니다. 에이전트 팀은 한 세션이 팀 리더로 작동하여 독립적인 팀원 간의 작업을 조정하는 CLI 기능입니다 |
+| 도구 호출에서 결정론적 로직 실행(감사, 차단, 변환)                    | [Hooks](/ko/agent-sdk/hooks)                  | 콜백이 있는 `hooks` 매개변수 또는 `settingSources`를 통해 로드된 셸 스크립트                          |
+| Claude에 외부 서비스에 대한 구조화된 도구 접근 제공                  | [MCP](/ko/agent-sdk/mcp)                      | `mcpServers` 매개변수                                                               |
 
 <Tip>
-  **하위 에이전트 대 에이전트 팀:** 하위 에이전트는 임시적이고 격리됩니다: 새로운 대화, 한 가지 작업, 부모에게 반환된 요약. 에이전트 팀은 공유 작업 목록을 공유하고 직접 메시지를 주고받는 여러 독립적인 Claude Code 인스턴스를 조정합니다. 에이전트 팀은 CLI 기능입니다. [하위 에이전트가 상속하는 것](/ko/agent-sdk/subagents#what-subagents-inherit) 및 [에이전트 팀 비교](/ko/agent-teams#compare-with-subagents)를 참조하세요.
+  **Subagents 대 agent teams:** Subagents는 임시적이고 격리됩니다: 새로운 대화, 한 가지 작업, 부모에게 반환된 요약. Agent teams는 공유 작업 목록을 공유하고 직접 메시지를 주고받는 여러 독립적인 Claude Code 인스턴스를 조정합니다. Agent teams는 CLI 기능입니다. [What subagents inherit](/ko/agent-sdk/subagents#what-subagents-inherit) 및 [agent teams 비교](/ko/agent-teams#compare-with-subagents)를 참조하세요.
 </Tip>
 
-활성화하는 모든 기능은 에이전트의 컨텍스트 윈도우에 추가됩니다. 기능별 비용 및 이 기능들이 함께 계층화되는 방식은 [Claude Code 확장](/ko/features-overview#understand-context-costs)을 참조하세요.
+활성화하는 모든 기능은 에이전트의 컨텍스트 윈도우에 추가됩니다. 기능별 비용 및 이 기능들이 함께 계층화되는 방식은 [Extend Claude Code](/ko/features-overview#understand-context-costs)를 참조하세요.
 
 ## 관련 리소스
 

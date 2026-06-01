@@ -16,7 +16,7 @@ Claude Code CLI에서 입력하는 대신 프롬프트를 말씀하세요. 음�
 
 음성 받아쓰기는 기록된 오디오를 Anthropic의 서버로 스트리밍하여 전사합니다. 오디오는 로컬에서 처리되지 않습니다. 음성 텍스트 변환 서비스는 Claude.ai 계정으로 인증할 때만 사용 가능하며, Claude Code가 Anthropic API 키, Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry를 직접 사용하도록 구성된 경우에는 사용할 수 없습니다. 전사는 Claude 메시지나 토큰을 소비하지 않으며 `/usage`에 표시된 한도에 포함되지 않습니다. Anthropic이 데이터를 처리하는 방법은 [데이터 사용](/ko/data-usage)을 참조하세요.
 
-음성 받아쓰기는 또한 로컬 마이크 접근이 필요하므로 [웹의 Claude Code](/ko/claude-code-on-the-web) 또는 SSH 세션과 같은 원격 환경에서는 작동하지 않습니다. WSL에서 음성 받아쓰기는 오디오 접근을 위해 WSLg가 필요하며, 이는 Windows 11의 WSL2에 포함되어 있습니다. Windows 10 또는 WSL1에서는 대신 기본 Windows에서 Claude Code를 실행하세요.
+음성 받아쓰기는 또한 로컬 마이크 접근이 필요하므로 [웹의 Claude Code](/ko/claude-code-on-the-web) 또는 SSH 세션과 같은 원격 환경에서는 작동하지 않습니다. WSL에서 음성 받아쓰기는 오디오 접근을 위해 WSLg가 필요하며, 이는 Windows 10 또는 11의 Microsoft Store에서 설치된 WSL2에 포함되어 있습니다. WSLg를 사용할 수 없는 경우(예: WSL1), 대신 기본 Windows에서 Claude Code를 실행하세요.
 
 오디오 녹음은 macOS, Linux 및 Windows의 기본 제공 네이티브 모듈을 사용합니다. Linux에서 네이티브 모듈을 로드할 수 없으면 Claude Code는 ALSA utils의 `arecord` 또는 SoX의 `rec`으로 폴백합니다. 둘 다 사용할 수 없으면 `/voice`는 패키지 관리자에 대한 설치 명령을 출력합니다.
 
@@ -51,7 +51,7 @@ Voice mode enabled (hold). Hold Space to record. Dictation language: en (/config
 }
 ```
 
-음성 받아쓰기가 활성화되어 있는 동안 입력 바닥글은 프롬프트가 비어 있을 때 `hold Space to speak` 힌트를 표시합니다. 힌트 텍스트는 두 모드 모두에서 동일하며, [사용자 정의 상태 줄](/ko/statusline)이 구성된 경우 나타나지 않습니다.
+음성 받아쓰기가 활성화되어 있는 동안 입력 바닥글은 프롬프트가 비어 있을 때 `hold Space to speak` 힌트를 표시합니다. 힌트는 현재 `voice:pushToTalk` 바인딩을 반영하며, [받아쓰기 키를 다시 바인딩](#rebind-the-dictation-key)하면 업데이트됩니다. 힌트 텍스트는 두 모드 모두에서 동일하며, [사용자 정의 상태 줄](/ko/statusline)이 구성된 경우 나타나지 않습니다.
 
 전사는 두 모드 모두에서 코딩 어휘에 맞게 조정됩니다. `regex`, `OAuth`, `JSON` 및 `localhost`와 같은 일반적인 개발 용어가 올바르게 인식되며, 현재 프로젝트 이름과 git 분기 이름이 자동으로 인식 힌트로 추가됩니다.
 
@@ -142,9 +142,11 @@ Voice mode enabled (hold). Hold Space to record. Dictation language: en (/config
 }
 ```
 
-`"space": null`을 설정하면 기본 바인딩이 제거됩니다. 두 키를 모두 활성화하려면 생략하세요.
+`voice:pushToTalk` 작업은 한 번에 하나의 키를 사용합니다. 사용자 정의 키를 바인딩하면 기본 `Space` 바인딩을 대체하며 두 번째 트리거를 추가하지 않으므로, 이 예제의 `"space": null` 줄은 명확성을 위한 것이며 동작을 변경하지 않고 생략할 수 있습니다.
 
-누르고 있기 모드에서는 `v`와 같은 단순 문자 키 바인딩을 피하세요. 누르고 있기 감지는 키 반복에 의존하고 문자는 워밍업 중에 프롬프트로 입력되기 때문입니다. `Space`를 사용하거나 `meta+k`와 같은 수정자 조합을 사용하여 워밍업 없이 첫 번째 키 누름에서 녹음을 시작하세요. 탭 모드에는 워밍업이 없으므로 모든 키가 작동합니다. 전체 키바인딩 구문은 [키보드 단축키 사용자 정의](/ko/keybindings)를 참조하세요.
+누르고 있기 모드에서는 `v`와 같은 단순 문자 키 바인딩을 피하세요. 누르고 있기 감지는 키 반복에 의존하고 문자는 워밍업 중에 프롬프트로 입력되기 때문입니다. `Space`를 사용하거나 `meta+k`와 같은 수정자 조합을 사용하여 워밍업 없이 첫 번째 키 누름에서 녹음을 시작하세요. 탭 모드에는 워밍업이 없으므로 대부분의 키가 작동합니다.
+
+일부 키는 터미널 애플리케이션에 전달되지 않으며 전혀 바인딩할 수 없습니다. 예를 들어, `Caps Lock`을 바인딩하려고 하면 오류가 표시됩니다. 전체 키바인딩 구문 및 예약된 단축키 목록은 [키보드 단축키 사용자 정의](/ko/keybindings)를 참조하세요.
 
 ## 문제 해결
 
@@ -153,6 +155,8 @@ Voice mode enabled (hold). Hold Space to record. Dictation language: en (/config
 * **`Voice mode requires a Claude.ai account`**: API 키 또는 타사 공급자로 인증되었습니다. `/login`을 실행하여 Claude.ai 계정으로 로그인하세요.
 * **`Microphone access is denied`**: 시스템 설정에서 터미널에 마이크 권한을 부여하세요. macOS에서는 시스템 설정 → 개인정보 보호 및 보안 → 마이크로 이동하여 터미널 앱을 활성화한 다음 `/voice`를 다시 실행하세요. Windows에서는 설정 → 개인정보 보호 및 보안 → 마이크로 이동하여 데스크톱 앱에 대한 마이크 접근을 켜세요. 그런 다음 `/voice`를 다시 실행하세요. 터미널이 macOS 설정에 나열되지 않으면 [macOS 마이크 설정에 나열되지 않은 터미널](#terminal-not-listed-in-macos-microphone-settings)을 참조하세요.
 * **Linux에서 `No audio recording tool found`**: 네이티브 오디오 모듈을 로드할 수 없고 폴백이 설치되지 않았습니다. 오류 메시지에 표시된 명령으로 SoX를 설치하세요. 예: `sudo apt-get install sox`.
+* **`Voice mode could not find a working audio recorder in WSL`**: WSLg는 ALSA 장치가 아닌 PulseAudio를 통해 오디오를 라우팅하므로 SoX는 PulseAudio 백엔드가 명시적으로 설치되어야 합니다. `sudo apt install sox libsox-fmt-pulse`를 실행하세요. `sox`만 설치하면 ALSA 백엔드가 함께 설치되는데, WSL에서는 `/dev/snd` 장치가 없기 때문에 녹음할 수 없습니다.
+* **`Voice input is failing repeatedly and has been paused`**: 음성 받아쓰기가 여러 번 시작 실패를 겪었고 하나가 성공할 때까지 새 세션 시도를 중단했습니다. 이는 일반적으로 이 호스트의 마이크 또는 오디오 스택이 오디오를 캡처할 수 없음을 의미합니다. 예를 들어 헤드리스 서버, 오디오 패스스루가 없는 원격 셸 또는 거부된 마이크 권한이 있습니다. 작동하는 입력 장치를 확인하고 위의 항목에서 근본 원인을 해결한 다음 음성을 다시 트리거하세요.
 * **누르고 있기 모드에서 `Space`를 누르고 있어도 아무것도 일어나지 않음**: 누르고 있는 동안 프롬프트 입력을 봅니다. 공백이 계속 누적되면 음성 받아쓰기가 꺼져 있을 가능성이 높습니다. `/voice hold`를 실행하여 활성화하세요. 1\~2개의 공백만 나타나고 그 다음 아무것도 없으면 음성 받아쓰기는 켜져 있지만 누르고 있기 감지가 트리거되지 않습니다. 누르고 있기 감지는 터미널이 키 반복 이벤트를 보내야 하므로 OS 수준에서 키 반복이 비활성화되면 누르고 있는 키를 감지할 수 없습니다. 키 반복 요구 사항을 피하려면 `/voice tap`으로 탭 모드로 전환하세요.
 * **탭 모드에서 `Space`를 탭하면 녹음 대신 공백을 입력함**: 첫 번째 탭은 프롬프트 입력이 비어 있을 때만 녹음을 시작합니다. 먼저 입력을 지우거나 `/voice tap`을 실행하여 탭 모드에 있는지 확인하세요.
 * **`No audio detected from microphone`**: 녹음이 시작되었지만 침묵을 캡처했습니다. 올바른 입력 장치가 시스템 기본값으로 설정되어 있고 입력 수준이 음소거되거나 0에 가깝지 않은지 확인하세요. Windows에서는 설정 → 시스템 → 사운드 → 입력을 열고 마이크를 선택하세요. macOS에서는 시스템 설정 → 사운드 → 입력을 열어보세요.

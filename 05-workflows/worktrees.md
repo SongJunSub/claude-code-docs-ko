@@ -32,7 +32,7 @@ claude --worktree bugfix-123
 claude --worktree
 ```
 
-세션 중에 Claude에게 "worktree에서 작업하기"를 요청할 수도 있으며, [`EnterWorktree`](/ko/tools-reference) 도구로 하나를 생성합니다.
+세션 중에 Claude에게 "worktree에서 작업하기"를 요청할 수도 있으며, [`EnterWorktree`](/ko/tools-reference) 도구로 하나를 생성합니다. worktree에 들어가면 Claude는 `.claude/worktrees/` 아래의 다른 worktree로 `EnterWorktree`를 호출하여 직접 전환할 수 있습니다. 이전 worktree는 디스크에 그대로 남아 있습니다.
 
 처음으로 디렉터리에서 `--worktree`를 사용하기 전에 해당 디렉터리에서 `claude`를 한 번 실행하여 작업 공간 신뢰 대화를 수락합니다. 신뢰가 아직 수락되지 않았으면 `--worktree`는 오류와 함께 종료되고 먼저 디렉터리에서 `claude`를 실행하도록 요청하며, `-p`와 결합할 때도 마찬가지입니다.
 
@@ -80,15 +80,17 @@ config/secrets.json
 
 서브에이전트는 자체 worktree에서 실행될 수 있으므로 병렬 편집이 충돌하지 않습니다. Claude에게 "에이전트에 worktree 사용"을 요청하거나, [사용자 정의 서브에이전트](/ko/sub-agents#supported-frontmatter-fields)에서 frontmatter에 `isolation: worktree`를 추가하여 영구적으로 설정합니다. 각 서브에이전트는 서브에이전트가 변경 없이 완료되면 자동으로 제거되는 임시 worktree를 가져옵니다.
 
+서브에이전트 worktree는 `--worktree`와 동일한 [기본 분기](#choose-the-base-branch)를 사용하므로, `worktree.baseRef`가 `"head"`로 설정되지 않은 한 저장소의 기본 분기에서 분기합니다.
+
 ## worktree 정리
 
 worktree 세션을 종료할 때 정리는 변경 사항을 만들었는지 여부에 따라 달라집니다:
 
-* **변경 없음**: worktree와 해당 브랜치가 자동으로 제거됩니다
-* **변경 또는 커밋 존재**: Claude는 worktree를 유지하거나 제거할지 묻습니다. 유지하면 디렉토리와 브랜치가 보존되어 나중에 돌아올 수 있습니다. 제거하면 worktree 디렉토리와 해당 브랜치가 삭제되어 모든 커밋되지 않은 변경 사항과 커밋이 버려집니다
+* **커밋되지 않은 변경 사항 없음, 추적되지 않은 파일 없음, 새로운 커밋 없음**: worktree와 해당 브랜치가 자동으로 제거됩니다. 세션에 [이름](/ko/sessions#name-your-sessions)이 있으면 Claude는 대신 프롬프트를 표시하여 나중을 위해 worktree를 유지할 수 있습니다
+* **커밋되지 않은 변경 사항, 추적되지 않은 파일 또는 새로운 커밋 존재**: Claude는 worktree를 유지하거나 제거할지 묻습니다. 유지하면 디렉토리와 브랜치가 보존되어 나중에 돌아올 수 있습니다. 제거하면 worktree 디렉토리와 해당 브랜치가 삭제되어 커밋되지 않은 모든 변경 사항, 추적되지 않은 파일 및 커밋이 버려집니다
 * **비대화형 실행**: `--worktree`와 함께 `-p`로 생성된 worktree는 종료 프롬프트가 없으므로 자동으로 정리되지 않습니다. `git worktree remove`로 제거합니다
 
-충돌 또는 중단된 실행으로 인해 고아가 된 서브에이전트 worktree는 [`cleanupPeriodDays`](/ko/settings#available-settings) 설정보다 오래되면 시작 시 제거되며, 커밋되지 않은 변경 사항, 추적되지 않은 파일 및 푸시되지 않은 커밋이 없는 경우입니다. `--worktree`로 생성한 Worktree는 이 스윕으로 절대 제거되지 않습니다.
+Claude가 서브에이전트 및 [백그라운드 세션](/ko/agent-view#how-file-edits-are-isolated)을 위해 생성한 worktree는 [`cleanupPeriodDays`](/ko/settings#available-settings) 설정보다 오래되면 자동으로 제거되며, 커밋되지 않은 변경 사항, 추적되지 않은 파일 및 푸시되지 않은 커밋이 없는 경우입니다. `--worktree`로 생성한 worktree는 이 스윕으로 절대 제거되지 않습니다.
 
 ## worktree 수동 관리
 

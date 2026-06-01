@@ -2,26 +2,26 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Streaming Input
+# 스트리밍 입력
 
-> Understanding the two input modes for Claude Agent SDK and when to use each
+> Claude Agent SDK의 두 가지 입력 모드를 이해하고 각각을 언제 사용할지 알아보기
 
-## Overview
+## 개요
 
-The Claude Agent SDK supports two distinct input modes for interacting with agents:
+Claude Agent SDK는 에이전트와 상호작용하기 위한 두 가지 서로 다른 입력 모드를 지원합니다:
 
-* **Streaming Input Mode** (Default & Recommended) - A persistent, interactive session
-* **Single Message Input** - One-shot queries that use session state and resuming
+* **스트리밍 입력 모드** (기본값 및 권장) - 지속적이고 대화형 세션
+* **단일 메시지 입력** - 세션 상태를 사용하고 재개하는 일회성 쿼리
 
-This guide explains the differences, benefits, and use cases for each mode to help you choose the right approach for your application.
+이 가이드는 각 모드의 차이점, 이점 및 사용 사례를 설명하여 애플리케이션에 적합한 접근 방식을 선택하는 데 도움을 줍니다.
 
-## Streaming Input Mode (Recommended)
+## 스트리밍 입력 모드 (권장)
 
-Streaming input mode is the **preferred** way to use the Claude Agent SDK. It provides full access to the agent's capabilities and enables rich, interactive experiences.
+스트리밍 입력 모드는 Claude Agent SDK를 사용하는 **선호되는** 방식입니다. 에이전트의 기능에 대한 전체 액세스를 제공하고 풍부하고 대화형의 경험을 가능하게 합니다.
 
-It allows the agent to operate as a long lived process that takes in user input, handles interruptions, surfaces permission requests, and handles session management.
+이를 통해 에이전트는 사용자 입력을 받아들이고, 중단을 처리하며, 권한 요청을 표시하고, 세션 관리를 처리하는 장기 실행 프로세스로 작동할 수 있습니다.
 
-### How It Works
+### 작동 방식
 
 ```mermaid theme={null}
 sequenceDiagram
@@ -59,49 +59,50 @@ sequenceDiagram
     deactivate Agent
 ```
 
-### Benefits
+### 이점
 
 <CardGroup cols={2}>
-  <Card title="Image Uploads" icon="image">
-    Attach images directly to messages for visual analysis and understanding
+  <Card title="이미지 업로드" icon="image">
+    시각적 분석 및 이해를 위해 메시지에 직접 이미지를 첨부합니다
   </Card>
 
-  <Card title="Queued Messages" icon="stack">
-    Send multiple messages that process sequentially, with ability to interrupt
+  <Card title="대기 중인 메시지" icon="stack">
+    순차적으로 처리되는 여러 메시지를 보내고 중단할 수 있습니다
   </Card>
 
-  <Card title="Tool Integration" icon="wrench">
-    Full access to all tools and custom MCP servers during the session
+  <Card title="도구 통합" icon="wrench">
+    세션 중에 모든 도구 및 사용자 정의 MCP 서버에 대한 전체 액세스
   </Card>
 
-  <Card title="Hooks Support" icon="link">
-    Use lifecycle hooks to customize behavior at various points
+  <Card title="Hooks 지원" icon="link">
+    라이프사이클 hooks를 사용하여 다양한 지점에서 동작을 사용자 정의합니다
   </Card>
 
-  <Card title="Real-time Feedback" icon="lightning">
-    See responses as they're generated, not just final results
+  <Card title="실시간 피드백" icon="lightning">
+    최종 결과뿐만 아니라 생성되는 응답을 실시간으로 확인합니다
   </Card>
 
-  <Card title="Context Persistence" icon="database">
-    Maintain conversation context across multiple turns naturally
+  <Card title="컨텍스트 지속성" icon="database">
+    여러 턴에 걸쳐 자연스럽게 대화 컨텍스트를 유지합니다
   </Card>
 </CardGroup>
 
-### Implementation Example
+### 구현 예제
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
-  import { query } from "@anthropic-ai/claude-agent-sdk";
+  import { query, type SDKUserMessage } from "@anthropic-ai/claude-agent-sdk";
   import { readFile } from "fs/promises";
 
-  async function* generateMessages() {
+  async function* generateMessages(): AsyncGenerator<SDKUserMessage> {
     // First message
     yield {
-      type: "user" as const,
+      type: "user",
       message: {
-        role: "user" as const,
+        role: "user",
         content: "Analyze this codebase for security issues"
-      }
+      },
+      parent_tool_use_id: null
     };
 
     // Wait for conditions or user input
@@ -109,9 +110,9 @@ sequenceDiagram
 
     // Follow-up with image
     yield {
-      type: "user" as const,
+      type: "user",
       message: {
-        role: "user" as const,
+        role: "user",
         content: [
           {
             type: "text",
@@ -126,7 +127,8 @@ sequenceDiagram
             }
           }
         ]
-      }
+      },
+      parent_tool_use_id: null
     };
   }
 
@@ -138,7 +140,7 @@ sequenceDiagram
       allowedTools: ["Read", "Grep"]
     }
   })) {
-    if (message.type === "result") {
+    if (message.type === "result" && message.subtype === "success") {
       console.log(message.result);
     }
   }
@@ -210,31 +212,31 @@ sequenceDiagram
   ```
 </CodeGroup>
 
-## Single Message Input
+## 단일 메시지 입력
 
-Single message input is simpler but more limited.
+단일 메시지 입력은 더 간단하지만 더 제한적입니다.
 
-### When to Use Single Message Input
+### 단일 메시지 입력을 사용할 때
 
-Use single message input when:
+다음의 경우 단일 메시지 입력을 사용합니다:
 
-* You need a one-shot response
-* You do not need image attachments, hooks, etc.
-* You need to operate in a stateless environment, such as a lambda function
+* 일회성 응답이 필요한 경우
+* 이미지 첨부, hooks 등이 필요하지 않은 경우
+* lambda 함수와 같은 상태 비저장 환경에서 작동해야 하는 경우
 
-### Limitations
+### 제한 사항
 
 <Warning>
-  Single message input mode does **not** support:
+  단일 메시지 입력 모드는 다음을 **지원하지 않습니다**:
 
-  * Direct image attachments in messages
-  * Dynamic message queueing
-  * Real-time interruption
-  * Hook integration
-  * Natural multi-turn conversations
+  * 메시지의 직접 이미지 첨부
+  * 동적 메시지 대기열
+  * 실시간 중단
+  * Hook 통합
+  * 자연스러운 다중 턴 대화
 </Warning>
 
-### Implementation Example
+### 구현 예제
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
@@ -248,7 +250,7 @@ Use single message input when:
       allowedTools: ["Read", "Grep"]
     }
   })) {
-    if (message.type === "result") {
+    if (message.type === "result" && message.subtype === "success") {
       console.log(message.result);
     }
   }
@@ -261,7 +263,7 @@ Use single message input when:
       maxTurns: 1
     }
   })) {
-    if (message.type === "result") {
+    if (message.type === "result" && message.subtype === "success") {
       console.log(message.result);
     }
   }

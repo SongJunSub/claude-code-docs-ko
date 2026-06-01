@@ -76,117 +76,7 @@ export const ContactSalesCard = ({surface}) => {
     </div>;
 };
 
-export const Experiment = ({flag, treatment, children}) => {
-  const VID_KEY = 'exp_vid';
-  const CONSENT_COUNTRIES = new Set(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'RE', 'GP', 'MQ', 'GF', 'YT', 'BL', 'MF', 'PM', 'WF', 'PF', 'NC', 'AW', 'CW', 'SX', 'FO', 'GL', 'AX', 'GB', 'UK', 'AI', 'BM', 'IO', 'VG', 'KY', 'FK', 'GI', 'MS', 'PN', 'SH', 'TC', 'GG', 'JE', 'IM', 'CA', 'BR', 'IN']);
-  const fnv1a = s => {
-    let h = 0x811c9dc5;
-    for (let i = 0; i < s.length; i++) {
-      h ^= s.charCodeAt(i);
-      h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
-    }
-    return h >>> 0;
-  };
-  const bucket = (seed, vid) => fnv1a(fnv1a(seed + vid) + '') % 10000 < 5000 ? 'control' : 'treatment';
-  const [decision] = useState(() => {
-    const params = new URLSearchParams(location.search);
-    const preBucketed = document.documentElement.dataset['gb_' + flag.replace(/-/g, '_')];
-    const force = params.get('gb-force');
-    if (force) {
-      for (const p of force.split(',')) {
-        const [k, v] = p.split(':');
-        if (k === flag) return {
-          variant: v || 'treatment',
-          track: false
-        };
-      }
-    }
-    if (navigator.globalPrivacyControl) {
-      return {
-        variant: 'control',
-        track: false
-      };
-    }
-    const prefsMatch = document.cookie.match(/(?:^|; )anthropic-consent-preferences=([^;]+)/);
-    if (prefsMatch) {
-      try {
-        if (JSON.parse(decodeURIComponent(prefsMatch[1])).analytics !== true) {
-          return {
-            variant: 'control',
-            track: false
-          };
-        }
-      } catch {
-        return {
-          variant: 'control',
-          track: false
-        };
-      }
-    } else {
-      const country = params.get('country')?.toUpperCase() || (document.cookie.match(/(?:^|; )cf_geo=([A-Z]{2})/) || [])[1];
-      if (!country || CONSENT_COUNTRIES.has(country)) {
-        return {
-          variant: 'control',
-          track: false
-        };
-      }
-    }
-    let vid;
-    try {
-      const ajsMatch = document.cookie.match(/(?:^|; )ajs_anonymous_id=([^;]+)/);
-      if (ajsMatch) {
-        vid = decodeURIComponent(ajsMatch[1]).replace(/^"|"$/g, '');
-      } else {
-        vid = localStorage.getItem(VID_KEY);
-        if (!vid) {
-          vid = crypto.randomUUID();
-        }
-        document.cookie = `ajs_anonymous_id=${vid}; domain=.claude.com; path=/; Secure; SameSite=Lax; max-age=31536000`;
-      }
-      try {
-        localStorage.setItem(VID_KEY, vid);
-      } catch {}
-    } catch {
-      return {
-        variant: 'control',
-        track: false
-      };
-    }
-    const variant = preBucketed === '1' ? 'treatment' : preBucketed === '0' ? 'control' : bucket(flag, vid);
-    return {
-      variant,
-      track: true,
-      vid
-    };
-  });
-  useEffect(() => {
-    if (!decision.track) return;
-    fetch('https://api.anthropic.com/api/event_logging/v2/batch', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-service-name': 'claude_code_docs'
-      },
-      body: JSON.stringify({
-        events: [{
-          event_type: 'GrowthbookExperimentEvent',
-          event_data: {
-            device_id: decision.vid,
-            anonymous_id: decision.vid,
-            timestamp: new Date().toISOString(),
-            experiment_id: flag,
-            variation_id: decision.variant === 'treatment' ? 1 : 0,
-            environment: 'production'
-          }
-        }]
-      }),
-      keepalive: true
-    }).catch(() => {});
-  }, []);
-  return decision.variant === 'treatment' ? treatment : children;
-};
-
-<Experiment flag="docs-contact-sales-cta" treatment={<ContactSalesCard surface="foundry" />} />
+<ContactSalesCard surface="foundry" />
 
 ## 필수 조건
 
@@ -240,7 +130,7 @@ az login
 ```
 
 <Note>
-  Microsoft Foundry를 사용할 때 `/login` 및 `/logout` 명령은 Azure 자격 증명을 통해 인증이 처리되므로 비활성화됩니다.
+  Microsoft Foundry를 사용할 때 `/logout` 명령은 Azure 자격 증명을 통해 인증이 처리되므로 사용할 수 없습니다.
 </Note>
 
 ### 3. Claude Code 구성
@@ -273,13 +163,25 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-4-6'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5'
 ```
 
+백그라운드 작업(예: 세션 제목 생성)은 일반적으로 Haiku 클래스 모델인 소형/빠른 모델을 사용합니다. Foundry에서 Claude Code는 모든 계정이 Haiku 배포를 가지고 있지 않기 때문에 기본 모델로 기본 설정됩니다. 백그라운드 작업에 Haiku를 사용하려면 위에 표시된 대로 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 계정에서 사용 가능한 Haiku 배포로 설정합니다.
+
 현재 및 레거시 모델 ID는 [모델 개요](https://platform.claude.com/docs/en/about-claude/models/overview)를 참조하세요. 전체 환경 변수 목록은 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하세요.
 
-[Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)은 자동으로 활성화됩니다. 기본 5분 대신 1시간 캐시 TTL을 요청하려면 다음 변수를 설정합니다. 1시간 TTL로 캐시 쓰기는 더 높은 요금으로 청구됩니다:
+[Prompt caching](/ko/prompt-caching)은 자동으로 활성화됩니다. 기본 5분 대신 1시간 캐시 TTL을 요청하려면 다음 변수를 설정합니다. 1시간 TTL로 캐시 쓰기는 더 높은 요금으로 청구됩니다:
 
 ```bash theme={null}
 export ENABLE_PROMPT_CACHING_1H=1
 ```
+
+### 5. Claude Code 실행
+
+환경 변수가 설정되면 프로젝트 디렉터리에서 Claude Code를 시작합니다:
+
+```bash theme={null}
+claude
+```
+
+Claude Code는 환경에서 `CLAUDE_CODE_USE_FOUNDRY` 및 기타 Foundry 변수를 읽고 첫 번째 프롬프트에서 Azure 리소스에 연결합니다. Bedrock 및 Vertex AI와 달리 Foundry는 대화형 설정 마법사가 없으므로 3단계와 4단계의 환경 변수가 유일한 구성 경로입니다.
 
 ## Azure RBAC 구성
 

@@ -22,7 +22,7 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
   })) {
     if (message.type === "system" && message.subtype === "init") {
       console.log("Available slash commands:", message.slash_commands);
-      // Example output: ["/compact", "/context", "/usage"]
+      // Example output: ["clear", "compact", "context", "usage"]
     }
   }
   ```
@@ -36,7 +36,7 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
       async for message in query(prompt="Hello Claude", options=ClaudeAgentOptions(max_turns=1)):
           if isinstance(message, SystemMessage) and message.subtype == "init":
               print("Available slash commands:", message.data["slash_commands"])
-              # Example output: ["/compact", "/context", "/usage"]
+              # Example output: ["clear", "compact", "context", "usage"]
 
 
   asyncio.run(main())
@@ -56,7 +56,7 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
     prompt: "/compact",
     options: { maxTurns: 1 }
   })) {
-    if (message.type === "result") {
+    if (message.type === "result" && message.subtype === "success") {
       console.log("Command executed:", message.result);
     }
   }
@@ -117,9 +117,15 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
   ```
 </CodeGroup>
 
-### 대화 지우기
+### `/clear` - 대화 컨텍스트 초기화
 
-대화형 `/clear` 명령어는 SDK에서 사용할 수 없습니다. 각 `query()` 호출은 이미 새로운 대화를 시작하므로, 컨텍스트를 지우려면 현재 `query()`를 종료하고 새로운 것을 시작합니다. 이전 대화는 디스크에 남아 있으며 세션 ID를 [`resume` 옵션](/ko/agent-sdk/sessions#resume-by-id)에 전달하여 돌아갈 수 있습니다.
+`/clear` 명령어는 대화를 빈 컨텍스트로 초기화하므로 이후의 프롬프트는 이전 대화 기록 없이 시작됩니다. 이전 대화는 디스크에 남아 있으며 세션 ID를 [`resume` 옵션](/ko/agent-sdk/sessions#resume-by-id)에 전달하여 돌아갈 수 있습니다.
+
+이는 단일 연결을 통해 여러 프롬프트를 보내는 [스트리밍 입력 모드](/ko/agent-sdk/streaming-vs-single-mode)에서 유용합니다. 일회성 `query()` 호출의 경우 각 호출은 이미 빈 컨텍스트로 시작하므로 `/clear`를 보내는 것은 실질적인 효과가 없습니다. 대신 새로운 `query()`를 시작하세요.
+
+<Note>
+  SDK의 `/clear`는 Claude Code v2.1.117 이상이 필요합니다. 이전 버전에서는 `slash_commands`에서 생략됩니다.
+</Note>
 
 ## 사용자 정의 슬래시 명령어 만들기
 
@@ -181,7 +187,7 @@ Analyze the codebase for security vulnerabilities including:
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Use a custom command
+  // 사용자 정의 명령어 사용
   for await (const message of query({
     prompt: "/refactor src/auth/login.ts",
     options: { maxTurns: 3 }
@@ -191,15 +197,15 @@ Analyze the codebase for security vulnerabilities including:
     }
   }
 
-  // Custom commands appear in the slash_commands list
+  // 사용자 정의 명령어는 slash_commands 목록에 나타납니다
   for await (const message of query({
     prompt: "Hello",
     options: { maxTurns: 1 }
   })) {
     if (message.type === "system" && message.subtype === "init") {
-      // Will include both built-in and custom commands
+      // 기본 제공 명령어와 사용자 정의 명령어를 모두 포함합니다
       console.log("Available commands:", message.slash_commands);
-      // Example: ["/compact", "/context", "/usage", "/refactor", "/security-check"]
+      // 예: ["clear", "compact", "context", "usage", "refactor", "security-check"]
     }
   }
   ```
@@ -210,7 +216,7 @@ Analyze the codebase for security vulnerabilities including:
 
 
   async def main():
-      # Use a custom command
+      # 사용자 정의 명령어 사용
       async for message in query(
           prompt="/refactor src/auth/login.py", options=ClaudeAgentOptions(max_turns=3)
       ):
@@ -219,12 +225,12 @@ Analyze the codebase for security vulnerabilities including:
                   if hasattr(block, "text"):
                       print("Refactoring suggestions:", block.text)
 
-      # Custom commands appear in the slash_commands list
+      # 사용자 정의 명령어는 slash_commands 목록에 나타납니다
       async for message in query(prompt="Hello", options=ClaudeAgentOptions(max_turns=1)):
           if isinstance(message, SystemMessage) and message.subtype == "init":
-              # Will include both built-in and custom commands
+              # 기본 제공 명령어와 사용자 정의 명령어를 모두 포함합니다
               print("Available commands:", message.data["slash_commands"])
-              # Example: ["/compact", "/context", "/usage", "/refactor", "/security-check"]
+              # 예: ["clear", "compact", "context", "usage", "refactor", "security-check"]
 
 
   asyncio.run(main())
@@ -255,13 +261,13 @@ SDK에서 사용:
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Pass arguments to custom command
+  // 사용자 정의 명령어에 인수 전달
   for await (const message of query({
     prompt: "/fix-issue 123 high",
     options: { maxTurns: 5 }
   })) {
-    // Command will process with $1="123" and $2="high"
-    if (message.type === "result") {
+    // 명령어는 $1="123"과 $2="high"로 처리됩니다
+    if (message.type === "result" && message.subtype === "success") {
       console.log("Issue fixed:", message.result);
     }
   }
@@ -273,9 +279,9 @@ SDK에서 사용:
 
 
   async def main():
-      # Pass arguments to custom command
+      # 사용자 정의 명령어에 인수 전달
       async for message in query(prompt="/fix-issue 123 high", options=ClaudeAgentOptions(max_turns=5)):
-          # Command will process with $1="123" and $2="high"
+          # 명령어는 $1="123"과 $2="high"로 처리됩니다
           if isinstance(message, ResultMessage):
               print("Issue fixed:", message.result)
 
@@ -332,12 +338,12 @@ Check for security issues, outdated dependencies, and misconfigurations.
 ```bash theme={null}
 .claude/commands/
 ├── frontend/
-│   ├── component.md      # Creates /component (project:frontend)
-│   └── style-check.md     # Creates /style-check (project:frontend)
+│   ├── component.md      # /component 생성 (project:frontend)
+│   └── style-check.md     # /style-check 생성 (project:frontend)
 ├── backend/
-│   ├── api-test.md        # Creates /api-test (project:backend)
-│   └── db-migrate.md      # Creates /db-migrate (project:backend)
-└── review.md              # Creates /review (project)
+│   ├── api-test.md        # /api-test 생성 (project:backend)
+│   └── db-migrate.md      # /db-migrate 생성 (project:backend)
+└── review.md              # /review 생성 (project)
 ```
 
 하위 디렉토리는 명령어 설명에 나타나지만 명령어 이름 자체에는 영향을 주지 않습니다.
@@ -397,20 +403,20 @@ SDK를 통해 이러한 명령어를 사용합니다:
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Run code review
+  // 코드 리뷰 실행
   for await (const message of query({
     prompt: "/code-review",
     options: { maxTurns: 3 }
   })) {
-    // Process review feedback
+    // 리뷰 피드백 처리
   }
 
-  // Run specific tests
+  // 특정 테스트 실행
   for await (const message of query({
     prompt: "/test auth",
     options: { maxTurns: 5 }
   })) {
-    // Handle test results
+    // 테스트 결과 처리
   }
   ```
 
@@ -420,14 +426,14 @@ SDK를 통해 이러한 명령어를 사용합니다:
 
 
   async def main():
-      # Run code review
+      # 코드 리뷰 실행
       async for message in query(prompt="/code-review", options=ClaudeAgentOptions(max_turns=3)):
-          # Process review feedback
+          # 리뷰 피드백 처리
           pass
 
-      # Run specific tests
+      # 특정 테스트 실행
       async for message in query(prompt="/test auth", options=ClaudeAgentOptions(max_turns=5)):
-          # Handle test results
+          # 테스트 결과 처리
           pass
 
 

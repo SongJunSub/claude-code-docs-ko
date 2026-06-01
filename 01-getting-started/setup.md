@@ -20,7 +20,7 @@ Claude Code는 다음 플랫폼 및 구성에서 실행됩니다:
   * Alpine Linux 3.19+
 * **하드웨어**: 4GB 이상 RAM, x64 또는 ARM64 프로세서
 * **네트워크**: 인터넷 연결 필수. [네트워크 구성](/ko/network-config#network-access-requirements)을 참조하세요.
-* **셸**: Bash, Zsh, PowerShell 또는 CMD. 네이티브 Windows에서는 [Git for Windows](https://git-scm.com/downloads/win)를 권장합니다. Git Bash가 없을 때 Claude Code는 PowerShell로 폴백됩니다. WSL 설정에는 Git for Windows가 필요하지 않습니다.
+* **셸**: Bash, Zsh, PowerShell 또는 CMD.
 * **위치**: [Anthropic 지원 국가](https://www.anthropic.com/supported-countries)
 
 ### 추가 종속성
@@ -103,29 +103,32 @@ claude
 
 Claude Code를 Windows에서 기본적으로 실행하거나 WSL 내에서 실행할 수 있습니다. 프로젝트가 위치한 곳과 필요한 기능을 기반으로 선택하세요:
 
-| 옵션           | 필요 사항                                                                      | [샌드박싱](/ko/sandboxing) | 사용 시기                      |
-| ------------ | -------------------------------------------------------------------------- | ---------------------- | -------------------------- |
-| 네이티브 Windows | [Git for Windows](https://git-scm.com/downloads/win) 권장; 없으면 PowerShell 사용 | 지원되지 않음                | Windows 기본 프로젝트 및 도구       |
-| WSL 2        | WSL 2 활성화                                                                  | 지원됨                    | Linux 도구 체인 또는 샌드박싱된 명령 실행 |
-| WSL 1        | WSL 1 활성화                                                                  | 지원되지 않음                | WSL 2를 사용할 수 없는 경우         |
+| 옵션           | 필요 사항                                                           | [샌드박싱](/ko/sandboxing) | 사용 시기                      |
+| ------------ | --------------------------------------------------------------- | ---------------------- | -------------------------- |
+| 네이티브 Windows | 없음; [Git for Windows](https://git-scm.com/downloads/win)는 선택 사항 | 지원되지 않음                | Windows 기본 프로젝트 및 도구       |
+| WSL 2        | WSL 2 활성화                                                       | 지원됨                    | Linux 도구 체인 또는 샌드박싱된 명령 실행 |
+| WSL 1        | WSL 1 활성화                                                       | 지원되지 않음                | WSL 2를 사용할 수 없는 경우         |
 
-**옵션 1: Git Bash를 사용한 네이티브 Windows**
+**옵션 1: 네이티브 Windows**
 
-[Git for Windows](https://git-scm.com/downloads/win)를 설치한 후 PowerShell 또는 CMD에서 설치 명령을 실행하세요. 관리자로 실행할 필요가 없습니다.
+PowerShell 또는 CMD에서 설치 명령을 실행하세요. 관리자로 실행할 필요가 없습니다. [Git for Windows](https://git-scm.com/downloads/win) 설치는 선택 사항입니다. 이는 Git Bash를 제공하여 [Bash 도구](/ko/tools-reference#bash-tool-behavior)를 활성화합니다.
 
 PowerShell 또는 CMD에서 설치하는지 여부는 실행하는 설치 명령에만 영향을 줍니다. 프롬프트는 PowerShell에서 `PS C:\Users\YourName>`을 표시하고 CMD에서는 `PS` 없이 `C:\Users\YourName>`을 표시합니다. 터미널이 처음이라면 [터미널 가이드](/ko/terminal-guide#windows)에서 각 단계를 안내합니다.
 
-설치 후 PowerShell, CMD 또는 Git Bash에서 `claude`를 실행하세요. Git Bash가 설치되어 있으면 Claude Code는 실행 위치와 관계없이 명령을 실행하기 위해 내부적으로 Git Bash를 사용합니다. Claude Code가 Git Bash 설치를 찾을 수 없으면 [settings.json 파일](/ko/settings)에서 경로를 설정하세요:
+설치 후 모든 터미널에서 `claude`를 실행하세요.
 
-```json theme={null}
-{
-  "env": {
-    "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Program Files\\Git\\bin\\bash.exe"
+* **Git for Windows 없음**, Claude Code는 [PowerShell 도구](/ko/tools-reference#powershell-tool)를 통해 셸 명령을 실행합니다.
+* **Git for Windows 포함**, Claude Code는 [Bash 도구](/ko/tools-reference#bash-tool-behavior)에 Git Bash를 사용합니다. Claude Code가 Git Bash를 찾을 수 없으면 [settings.json 파일](/ko/settings)에서 경로를 설정하세요:
+
+  ```json theme={null}
+  {
+    "env": {
+      "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Program Files\\Git\\bin\\bash.exe"
+    }
   }
-}
-```
+  ```
 
-Claude Code는 또한 Windows에서 PowerShell을 기본적으로 실행할 수 있습니다. Git Bash가 설치되어 있으면 PowerShell 도구는 추가 옵션으로 점진적으로 출시되고 있습니다. 옵트인하려면 `CLAUDE_CODE_USE_POWERSHELL_TOOL=1`을 설정하거나 옵트아웃하려면 `0`을 설정하세요. 설정 및 제한사항은 [PowerShell 도구](/ko/tools-reference#powershell-tool)를 참조하세요.
+Git for Windows가 설치되면 PowerShell 도구는 Bash와 함께 추가 옵션으로 점진적으로 출시되고 있습니다. 옵트인하려면 `CLAUDE_CODE_USE_POWERSHELL_TOOL=1`을 설정하거나 옵트아웃하려면 `0`을 설정하세요. 설정 및 제한사항은 [PowerShell 도구](/ko/tools-reference#powershell-tool)를 참조하세요.
 
 **옵션 2: WSL**
 
@@ -175,14 +178,22 @@ Claude Code는 Pro, Max, Team, Enterprise 또는 Console 계정이 필요합니�
 
 ## Claude Code 업데이트
 
-네이티브 설치는 백그라운드에서 자동으로 업데이트됩니다. [릴리스 채널을 구성](#configure-release-channel)하여 즉시 업데이트를 받을지 또는 지연된 안정적인 일정으로 받을지 제어하거나, [자동 업데이트를 비활성화](#disable-auto-updates)할 수 있습니다. Homebrew, WinGet 및 [Linux 패키지 관리자](#install-with-linux-package-managers) 설치는 수동 업데이트가 필요합니다.
+네이티브 설치는 백그라운드에서 자동으로 업데이트됩니다. [릴리스 채널을 구성](#configure-release-channel)하여 즉시 업데이트를 받을지 또는 지연된 안정적인 일정으로 받을지 제어하거나, [자동 업데이트를 비활성화](#disable-auto-updates)할 수 있습니다. Homebrew, WinGet 및 [Linux 패키지 관리자](#install-with-linux-package-managers) 설치는 기본적으로 수동 업데이트가 필요합니다.
 
 ### 자동 업데이트
 
 Claude Code는 시작 시 및 실행 중에 주기적으로 업데이트를 확인합니다. 업데이트는 백그라운드에서 다운로드 및 설치되며 다음 번에 Claude Code를 시작할 때 적용됩니다.
 
+`claude doctor`를 실행하여 가장 최근 업데이트 시도의 결과를 확인하세요.
+
+npm 전역 설치가 npm 전역 디렉터리를 쓸 수 없기 때문에 자동 업데이트할 수 없는 경우, Claude Code는 시작 시 일회성 알림을 표시하고 `claude doctor`는 사용 가능한 수정 사항을 나열합니다. 자세한 내용은 [설치 중 권한 오류](/ko/troubleshoot-install#permission-errors-during-installation)를 참조하세요.
+
 <Note>
-  Homebrew, WinGet, apt, dnf 및 apk 설치는 자동으로 업데이트되지 않습니다. Homebrew의 경우 `brew upgrade claude-code` 또는 `brew upgrade claude-code@latest`를 실행하세요(설치한 cask에 따라 다름). WinGet의 경우 `winget upgrade Anthropic.ClaudeCode`를 실행하세요. Linux 패키지 관리자의 경우 [Linux 패키지 관리자로 설치](#install-with-linux-package-managers)의 업그레이드 명령을 참조하세요.
+  Homebrew, WinGet, apt, dnf 및 apk 설치는 기본적으로 자동으로 업데이트되지 않습니다. Homebrew 및 WinGet에 대해 옵트인하려면 아래를 참조하세요. Homebrew를 수동으로 업그레이드하려면 설치한 cask에 따라 `brew upgrade claude-code` 또는 `brew upgrade claude-code@latest`를 실행하세요. WinGet의 경우 `winget upgrade Anthropic.ClaudeCode`를 실행하세요. Linux 패키지 관리자의 경우 [Linux 패키지 관리자로 설치](#install-with-linux-package-managers)의 업그레이드 명령을 참조하세요.
+
+  Claude Code가 Homebrew 또는 WinGet에서 업그레이드 명령을 실행하도록 하려면 [`CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE`](/ko/env-vars)를 `1`로 설정하세요. Claude Code는 새 버전을 사용할 수 있을 때 백그라운드에서 업그레이드를 실행하고 성공 시 재시작 프롬프트를 표시합니다. 업그레이드는 Claude Code 패키지만 대상으로 하며 설치한 다른 소프트웨어에는 영향을 주지 않습니다.
+
+  WinGet에서는 Claude Code가 실행 중일 때 Windows가 실행 파일을 잠그기 때문에 업그레이드가 실패할 수 있습니다. 이 경우 Claude Code는 수동 명령을 대신 표시합니다. apt, dnf 및 apk는 이러한 명령이 상승된 권한이 필요하기 때문에 계속 수동 업그레이드가 필요합니다.
 
   **알려진 문제:** Claude Code는 새 버전이 이러한 패키지 관리자에서 사용 가능하기 전에 업데이트를 알릴 수 있습니다. 업그레이드가 실패하면 잠시 기다렸다가 나중에 다시 시도하세요.
 
@@ -394,6 +405,8 @@ npm 패키지는 독립 실행형 설치 프로그램과 동일한 네이티브 
 
 지원되는 npm 설치 플랫폼은 `darwin-arm64`, `darwin-x64`, `linux-x64`, `linux-arm64`, `linux-x64-musl`, `linux-arm64-musl`, `win32-x64` 및 `win32-arm64`입니다. 패키지 관리자는 선택적 종속성을 허용해야 합니다. 설치 후 바이너리가 누락된 경우 [문제 해결](/ko/troubleshoot-install#native-binary-not-found-after-npm-install)을 참조하세요.
 
+npm 설치를 업그레이드하려면 `npm install -g @anthropic-ai/claude-code@latest`를 실행하세요. `npm update -g`는 원래 설치의 semver 범위를 존중하며 최신 릴리스로 이동하지 않을 수 있으므로 피하세요.
+
 <Warning>
   `sudo npm install -g`를 사용하지 마세요. 이는 권한 문제 및 보안 위험으로 이어질 수 있습니다. 권한 오류가 발생하면 [설치 중 권한 오류 문제 해결](/ko/troubleshoot-install#permission-errors-during-installation)을 참조하세요.
 </Warning>
@@ -489,7 +502,7 @@ npm 패키지는 독립 실행형 설치 프로그램과 동일한 네이티브 
 
 ## Claude Code 제거
 
-Claude Code를 제거하려면 설치 방법에 따른 지침을 따르세요.
+Claude Code를 제거하려면 설치 방법에 따른 지침을 따르세요. 제거 후에도 `claude`가 계속 실행되면 두 번째 설치 또는 이전 설치 프로그램의 남은 셸 별칭이 있을 가능성이 높습니다. [충돌하는 설치 확인](/ko/troubleshoot-install#check-for-conflicting-installations)을 참조하여 이를 찾아 제거하세요.
 
 ### 네이티브 설치
 

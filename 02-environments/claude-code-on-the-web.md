@@ -32,14 +32,18 @@
 
 클라우드 세션은 코드를 복제하고 분기를 푸시하기 위해 GitHub 저장소에 액세스해야 합니다. 두 가지 방법으로 액세스 권한을 부여할 수 있습니다:
 
-| 방법               | 작동 방식                                                                                      | 최적 대상                |
-| :--------------- | :----------------------------------------------------------------------------------------- | :------------------- |
-| **GitHub App**   | [웹 온보딩](/ko/web-quickstart) 중에 특정 저장소에 Claude GitHub App을 설치합니다. 액세스는 저장소별로 범위가 지정됩니다.     | 저장소별 명시적 인증을 원하는 팀   |
-| **`/web-setup`** | 터미널에서 `/web-setup`을 실행하여 로컬 `gh` CLI 토큰을 Claude 계정과 동기화합니다. 액세스는 `gh` 토큰이 볼 수 있는 것과 일치합니다. | 이미 `gh`를 사용하는 개별 개발자 |
+| 방법               | 작동 방식                                                       | 최적 대상                                             |
+| :--------------- | :---------------------------------------------------------- | :------------------------------------------------ |
+| **GitHub App**   | [웹 온보딩](/ko/web-quickstart) 중에 Claude GitHub App을 승인합니다.    | 브라우저 온보딩; [자동 수정](#auto-fix-pull-requests)을 원하는 팀 |
+| **`/web-setup`** | 터미널에서 `/web-setup`을 실행하여 로컬 `gh` CLI 토큰을 Claude 계정과 동기화합니다. | 이미 `gh`를 사용하는 개별 개발자                              |
+
+<Note>
+  두 방법 모두에서 클라우드 세션은 Claude GitHub App이 설치된 저장소뿐만 아니라 연결된 GitHub 계정이 볼 수 있는 모든 저장소에 액세스할 수 있습니다. App 설치는 [자동 수정](#auto-fix-pull-requests)을 위한 PR 웹훅을 활성화합니다. 이는 세션 수준의 액세스 제어가 아닙니다. 클라우드 세션에서 팀이 도달할 수 있는 저장소를 제한하려면 GitHub 자체에서 액세스를 제한하세요. 예를 들어 연결된 GitHub 계정의 팀 또는 저장소 멤버십을 제한하면 됩니다.
+</Note>
 
 두 방법 모두 작동합니다. [`/schedule`](/ko/routines)은 두 형태의 액세스를 확인하고 구성되지 않은 경우 `/web-setup`을 실행하라는 메시지를 표시합니다. `/web-setup` 안내는 [터미널에서 연결](/ko/web-quickstart#connect-from-your-terminal)을 참조하세요.
 
-GitHub App은 PR 웹훅을 수신하기 위해 App을 사용하는 [자동 수정](#auto-fix-pull-requests)에 필요합니다. `/web-setup`으로 연결했다가 나중에 자동 수정을 원하면 해당 저장소에 App을 설치하세요.
+GitHub App은 App을 사용하여 PR 웹훅을 수신하는 [자동 수정](#auto-fix-pull-requests)에 필요합니다. `/web-setup`으로 연결했다가 나중에 자동 수정을 원하면 해당 저장소에 App을 설치하세요.
 
 Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)의 Quick web setup 토글로 `/web-setup`을 비활성화할 수 있습니다.
 
@@ -113,10 +117,10 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
 
 각 클라우드 세션에는 claude.ai의 트랜스크립트 URL이 있으며, 세션은 `CLAUDE_CODE_REMOTE_SESSION_ID` 환경 변수에서 자신의 ID를 읽을 수 있습니다. 이를 사용하여 PR 본문, 커밋 메시지, Slack 게시물 또는 생성된 보고서에 추적 가능한 링크를 넣어서 검토자가 이를 생성한 실행을 열 수 있습니다.
 
-Claude에 환경 변수에서 링크를 구성하도록 요청하세요. 다음 명령은 URL을 인쇄합니다:
+변수의 값은 `cse_` 접두사를 사용하고, 트랜스크립트 URL 경로는 `session_` 접두사를 사용하는 동일한 ID를 사용합니다. 링크를 구성할 때 접두사를 대체하세요. 다음 명령은 URL을 인쇄합니다:
 
 ```bash theme={null}
-echo "https://claude.ai/code/${CLAUDE_CODE_REMOTE_SESSION_ID}"
+echo "https://claude.ai/code/${CLAUDE_CODE_REMOTE_SESSION_ID/#cse_/session_}"
 ```
 
 ### 테스트 실행, 서비스 시작 및 패키지 추가
@@ -156,7 +160,7 @@ Docker는 컨테이너화된 서비스를 실행하는 데 사용 가능합니�
 | 작업                 | 방법                                                                                                                  |
 | :----------------- | :------------------------------------------------------------------------------------------------------------------ |
 | 환경 추가              | 현재 환경을 선택하여 선택기를 열고 **Add environment**를 선택합니다. 대화 상자에는 이름, 네트워크 액세스 수준, 환경 변수 및 설정 스크립트가 포함됩니다.                    |
-| 환경 편집              | 환경 이름 오른쪽의 설정 아이콘을 선택합니다.                                                                                           |
+| 환경 편집              | 클라우드 아이콘을 선택하여 현재 환경의 이름을 표시하고 선택기를 열고, 환경 위에 마우스를 올리고, 오른쪽에 나타나는 설정 아이콘을 클릭합니다.                                    |
 | 환경 보관              | 환경을 편집하기 위해 열고 **Archive**를 선택합니다. 보관된 환경은 선택기에서 숨겨지지만 기존 세션은 계속 실행됩니다.                                             |
 | `--remote`의 기본값 설정 | 터미널에서 `/remote-env`를 실행합니다. 단일 환경이 있으면 이 명령은 현재 구성을 표시합니다. `/remote-env`는 기본값만 선택합니다. 웹 인터페이스에서 환경을 추가, 편집 및 보관합니다. |
 
@@ -184,6 +188,8 @@ apt update && apt install -y gh
 ```
 
 스크립트가 0이 아닌 값으로 종료되면 세션이 시작되지 않습니다. 간헐적인 설치 실패로 세션을 차단하지 않으려면 중요하지 않은 명령에 `|| true`를 추가하세요.
+
+스크립트의 총 런타임을 대략 5분 이내로 유지하여 [환경 캐시](#environment-caching)를 구성할 수 있습니다. `&` 및 `wait`를 사용하여 독립적인 설치를 병렬로 실행하세요. 단일 다운로드가 5분 제한에 맞지 않으면 [SessionStart hook](#setup-scripts-vs-sessionstart-hooks)으로 이동하여 백그라운드에서 시작하세요.
 
 <Note>
   패키지를 설치하는 설정 스크립트는 레지스트리에 도달하기 위해 네트워크 액세스가 필요합니다. 기본 **Trusted** 네트워크 액세스는 npm, PyPI, RubyGems 및 crates.io를 포함한 [일반적인 패키지 레지스트리](#default-allowed-domains)에 대한 연결을 허용합니다. 환경이 **None** 네트워크 액세스를 사용하면 스크립트가 패키지 설치에 실패합니다.
@@ -264,6 +270,12 @@ SessionStart hooks는 클라우드 세션에서 몇 가지 제한 사항이 있�
 ## 네트워크 액세스
 
 네트워크 액세스는 클라우드 환경에서 아웃바운드 연결을 제어합니다. 각 환경은 하나의 액세스 수준을 지정하며, 사용자 정의 허용 도메인으로 확장할 수 있습니다. 기본값은 **Trusted**이며, 패키지 레지스트리 및 기타 [허용 목록 도메인](#default-allowed-domains)을 허용합니다.
+
+환경의 네트워크 액세스를 변경하려면 [편집을 위해 열고](#configure-your-environment) 대화 상자에서 **Network access** 선택기를 사용하세요. 별도의 Environments 페이지가 없습니다. 클라우드 세션을 시작하거나 [routine](/ko/routines#environments-and-network-access)을 구성할 때마다 클라우드 아이콘이 나타납니다.
+
+<Note>
+  MCP 커넥터 트래픽은 Anthropic의 서버를 통해 라우팅되므로 세션 또는 routine에서 활성화한 커넥터는 **Allowed domains**에 해당 호스트를 추가하지 않고도 작동합니다. 커넥터는 세션별 또는 routine별로 구성됩니다. 필요하지 않은 것을 제거하여 Claude가 도달할 수 있는 도구를 제한하세요. 이는 [보안 및 격리](#security-and-isolation)에서 언급한 동일한 Anthropic 바운드 채널에 의존합니다.
+</Note>
 
 ### 액세스 수준
 
@@ -731,6 +743,8 @@ PR이 어디에서 왔는지와 어떤 기기를 사용하는지에 따라 자�
 * **모바일 앱에서**: Claude에 PR을 자동 수정하도록 지시합니다. 예를 들어 "watch this PR and fix any CI failures or review comments"
 * **기존 PR**: PR URL을 세션에 붙여넣고 Claude에 자동 수정하도록 지시합니다
 
+자동 수정은 PR별 토글입니다. 모니터링을 중지하려면 웹 세션에서 CI 상태 표시줄을 열고 **Auto-fix** 토글을 해제하거나, Claude에 PR 감시를 중지하도록 지시합니다.
+
 ### Claude가 PR 활동에 응답하는 방식
 
 자동 수정이 활성화되면 Claude는 새 검토 주석 및 CI 검사 실패를 포함한 PR의 GitHub 이벤트를 수신합니다. 각 이벤트에 대해 Claude는 조사하고 진행 방식을 결정합니다:
@@ -754,6 +768,32 @@ Claude는 GitHub의 검토 주석 스레드에 회신할 수 있습니다. 이�
 * **자격 증명 보호**: git 자격 증명 또는 서명 키와 같은 민감한 자격 증명은 Claude Code가 있는 샌드박스 내부에 없습니다. 인증은 범위 자격 증명을 사용하는 보안 프록시를 통해 처리됩니다.
 * **안전한 분석**: 코드는 PR을 생성하기 전에 격리된 VM 내에서 분석 및 수정됩니다
 
+## 문제 해결
+
+런타임 API 오류(예: `API Error: 500`, `529 Overloaded`, `429` 또는 `Prompt is too long`)가 대화에 나타나면 [오류 참조](/ko/errors)를 참조하세요. 이러한 오류와 해결 방법은 CLI 및 Desktop 앱과 공유됩니다. 아래 섹션에서는 클라우드 세션에 특정한 문제를 다룹니다.
+
+### 세션 생성 실패
+
+새 세션이 `Session creation failed`로 시작되지 않거나 프로비저닝에서 정지되면 Claude Code가 클라우드 환경을 할당할 수 없습니다.
+
+* [status.claude.com](https://status.claude.com)에서 클라우드 세션 인시던트를 확인하세요
+* 용량이 온디맨드로 프로비저닝되므로 1분 후 다시 시도하세요
+* 저장소에 도달할 수 있는지 확인하세요. 연결하는 GitHub 계정은 Claude GitHub App 인증 또는 `/web-setup`을 통해 동기화된 `gh` 토큰을 통해 GitHub의 저장소에 액세스할 수 있어야 합니다. 저장소에 App을 설치할 필요는 없습니다. [GitHub 인증 옵션](#github-authentication-options)을 참조하세요.
+
+### Remote Control 세션 만료 또는 액세스 거부
+
+`--teleport`는 클라우드 세션이 사용하는 동일한 Remote Control 세션 인프라를 통해 연결되므로 인증 및 세션 만료 오류는 Remote Control 용어로 표시됩니다. `Remote Control session expired` 또는 `Access denied`가 표시될 수 있습니다. 연결 토큰은 단기이며 계정으로 범위가 지정됩니다.
+
+* 로컬에서 `/login`을 실행하여 자격 증명을 새로 고친 다음 다시 연결하세요
+* 세션을 소유한 동일한 계정으로 로그인했는지 확인하세요
+* `Remote Control may not be available for this organization`이 표시되면 관리자가 계획에 대해 원격 세션을 활성화하지 않았습니다
+
+### 환경 만료
+
+클라우드 세션은 비활성 기간 후 중지되고 기본 환경이 회수됩니다. 로컬 터미널에서 이는 `Could not resume session ... its environment has expired. Creating a fresh session instead.`로 표시됩니다. 웹에서 세션은 세션 목록에서 만료된 것으로 표시됩니다.
+
+[claude.ai/code](https://claude.ai/code)에서 세션을 다시 열어 대화 기록이 복원된 새로운 환경을 프로비저닝하세요.
+
 ## 제한 사항
 
 클라우드 세션을 워크플로우에 사용하기 전에 이러한 제약을 고려하세요:
@@ -761,6 +801,7 @@ Claude는 GitHub의 검토 주석 스레드에 회신할 수 있습니다. 이�
 * **속도 제한**: Claude Code on the web은 계정 내의 다른 모든 Claude 및 Claude Code 사용과 속도 제한을 공유합니다. 여러 작업을 병렬로 실행하면 비례적으로 더 많은 속도 제한을 소비합니다. 클라우드 VM에 대한 별도의 컴퓨팅 요금은 없습니다.
 * **저장소 인증**: 웹에서 로컬로 세션을 이동할 때 동일한 계정으로 인증된 경우에만 가능합니다
 * **플랫폼 제한**: 저장소 복제 및 pull request 생성에는 GitHub가 필요합니다. 자체 호스팅 [GitHub Enterprise Server](/ko/github-enterprise-server) 인스턴스는 Team 및 Enterprise 플랜에서 지원됩니다. GitLab, Bitbucket 및 기타 비 GitHub 저장소는 [로컬 번들](#send-local-repositories-without-github)로 클라우드 세션에 보낼 수 있지만 세션이 원격으로 결과를 다시 푸시할 수 없습니다
+* **조직 IP 허용 목록**: 클라우드 세션은 네트워크에서가 아닌 Anthropic 관리 인프라에서 Anthropic API를 호출합니다. 조직에 [IP 허용 목록](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)이 활성화되어 있으면 모든 클라우드 세션이 인증 오류로 실패합니다. 동일하게 [Code Review](/ko/code-review) 및 [Routines](/ko/routines)에 적용됩니다. [Anthropic 지원](https://support.claude.com/)에 문의하여 조직의 IP 허용 목록에서 Anthropic 호스팅 서비스를 제외하세요.
 
 ## 관련 리소스
 

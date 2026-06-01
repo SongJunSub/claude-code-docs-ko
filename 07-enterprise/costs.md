@@ -17,10 +17,10 @@ Claude Code는 API 토큰 소비량으로 청구됩니다. 구독 요금제 가�
 ### `/usage` 명령 사용
 
 <Note>
-  `/usage`의 Session 블록은 API 토큰 사용량을 표시하며 API 사용자를 위한 것입니다. Claude Max 및 Pro 구독자는 구독에 사용량이 포함되어 있으므로 세션 비용 수치는 청구 목적으로 관련이 없습니다. 구독자는 동일한 화면에서 요금제 사용량 막대 및 활동 통계를 볼 수 있습니다.
+  `/usage`의 Session 블록은 API 토큰 사용량을 표시하며 API 사용자를 위한 것입니다. Claude Max 및 Pro 구독자는 구독에 사용량이 포함되어 있으므로 세션 비용 수치는 청구 목적으로 관련이 없습니다. 구독자는 동일한 화면에서 요금제 사용량 막대, 활동 통계 및 사용량 분석을 볼 수 있습니다.
 </Note>
 
-`/usage` 명령은 현재 세션에 대한 자세한 토큰 사용량 통계를 제공합니다. 달러 수치는 토큰 수에서 로컬로 계산된 추정치이며 실제 청구서와 다를 수 있습니다. 권위 있는 청구를 위해 [Claude Console](https://platform.claude.com/usage)의 사용량 페이지를 참조하십시오.
+`/usage` 명령 상단의 Session 블록은 현재 세션에 대한 자세한 토큰 사용량 통계를 표시합니다. 달러 수치는 토큰 수에서 로컬로 계산된 추정치이며 실제 청구서와 다를 수 있습니다. 권위 있는 청구를 위해 [Claude Console](https://platform.claude.com/usage)의 사용량 페이지를 참조하십시오.
 
 ```text theme={null}
 Total cost:            $0.55
@@ -29,14 +29,18 @@ Total duration (wall): 6h 33m 10.2s
 Total code changes:    0 lines added, 0 lines removed
 ```
 
+Pro, Max, Team 또는 Enterprise 요금제에서 `/usage`는 요금제 한도에 포함되는 항목의 분석도 표시합니다. 최근 사용량을 skills, subagents, plugins 및 개별 MCP 서버에 귀속시키며, 각각은 전체의 백분율로 표시됩니다. `d` 또는 `w`를 눌러 지난 24시간과 지난 7일 사이를 전환할 수 있습니다. 수치는 근사치이며 이 기기의 로컬 세션 기록에서 계산되므로 다른 기기 또는 claude.ai의 사용량은 포함되지 않습니다.
+
 ## 팀 비용 관리
 
-Claude API를 사용할 때, 전체 Claude Code 워크스페이스 지출에 대해 [워크스페이스 지출 한도를 설정](https://platform.claude.com/docs/en/build-with-claude/workspaces#workspace-limits)할 수 있습니다. 관리자는 Console에서 [비용 및 사용량 보고서를 볼 수 있습니다](https://platform.claude.com/docs/en/build-with-claude/workspaces#usage-and-cost-tracking).
+Claude API를 사용할 때, 전체 Claude Code 워크스페이스 지출에 대해 [워크스페이스 지출 한도를 설정](https://platform.claude.com/docs/ko/build-with-claude/workspaces#workspace-limits)할 수 있습니다. 관리자는 Console에서 [비용 및 사용량 보고서를 볼 수 있습니다](https://platform.claude.com/docs/ko/build-with-claude/workspaces#usage-and-cost-tracking).
+
+Pro 및 Max 플랜에서는 `/usage-credits` 명령어를 사용하여 사용 크레딧에 대한 월간 지출 한도를 설정할 수 있습니다. 사용 크레딧이 아직 남아 있는 상태에서 해당 한도에 도달하면, Claude Code는 한도를 높이거나 제거하도록 요청하여 CLI를 떠나지 않고 계속 진행할 수 있도록 합니다. 한도를 변경하려면 계정에 대한 청구 액세스 권한이 필요합니다.
 
 <Note>
   Claude Code를 Claude Console 계정으로 처음 인증할 때, "Claude Code"라는 워크스페이스가 자동으로 생성됩니다. 이 워크스페이스는 조직의 모든 Claude Code 사용에 대한 중앙 집중식 비용 추적 및 관리를 제공합니다. 이 워크스페이스에 대해 API 키를 생성할 수 없습니다. 이는 Claude Code 인증 및 사용 전용입니다.
 
-  사용자 정의 속도 제한이 있는 조직의 경우, 이 워크스페이스의 Claude Code 트래픽은 조직의 전체 API 속도 제한에 포함됩니다. Claude Console의 이 워크스페이스의 한도 페이지에서 [워크스페이스 속도 제한](https://platform.claude.com/docs/en/api/rate-limits#setting-lower-limits-for-workspaces)을 설정하여 Claude Code의 할당량을 제한하고 다른 프로덕션 워크로드를 보호할 수 있습니다.
+  사용자 정의 속도 제한이 있는 조직의 경우, 이 워크스페이스의 Claude Code 트래픽은 조직의 전체 API 속도 제한에 포함됩니다. Claude Console의 이 워크스페이스의 한도 페이지에서 [워크스페이스 속도 제한](https://platform.claude.com/docs/ko/api/rate-limits#setting-lower-limits-for-workspaces)을 설정하여 Claude Code의 할당량을 제한하고 다른 프로덕션 워크로드를 보호할 수 있습니다.
 </Note>
 
 Bedrock, Vertex 및 Foundry에서 Claude Code는 클라우드에서 메트릭을 전송하지 않습니다. 비용 메트릭을 얻으려면 여러 대규모 엔터프라이즈에서 [LiteLLM](/ko/llm-gateway#litellm-configuration)을 사용한다고 보고했으며, 이는 회사가 [키별 지출을 추적](https://docs.litellm.ai/docs/proxy/virtual_keys#tracking-spend)하는 데 도움이 되는 오픈소스 도구입니다. 이 프로젝트는 Anthropic과 무관하며 보안 감사를 받지 않았습니다.
@@ -76,7 +80,7 @@ Bedrock, Vertex 및 Foundry에서 Claude Code는 클라우드에서 메트릭을
 
 ## 토큰 사용량 감소
 
-토큰 비용은 컨텍스트 크기에 따라 확장됩니다. Claude가 처리하는 컨텍스트가 많을수록 더 많은 토큰을 사용합니다. Claude Code는 prompt caching(시스템 프롬프트와 같은 반복되는 콘텐츠의 비용을 줄임)과 auto-compaction(컨텍스트 한도에 접근할 때 대화 기록을 요약함)을 통해 비용을 자동으로 최적화합니다.
+토큰 비용은 컨텍스트 크기에 따라 확장됩니다. Claude가 처리하는 컨텍스트가 많을수록 더 많은 토큰을 사용합니다. Claude Code는 [prompt caching](/ko/prompt-caching)(시스템 프롬프트와 같은 반복되는 콘텐츠의 비용을 줄임)과 auto-compaction(컨텍스트 한도에 접근할 때 대화 기록을 요약함)을 통해 비용을 자동으로 최적화합니다.
 
 다음 전략은 컨텍스트를 작게 유지하고 메시지당 비용을 줄이는 데 도움이 됩니다.
 
@@ -184,7 +188,7 @@ MCP 도구 정의는 [기본적으로 연기됩니다](/ko/mcp#scale-with-mcp-to
 
 더 길거나 복잡한 작업의 경우, 이러한 습관은 잘못된 경로로 인한 낭비된 토큰을 피하는 데 도움이 됩니다:
 
-* **복잡한 작업에 plan mode 사용**: Shift+Tab을 눌러 구현 전에 [plan mode](/ko/common-workflows#use-plan-mode-for-safe-code-analysis)에 들어가십시오. Claude는 코드베이스를 탐색하고 승인을 위한 접근 방식을 제안하여, 초기 방향이 잘못되었을 때 비용이 많이 드는 재작업을 방지합니다.
+* **복잡한 작업에 plan mode 사용**: Shift+Tab을 눌러 구현 전에 [plan mode](/ko/permission-modes#analyze-before-you-edit-with-plan-mode)에 들어가십시오. Claude는 코드베이스를 탐색하고 승인을 위한 접근 방식을 제안하여, 초기 방향이 잘못되었을 때 비용이 많이 드는 재작업을 방지합니다.
 * **조기에 방향 수정**: Claude가 잘못된 방향으로 가기 시작하면, Escape를 눌러 즉시 중지하십시오. `/rewind`를 사용하거나 Escape를 두 번 눌러 대화 및 코드를 이전 checkpoint로 복원하십시오.
 * **검증 대상 제공**: 테스트 케이스를 포함하고, 스크린샷을 붙여넣거나, 프롬프트에서 예상 출력을 정의하십시오. Claude가 자신의 작업을 검증할 수 있으면, 수정을 요청해야 하기 전에 문제를 포착합니다.
 * **증분적으로 테스트**: 한 파일을 작성하고, 테스트한 다음, 계속하십시오. 이는 문제가 저렴하게 수정될 수 있을 때 조기에 포착합니다.

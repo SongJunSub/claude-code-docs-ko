@@ -8,6 +8,46 @@
 
 주간 개발자 다이제스트는 업무 방식을 바꿀 가능성이 가장 높은 기능들을 강조합니다. 각 항목에는 실행 가능한 코드, 짧은 데모, 그리고 전체 문서로의 링크가 포함됩니다. 모든 버그 수정 및 사소한 개선 사항은 [changelog](/ko/changelog)를 참조하십시오.
 
+<Update label="Week 22" description="2026년 5월 25–29일" tags={["v2.1.150–v2.1.157"]}>
+  **Claude Opus 4.8**: Max, Team Premium, Enterprise 종량제, 그리고 Anthropic API 계정의 새로운 기본 모델로, 기본적으로 높은 노력 수준을 제공하며 가장 어려운 작업을 위해 `/effort xhigh`를 지원합니다.
+
+  이번 주의 다른 기능들: **dynamic workflows**는 Claude가 작성한 스크립트에서 수십 개에서 수백 개의 서브에이전트를 조율합니다. **security-guidance plugin**은 Claude가 작업하는 동안 변경 사항을 검토하여 취약점을 찾습니다. 그리고 **fast mode**는 Opus 4.8에서 실행되며 MTok당 \$10/\$50입니다.
+
+  [Week 22 다이제스트 읽기 →](/ko/whats-new/2026-w22)
+</Update>
+
+<Update label="Week 21" description="2026년 5월 18–22일" tags={["v2.1.143–v2.1.149"]}>
+  **Pro 플랜의 Auto mode**: auto mode는 이제 Pro 계정에서 실행되며 Opus와 함께 Sonnet 4.6을 지원하여 권한 프롬프트를 백그라운드 안전 검사로 대체합니다.
+
+  이번 주의 다른 기능들: \*\*`/usage`\*\*는 스킬, 서브에이전트, 플러그인, 그리고 MCP 서버별로 플랜 제한을 유발하는 요소를 분석합니다. 새로운 **`/code-review`** 명령은 정확성 버그를 보고합니다. 그리고 **background sessions**은 `/resume`에 나타나며 고정될 때 활성 상태를 유지합니다.
+
+  [Week 21 다이제스트 읽기 →](/ko/whats-new/2026-w21)
+</Update>
+
+<Update label="Week 20" description="2026년 5월 11–15일" tags={["v2.1.139–v2.1.142"]}>
+  **Agent view**: `claude agents`는 모든 Claude Code 세션에 대해 하나의 화면을 열어서 실행 중인 것, 사용자의 입력을 기다리는 것, 완료된 것을 보여줍니다.
+
+  이번 주의 다른 기능들: \*\*`/goal`\*\*은 완료 조건이 충족될 때까지 Claude가 여러 턴에 걸쳐 작업을 계속하도록 유지합니다. **fast mode**는 이제 기본적으로 Opus 4.7에서 실행됩니다. 그리고 **Rewind menu**는 "Summarize up to here"로 이전 컨텍스트를 압축할 수 있습니다.
+
+  [Week 20 다이제스트 읽기 →](/ko/whats-new/2026-w20)
+</Update>
+
+<Update label="Week 19" description="2026년 5월 4–8일" tags={["v2.1.128–v2.1.136"]}>
+  **플러그인이 `.zip` 아카이브 및 URL에서 로드됩니다**: `--plugin-dir`은 이제 `.zip` 파일을 허용하며, `--plugin-url`은 현재 세션에 대한 플러그인 아카이브를 가져옵니다.
+
+  이번 주의 다른 기능들: \*\*`worktree.baseRef`\*\*는 새로운 worktree가 원격 기본값 또는 로컬 `HEAD`에서 분기할지 여부를 선택합니다. **auto mode hard deny rules**는 allow 예외와 관계없이 작업을 무조건 차단합니다. 그리고 **hooks는 활성 노력 수준을 봅니다** `effort.level` 및 `$CLAUDE_EFFORT`를 통해.
+
+  [Week 19 다이제스트 읽기 →](/ko/whats-new/2026-w19)
+</Update>
+
+<Update label="Week 18" description="2026년 4월 27일 – 5월 1일" tags={["v2.1.120–v2.1.126"]}>
+  **Git Bash 없는 Windows**: Git for Windows는 더 이상 필요하지 않으며, Claude Code는 Bash가 없을 때 PowerShell을 셸 도구로 사용합니다.
+
+  이번 주의 다른 기능들: \*\*`claude ultrareview`\*\*는 CI 및 스크립트에 클라우드 코드 리뷰를 제공합니다. \*\*`claude project purge`\*\*는 프로젝트의 로컬 상태를 정리합니다. 그리고 **PR URL을 `/resume`에 붙여넣기**하면 이를 생성한 세션을 찾습니다.
+
+  [Week 18 다이제스트 읽기 →](/ko/whats-new/2026-w18)
+</Update>
+
 <Update label="Week 17" description="2026년 4월 20–24일" tags={["v2.1.114–v2.1.119"]}>
   \*\*`/ultrareview`\*\*가 공개 연구 미리보기로 출시됩니다: 클라우드에서 실행되는 버그 사냥 에이전트 플릿이 발견 사항을 CLI 또는 Desktop으로 자동으로 전달합니다.
 
@@ -19,7 +59,7 @@
 <Update label="Week 16" description="2026년 4월 13–17일" tags={["v2.1.105–v2.1.113"]}>
   **Claude Opus 4.7**이 Max 및 Team Premium의 새로운 기본값으로 출시되며, 대부분의 코딩 작업에 권장되는 새로운 `xhigh` 노력 수준과 이를 조정할 수 있는 대화형 `/effort` 슬라이더가 포함됩니다.
 
-  이번 주의 다른 기능들: Claude Code on the web의 **Routines**은 일정, GitHub 이벤트 또는 API 호출에서 템플릿 클라우드 에이전트를 실행합니다. `/ultrareview`는 클라우드에서 병렬 다중 에이전트 코드 리뷰를 실행합니다. `/usage`는 제한을 유발하는 요소를 표시합니다. 그리고 CLI는 네이티브 바이너리로 이동합니다.
+  이번 주의 다른 기능들: Claude Code on the web의 **Routines**은 일정, GitHub 이벤트 또는 API 호출에서 템플릿 클라우드 에이전트를 실행합니다. **mobile push notifications**은 긴 작업이 완료되거나 Claude가 필요할 때 휴대폰에 알림을 보냅니다. `/usage`는 제한을 유발하는 요소를 표시합니다. 그리고 CLI는 네이티브 바이너리로 이동합니다.
 
   [Week 16 다이제스트 읽기 →](/ko/whats-new/2026-w16)
 </Update>

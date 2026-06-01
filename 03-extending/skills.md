@@ -8,10 +8,10 @@
 
 Skills는 Claude가 할 수 있는 작업을 확장합니다. `SKILL.md` 파일을 지침과 함께 생성하면 Claude가 이를 자신의 도구 모음에 추가합니다. Claude는 관련이 있을 때 skills를 사용하거나 `/skill-name`으로 직접 호출할 수 있습니다.
 
-같은 플레이북, 체크리스트 또는 다단계 절차를 계속 채팅에 붙여넣거나, CLAUDE.md의 섹션이 사실이 아닌 절차로 성장했을 때 skill을 생성합니다. CLAUDE.md 콘텐츠와 달리, skill의 본문은 사용할 때만 로드되므로 긴 참조 자료는 필요할 때까지 거의 비용이 들지 않습니다.
+같은 지침, 체크리스트 또는 다단계 절차를 계속 채팅에 붙여넣거나, CLAUDE.md의 섹션이 사실이 아닌 절차로 성장했을 때 skill을 생성합니다. CLAUDE.md 콘텐츠와 달리, skill의 본문은 사용할 때만 로드되므로 긴 참조 자료는 필요할 때까지 거의 비용이 들지 않습니다.
 
 <Note>
-  `/help` 및 `/compact`와 같은 기본 제공 명령어와 `/debug` 및 `/simplify`와 같은 번들 skills는 [명령어 참조](/ko/commands)를 참조하세요.
+  `/help` 및 `/compact`와 같은 기본 제공 명령어와 `/debug` 및 `/code-review`와 같은 번들 skills는 [명령어 참조](/ko/commands)를 참조하세요.
 
   **사용자 정의 명령어가 skills로 병합되었습니다.** `.claude/commands/deploy.md`의 파일과 `.claude/skills/deploy/SKILL.md`의 skill은 모두 `/deploy`를 생성하고 동일하게 작동합니다. 기존 `.claude/commands/` 파일은 계속 작동합니다. Skills는 선택적 기능을 추가합니다: 지원 파일을 위한 디렉토리, [skill을 누가 호출하는지 제어](#control-who-invokes-a-skill)하기 위한 frontmatter, 그리고 Claude가 관련이 있을 때 자동으로 로드할 수 있는 기능입니다.
 </Note>
@@ -20,62 +20,79 @@ Claude Code skills는 [Agent Skills](https://agentskills.io) 개방형 표준을
 
 ## 번들 skills
 
-Claude Code에는 모든 세션에서 사용 가능한 번들 skills 세트가 포함되어 있으며, `/simplify`, `/batch`, `/debug`, `/loop`, `/claude-api`를 포함합니다. 고정 로직을 직접 실행하는 대부분의 기본 제공 명령어와 달리, 번들 skills는 프롬프트 기반입니다: Claude에 상세한 플레이북을 제공하고 도구를 사용하여 작업을 조율하도록 합니다. 다른 skill과 동일한 방식으로 호출합니다: `/` 다음에 skill 이름을 입력합니다.
+Claude Code에는 모든 세션에서 사용 가능한 번들 skills 세트가 포함되어 있으며, `/code-review`, `/batch`, `/debug`, `/loop`, `/claude-api`를 포함합니다. 고정 로직을 직접 실행하는 대부분의 기본 제공 명령어와 달리, 번들 skills는 프롬프트 기반입니다: Claude에 상세한 지시사항을 제공하고 도구를 사용하여 작업을 조율하도록 합니다. 다른 skill과 동일한 방식으로 호출합니다: `/` 다음에 skill 이름을 입력합니다.
 
 번들 skills는 [명령어 참조](/ko/commands)에 나열되어 있으며, 목적 열에 **Skill**로 표시됩니다.
+
+### 앱 실행 및 확인
+
+세 가지 번들 skills는 함께 작동하여 앱을 시작하고 테스트만이 아닌 실행 중인 앱에 대해 변경 사항을 확인합니다:
+
+| Skill                  | 목적                                                           |
+| :--------------------- | :----------------------------------------------------------- |
+| `/run`                 | 앱을 시작하고 변경 사항이 작동하는지 확인하기 위해 앱을 실행합니다                        |
+| `/verify`              | 앱을 빌드하고 실행하여 코드 변경이 의도한 대로 작동하는지 확인하며, 테스트나 타입 체크로 돌아가지 않습니다 |
+| `/run-skill-generator` | `/run`과 `/verify`에 프로젝트를 빌드하고 시작하는 방법을 가르칩니다                 |
+
+{/* min-version: 2.1.145 */}세 가지 skills 모두 Claude Code v2.1.145 이상이 필요합니다.
+
+`/run`과 `/verify`는 설정 없이 작동합니다. 프로젝트 유형(CLI, 서버, TUI, 브라우저 기반)과 README, `package.json` 또는 `Makefile`의 내용으로부터 시작을 추론합니다. 이 추론은 표준 시작 이상의 것이 필요한 프로젝트(데이터베이스, env 파일, 그래픽 세션, 다단계 빌드)에 대해서는 신뢰할 수 없게 됩니다.
+
+`/run-skill-generator`는 대신 레시피를 기록합니다. 깨끗한 환경에서 앱을 실행하고, 작동한 것(설치 명령어, env 변수, 시작 스크립트)을 캡처하고, 프로젝트별 skill로 `.claude/skills/run-<name>/`에 커밋합니다. 그 후 `/run`, `/verify` 및 리포지토리의 다른 모든 에이전트는 레시피를 다시 발견하는 대신 기록된 레시피를 따릅니다. 프로젝트당 한 번 `/run-skill-generator`를 실행하고, 빌드 또는 시작 프로세스가 변경되면 다시 실행합니다.
 
 ## 시작하기
 
 ### 첫 번째 skill 생성
 
-이 예제는 Claude에게 시각적 다이어그램과 유추를 사용하여 코드를 설명하도록 가르치는 skill을 생성합니다. 기본 frontmatter를 사용하므로 Claude는 코드가 어떻게 작동하는지 물어볼 때 자동으로 로드하거나 `/explain-code`로 직접 호출할 수 있습니다.
+이 예제는 git 저장소의 커밋되지 않은 변경 사항을 요약하고 위험한 항목을 표시하는 skill을 생성합니다. 라이브 diff를 Claude가 읽기 전에 프롬프트로 가져오므로, 응답은 Claude가 열린 파일에서 추측할 수 있는 것이 아니라 실제 작업 트리에 기반합니다. Claude는 변경 사항에 대해 물어볼 때 자동으로 skill을 로드하거나 `/summarize-changes`로 직접 호출할 수 있습니다.
 
 <Steps>
   <Step title="skill 디렉토리 생성">
     개인 skills 폴더에 skill을 위한 디렉토리를 생성합니다. 개인 skills는 모든 프로젝트에서 사용 가능합니다.
 
     ```bash theme={null}
-    mkdir -p ~/.claude/skills/explain-code
+    mkdir -p ~/.claude/skills/summarize-changes
     ```
   </Step>
 
   <Step title="SKILL.md 작성">
-    모든 skill에는 두 부분이 있는 `SKILL.md` 파일이 필요합니다: Claude에게 skill을 언제 사용할지 알려주는 YAML frontmatter (`---` 마커 사이)와 skill이 호출될 때 Claude가 따르는 지침이 있는 markdown 콘텐츠입니다. 디렉토리 이름이 `/slash-command`가 되고, `description`은 Claude가 자동으로 로드할 시기를 결정하는 데 도움이 됩니다.
+    모든 skill에는 두 부분이 있는 `SKILL.md` 파일이 필요합니다: Claude에게 skill을 언제 사용할지 알려주는 YAML frontmatter (`---` 마커 사이)와 skill이 실행될 때 Claude가 따르는 지침이 있는 markdown 콘텐츠입니다. 디렉토리 이름이 입력하는 명령어가 되고, `description`은 Claude가 자동으로 skill을 로드할 시기를 결정하는 데 도움이 됩니다.
 
-    `~/.claude/skills/explain-code/SKILL.md` 생성:
+    이를 `~/.claude/skills/summarize-changes/SKILL.md`에 저장합니다:
 
     ```yaml theme={null}
     ---
-    description: Explains code with visual diagrams and analogies. Use when explaining how code works, teaching about a codebase, or when the user asks "how does this work?"
+    description: Summarizes uncommitted changes and flags anything risky. Use when the user asks what changed, wants a commit message, or asks to review their diff.
     ---
 
-    When explaining code, always include:
+    ## Current changes
 
-    1. **Start with an analogy**: Compare the code to something from everyday life
-    2. **Draw a diagram**: Use ASCII art to show the flow, structure, or relationships
-    3. **Walk through the code**: Explain step-by-step what happens
-    4. **Highlight a gotcha**: What's a common mistake or misconception?
+    !`git diff HEAD`
 
-    Keep explanations conversational. For complex concepts, use multiple analogies.
+    ## Instructions
+
+    Summarize the changes above in two or three bullet points, then list any risks you notice such as missing error handling, hardcoded values, or tests that need updating. If the diff is empty, say there are no uncommitted changes.
     ```
+
+    `` !`git diff HEAD` `` 줄은 [동적 컨텍스트 주입](#inject-dynamic-context)을 사용합니다: Claude Code는 명령어를 실행하고 Claude가 skill 콘텐츠를 보기 전에 줄을 출력으로 바꾸므로, 지침은 현재 diff가 이미 인라인된 상태로 도착합니다.
   </Step>
 
   <Step title="skill 테스트">
-    두 가지 방법으로 테스트할 수 있습니다:
+    git 프로젝트를 열고, 파일을 약간 편집한 후, `claude`를 실행하여 Claude Code를 시작합니다. 두 가지 방법으로 skill을 테스트할 수 있습니다.
 
     **Claude가 자동으로 호출하도록 하기** - 설명과 일치하는 항목을 물어봅니다:
 
     ```text theme={null}
-    How does this code work?
+    What did I change?
     ```
 
     **또는 skill 이름으로 직접 호출하기**:
 
     ```text theme={null}
-    /explain-code src/auth/login.ts
+    /summarize-changes
     ```
 
-    어느 쪽이든 Claude는 설명에 유추와 ASCII 다이어그램을 포함해야 합니다.
+    어느 쪽이든 Claude는 편집의 짧은 요약과 위험 목록으로 응답해야 합니다.
   </Step>
 </Steps>
 
@@ -92,13 +109,21 @@ skill을 저장하는 위치에 따라 누가 사용할 수 있는지가 결정�
 
 Skills가 여러 수준에서 같은 이름을 공유할 때, enterprise가 personal을 재정의하고, personal이 project를 재정의합니다. Plugin skills는 `plugin-name:skill-name` 네임스페이스를 사용하므로 다른 수준과 충돌할 수 없습니다. `.claude/commands/`에 파일이 있으면 동일한 방식으로 작동하지만, skill과 명령어가 같은 이름을 공유하면 skill이 우선합니다.
 
+<Note>
+  `.claude-plugin/plugin.json`을 skill 폴더에 추가하면 `<name>@skills-dir`이라는 [플러그인](/ko/plugins-reference#skills-directory-plugins)으로 로드되므로, agents, hooks 및 MCP 서버를 번들로 제공할 수 있습니다. 프로젝트의 `.claude/skills/`에서는 먼저 작업 공간 신뢰 대화를 수락해야 합니다.
+</Note>
+
 #### 라이브 변경 감지
 
 Claude Code는 skill 디렉토리의 파일 변경을 감시합니다. `~/.claude/skills/`, 프로젝트 `.claude/skills/`, 또는 `--add-dir` 디렉토리 내의 `.claude/skills/` 아래에서 skill을 추가, 편집 또는 제거하면 Claude Code를 다시 시작하지 않고도 현재 세션 내에서 적용됩니다. 세션이 시작되었을 때 존재하지 않았던 최상위 skills 디렉토리를 생성하려면 Claude Code를 다시 시작해야 새 디렉토리를 감시할 수 있습니다.
 
-#### 중첩된 디렉토리에서 자동 검색
+<Note>
+  라이브 변경 감지는 `SKILL.md` 텍스트만 포함합니다. skill 폴더가 [플러그인](/ko/plugins-reference#skills-directory-plugins)이기도 한 경우, `hooks/`, `.mcp.json`, `agents/` 및 `output-styles/`의 변경 사항은 `/reload-plugins`를 실행해야 적용됩니다.
+</Note>
 
-하위 디렉토리의 파일로 작업할 때, Claude Code는 중첩된 `.claude/skills/` 디렉토리에서 skills를 자동으로 검색합니다. 예를 들어, `packages/frontend/`의 파일을 편집하는 경우, Claude Code는 `packages/frontend/.claude/skills/`에서도 skills를 찾습니다. 이는 패키지가 자신의 skills를 가진 monorepo 설정을 지원합니다.
+#### 상위 및 중첩된 디렉토리에서 자동 검색
+
+프로젝트 skills는 시작 디렉토리의 `.claude/skills/`와 저장소 루트까지의 모든 상위 디렉토리에서 로드되므로, 하위 디렉토리에서 Claude를 시작해도 루트에서 정의된 skills를 선택합니다. 시작 디렉토리 아래의 하위 디렉토리에 있는 파일로 작업할 때, Claude Code는 필요에 따라 중첩된 `.claude/skills/` 디렉토리에서 skills를 검색합니다. 예를 들어, `packages/frontend/`의 파일을 편집하는 경우, Claude Code는 `packages/frontend/.claude/skills/`에서도 skills를 찾습니다. 이는 패키지가 자신의 skills를 가진 monorepo 설정을 지원합니다.
 
 각 skill은 `SKILL.md`를 진입점으로 하는 디렉토리입니다:
 
@@ -120,9 +145,9 @@ my-skill/
 
 #### 추가 디렉토리의 Skills
 
-`--add-dir` 플래그는 [파일 액세스를 부여](/ko/permissions#additional-directories-grant-file-access-not-configuration)하지만 구성 검색은 하지 않습니다. 그러나 skills는 예외입니다: 추가된 디렉토리 내의 `.claude/skills/`는 자동으로 로드됩니다. [라이브 변경 감지](#live-change-detection)를 참조하여 세션 중에 편집이 어떻게 선택되는지 확인하세요.
+`--add-dir` 플래그와 `/add-dir` 명령어는 [파일 액세스를 부여](/ko/permissions#additional-directories-grant-file-access-not-configuration)하지만 구성 검색은 하지 않습니다. 그러나 skills는 예외입니다: 추가된 디렉토리 내의 `.claude/skills/`는 자동으로 로드됩니다. 이 예외는 `--add-dir`과 `/add-dir`에만 적용됩니다. `settings.json`의 `permissions.additionalDirectories` 설정은 파일 액세스만 부여하며 skills를 로드하지 않습니다. [라이브 변경 감지](#live-change-detection)를 참조하여 세션 중에 편집이 어떻게 선택되는지 확인하세요.
 
-subagents, 명령어 및 출력 스타일과 같은 다른 `.claude/` 구성은 추가 디렉토리에서 로드되지 않습니다. 로드되는 항목과 로드되지 않는 항목의 전체 목록과 프로젝트 간 구성을 공유하는 권장 방법은 [예외 표](/ko/permissions#additional-directories-grant-file-access-not-configuration)를 참조하세요.
+다른 `.claude/` 구성(예: subagents, 명령어 및 출력 스타일)은 추가 디렉토리에서 로드되지 않습니다. 로드되는 항목과 로드되지 않는 항목의 전체 목록과 프로젝트 간 구성을 공유하는 권장 방법은 [예외 표](/ko/permissions#additional-directories-grant-file-access-not-configuration)를 참조하세요.
 
 <Note>
   `--add-dir` 디렉토리의 CLAUDE.md 파일은 기본적으로 로드되지 않습니다. 로드하려면 `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`을 설정하세요. [추가 디렉토리에서 로드](/ko/memory#load-from-additional-directories)를 참조하세요.
@@ -168,6 +193,8 @@ Deploy the application:
 
 `SKILL.md`는 모든 것을 포함할 수 있지만, skill을 호출하는 방식(사용자, Claude 또는 둘 다)과 실행 위치(인라인 또는 subagent)를 생각하면 포함할 내용을 안내하는 데 도움이 됩니다. 복잡한 skills의 경우, [지원 파일을 추가](#add-supporting-files)하여 주요 skill을 집중적으로 유지할 수도 있습니다.
 
+본문 자체는 간결하게 유지합니다. Skill이 로드되면, 그 콘텐츠는 [턴 전체에 걸쳐 컨텍스트에 유지](#skill-content-lifecycle)되므로, 모든 줄이 반복되는 토큰 비용입니다. 어떻게 또는 왜인지 설명하기보다는 무엇을 할지 명시하고, [CLAUDE.md 콘텐츠](/ko/best-practices#write-an-effective-claude-md)에 적용할 동일한 간결성 테스트를 적용합니다.
+
 ### Frontmatter 참조
 
 markdown 콘텐츠 외에도, `SKILL.md` 파일 상단의 `---` 마커 사이의 YAML frontmatter 필드를 사용하여 skill 동작을 구성할 수 있습니다:
@@ -187,14 +214,15 @@ Your skill instructions here...
 
 | 필드                         | 필수  | 설명                                                                                                                                                                                                         |
 | :------------------------- | :-- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                     | 아니오 | skill의 표시 이름. 생략하면 디렉토리 이름을 사용합니다. 소문자, 숫자 및 하이픈만 사용 가능(최대 64자).                                                                                                                                           |
+| `name`                     | 아니오 | skill 목록에 표시되는 표시 이름입니다. 디렉토리 이름으로 기본값이 설정됩니다. skill을 호출하기 위해 입력하는 이름과 어떻게 다른지는 [skill이 명령어 이름을 얻는 방법](#how-a-skill-gets-its-command-name)을 참조하세요.                                                         |
 | `description`              | 권장  | skill이 무엇을 하는지, 언제 사용할지. Claude는 이를 사용하여 skill을 자동으로 적용할 시기를 결정합니다. 생략하면 markdown 콘텐츠의 첫 번째 단락을 사용합니다. 주요 사용 사례를 앞에 배치합니다: 결합된 `description` 및 `when_to_use` 텍스트는 컨텍스트 사용을 줄이기 위해 skill 목록에서 1,536자로 잘립니다. |
 | `when_to_use`              | 아니오 | Claude가 skill을 호출해야 할 때에 대한 추가 컨텍스트(예: 트리거 구문 또는 예제 요청). skill 목록에서 `description`에 추가되며 1,536자 제한에 포함됩니다.                                                                                                  |
 | `argument-hint`            | 아니오 | 예상 인수를 나타내기 위해 자동 완성 중에 표시되는 힌트. 예: `[issue-number]` 또는 `[filename] [format]`.                                                                                                                             |
 | `arguments`                | 아니오 | skill 콘텐츠에서 [`$name` 치환](#available-string-substitutions)을 위한 명명된 위치 인수. 공백으로 구분된 문자열 또는 YAML 목록을 허용합니다. 이름은 순서대로 인수 위치에 매핑됩니다.                                                                            |
 | `disable-model-invocation` | 아니오 | Claude가 이 skill을 자동으로 로드하는 것을 방지하려면 `true`로 설정합니다. `/name`으로 수동으로 트리거하려는 워크플로우에 사용합니다. 또한 skill이 [subagents에 미리 로드되는 것](/ko/sub-agents#preload-skills-into-subagents)을 방지합니다. 기본값: `false`.                |
 | `user-invocable`           | 아니오 | `/` 메뉴에서 숨기려면 `false`로 설정합니다. 사용자가 직접 호출하지 않아야 하는 배경 지식에 사용합니다. 기본값: `true`.                                                                                                                               |
-| `allowed-tools`            | 아니오 | 이 skill이 활성화되었을 때 Claude가 권한을 요청하지 않고 사용할 수 있는 도구. 공백으로 구분된 문자열 또는 YAML 목록을 허용합니다.                                                                                                                         |
+| `allowed-tools`            | 아니오 | 이 skill이 활성화되었을 때 Claude가 권한을 요청하지 않고 사용할 수 있는 도구. 공백 또는 쉼표로 구분된 문자열 또는 YAML 목록을 허용합니다.                                                                                                                    |
+| `disallowed-tools`         | 아니오 | 이 skill이 활성화되었을 때 Claude의 사용 가능한 도구 풀에서 제거되는 도구. `AskUserQuestion`과 같이 배경 루프에 대해 특정 도구를 호출하지 않아야 하는 자율 skills에 사용합니다. 공백 또는 쉼표로 구분된 문자열 또는 YAML 목록을 허용합니다. 다음 메시지를 보낼 때 제한이 해제됩니다.                         |
 | `model`                    | 아니오 | 이 skill이 활성화되었을 때 사용할 모델. 재정의는 현재 턴의 나머지 부분에 적용되며 설정에 저장되지 않습니다. 다음 프롬프트에서 세션 모델이 재개됩니다. [`/model`](/ko/model-config)과 동일한 값을 허용하거나 활성 모델을 유지하려면 `inherit`을 허용합니다.                                         |
 | `effort`                   | 아니오 | [노력 수준](/ko/model-config#adjust-effort-level) - 이 skill이 활성화되었을 때. 세션 노력 수준을 재정의합니다. 기본값: 세션에서 상속. 옵션: `low`, `medium`, `high`, `xhigh`, `max`; 사용 가능한 수준은 모델에 따라 다릅니다.                                    |
 | `context`                  | 아니오 | forked subagent 컨텍스트에서 실행하려면 `fork`로 설정합니다.                                                                                                                                                                |
@@ -202,6 +230,21 @@ Your skill instructions here...
 | `hooks`                    | 아니오 | 이 skill의 라이프사이클에 범위가 지정된 hooks. 구성 형식은 [Skills 및 agents의 Hooks](/ko/hooks#hooks-in-skills-and-agents)를 참조하세요.                                                                                              |
 | `paths`                    | 아니오 | 이 skill이 활성화되는 시기를 제한하는 Glob 패턴. 쉼표로 구분된 문자열 또는 YAML 목록을 허용합니다. 설정하면 Claude는 패턴과 일치하는 파일로 작업할 때만 자동으로 skill을 로드합니다. [경로별 규칙](/ko/memory#path-specific-rules)과 동일한 형식을 사용합니다.                               |
 | `shell`                    | 아니오 | 이 skill의 `` !`command` `` 및 ` ```! ` 블록에 사용할 shell. `bash`(기본값) 또는 `powershell`을 허용합니다. `powershell`을 설정하면 Windows에서 PowerShell을 통해 인라인 shell 명령어를 실행합니다. `CLAUDE_CODE_USE_POWERSHELL_TOOL=1`이 필요합니다.      |
+
+#### Skill이 명령어 이름을 얻는 방법
+
+skill을 호출하기 위해 입력하는 명령어는 skill 파일이 있는 위치에서 나옵니다. frontmatter `name` 필드는 skill 목록에 표시되는 표시 레이블을 설정하며, plugin 루트 `SKILL.md`를 제외하고는 `/` 뒤에 입력하는 내용을 변경하지 않습니다.
+
+아래 표는 각 레이아웃에 대해 명령어 이름이 어디에서 나오는지 보여줍니다:
+
+| Skill 위치                                                | 명령어 이름 소스                                   | 예제                                                                                                                    |
+| :------------------------------------------------------ | :------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------- |
+| `~/.claude/skills/` 또는 `.claude/skills/` 아래의 Skill 디렉토리 | 디렉토리 이름                                     | `.claude/skills/deploy-staging/SKILL.md` → `/deploy-staging`                                                          |
+| `.claude/commands/` 아래의 파일                              | 확장자 없는 파일 이름                                | `.claude/commands/deploy.md` → `/deploy`                                                                              |
+| Plugin `skills/` 하위 디렉토리                                | 디렉토리 이름, plugin으로 네임스페이스됨                   | `my-plugin/skills/review/SKILL.md` → `/my-plugin:review`                                                              |
+| Plugin 루트 `SKILL.md`                                    | Frontmatter `name`, plugin 디렉토리 이름을 폴백으로 사용 | `my-plugin/SKILL.md`에서 `name: review` → `/my-plugin:review`. [경로 동작 규칙](/ko/plugins-reference#path-behavior-rules) 참조 |
+
+plugin 루트 경우는 `name`이 명령어 이름을 설정하는 유일한 경우입니다. skill 디렉토리가 없기 때문입니다. frontmatter에서 `name`이 설정되지 않으면 plugin의 디렉토리 이름이 대신 사용됩니다.
 
 #### 사용 가능한 문자열 치환
 
@@ -214,7 +257,7 @@ Skills는 skill 콘텐츠의 동적 값에 대한 문자열 치환을 지원합�
 | `$N`                   | `$ARGUMENTS[N]`의 약자(예: `$0`은 첫 번째 인수, `$1`은 두 번째 인수).                                                                                                                               |
 | `$name`                | [`arguments`](#frontmatter-reference) frontmatter 목록에서 선언된 명명된 인수. 이름은 순서대로 위치에 매핑되므로, `arguments: [issue, branch]`를 사용하면 플레이스홀더 `$issue`는 첫 번째 인수로 확장되고 `$branch`는 두 번째 인수로 확장됩니다. |
 | `${CLAUDE_SESSION_ID}` | 현재 세션 ID. 로깅, 세션별 파일 생성 또는 skill 출력을 세션과 연관시키는 데 유용합니다.                                                                                                                             |
-| `${CLAUDE_EFFORT}`     | 현재 노력 수준: `low`, `medium`, `high`, `xhigh` 또는 `max`. 이를 사용하여 활성 노력 설정에 맞게 skill 지침을 조정합니다.                                                                                          |
+| `${CLAUDE_EFFORT}`     | 현재 노력 수준: `low`, `medium`, `high`, `xhigh`, 또는 `max`. Ultracode는 별개의 수준이 아니며 `xhigh`로 보고됩니다. 이를 사용하여 활성 노력 설정에 맞게 skill 지침을 조정합니다.                                                  |
 | `${CLAUDE_SKILL_DIR}`  | skill의 `SKILL.md` 파일을 포함하는 디렉토리. plugin skills의 경우, 이는 plugin 루트가 아닌 plugin 내의 skill 하위 디렉토리입니다. bash 주입 명령어에서 현재 작업 디렉토리와 관계없이 skill과 함께 번들된 스크립트 또는 파일을 참조하는 데 사용합니다.             |
 
 인덱싱된 인수는 shell 스타일 인용을 사용하므로 다중 단어 값을 따옴표로 감싸서 단일 인수로 전달합니다. 예를 들어, `/my-skill "hello world" second`는 `$0`을 `hello world`로, `$1`을 `second`로 확장합니다. `$ARGUMENTS` 플레이스홀더는 항상 입력한 전체 인수 문자열로 확장됩니다.
@@ -304,6 +347,8 @@ skill이 첫 번째 응답 후 동작에 영향을 미치지 않는 것처럼 �
 ### Skill에 대한 도구 사전 승인
 
 `allowed-tools` 필드는 skill이 활성화되었을 때 나열된 도구에 대한 권한을 부여하므로 Claude는 승인을 요청하지 않고 사용할 수 있습니다. 사용 가능한 도구를 제한하지 않습니다: 모든 도구는 호출 가능하게 유지되며, [권한 설정](/ko/permissions)은 나열되지 않은 도구에 대한 도구를 계속 관리합니다.
+
+프로젝트의 `.claude/skills/` 디렉토리에 체크인된 skills의 경우, `allowed-tools`는 해당 폴더에 대한 작업 공간 신뢰 대화를 수락한 후 적용되며, `.claude/settings.json`의 권한 규칙과 동일합니다. 프로젝트 skills를 신뢰하기 전에 검토하세요. skill은 자신에게 광범위한 도구 액세스 권한을 부여할 수 있습니다.
 
 이 skill은 skill을 호출할 때마다 Claude가 승인을 요청하지 않고 git 명령어를 실행할 수 있게 합니다:
 
@@ -402,6 +447,10 @@ Summarize this pull request...
 
 이는 전처리이며, Claude가 실행하는 것이 아닙니다. Claude는 최종 결과만 봅니다.
 
+대체는 원본 파일에 대해 한 번 실행됩니다. 명령어 출력은 일반 텍스트로 삽입되며 추가 `` !`<command>` `` 플레이스홀더에 대해 다시 스캔되지 않으므로, 명령어는 나중의 패스에서 확장할 플레이스홀더를 내보낼 수 없습니다.
+
+인라인 형식은 `!`이 줄의 시작 또는 공백 직후에 나타날 때만 인식됩니다. `!`이 `` KEY=!`cmd` ``처럼 다른 문자 뒤에 오면, 플레이스홀더는 리터럴 텍스트로 남겨지고 명령어는 실행되지 않습니다.
+
 다중 라인 명령어의 경우, 인라인 형식 대신 ` ```! `로 열린 펜스 코드 블록을 사용합니다:
 
 ````markdown theme={null}
@@ -416,7 +465,7 @@ git status --short
 사용자, 프로젝트, 플러그인 또는 [추가 디렉토리](#skills-from-additional-directories) 소스의 skills 및 사용자 정의 명령어에 대해 이 동작을 비활성화하려면, [설정](/ko/settings)에서 `"disableSkillShellExecution": true`를 설정합니다. 각 명령어는 실행되는 대신 `[shell command execution disabled by policy]`로 대체됩니다. 번들 및 관리 skills는 영향을 받지 않습니다. 이 설정은 사용자가 재정의할 수 없는 [관리 설정](/ko/permissions#managed-settings)에서 가장 유용합니다.
 
 <Tip>
-  skill에서 [확장 사고](/ko/common-workflows#use-extended-thinking-thinking-mode)를 활성화하려면 skill 콘텐츠의 어디든 "ultrathink"라는 단어를 포함합니다.
+  skill에서 더 깊은 추론을 요청하려면 skill 콘텐츠의 어디든 `ultrathink`를 포함합니다. [일회성 깊은 추론을 위해 ultrathink 사용](/ko/model-config#use-ultrathink-for-one-off-deep-reasoning)을 참조하세요.
 </Tip>
 
 ### Subagent에서 Skills 실행
@@ -429,12 +478,12 @@ skill을 격리 상태에서 실행하려면 frontmatter에 `context: fork`를 �
 
 Skills와 [subagents](/ko/sub-agents)는 두 방향으로 함께 작동합니다:
 
-| 접근 방식                     | 시스템 프롬프트                       | 작업             | 또한 로드                     |
-| :------------------------ | :----------------------------- | :------------- | :------------------------ |
-| `context: fork`가 있는 Skill | 에이전트 유형(`Explore`, `Plan` 등)에서 | SKILL.md 콘텐츠   | CLAUDE.md                 |
-| `skills` 필드가 있는 Subagent  | Subagent의 markdown 본문          | Claude의 위임 메시지 | 미리 로드된 skills + CLAUDE.md |
+| 접근 방식                     | 시스템 프롬프트              | 작업             | 또한 로드                                   |
+| :------------------------ | :-------------------- | :------------- | :-------------------------------------- |
+| `context: fork`가 있는 Skill | 에이전트 유형에서             | SKILL.md 콘텐츠   | CLAUDE.md, 에이전트가 Explore 또는 Plan인 경우 제외 |
+| `skills` 필드가 있는 Subagent  | Subagent의 markdown 본문 | Claude의 위임 메시지 | 미리 로드된 skills + CLAUDE.md               |
 
-`context: fork`를 사용하면 skill에 작업을 작성하고 실행할 에이전트 유형을 선택합니다. 역방향(skills를 참조 자료로 사용하는 사용자 정의 subagent 정의)은 [Subagents](/ko/sub-agents#preload-skills-into-subagents)를 참조하세요.
+`context: fork`를 사용하면 skill에 작업을 작성하고 실행할 에이전트 유형을 선택합니다. 기본 제공 Explore 및 Plan 에이전트는 [컨텍스트를 작게 유지하기 위해 CLAUDE.md 및 git status를 건너뜁니다](/ko/sub-agents#what-loads-at-startup). 따라서 `agent: Explore`를 사용하는 forked skill은 SKILL.md 콘텐츠와 에이전트 자체의 시스템 프롬프트만 봅니다. 역방향(skills를 참조 자료로 사용하는 사용자 정의 subagent 정의)은 [Subagents](/ko/sub-agents#preload-skills-into-subagents)를 참조하세요.
 
 #### 예제: Explore 에이전트를 사용하는 Research Skill
 
@@ -496,6 +545,32 @@ Skill(deploy *)
   `user-invocable` 필드는 메뉴 가시성만 제어하고 Skill 도구 액세스는 제어하지 않습니다. 프로그래밍 방식 호출을 차단하려면 `disable-model-invocation: true`를 사용합니다.
 </Note>
 
+### 설정에서 Skill 가시성 재정의
+
+`skillOverrides` 설정은 skill의 자체 frontmatter 대신 [설정](/ko/settings)에서 skill 가시성을 제어합니다. 공유 프로젝트 리포지토리에 체크인되거나 MCP 서버에서 제공하는 것처럼 SKILL.md를 편집하고 싶지 않은 skills에 사용합니다. `/skills` 메뉴가 이를 작성합니다: skill을 강조하고 `Space`를 눌러 상태를 순환한 다음 `Enter`를 눌러 `.claude/settings.local.json`에 저장합니다.
+
+각 키는 skill 이름이고 각 값은 다음 네 가지 상태 중 하나입니다:
+
+| 값                       | Claude에 나열됨 | `/` 메뉴에서 |
+| :---------------------- | :---------- | :------- |
+| `"on"`                  | 이름 및 설명     | 예        |
+| `"name-only"`           | 이름만         | 예        |
+| `"user-invocable-only"` | 숨김          | 예        |
+| `"off"`                 | 숨김          | 숨김       |
+
+`skillOverrides`에 없는 skill은 `"on"`으로 처리됩니다. 아래 예제는 한 skill을 이름으로 축소하고 다른 skill을 완전히 끕니다:
+
+```json theme={null}
+{
+  "skillOverrides": {
+    "legacy-context": "name-only",
+    "deploy": "off"
+  }
+}
+```
+
+플러그인 skills은 `skillOverrides`의 영향을 받지 않습니다. `/plugin`을 통해 이를 관리합니다.
+
 ## Skills 공유
 
 Skills는 대상에 따라 다양한 범위에서 배포할 수 있습니다:
@@ -516,13 +591,13 @@ Skill 디렉토리 생성:
 mkdir -p ~/.claude/skills/codebase-visualizer/scripts
 ```
 
-`~/.claude/skills/codebase-visualizer/SKILL.md` 생성. 설명은 Claude에게 이 Skill을 언제 활성화할지 알려주고, 지침은 Claude에게 번들 스크립트를 실행하도록 알려줍니다:
+`~/.claude/skills/codebase-visualizer/SKILL.md`에 저장합니다. 설명은 Claude에게 이 Skill을 언제 활성화할지 알려주고, 지침은 Claude에게 번들 스크립트를 실행하도록 알려줍니다. 스크립트 경로는 [`${CLAUDE_SKILL_DIR}`](#available-string-substitutions)를 사용하므로 skill이 개인, 프로젝트 또는 플러그인 수준에서 설치되었는지 여부에 관계없이 올바르게 해석됩니다:
 
 ````yaml theme={null}
 ---
 name: codebase-visualizer
 description: Generate an interactive collapsible tree visualization of your codebase. Use when exploring a new repo, understanding project structure, or identifying large files.
-allowed-tools: Bash(python *)
+allowed-tools: Bash(python3 *)
 ---
 
 # Codebase Visualizer
@@ -534,7 +609,7 @@ Generate an interactive HTML tree view that shows your project's file structure 
 Run the visualization script from your project root:
 
 ```bash
-python ~/.claude/skills/codebase-visualizer/scripts/visualize.py .
+python3 ${CLAUDE_SKILL_DIR}/scripts/visualize.py .
 ```
 
 This creates `codebase-map.html` in the current directory and opens it in your default browser.
@@ -547,13 +622,13 @@ This creates `codebase-map.html` in the current directory and opens it in your d
 - **Directory totals**: Shows aggregate size of each folder
 ````
 
-`~/.claude/skills/codebase-visualizer/scripts/visualize.py` 생성. 이 스크립트는 디렉토리 트리를 스캔하고 다음을 포함하는 자체 포함 HTML 파일을 생성합니다:
+`~/.claude/skills/codebase-visualizer/scripts/visualize.py`에 저장합니다. 이 스크립트는 디렉토리 트리를 스캔하고 다음을 포함하는 자체 포함 HTML 파일을 생성합니다:
 
 * 파일 수, 디렉토리 수, 총 크기 및 파일 유형 수를 보여주는 **요약 사이드바**
 * 파일 유형별로 코드베이스를 분석하는 **막대 차트**(크기 기준 상위 8개)
 * 디렉토리를 확장 및 축소할 수 있는 **축소 가능한 트리**로, 색상으로 코딩된 파일 유형 표시기 포함
 
-스크립트는 Python이 필요하지만 기본 제공 라이브러리만 사용하므로 설치할 패키지가 없습니다:
+스크립트는 Python 3이 필요하지만 기본 제공 라이브러리만 사용하므로 설치할 패키지가 없습니다:
 
 ```python expandable theme={null}
 #!/usr/bin/env python3
@@ -562,6 +637,7 @@ This creates `codebase-map.html` in the current directory and opens it in your d
 import json
 import sys
 import webbrowser
+from html import escape
 from pathlib import Path
 from collections import Counter
 
@@ -650,7 +726,7 @@ def generate_html(data: dict, stats: dict, output: Path) -> None:
       {lang_bars}
     </div>
     <div class="main">
-      <h1>📁 {data["name"]}</h1>
+      <h1>📁 {escape(data["name"])}</h1>
       <ul class="tree" id="root"></ul>
     </div>
   </div>
@@ -658,11 +734,12 @@ def generate_html(data: dict, stats: dict, output: Path) -> None:
     const data = {json.dumps(data)};
     const colors = {json.dumps(colors)};
     function fmt(b) {{ if (b < 1024) return b + ' B'; if (b < 1048576) return (b/1024).toFixed(1) + ' KB'; return (b/1048576).toFixed(1) + ' MB'; }}
+    function esc(s) {{ return s.replace(/[&<>"']/g, c => ({{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}}[c])); }}
     function render(node, parent) {{
       if (node.children) {{
         const det = document.createElement('details');
         det.open = parent === document.getElementById('root');
-        det.innerHTML = `<summary><span class="folder">📁 ${{node.name}}</span><span class="size">${{fmt(node.size)}}</span></summary>`;
+        det.innerHTML = `<summary><span class="folder">📁 ${{esc(node.name)}}</span><span class="size">${{fmt(node.size)}}</span></summary>`;
         const ul = document.createElement('ul'); ul.className = 'tree';
         node.children.sort((a,b) => (b.children?1:0)-(a.children?1:0) || a.name.localeCompare(b.name));
         node.children.forEach(c => render(c, ul));
@@ -670,7 +747,7 @@ def generate_html(data: dict, stats: dict, output: Path) -> None:
         const li = document.createElement('li'); li.appendChild(det); parent.appendChild(li);
       }} else {{
         const li = document.createElement('li'); li.className = 'file';
-        li.innerHTML = `<span class="dot" style="background:${{colors[node.ext]||'#6b7280'}}"></span>${{node.name}}<span class="size">${{fmt(node.size)}}</span>`;
+        li.innerHTML = `<span class="dot" style="background:${{colors[node.ext]||'#6b7280'}}"></span>${{esc(node.name)}}<span class="size">${{fmt(node.size)}}</span>`;
         parent.appendChild(li);
       }}
     }}
@@ -713,9 +790,9 @@ Claude가 원하지 않을 때 skill을 사용하는 경우:
 
 ### Skill 설명이 잘림
 
-Skill 설명은 Claude가 사용 가능한 항목을 알 수 있도록 컨텍스트에 로드됩니다. 모든 skill 이름은 항상 포함되지만, 많은 skills가 있으면 설명이 단축되어 문자 예산에 맞출 수 있으며, 이는 Claude가 요청과 일치하는 데 필요한 키워드를 제거할 수 있습니다. 예산은 컨텍스트 윈도우의 1%에서 동적으로 확장되며, 8,000자의 폴백이 있습니다.
+Skill 설명은 Claude가 사용 가능한 항목을 알 수 있도록 컨텍스트에 로드됩니다. 모든 skill 이름은 항상 포함되지만, 많은 skills가 있으면 설명이 단축되어 문자 예산에 맞출 수 있으며, 이는 Claude가 요청과 일치하는 데 필요한 키워드를 제거할 수 있습니다. 예산은 모델의 컨텍스트 윈도우의 1%에서 확장됩니다. 예산이 초과되면, 가장 적게 호출하는 skills의 설명이 먼저 삭제되므로 실제로 사용하는 skills는 전체 텍스트를 유지합니다. `/doctor`를 실행하여 예산이 초과되었는지 확인하고 어떤 skills가 영향을 받는지 확인합니다.
 
-제한을 높이려면 `SLASH_COMMAND_TOOL_CHAR_BUDGET` 환경 변수를 설정합니다. 또는 소스에서 설명을 자릅니다: 주요 사용 사례를 앞에 배치합니다. 각 항목의 결합된 텍스트는 예산과 관계없이 1,536자로 제한됩니다.
+예산을 높이려면 [`skillListingBudgetFraction`](/ko/settings#available-settings) 설정(예: `0.02` = 2%)을 설정하거나 `SLASH_COMMAND_TOOL_CHAR_BUDGET` 환경 변수를 고정 문자 수로 설정합니다. 다른 skills를 위해 예산을 확보하려면 [`skillOverrides`](#override-skill-visibility-from-settings)에서 낮은 우선순위 항목을 `"name-only"`로 설정하여 설명 없이 나열되도록 합니다. 또한 소스에서 `description` 및 `when_to_use` 텍스트를 자를 수 있습니다: 주요 사용 사례를 먼저 배치합니다. 각 항목의 결합된 텍스트는 예산과 관계없이 1,536자로 제한되기 때문입니다. 이 제한은 [`maxSkillDescriptionChars`](/ko/settings#available-settings)로 구성할 수 있습니다.
 
 ## 관련 리소스
 

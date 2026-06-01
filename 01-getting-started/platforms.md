@@ -12,15 +12,16 @@ Claude Code는 모든 곳에서 동일한 기본 엔진을 실행하지만, 각 
 
 프로젝트가 있는 위치와 작업 방식에 따라 플랫폼을 선택합니다.
 
-| 플랫폼                               | 최적 용도                                                  | 제공 기능                                                                                                                           |
-| :-------------------------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| [CLI](/ko/quickstart)             | 터미널 워크플로우, 스크립팅, 원격 서버                                 | 전체 기능 세트, [Agent SDK](/ko/headless), 타사 제공자                                                                                     |
-| [Desktop](/ko/desktop)            | 시각적 검토, 병렬 세션, 관리형 설정                                  | Diff 뷰어, 앱 미리보기, Pro 및 Max의 [컴퓨터 사용](/ko/desktop#let-claude-use-your-computer) 및 [Dispatch](/ko/desktop#sessions-from-dispatch) |
-| [VS Code](/ko/vs-code)            | 터미널로 전환하지 않고 VS Code 내에서 작업                            | 인라인 Diff, 통합 터미널, 파일 컨텍스트                                                                                                       |
-| [JetBrains](/ko/jetbrains)        | IntelliJ, PyCharm, WebStorm 또는 기타 JetBrains IDE 내에서 작업 | Diff 뷰어, 선택 공유, 터미널 세션                                                                                                          |
-| [Web](/ko/claude-code-on-the-web) | 많은 조작이 필요하지 않은 장기 실행 작업 또는 오프라인 상태에서도 계속되어야 하는 작업      | Anthropic 관리형 클라우드, 연결 해제 후에도 계속 실행                                                                                             |
+| 플랫폼                               | 최적 용도                                                  | 제공 기능                                                                                                                                              |
+| :-------------------------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [CLI](/ko/quickstart)             | 터미널 워크플로우, 스크립팅, 원격 서버                                 | 전체 기능 세트, [Agent SDK](/ko/headless), macOS의 [컴퓨터 사용](/ko/computer-use) (Pro 및 Max), 타사 제공자                                                         |
+| [Desktop](/ko/desktop)            | 시각적 검토, 병렬 세션, 관리형 설정                                  | Diff 뷰어, 앱 미리보기, Pro 및 Max의 [컴퓨터 사용](/ko/desktop#let-claude-use-your-computer) 및 [Dispatch](/ko/desktop#sessions-from-dispatch)                    |
+| [VS Code](/ko/vs-code)            | 터미널로 전환하지 않고 VS Code 내에서 작업                            | 인라인 Diff, 통합 터미널, 파일 컨텍스트                                                                                                                          |
+| [JetBrains](/ko/jetbrains)        | IntelliJ, PyCharm, WebStorm 또는 기타 JetBrains IDE 내에서 작업 | Diff 뷰어, 선택 공유, 터미널 세션                                                                                                                             |
+| [Web](/ko/claude-code-on-the-web) | 많은 조작이 필요하지 않은 장기 실행 작업 또는 오프라인 상태에서도 계속되어야 하는 작업      | Anthropic 관리형 클라우드, 연결 해제 후에도 계속 실행                                                                                                                |
+| Mobile                            | 컴퓨터에서 멀리 떨어져 있을 때 작업 시작 및 모니터링                         | iOS 및 Android용 Claude 앱의 클라우드 세션, 로컬 세션용 [Remote Control](/ko/remote-control), Pro 및 Max의 Desktop으로 [Dispatch](/ko/desktop#sessions-from-dispatch) |
 
-CLI는 터미널 기반 작업을 위한 가장 완전한 플랫폼입니다. 스크립팅, 타사 제공자, Agent SDK는 CLI 전용입니다. Desktop과 IDE 확장 프로그램은 일부 CLI 전용 기능을 포기하는 대신 시각적 검토와 더 긴밀한 편집기 통합을 제공합니다. 웹은 Anthropic의 클라우드에서 실행되므로 연결을 해제한 후에도 작업이 계속됩니다.
+CLI는 터미널 기반 작업을 위한 가장 완전한 플랫폼입니다. 스크립팅 및 Agent SDK는 CLI 전용입니다. 타사 제공자는 [VS Code](/ko/vs-code#use-third-party-providers)에서도 작동합니다. Enterprise [Desktop](/ko/desktop) 배포는 Vertex AI 및 게이트웨이 제공자를 지원합니다. Bedrock 또는 Foundry의 경우 Desktop 대신 CLI 또는 VS Code를 사용합니다. Desktop과 IDE 확장 프로그램은 일부 CLI 전용 기능을 포기하는 대신 시각적 검토와 더 긴밀한 편집기 통합을 제공합니다. 웹은 Anthropic의 클라우드에서 실행되므로 연결을 해제한 후에도 작업이 계속됩니다. Mobile은 동일한 클라우드 세션으로의 씬 클라이언트이거나 Remote Control을 통한 로컬 세션으로의 씬 클라이언트이며, Dispatch를 통해 Desktop으로 작업을 보낼 수 있습니다.
 
 동일한 프로젝트에서 여러 플랫폼을 혼합하여 사용할 수 있습니다. 구성, 프로젝트 메모리 및 MCP 서버는 로컬 플랫폼 간에 공유됩니다.
 
@@ -61,10 +62,12 @@ Claude Code offers several ways to work when you're not at your terminal. They d
 * [VS Code](/ko/vs-code): 편집기 내 Claude Code 확장 프로그램
 * [JetBrains](/ko/jetbrains): IntelliJ, PyCharm 및 기타 JetBrains IDE용 확장 프로그램
 * [웹의 Claude Code](/ko/claude-code-on-the-web): 연결 해제 후에도 계속 실행되는 클라우드 세션
+* Mobile: [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) 및 [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude)용 Claude 앱으로 컴퓨터에서 멀리 떨어져 있을 때 작업 시작 및 모니터링
 
 ### 통합
 
 * [Chrome](/ko/chrome): 로그인된 세션으로 브라우저 작업 자동화
+* [컴퓨터 사용](/ko/computer-use): Claude가 macOS에서 앱을 열고 화면을 제어하도록 허용
 * [GitHub Actions](/ko/github-actions): CI 파이프라인에서 Claude 실행
 * [GitLab CI/CD](/ko/gitlab-ci-cd): GitLab용 동일한 기능
 * [Code Review](/ko/code-review): 모든 풀 요청에 대한 자동 검토

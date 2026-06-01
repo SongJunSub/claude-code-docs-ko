@@ -99,21 +99,22 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 
 `Chat` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                    | 기본값                      | 설명                           |
-| :-------------------- | :----------------------- | :--------------------------- |
-| `chat:cancel`         | Escape                   | 현재 입력 취소                     |
-| `chat:clearInput`     | Ctrl+L                   | 프롬프트 입력을 지우고 전체 화면 다시 그리기 강제 |
-| `chat:killAgents`     | Ctrl+X Ctrl+K            | 모든 백그라운드 에이전트 종료             |
-| `chat:cycleMode`      | Shift+Tab\*              | 권한 모드 순환                     |
-| `chat:modelPicker`    | Cmd+P / Meta+P           | 모델 선택기 열기                    |
-| `chat:fastMode`       | Meta+O                   | 빠른 모드 전환                     |
-| `chat:thinkingToggle` | Cmd+T / Meta+T           | 확장 사고 전환                     |
-| `chat:submit`         | Enter                    | 메시지 제출                       |
-| `chat:newline`        | Ctrl+J                   | 제출하지 않고 줄 바꿈 삽입              |
-| `chat:undo`           | Ctrl+\_, Ctrl+Shift+-    | 마지막 작업 실행 취소                 |
-| `chat:externalEditor` | Ctrl+G, Ctrl+X Ctrl+E    | 외부 편집기에서 열기                  |
-| `chat:stash`          | Ctrl+S                   | 현재 프롬프트 숨기기                  |
-| `chat:imagePaste`     | Ctrl+V (Windows에서 Alt+V) | 이미지 붙여넣기                     |
+| 작업                    | 기본값                            | 설명                                                                                                             |
+| :-------------------- | :----------------------------- | :------------------------------------------------------------------------------------------------------------- |
+| `chat:cancel`         | Escape                         | 현재 입력 취소                                                                                                       |
+| `chat:clearInput`     | Ctrl+L                         | 입력을 유지하면서 전체 화면을 다시 그리기 강제합니다. [전체 화면 렌더링](/ko/fullscreen#clear-the-conversation)에서 2초 이내에 두 번 누르면 `/clear` 실행 |
+| `chat:clearScreen`    | Cmd+K                          | [전체 화면 렌더링](/ko/fullscreen#clear-the-conversation)에서 2초 이내에 두 번 누르면 `/clear` 실행                                |
+| `chat:killAgents`     | Ctrl+X Ctrl+K                  | 이 세션의 모든 실행 중인 [백그라운드 서브에이전트](/ko/sub-agents#run-subagents-in-foreground-or-background) 종료                     |
+| `chat:cycleMode`      | Shift+Tab\*                    | 권한 모드 순환                                                                                                       |
+| `chat:modelPicker`    | Meta+P                         | 모델 선택기 열기                                                                                                      |
+| `chat:fastMode`       | Meta+O                         | 빠른 모드 전환                                                                                                       |
+| `chat:thinkingToggle` | Meta+T                         | 확장 사고 전환                                                                                                       |
+| `chat:submit`         | Enter                          | 메시지 제출                                                                                                         |
+| `chat:newline`        | Ctrl+J                         | 제출하지 않고 줄 바꿈 삽입                                                                                                |
+| `chat:undo`           | Ctrl+\_, Ctrl+Shift+-          | 마지막 작업 실행 취소                                                                                                   |
+| `chat:externalEditor` | Ctrl+G, Ctrl+X Ctrl+E          | 외부 편집기에서 열기                                                                                                    |
+| `chat:stash`          | Ctrl+S                         | 현재 프롬프트 숨기기                                                                                                    |
+| `chat:imagePaste`     | Ctrl+V (Windows 및 WSL에서 Alt+V) | 클립보드에서 이미지 붙여넣기. WSL에서는 두 단축키 모두 기본적으로 바인딩됩니다                                                                  |
 
 \*VT 모드가 없는 Windows에서(Node \<24.2.0/\<22.17.0, Bun \<1.2.23), 기본값은 Meta+M입니다.
 
@@ -148,9 +149,9 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 
 권한 대화 상자의 `Confirmation` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                       | 기본값    | 설명           |
-| :----------------------- | :----- | :----------- |
-| `permission:toggleDebug` | Ctrl+D | 권한 디버그 정보 전환 |
+| 작업                       | 기본값       | 설명                                                                   |
+| :----------------------- | :-------- | :------------------------------------------------------------------- |
+| `permission:toggleDebug` | (바인딩 해제됨) | 권한 디버그 정보 전환. v2.1.146에서 `app:exit`를 가렸기 때문에 이전 기본값인 Ctrl+D가 제거되었습니다 |
 
 ### 트랜스크립트 작업
 
@@ -165,12 +166,13 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 
 `HistorySearch` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                      | 기본값         | 설명        |
-| :---------------------- | :---------- | :-------- |
-| `historySearch:next`    | Ctrl+R      | 다음 일치 항목  |
-| `historySearch:accept`  | Escape, Tab | 선택 수락     |
-| `historySearch:cancel`  | Ctrl+C      | 검색 취소     |
-| `historySearch:execute` | Enter       | 선택한 명령 실행 |
+| 작업                         | 기본값         | 설명                    |
+| :------------------------- | :---------- | :-------------------- |
+| `historySearch:next`       | Ctrl+R      | 다음 일치 항목              |
+| `historySearch:accept`     | Escape, Tab | 선택 수락                 |
+| `historySearch:cancel`     | Ctrl+C      | 검색 취소                 |
+| `historySearch:execute`    | Enter       | 선택한 명령 실행             |
+| `historySearch:cycleScope` | Ctrl+S      | 범위 순환: 세션, 프로젝트, 모든 곳 |
 
 ### 작업 작업
 
@@ -245,24 +247,36 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 
 `DiffDialog` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                    | 기본값     | 설명              |
-| :-------------------- | :------ | :-------------- |
-| `diff:dismiss`        | Escape  | Diff 뷰어 닫기      |
-| `diff:previousSource` | Left    | 이전 diff 소스      |
-| `diff:nextSource`     | Right   | 다음 diff 소스      |
-| `diff:previousFile`   | Up      | Diff의 이전 파일     |
-| `diff:nextFile`       | Down    | Diff의 다음 파일     |
-| `diff:viewDetails`    | Enter   | Diff 세부 정보 보기   |
-| `diff:back`           | (컨텍스트별) | Diff 뷰어에서 뒤로 이동 |
+| 작업                    | 기본값     | 설명                                   |
+| :-------------------- | :------ | :----------------------------------- |
+| `diff:dismiss`        | Escape  | Diff 뷰어 닫기                           |
+| `diff:previousSource` | Left    | 이전 diff 소스                           |
+| `diff:nextSource`     | Right   | 다음 diff 소스                           |
+| `diff:previousFile`   | Up, K   | 파일 목록의 이전 파일; 세부 정보 보기에서 한 줄 위로 스크롤  |
+| `diff:nextFile`       | Down, J | 파일 목록의 다음 파일; 세부 정보 보기에서 한 줄 아래로 스크롤 |
+| `diff:viewDetails`    | Enter   | Diff 세부 정보 보기                        |
+| `diff:back`           | (컨텍스트별) | Diff 뷰어에서 뒤로 이동                      |
+
+Diff 세부 정보 보기는 또한 페이저 스타일 키를 표준 [스크롤 작업](#scroll-actions)에 바인딩합니다. 이러한 바인딩은 `DiffDialog` 컨텍스트의 일부이며 세부 정보 보기에만 적용됩니다. [스크롤 작업](#scroll-actions) 아래에 나열된 `Scroll` 컨텍스트 기본값은 변경되지 않습니다.
+
+| 작업                    | 기본값            | 설명                |
+| :-------------------- | :------------- | :---------------- |
+| `scroll:pageUp`       | PageUp         | 뷰포트의 절반만큼 위로 스크롤  |
+| `scroll:pageDown`     | PageDown       | 뷰포트의 절반만큼 아래로 스크롤 |
+| `scroll:fullPageUp`   | Shift+Space, B | 전체 뷰포트만큼 위로 스크롤   |
+| `scroll:fullPageDown` | Space          | 전체 뷰포트만큼 아래로 스크롤  |
+| `scroll:top`          | G, Home        | 맨 위로 이동           |
+| `scroll:bottom`       | Shift+G, End   | 맨 아래로 이동          |
 
 ### 모델 선택기 작업
 
 `ModelPicker` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                           | 기본값   | 설명       |
-| :--------------------------- | :---- | :------- |
-| `modelPicker:decreaseEffort` | Left  | 노력 수준 감소 |
-| `modelPicker:increaseEffort` | Right | 노력 수준 증가 |
+| 작업                            | 기본값   | 설명                   |
+| :---------------------------- | :---- | :------------------- |
+| `modelPicker:decreaseEffort`  | Left  | 노력 수준 감소             |
+| `modelPicker:increaseEffort`  | Right | 노력 수준 증가             |
+| `modelPicker:thisSessionOnly` | s     | 강조 표시된 모델을 이 세션에만 적용 |
 
 ### 선택 작업
 
@@ -343,16 +357,18 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 `+` 구분자로 수정자 키를 사용합니다:
 
 * `ctrl` 또는 `control` - Control 키
-* `alt`, `opt`, 또는 `option` - Alt/Option 키
 * `shift` - Shift 키
-* `meta`, `cmd`, 또는 `command` - Meta/Command 키
+* `alt`, `opt`, `option`, 또는 `meta` - Windows 및 Linux의 Alt 키, macOS의 Option 키
+* `cmd`, `command`, `super`, 또는 `win` - macOS의 Command 키, Windows의 Windows 키, Linux의 Super 키
+
+`cmd` 그룹은 Kitty 키보드 프로토콜 또는 xterm의 `modifyOtherKeys` 모드를 지원하는 것과 같이 Super 수정자를 보고하는 터미널에서만 감지됩니다. 대부분의 터미널은 이를 전송하지 않으므로 모든 곳에서 작동하기를 원하는 바인딩에는 `ctrl` 또는 `meta`를 사용합니다.
 
 예를 들어:
 
 ```text theme={null}
-ctrl+k          수정자가 있는 단일 키
+ctrl+k          Ctrl + K
 shift+tab       Shift + Tab
-meta+p          Command/Meta + P
+meta+p          macOS의 Option + P, 다른 곳의 Alt + P
 ctrl+shift+c    여러 수정자
 ```
 
@@ -360,7 +376,7 @@ ctrl+shift+c    여러 수정자
 
 독립 실행형 대문자는 Shift를 의미합니다. 예를 들어 `K`는 `shift+k`와 동일합니다. 이는 대문자와 소문자 키가 다른 의미를 갖는 vim 스타일 바인딩에 유용합니다.
 
-수정자가 있는 대문자(예: `ctrl+K`)는 스타일 지정으로 처리되며 Shift를 의미하지 **않습니다** — `ctrl+K`는 `ctrl+k`와 동일합니다.
+수정자가 있는 대문자(예: `ctrl+K`)는 스타일 지정으로 처리되며 Shift를 의미하지 **않습니다**: `ctrl+K`는 `ctrl+k`와 동일합니다.
 
 ### 코드
 
@@ -419,11 +435,12 @@ ctrl+k ctrl+s   Ctrl+K를 누르고 놓은 다음 Ctrl+S를 누릅니다
 
 이러한 단축키는 다시 바인딩할 수 없습니다:
 
-| 단축키    | 이유                        |
-| :----- | :------------------------ |
-| Ctrl+C | 하드코딩된 중단/취소               |
-| Ctrl+D | 하드코딩된 종료                  |
-| Ctrl+M | 터미널의 Enter와 동일(둘 다 CR 전송) |
+| 단축키       | 이유                        |
+| :-------- | :------------------------ |
+| Ctrl+C    | 하드코딩된 중단/취소               |
+| Ctrl+D    | 하드코딩된 종료                  |
+| Ctrl+M    | 터미널의 Enter와 동일(둘 다 CR 전송) |
+| Caps Lock | 터미널 애플리케이션에 전달되지 않음       |
 
 ## 터미널 충돌
 
@@ -444,6 +461,7 @@ vim 모드가 `/config` → 편집기 모드를 통해 활성화되면 키바인
 * vim 모드의 Escape 키는 INSERT를 NORMAL 모드로 전환합니다. `chat:cancel`을 트리거하지 않습니다.
 * 대부분의 Ctrl+key 단축키는 vim 모드를 통과하여 키바인딩 시스템으로 이동합니다.
 * vim NORMAL 모드에서 `?`는 도움말 메뉴를 표시합니다(vim 동작).
+* vim NORMAL 모드에서 `/`는 히스토리 검색을 열며, 표준 모드의 Ctrl+R과 동일합니다.
 
 ## 유효성 검사
 

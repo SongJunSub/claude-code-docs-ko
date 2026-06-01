@@ -7,14 +7,10 @@
 > Claude Code를 라이브러리로 사용하여 프로덕션 AI 에이전트 구축하기
 
 <Note>
-  Claude Code SDK의 이름이 Claude Agent SDK로 변경되었습니다. 이전 SDK에서 마이그레이션하는 경우 [마이그레이션 가이드](/ko/agent-sdk/migration-guide)를 참조하십시오.
+  Starting June 15, 2026, Agent SDK and `claude -p` usage on subscription plans will draw from a new monthly Agent SDK credit, separate from your interactive usage limits. See [Use the Claude Agent SDK with your Claude plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) for details.
 </Note>
 
 자율적으로 파일을 읽고, 명령을 실행하고, 웹을 검색하고, 코드를 편집하는 등의 작업을 수행하는 AI 에이전트를 구축하십시오. Agent SDK는 Claude Code를 강화하는 동일한 도구, 에이전트 루프 및 컨텍스트 관리를 Python 및 TypeScript로 프로그래밍할 수 있도록 제공합니다.
-
-<Note>
-  Opus 4.7(`claude-opus-4-7`)은 Agent SDK v0.2.111 이상이 필요합니다. `thinking.type.enabled` API 오류가 표시되면 [문제 해결](/ko/agent-sdk/quickstart#troubleshooting)을 참조하십시오.
-</Note>
 
 <CodeGroup>
   ```python Python theme={null}
@@ -72,6 +68,8 @@ Agent SDK에는 파일 읽기, 명령 실행 및 코드 편집을 위한 기본 
         ```bash theme={null}
         pip install claude-agent-sdk
         ```
+
+        Python 패키지는 Python 3.10 이상이 필요합니다. pip에서 `No matching distribution found for claude-agent-sdk`를 보고하면 인터프리터가 3.10보다 오래된 것입니다. macOS 또는 Linux에서 `python3 --version`을 실행하거나 Windows에서 `py --version`을 실행하여 확인하십시오.
       </Tab>
     </Tabs>
 
@@ -90,10 +88,11 @@ Agent SDK에는 파일 읽기, 명령 실행 및 코드 편집을 위한 기본 
     SDK는 또한 타사 API 제공자를 통한 인증을 지원합니다:
 
     * **Amazon Bedrock**: `CLAUDE_CODE_USE_BEDROCK=1` 환경 변수를 설정하고 AWS 자격 증명을 구성합니다
+    * **Claude Platform on AWS**: `CLAUDE_CODE_USE_ANTHROPIC_AWS=1` 및 `ANTHROPIC_AWS_WORKSPACE_ID`를 설정한 다음 AWS 자격 증명을 구성합니다
     * **Google Vertex AI**: `CLAUDE_CODE_USE_VERTEX=1` 환경 변수를 설정하고 Google Cloud 자격 증명을 구성합니다
     * **Microsoft Azure**: `CLAUDE_CODE_USE_FOUNDRY=1` 환경 변수를 설정하고 Azure 자격 증명을 구성합니다
 
-    [Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai) 또는 [Azure AI Foundry](/ko/microsoft-foundry)의 설정 가이드를 참조하십시오.
+    [Bedrock](/ko/amazon-bedrock), [Claude Platform on AWS](/ko/claude-platform-on-aws), [Vertex AI](/ko/google-vertex-ai) 또는 [Azure AI Foundry](/ko/microsoft-foundry)의 설정 가이드를 참조하십시오.
 
     <Note>
       이전에 승인되지 않은 경우, Anthropic은 타사 개발자가 Claude Agent SDK로 구축한 에이전트를 포함하여 자신의 제품에 대해 claude.ai 로그인 또는 속도 제한을 제공하도록 허용하지 않습니다. 대신 이 문서에 설명된 API 키 인증 방법을 사용하십시오.
@@ -261,7 +260,7 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
   <Tab title="서브에이전트">
     특화된 에이전트를 생성하여 집중된 부작업을 처리합니다. 주 에이전트가 작업을 위임하고 서브에이전트가 결과를 보고합니다.
 
-    특화된 지침으로 사용자 정의 에이전트를 정의합니다. 서브에이전트가 Agent 도구를 통해 호출되므로 `allowedTools`에 `Agent`를 포함하십시오:
+    특화된 지침으로 사용자 정의 에이전트를 정의합니다. 서브에이전트가 Agent 도구를 통해 호출되므로 `allowedTools`에 `Agent`를 포함하여 해당 호출을 자동으로 승인합니다:
 
     <CodeGroup>
       ```python Python theme={null}
@@ -475,12 +474,12 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
 
 SDK는 또한 Claude Code의 파일 시스템 기반 구성을 지원합니다. 기본 옵션을 사용하면 SDK는 작업 디렉토리의 `.claude/` 및 `~/.claude/`에서 이를 로드합니다. 로드되는 소스를 제한하려면 옵션에서 `setting_sources`(Python) 또는 `settingSources`(TypeScript)를 설정하십시오.
 
-| 기능                                               | 설명                           | 위치                                 |
-| ------------------------------------------------ | ---------------------------- | ---------------------------------- |
-| [Skills](/ko/agent-sdk/skills)                   | Markdown에 정의된 특화된 기능         | `.claude/skills/*/SKILL.md`        |
-| [Slash commands](/ko/agent-sdk/slash-commands)   | 일반적인 작업을 위한 사용자 정의 명령        | `.claude/commands/*.md`            |
-| [Memory](/ko/agent-sdk/modifying-system-prompts) | 프로젝트 컨텍스트 및 지침               | `CLAUDE.md` 또는 `.claude/CLAUDE.md` |
-| [Plugins](/ko/agent-sdk/plugins)                 | 사용자 정의 명령, 에이전트 및 MCP 서버로 확장 | `plugins` 옵션을 통한 프로그래밍 방식          |
+| 기능                                               | 설명                                          | 위치                                 |
+| ------------------------------------------------ | ------------------------------------------- | ---------------------------------- |
+| [Skills](/ko/agent-sdk/skills)                   | Claude가 자동으로 사용하거나 `/name`으로 호출하는 특화된 기능    | `.claude/skills/*/SKILL.md`        |
+| [Commands](/ko/agent-sdk/slash-commands)         | 레거시 형식의 사용자 정의 명령. 새로운 사용자 정의 명령은 Skills 사용 | `.claude/commands/*.md`            |
+| [Memory](/ko/agent-sdk/modifying-system-prompts) | 프로젝트 컨텍스트 및 지침                              | `CLAUDE.md` 또는 `.claude/CLAUDE.md` |
+| [Plugins](/ko/agent-sdk/plugins)                 | Skills, 에이전트, 훅 및 MCP 서버로 확장                | `plugins` 옵션을 통한 프로그래밍 방식          |
 
 ## Agent SDK를 다른 Claude 도구와 비교
 

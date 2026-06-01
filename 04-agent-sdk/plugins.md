@@ -4,9 +4,9 @@
 
 # SDK의 플러그인
 
-> Agent SDK를 통해 명령어, 에이전트, 스킬 및 훅을 추가하여 Claude Code를 확장하는 사용자 정의 플러그인 로드
+> Agent SDK를 통해 스킬, 에이전트, 훅 및 MCP 서버를 추가하여 Claude Code를 확장하는 사용자 정의 플러그인 로드
 
-플러그인을 사용하면 프로젝트 전체에서 공유할 수 있는 사용자 정의 기능으로 Claude Code를 확장할 수 있습니다. Agent SDK를 통해 로컬 디렉터리에서 플러그인을 프로그래밍 방식으로 로드하여 에이전트 세션에 사용자 정의 슬래시 명령어, 에이전트, 스킬, 훅 및 MCP 서버를 추가할 수 있습니다.
+플러그인을 사용하면 프로젝트 전체에서 공유할 수 있는 사용자 정의 기능으로 Claude Code를 확장할 수 있습니다. Agent SDK를 통해 로컬 디렉터리에서 플러그인을 프로그래밍 방식으로 로드하여 에이전트 세션에 스킬, 에이전트, 훅 및 MCP 서버를 추가할 수 있습니다.
 
 ## 플러그인이란 무엇입니까?
 
@@ -46,18 +46,18 @@
 
   ```python Python theme={null}
   import asyncio
-  from claude_agent_sdk import query
+  from claude_agent_sdk import query, ClaudeAgentOptions
 
 
   async def main():
       async for message in query(
           prompt="Hello",
-          options={
-              "plugins": [
+          options=ClaudeAgentOptions(
+              plugins=[
                   {"type": "local", "path": "./my-plugin"},
                   {"type": "local", "path": "/absolute/path/to/another-plugin"},
               ]
-          },
+          ),
       ):
           # Plugin commands, agents, and other features are now available
           pass
@@ -93,34 +93,45 @@
     }
   })) {
     if (message.type === "system" && message.subtype === "init") {
-      // Check loaded plugins
+      // 로드된 플러그인 확인
       console.log("Plugins:", message.plugins);
-      // Example: [{ name: "my-plugin", path: "./my-plugin" }]
+      // 예: [{ name: "my-plugin", path: "./my-plugin" }]
 
-      // Check available commands from plugins
+      // 플러그인 스킬은 플러그인 이름을 접두사로 하여 나타납니다
+      console.log("Skills:", message.skills);
+      // 예: ["my-plugin:greet"]
+
+      // 플러그인 명령어는 동일한 접두사를 사용하며, 스킬도 여기에 나타납니다
       console.log("Commands:", message.slash_commands);
-      // Example: ["/help", "/compact", "my-plugin:custom-command"]
+      // 예: ["compact", "context", "my-plugin:custom-command", "my-plugin:greet"]
     }
   }
   ```
 
   ```python Python theme={null}
   import asyncio
-  from claude_agent_sdk import query
+  from claude_agent_sdk import query, ClaudeAgentOptions, SystemMessage
 
 
   async def main():
       async for message in query(
-          prompt="Hello", options={"plugins": [{"type": "local", "path": "./my-plugin"}]}
+          prompt="Hello",
+          options=ClaudeAgentOptions(
+              plugins=[{"type": "local", "path": "./my-plugin"}]
+          ),
       ):
-          if message.type == "system" and message.subtype == "init":
-              # Check loaded plugins
+          if isinstance(message, SystemMessage) and message.subtype == "init":
+              # 로드된 플러그인 확인
               print("Plugins:", message.data.get("plugins"))
-              # Example: [{"name": "my-plugin", "path": "./my-plugin"}]
+              # 예: [{"name": "my-plugin", "path": "./my-plugin"}]
 
-              # Check available commands from plugins
+              # 플러그인 스킬은 플러그인 이름을 접두사로 하여 나타납니다
+              print("Skills:", message.data.get("skills"))
+              # 예: ["my-plugin:greet"]
+
+              # 플러그인 명령어는 동일한 접두사를 사용하며, 스킬도 여기에 나타납니다
               print("Commands:", message.data.get("slash_commands"))
-              # Example: ["/help", "/compact", "my-plugin:custom-command"]
+              # 예: ["compact", "context", "my-plugin:custom-command", "my-plugin:greet"]
 
 
   asyncio.run(main())
@@ -129,7 +140,7 @@
 
 ## 플러그인 스킬 사용
 
-플러그인의 스킬은 충돌을 피하기 위해 플러그인 이름으로 자동 네임스페이스됩니다. 슬래시 명령어로 호출될 때 형식은 `plugin-name:skill-name`입니다.
+플러그인의 스킬은 충돌을 피하기 위해 플러그인 이름으로 자동 네임스페이스됩니다. 직접 호출하려면 프롬프트로 `/plugin-name:skill-name`을 전송하십시오.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
@@ -151,14 +162,16 @@
 
   ```python Python theme={null}
   import asyncio
-  from claude_agent_sdk import query, AssistantMessage, TextBlock
+  from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage, TextBlock
 
 
   async def main():
       # Load a plugin with a custom /greet skill
       async for message in query(
           prompt="/demo-plugin:greet",  # Use plugin skill with namespace
-          options={"plugins": [{"type": "local", "path": "./plugins/demo-plugin"}]},
+          options=ClaudeAgentOptions(
+              plugins=[{"type": "local", "path": "./plugins/demo-plugin"}]
+          ),
       ):
           # Claude executes the custom greeting skill from the plugin
           if isinstance(message, AssistantMessage):
@@ -198,6 +211,7 @@
     })) {
       if (message.type === "system" && message.subtype === "init") {
         console.log("Loaded plugins:", message.plugins);
+        console.log("Available skills:", message.skills);
         console.log("Available commands:", message.slash_commands);
       }
 
@@ -219,6 +233,7 @@
   from claude_agent_sdk import (
       AssistantMessage,
       ClaudeAgentOptions,
+      SystemMessage,
       TextBlock,
       query,
   )
@@ -238,8 +253,9 @@
       async for message in query(
           prompt="What custom commands do you have available?", options=options
       ):
-          if message.type == "system" and message.subtype == "init":
+          if isinstance(message, SystemMessage) and message.subtype == "init":
               print(f"Loaded plugins: {message.data.get('plugins')}")
+              print(f"Available skills: {message.data.get('skills')}")
               print(f"Available commands: {message.data.get('slash_commands')}")
 
           if isinstance(message, AssistantMessage):
@@ -321,8 +337,8 @@ plugins: [
 
 플러그인 스킬이 작동하지 않으면:
 
-1. **네임스페이스 사용**: 플러그인 스킬은 슬래시 명령어로 호출될 때 `plugin-name:skill-name` 형식이 필요합니다
-2. **초기화 메시지 확인**: 스킬이 올바른 네임스페이스와 함께 `slash_commands`에 나타나는지 확인합니다
+1. **네임스페이스 사용**: `/plugin-name:skill-name`으로 플러그인 스킬을 호출합니다
+2. **초기화 메시지 확인**: 스킬이 올바른 네임스페이스와 함께 `skills` 목록에 나타나는지 확인합니다
 3. **스킬 파일 검증**: 각 스킬이 `skills/` 아래의 자체 하위 디렉터리에 `SKILL.md` 파일을 가지고 있는지 확인합니다(예: `skills/my-skill/SKILL.md`)
 
 ### 경로 확인 문제

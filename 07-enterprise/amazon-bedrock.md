@@ -76,117 +76,7 @@ export const ContactSalesCard = ({surface}) => {
     </div>;
 };
 
-export const Experiment = ({flag, treatment, children}) => {
-  const VID_KEY = 'exp_vid';
-  const CONSENT_COUNTRIES = new Set(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'RE', 'GP', 'MQ', 'GF', 'YT', 'BL', 'MF', 'PM', 'WF', 'PF', 'NC', 'AW', 'CW', 'SX', 'FO', 'GL', 'AX', 'GB', 'UK', 'AI', 'BM', 'IO', 'VG', 'KY', 'FK', 'GI', 'MS', 'PN', 'SH', 'TC', 'GG', 'JE', 'IM', 'CA', 'BR', 'IN']);
-  const fnv1a = s => {
-    let h = 0x811c9dc5;
-    for (let i = 0; i < s.length; i++) {
-      h ^= s.charCodeAt(i);
-      h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
-    }
-    return h >>> 0;
-  };
-  const bucket = (seed, vid) => fnv1a(fnv1a(seed + vid) + '') % 10000 < 5000 ? 'control' : 'treatment';
-  const [decision] = useState(() => {
-    const params = new URLSearchParams(location.search);
-    const preBucketed = document.documentElement.dataset['gb_' + flag.replace(/-/g, '_')];
-    const force = params.get('gb-force');
-    if (force) {
-      for (const p of force.split(',')) {
-        const [k, v] = p.split(':');
-        if (k === flag) return {
-          variant: v || 'treatment',
-          track: false
-        };
-      }
-    }
-    if (navigator.globalPrivacyControl) {
-      return {
-        variant: 'control',
-        track: false
-      };
-    }
-    const prefsMatch = document.cookie.match(/(?:^|; )anthropic-consent-preferences=([^;]+)/);
-    if (prefsMatch) {
-      try {
-        if (JSON.parse(decodeURIComponent(prefsMatch[1])).analytics !== true) {
-          return {
-            variant: 'control',
-            track: false
-          };
-        }
-      } catch {
-        return {
-          variant: 'control',
-          track: false
-        };
-      }
-    } else {
-      const country = params.get('country')?.toUpperCase() || (document.cookie.match(/(?:^|; )cf_geo=([A-Z]{2})/) || [])[1];
-      if (!country || CONSENT_COUNTRIES.has(country)) {
-        return {
-          variant: 'control',
-          track: false
-        };
-      }
-    }
-    let vid;
-    try {
-      const ajsMatch = document.cookie.match(/(?:^|; )ajs_anonymous_id=([^;]+)/);
-      if (ajsMatch) {
-        vid = decodeURIComponent(ajsMatch[1]).replace(/^"|"$/g, '');
-      } else {
-        vid = localStorage.getItem(VID_KEY);
-        if (!vid) {
-          vid = crypto.randomUUID();
-        }
-        document.cookie = `ajs_anonymous_id=${vid}; domain=.claude.com; path=/; Secure; SameSite=Lax; max-age=31536000`;
-      }
-      try {
-        localStorage.setItem(VID_KEY, vid);
-      } catch {}
-    } catch {
-      return {
-        variant: 'control',
-        track: false
-      };
-    }
-    const variant = preBucketed === '1' ? 'treatment' : preBucketed === '0' ? 'control' : bucket(flag, vid);
-    return {
-      variant,
-      track: true,
-      vid
-    };
-  });
-  useEffect(() => {
-    if (!decision.track) return;
-    fetch('https://api.anthropic.com/api/event_logging/v2/batch', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-service-name': 'claude_code_docs'
-      },
-      body: JSON.stringify({
-        events: [{
-          event_type: 'GrowthbookExperimentEvent',
-          event_data: {
-            device_id: decision.vid,
-            anonymous_id: decision.vid,
-            timestamp: new Date().toISOString(),
-            experiment_id: flag,
-            variation_id: decision.variant === 'treatment' ? 1 : 0,
-            environment: 'production'
-          }
-        }]
-      }),
-      keepalive: true
-    }).catch(() => {});
-  }, []);
-  return decision.variant === 'treatment' ? treatment : children;
-};
-
-<Experiment flag="docs-contact-sales-cta" treatment={<ContactSalesCard surface="bedrock" />} />
+<ContactSalesCard surface="bedrock" />
 
 ## 필수 조건
 
@@ -280,7 +170,10 @@ Bedrock API 키는 전체 AWS 자격 증명이 필요 없는 더 간단한 인�
 
 Claude Code는 AWS SSO 및 회사 ID 공급자에 대한 자동 자격 증명 새로 고침을 지원합니다. Claude Code 설정 파일에 이러한 설정을 추가하십시오([설정](/ko/settings)에서 파일 위치 참조).
 
-Claude Code가 AWS 자격 증명이 만료되었음을 감지하면(타임스탬프를 기반으로 로컬에서 또는 Bedrock이 자격 증명 오류를 반환할 때), 요청을 다시 시도하기 전에 새 자격 증명을 얻기 위해 구성된 `awsAuthRefresh` 및/또는 `awsCredentialExport` 명령을 자동으로 실행합니다.
+이 두 설정은 서로 다른 트리거 조건을 가집니다:
+
+* **`awsAuthRefresh`**: Claude Code가 AWS 자격 증명이 만료되었음을 감지할 때만 실행됩니다. 타임스탬프를 기반으로 로컬에서 또는 Bedrock이 자격 증명 오류를 반환할 때 감지되며, 새로 고쳐진 자격 증명으로 요청을 다시 시도합니다.
+* **`awsCredentialExport`**: 세션 시작 시 및 각 자격 증명 다시 로드 시 실행되며, AWS 기본 자격 증명 공급자 체인의 자격 증명이 여전히 유효한 경우에도 실행됩니다. Bedrock 계정이 기본 공급자 체인이 확인할 자격 증명과 다른 교차 계정 자격 증명을 필요로 할 때 사용하십시오.
 
 ##### 예제 구성
 
@@ -297,7 +190,7 @@ Claude Code가 AWS 자격 증명이 만료되었음을 감지하면(타임스탬
 
 **`awsAuthRefresh`**: `.aws` 디렉토리를 수정하는 명령(예: 자격 증명, SSO 캐시 또는 구성 파일 업데이트)에 사용하십시오. 명령의 출력이 사용자에게 표시되지만 대화형 입력은 지원되지 않습니다. 이는 CLI가 URL 또는 코드를 표시하고 브라우저에서 인증을 완료하는 브라우저 기반 SSO 흐름에 적합합니다.
 
-**`awsCredentialExport`**: `.aws`를 수정할 수 없고 자격 증명을 직접 반환해야 하는 경우에만 사용하십시오. 출력은 자동으로 캡처되며 사용자에게 표시되지 않습니다. 명령은 다음 형식으로 JSON을 출력해야 합니다:
+**`awsCredentialExport`**: `.aws`를 수정할 수 없고 자격 증명을 직접 반환해야 하는 경우에만 사용하십시오. 이 명령은 자격 증명이 만료되었을 때뿐만 아니라 자격 증명을 새로 고쳐야 할 때마다 실행됩니다. 출력은 자동으로 캡처되며 사용자에게 표시되지 않습니다. 명령은 다음 형식으로 JSON을 출력해야 합니다:
 
 ```json theme={null}
 {
@@ -318,8 +211,9 @@ Bedrock을 활성화하려면 다음 환경 변수를 설정하십시오:
 export CLAUDE_CODE_USE_BEDROCK=1
 export AWS_REGION=us-east-1  # 또는 선호하는 지역
 
-# 선택 사항: 소형/빠른 모델(Haiku)의 지역 재정의
-# Bedrock Mantle에도 적용됩니다.
+# 선택 사항: 소형/빠른 모델(Bedrock 및 Mantle)의 AWS 지역 재정의
+# Bedrock에서는 ANTHROPIC_DEFAULT_HAIKU_MODEL
+# 또는 더 이상 사용되지 않는 ANTHROPIC_SMALL_FAST_MODEL이 설정되지 않으면 효과가 없습니다.
 export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
 
 # 선택 사항: 사용자 정의 엔드포인트 또는 게이트웨이를 위한 Bedrock 엔드포인트 URL 재정의
@@ -329,7 +223,7 @@ export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
 Claude Code에 대해 Bedrock을 활성화할 때 다음을 염두에 두십시오:
 
 * `AWS_REGION`은 필수 환경 변수입니다. Claude Code는 이 설정에 대해 `.aws` 구성 파일을 읽지 않습니다.
-* Bedrock을 사용할 때 `/login` 및 `/logout` 명령은 AWS 자격 증명을 통해 인증이 처리되므로 비활성화됩니다.
+* Bedrock을 사용할 때 `/logout` 명령은 AWS 자격 증명을 통해 인증이 처리되므로 사용할 수 없습니다.
 * 다른 프로세스에 유출되지 않도록 하려는 `AWS_PROFILE`과 같은 환경 변수에 설정 파일을 사용할 수 있습니다. 자세한 내용은 [설정](/ko/settings)을 참조하십시오.
 
 ### 4. 모델 버전 고정
@@ -355,13 +249,15 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
 | 모델 유형    | 기본값                                            |
 | :------- | :--------------------------------------------- |
 | 기본 모델    | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
-| 소형/빠른 모델 | `us.anthropic.claude-haiku-4-5-20251001-v1:0`  |
+| 소형/빠른 모델 | 기본 모델과 동일                                      |
+
+세션 제목 생성과 같은 백그라운드 작업은 소형/빠른 모델(일반적으로 Haiku 클래스 모델)을 사용합니다. Bedrock에서 Claude Code는 모든 계정 또는 지역에서 Haiku를 사용할 수 없을 수 있으므로 기본적으로 이를 기본 모델로 설정합니다. 백그라운드 작업에 Haiku를 사용하려면 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 계정에서 사용 가능한 모델 ID로 설정하십시오.
 
 모델을 추가로 사용자 정의하려면 다음 방법 중 하나를 사용하십시오:
 
 ```bash theme={null}
 # 추론 프로필 ID 사용
-export ANTHROPIC_MODEL='global.anthropic.claude-sonnet-4-6'
+export ANTHROPIC_MODEL='us.anthropic.claude-sonnet-4-6'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:0'
 
 # 애플리케이션 추론 프로필 ARN 사용
@@ -374,7 +270,9 @@ export DISABLE_PROMPT_CACHING=1
 export ENABLE_PROMPT_CACHING_1H=1
 ```
 
-<Note>[프롬프트 캐싱](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)은 모든 지역에서 사용할 수 없을 수 있습니다. 1시간 TTL이 있는 캐시 쓰기는 5분 쓰기보다 높은 요금으로 청구됩니다.</Note>
+1시간 캐시 TTL은 5분 기본값보다 높은 요금으로 청구됩니다. [캐시 수명](/ko/prompt-caching#cache-lifetime)을 참조하십시오.
+
+<Note>프롬프트 캐싱은 모든 Bedrock 지역에서 사용할 수 없을 수 있습니다. 캐시 토큰 수가 0으로 유지되면 Bedrock 설명서에서 [지원되는 모델, 지역 및 제한](https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html#prompt-caching-models)을 확인하십시오.</Note>
 
 #### 각 모델 버전을 추론 프로필에 매핑
 
@@ -461,6 +359,16 @@ Claude Code에 필요한 권한이 있는 IAM 정책을 만드십시오:
 Claude Opus 4.7, Opus 4.6 및 Sonnet 4.6은 Amazon Bedrock에서 [1M 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/en/build-with-claude/context-windows#1m-token-context-window)를 지원합니다. Claude Code는 1M 모델 변형을 선택할 때 확장된 컨텍스트 윈도우를 자동으로 활성화합니다.
 
 [설정 마법사](#sign-in-with-bedrock)는 모델을 고정할 때 1M 컨텍스트 옵션을 제공합니다. 수동으로 고정된 모델에 대해 대신 활성화하려면 모델 ID에 `[1m]`을 추가하십시오. 자세한 내용은 [타사 배포를 위한 모델 고정](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
+
+## 서비스 계층
+
+[Amazon Bedrock 서비스 계층](https://docs.aws.amazon.com/bedrock/latest/userguide/service-tiers-inference.html)을 사용하면 비용과 지연 시간을 절충할 수 있습니다. `ANTHROPIC_BEDROCK_SERVICE_TIER`를 `default`, `flex` 또는 `priority`로 설정하십시오:
+
+```bash theme={null}
+export ANTHROPIC_BEDROCK_SERVICE_TIER=priority
+```
+
+Claude Code는 이를 각 요청의 `X-Amzn-Bedrock-Service-Tier` 헤더로 보냅니다. 계층 가용성은 모델 및 지역에 따라 다릅니다. 예약된 용량은 이 설정 대신 [프로비저닝된 처리량](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html) ARN을 모델 ID로 사용합니다.
 
 ## AWS Guardrails
 

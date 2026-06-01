@@ -41,7 +41,7 @@ Claude Code는 중앙 집중식 구성을 위한 두 가지 방식을 지원합�
   </Step>
 
   <Step title="설정 정의">
-    구성을 JSON으로 추가합니다. [`settings.json`에서 사용 가능한 모든 설정](/ko/settings#available-settings)이 지원되며, [hooks](/ko/hooks), [환경 변수](/ko/env-vars), 및 `allowManagedPermissionRulesOnly`와 같은 [관리 전용 설정](/ko/permissions#managed-only-settings)도 포함됩니다.
+    구성을 JSON으로 추가합니다. [`settings.json`에서 사용 가능한 모든 설정](/ko/settings#available-settings)이 지원되며, OS 수준 정책 전달로 제한된 설정을 제외하고는 모두 지원됩니다. [현재 제한사항](#current-limitations)에서 해당 짧은 목록을 참조하십시오. 여기에는 [hooks](/ko/hooks), [환경 변수](/ko/env-vars), 및 `allowManagedPermissionRulesOnly`와 같은 [관리 전용 설정](/ko/permissions#managed-only-settings)이 포함됩니다.
 
     이 예제는 권한 거부 목록을 적용하고, 사용자가 권한을 우회하는 것을 방지하며, 권한 규칙을 관리 설정에 정의된 규칙으로만 제한합니다.
 
@@ -93,7 +93,7 @@ Claude Code는 중앙 집중식 구성을 위한 두 가지 방식을 지원합�
     }
     ```
 
-    Hook은 셸 명령을 실행하므로 사용자는 적용되기 전에 [보안 승인 대화](#security-approval-dialogs)를 봅니다. `autoMode` 항목이 분류기가 차단하는 것에 어떻게 영향을 미치는지, 그리고 `allow` 및 `soft_deny` 필드에 대한 중요한 경고는 [자동 모드 구성](/ko/auto-mode-config)을 참조하십시오.
+    Hook은 셸 명령을 실행하므로 사용자는 적용되기 전에 [보안 승인 대화](#security-approval-dialogs)를 봅니다. `autoMode` 항목이 분류기가 차단하는 것에 어떻게 영향을 미치는지, 그리고 `environment`, `allow`, `soft_deny`, 및 `hard_deny` 필드에 대한 중요한 경고는 [자동 모드 구성](/ko/auto-mode-config)을 참조하십시오.
   </Step>
 
   <Step title="저장 및 배포">
@@ -123,7 +123,8 @@ Claude Code는 중앙 집중식 구성을 위한 두 가지 방식을 지원합�
 서버 관리 설정은 다음과 같은 제한사항이 있습니다.
 
 * 설정은 조직의 모든 사용자에게 균일하게 적용됩니다. 그룹별 구성은 아직 지원되지 않습니다.
-* [MCP 서버 구성](/ko/mcp#managed-mcp-configuration)은 서버 관리 설정을 통해 배포할 수 없습니다.
+* [`managed-mcp.json`](/ko/managed-mcp) 파일은 서버 관리 설정을 통해 배포할 수 없습니다. 대신 `allowedMcpServers` 및 `deniedMcpServers` 정책 키를 배포하십시오.
+* OS 수준 정책 소스로 제한된 설정(예: `policyHelper` 및 `wslInheritsWindowsSettings`)은 적용되지 않습니다. 대신 MDM 또는 시스템 `managed-settings.json` 파일을 통해 배포하십시오.
 
 ## 설정 전달
 
@@ -169,6 +170,8 @@ Claude Code는 OpenTelemetry 구성과 같은 고급 설정을 제외하고 재�
 
 이 설정을 활성화하기 전에 네트워크 정책이 `api.anthropic.com`에 대한 연결을 허용하는지 확인합니다. 해당 엔드포인트에 도달할 수 없으면 CLI는 시작 시 종료되고 사용자는 Claude Code를 시작할 수 없습니다.
 
+v2.1.139 이상에서는 `claude auth` 하위 명령(예: `claude auth login`)이 이 확인에서 제외되므로 만료된 자격 증명이 설정 가져오기 실패의 원인인 경우 사용자가 다시 인증할 수 있습니다.
+
 ### 보안 승인 대화
 
 보안 위험을 초래할 수 있는 특정 설정은 적용되기 전에 명시적인 사용자 승인이 필요합니다.
@@ -202,13 +205,13 @@ Claude Code는 OpenTelemetry 구성과 같은 고급 설정을 제외하고 재�
 
 서버 관리 설정은 중앙 집중식 정책 적용을 제공하지만 클라이언트 측 제어로 작동합니다. 관리되지 않는 기기에서 관리자 또는 sudo 액세스 권한이 있는 사용자는 Claude Code 바이너리, 파일 시스템 또는 네트워크 구성을 수정할 수 있습니다.
 
-| 시나리오                                          | 동작                                                                                                                                                                          |
-| :-------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 사용자가 캐시된 설정 파일을 편집함                           | 변조된 파일이 시작 시 적용되지만 다음 서버 가져오기에서 올바른 설정이 복원됩니다.                                                                                                                              |
-| 사용자가 캐시된 설정 파일을 삭제함                           | 첫 시작 동작이 발생합니다. 설정이 비동기적으로 가져오지며 짧은 적용되지 않은 시간이 있습니다.                                                                                                                       |
-| API를 사용할 수 없음                                 | 캐시된 설정이 있으면 적용되고, 그렇지 않으면 다음 성공적인 가져오기까지 관리 설정이 적용되지 않습니다. `forceRemoteSettingsRefresh: true`를 사용하면 CLI는 계속하는 대신 종료됩니다.                                                     |
-| 사용자가 다른 조직으로 인증함                              | 관리 조직 외부의 계정에 대해 설정이 전달되지 않습니다.                                                                                                                                             |
-| 사용자가 [타사 모델 공급자](#platform-availability)를 구성함 | 서버 관리 설정이 우회됩니다. 여기에는 `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_MANTLE`, `CLAUDE_CODE_USE_VERTEX`, `CLAUDE_CODE_USE_FOUNDRY` 설정 또는 기본이 아닌 `ANTHROPIC_BASE_URL` 설정이 포함됩니다. |
+| 시나리오                                          | 동작                                                                                                                                                                             |
+| :-------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 사용자가 캐시된 설정 파일을 편집함                           | 변조된 파일이 시작 시 적용되지만 다음 서버 가져오기에서 올바른 설정이 복원됩니다.                                                                                                                                 |
+| 사용자가 캐시된 설정 파일을 삭제함                           | 첫 시작 동작이 발생합니다. 설정이 비동기적으로 가져오지며 짧은 적용되지 않은 시간이 있습니다.                                                                                                                          |
+| API를 사용할 수 없음                                 | 캐시된 설정이 있으면 적용되고, 그렇지 않으면 다음 성공적인 가져오기까지 관리 설정이 적용되지 않습니다. `forceRemoteSettingsRefresh: true`를 사용하면 CLI는 계속하는 대신 종료됩니다. [`claude auth` 부분 명령](#enforce-fail-closed-startup) 제외 |
+| 사용자가 다른 조직으로 인증함                              | 관리 조직 외부의 계정에 대해 설정이 전달되지 않습니다.                                                                                                                                                |
+| 사용자가 [타사 모델 공급자](#platform-availability)를 구성함 | 서버 관리 설정이 우회됩니다. 여기에는 `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_MANTLE`, `CLAUDE_CODE_USE_VERTEX`, `CLAUDE_CODE_USE_FOUNDRY` 설정 또는 기본이 아닌 `ANTHROPIC_BASE_URL` 설정이 포함됩니다.    |
 
 런타임 구성 변경을 감지하려면 [`ConfigChange` hooks](/ko/hooks#configchange)를 사용하여 수정 사항을 기록하거나 적용되기 전에 무단 변경을 차단합니다.
 

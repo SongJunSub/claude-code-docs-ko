@@ -27,7 +27,7 @@ Claude Code는 투명하고 안전하도록 설계되었습니다. 예를 들어
 * **샌드박스 bash 도구**: [Sandbox](/ko/sandboxing)를 사용하여 bash 명령을 파일 시스템 및 네트워크 격리로 실행하여 권한 프롬프트를 줄이면서 보안을 유지합니다. `/sandbox`를 사용하여 Claude Code가 자율적으로 작업할 수 있는 경계를 정의하도록 활성화합니다.
 * **쓰기 액세스 제한**: Claude Code는 시작된 폴더와 그 하위 폴더에만 쓸 수 있으며, 명시적 권한 없이 상위 디렉토리의 파일을 수정할 수 없습니다. Claude Code는 작업 디렉토리 외부의 파일을 읽을 수 있지만(시스템 라이브러리 및 종속성에 액세스하는 데 유용함), 쓰기 작업은 프로젝트 범위로 엄격히 제한되어 명확한 보안 경계를 만듭니다.
 * **프롬프트 피로 완화**: 사용자별, 코드베이스별 또는 조직별로 자주 사용되는 안전한 명령을 허용 목록에 추가하는 지원
-* **Accept Edits 모드**: 여러 편집을 일괄 수락하면서 부작용이 있는 명령에 대한 권한 프롬프트를 유지합니다.
+* **Accept Edits 모드**: 파일 편집을 자동으로 승인하고 작업 디렉토리의 경로에 대해 `mkdir`, `touch`, `rm`, `mv`, `cp`, `sed`와 같은 고정된 파일 시스템 Bash 명령 집합을 자동으로 승인합니다. 다른 Bash 명령과 범위를 벗어난 경로는 여전히 프롬프트를 표시합니다.
 
 ### 사용자 책임
 
@@ -59,7 +59,8 @@ Claude Code는 사용자가 부여한 권한만 가집니다. 승인 전에 제�
 * **네트워크 요청 승인**: 네트워크 요청을 하는 도구는 기본적으로 사용자 승인이 필요합니다.
 * **격리된 컨텍스트 윈도우**: 웹 가져오기는 별도의 컨텍스트 윈도우를 사용하여 잠재적으로 악의적인 프롬프트 주입을 방지합니다.
 * **신뢰 확인**: 첫 번째 코드베이스 실행 및 새 MCP 서버는 신뢰 확인이 필요합니다.
-  * 참고: `-p` 플래그를 사용하여 비대화형으로 실행할 때 신뢰 확인이 비활성화됩니다.
+  * 참고: `-p` 플래그를 사용하여 비대화형으로 실행할 때 신뢰 확인이 비활성화됩니다. 예외는 [`--worktree`](/ko/worktrees)이며, 이는 여전히 디렉토리에 대해 신뢰가 수락되었어야 합니다.
+  * 참고: Claude Code를 홈 디렉토리에서 직접 시작할 때 신뢰 수락은 현재 세션에만 유지되며 디스크에 기록되지 않으므로 각 시작 시 프롬프트가 다시 나타납니다. 이를 유지하는 설정은 없습니다. 신뢰 수락이 디렉토리별로 저장되는 프로젝트 하위 디렉토리에서 Claude Code를 시작하십시오.
 * **명령 주입 감지**: 의심스러운 bash 명령은 이전에 허용 목록에 있었더라도 수동 승인이 필요합니다.
 * **폐쇄형 매칭 실패**: 일치하지 않는 명령은 기본적으로 수동 승인이 필요합니다.
 * **자연어 설명**: 복잡한 bash 명령에는 사용자 이해를 위한 설명이 포함됩니다.
@@ -85,7 +86,7 @@ Claude Code는 사용자가 부여한 권한만 가집니다. 승인 전에 제�
 
 Claude Code를 사용하면 사용자가 Model Context Protocol(MCP) 서버를 구성할 수 있습니다. 허용된 MCP 서버 목록은 소스 코드에서 구성되며, Claude Code 설정의 일부로 엔지니어가 소스 제어에 체크인합니다.
 
-자신의 MCP 서버를 작성하거나 신뢰하는 제공자의 MCP 서버를 사용할 것을 권장합니다. Claude Code 권한을 MCP 서버에 대해 구성할 수 있습니다. Anthropic은 MCP 서버를 관리하거나 감사하지 않습니다.
+자신의 MCP 서버를 작성하거나 신뢰하는 제공자의 MCP 서버를 사용할 것을 권장합니다. Claude Code 권한을 MCP 서버에 대해 구성할 수 있습니다. Anthropic은 커넥터를 [나열 기준](https://claude.com/docs/connectors/building/review-criteria)에 따라 검토한 후 [Anthropic 디렉토리](https://claude.ai/directory)에 추가하지만, MCP 서버에 대한 보안 감사를 수행하거나 관리하지 않습니다.
 
 ## IDE 보안
 
@@ -134,8 +135,10 @@ Claude Code에서 보안 취약점을 발견한 경우:
 
 ## 관련 리소스
 
-* [Sandboxing](/ko/sandboxing) - bash 명령에 대한 파일 시스템 및 네트워크 격리
-* [Permissions](/ko/permissions) - 권한 및 액세스 제어 구성
-* [Monitoring usage](/ko/monitoring-usage) - Claude Code 활동 추적 및 감사
-* [Development containers](/ko/devcontainer) - 보안, 격리된 환경
-* [Anthropic Trust Center](https://trust.anthropic.com) - 보안 인증 및 규정 준수
+* [Security guidance plugin](/ko/security-guidance): Claude가 세션 중에 자신의 코드 변경 사항에서 취약점을 검토하고 수정하도록 합니다
+* [Sandbox 환경](/ko/sandbox-environments): 격리 접근 방식을 비교하고 위협 모델에 맞는 방식을 선택합니다
+* [Sandboxing](/ko/sandboxing): Bash 명령에 대한 파일 시스템 및 네트워크 격리
+* [Permissions](/ko/permissions): 권한 및 액세스 제어를 구성합니다
+* [Monitoring usage](/ko/monitoring-usage): Claude Code 활동을 추적하고 감사합니다
+* [Development containers](/ko/devcontainer): 보안, 격리된 환경
+* [Anthropic Trust Center](https://trust.anthropic.com): 보안 인증 및 규정 준수

@@ -17,22 +17,26 @@ Claude Code의 `model` 설정에서 다음 중 하나를 구성할 수 있습니
   * Foundry: 배포 이름
   * Vertex: 버전 이름
 
+<Note>
+  `ANTHROPIC_BASE_URL`은 요청이 전송되는 위치를 변경하며, 어느 모델이 응답하는지는 변경하지 않습니다. Claude를 LLM 게이트웨이를 통해 라우팅하려면 [LLM 게이트웨이 구성](/ko/llm-gateway)을 참조하세요.
+</Note>
+
 ### 모델 별칭
 
 모델 별칭은 정확한 버전 번호를 기억할 필요 없이 모델 설정을 선택하는 편리한 방법을 제공합니다:
 
-| 모델 별칭            | 동작                                                                                                                                         |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`default`**    | 모델 재정의를 제거하고 계정 유형에 따른 권장 모델로 되돌리는 특수 값입니다. 자체로는 모델 별칭이 아닙니다                                                                               |
-| **`best`**       | 현재 사용 가능한 가장 강력한 모델을 사용하며, 현재 `opus`와 동일합니다                                                                                                |
-| **`sonnet`**     | 일일 코딩 작업을 위해 최신 Sonnet 모델 사용                                                                                                               |
-| **`opus`**       | 복잡한 추론 작업을 위해 최신 Opus 모델 사용                                                                                                                |
-| **`haiku`**      | 간단한 작업을 위해 빠르고 효율적인 Haiku 모델 사용                                                                                                            |
-| **`sonnet[1m]`** | 긴 세션을 위해 [100만 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 사용하는 Sonnet 사용 |
-| **`opus[1m]`**   | 긴 세션을 위해 [100만 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 사용하는 Opus 사용   |
-| **`opusplan`**   | Plan Mode 중에 `opus`를 사용한 후 실행을 위해 `sonnet`으로 전환하는 특수 모드                                                                                    |
+| 모델 별칭            | 동작                                                                                                                                             |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`default`**    | 모델 재정의를 제거하고 계정 유형에 따른 권장 모델로 되돌리는 특수 값입니다. 자체로는 모델 별칭이 아닙니다                                                                                   |
+| **`best`**       | 현재 사용 가능한 가장 강력한 모델을 사용하며, 현재 `opus`와 동일합니다                                                                                                    |
+| **`sonnet`**     | 일일 코딩 작업을 위해 최신 Sonnet 모델을 사용합니다                                                                                                               |
+| **`opus`**       | 복잡한 추론 작업을 위해 최신 Opus 모델을 사용합니다                                                                                                                |
+| **`haiku`**      | 간단한 작업을 위해 빠르고 효율적인 Haiku 모델을 사용합니다                                                                                                            |
+| **`sonnet[1m]`** | 긴 세션을 위해 [100만 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 사용하는 Sonnet을 사용합니다 |
+| **`opus[1m]`**   | 긴 세션을 위해 [100만 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 사용하는 Opus를 사용합니다   |
+| **`opusplan`**   | Plan Mode 중에 `opus`를 사용한 후 실행을 위해 `sonnet`으로 전환하는 특수 모드입니다                                                                                     |
 
-Anthropic API에서 `opus`는 Opus 4.7로, `sonnet`은 Sonnet 4.6으로 확인됩니다. Bedrock, Vertex 및 Foundry에서 `opus`는 Opus 4.6으로, `sonnet`은 Sonnet 4.5로 확인됩니다. 더 새로운 모델은 전체 모델 이름을 명시적으로 선택하거나 `ANTHROPIC_DEFAULT_OPUS_MODEL` 또는 `ANTHROPIC_DEFAULT_SONNET_MODEL`을 설정하여 해당 제공자에서 사용할 수 있습니다.
+Anthropic API 및 [Claude Platform on AWS](/ko/claude-platform-on-aws)에서 `opus`는 Opus 4.7로, `sonnet`은 Sonnet 4.6으로 확인됩니다. Bedrock, Vertex 및 Foundry에서 `opus`는 Opus 4.6으로, `sonnet`은 Sonnet 4.5로 확인됩니다. 더 새로운 모델은 전체 모델 이름을 명시적으로 선택하거나 `ANTHROPIC_DEFAULT_OPUS_MODEL` 또는 `ANTHROPIC_DEFAULT_SONNET_MODEL`을 설정하여 해당 제공자에서 사용할 수 있습니다.
 
 별칭은 제공자에 대한 권장 버전을 가리키며 시간이 지남에 따라 업데이트됩니다. 특정 버전으로 고정하려면 전체 모델 이름(예: `claude-opus-4-7`)을 사용하거나 `ANTHROPIC_DEFAULT_OPUS_MODEL`과 같은 해당 환경 변수를 설정합니다.
 
@@ -45,13 +49,24 @@ Anthropic API에서 `opus`는 Opus 4.7로, `sonnet`은 Sonnet 4.6으로 확인�
 다음과 같은 여러 방법으로 모델을 구성할 수 있으며, 우선순위 순서대로 나열되어 있습니다:
 
 1. **세션 중** - `/model <alias|name>`을 사용하여 즉시 전환하거나, 인수 없이 `/model`을 실행하여 선택기를 엽니다. 선택기는 대화에 이전 출력이 있을 때 확인을 요청합니다. 다음 응답이 캐시된 컨텍스트 없이 전체 기록을 다시 읽기 때문입니다.
-2. **시작 시** - `claude --model <alias|name>`으로 실행
-3. **환경 변수** - `ANTHROPIC_MODEL=<alias|name>` 설정
+2. **시작 시** - `claude --model <alias|name>`으로 실행합니다.
+3. **환경 변수** - `ANTHROPIC_MODEL=<alias|name>`을 설정합니다.
 4. **설정** - `model` 필드를 사용하여 설정 파일에서 영구적으로 구성합니다.
 
-`/model` 선택은 사용자 설정에 저장되며 재시작 후에도 유지됩니다. v2.1.117부터 프로젝트의 `.claude/settings.json`이 다른 모델을 고정하는 경우, Claude Code는 선택 항목을 `.claude/settings.local.json`에도 작성하므로 재시작 후 해당 프로젝트에서 계속 적용됩니다. 관리되는 설정이 우선순위를 가지며 다음 실행 시 다시 적용됩니다.
+v2.1.153부터 `/model`은 사용자 설정에서 `model` 필드를 작성하여 새 세션의 기본값으로 선택 항목을 저장합니다. 선택기에서:
 
-시작 시 활성 모델이 자신의 선택이 아닌 프로젝트 또는 관리되는 설정에서 나온 경우, 시작 헤더는 어느 설정 파일이 이를 설정했는지 표시합니다. `/model`을 실행하여 현재 세션에 대해 재정의합니다.
+* `Enter`: 모델을 전환하고 기본값으로 저장합니다
+* `s`: 이 세션에만 모델을 전환합니다
+
+`/model <name>`을 직접 입력하면 `Enter`처럼 동작합니다. 프로젝트 및 관리되는 설정은 여전히 우선순위를 가지며 다음 실행 시 다시 적용됩니다.
+
+v2.1.144부터 v2.1.152까지는 `/model`이 현재 세션에만 적용되었으며 선택기에서 `d`가 기본값을 저장했습니다.
+
+`--model` 플래그 및 `ANTHROPIC_MODEL` 환경 변수는 이를 사용하여 실행한 세션에만 적용됩니다. 동시에 다른 터미널에서 다른 모델을 실행하려면 `/model`로 전환하는 대신 각각 자신의 `--model` 플래그로 실행합니다.
+
+`claude --resume`, `--continue` 또는 `/resume` 선택기로 시작된 재개된 세션은 현재 `model` 설정에 관계없이 트랜스크립트가 저장되었을 때 사용 중이던 모델을 유지합니다. 해당 모델이 중단된 경우 세션은 일반 우선순위 순서로 폴백됩니다. 이는 다른 세션의 `/model` 선택이 재개 시 모델을 변경하는 것을 방지합니다.
+
+시작 시 활성 모델이 자신의 선택이 아닌 프로젝트 또는 관리되는 설정에서 나온 경우, 시작 헤더는 어느 설정 파일이 이를 설정했는지 표시합니다. `/model`을 실행하여 재정의합니다. 프로젝트 또는 관리되는 설정은 다음 실행 시 다시 적용됩니다.
 
 사용 예시:
 
@@ -174,17 +189,20 @@ Opus 4.7을 처음 실행할 때 Claude Code는 이전에 Opus 4.6 또는 Sonnet
 
 각 수준은 토큰 지출과 기능을 절충합니다. 기본값은 대부분의 코딩 작업에 적합합니다. 다른 균형을 원할 때 조정하세요.
 
-| 수준       | 사용 시기                                                                      |
-| :------- | :------------------------------------------------------------------------- |
-| `low`    | 지능 민감도가 낮은 짧고 범위가 지정된 지연 시간 민감 작업을 위해 예약                                   |
-| `medium` | 일부 지능을 절충할 수 있는 비용 민감 작업의 토큰 사용량 감소                                        |
-| `high`   | 토큰 사용량과 지능의 균형을 맞춥니다. 지능 민감 작업의 최소값으로 사용하거나 `xhigh`에 비해 토큰 지출을 줄이기 위해 사용   |
-| `xhigh`  | 대부분의 코딩 및 에이전트 작업에 최고의 결과. Opus 4.7에서 권장 기본값                               |
-| `max`    | 까다로운 작업의 성능을 개선할 수 있지만 수익 감소를 보일 수 있으며 과도한 생각에 취약합니다. 광범위하게 채택하기 전에 테스트하세요 |
+| 수준          | 사용 시기                                                                                    |
+| :---------- | :--------------------------------------------------------------------------------------- |
+| `low`       | 지능 민감도가 낮은 짧고 범위가 지정된 지연 시간 민감 작업을 위해 예약                                                 |
+| `medium`    | 일부 지능을 절충할 수 있는 비용 민감 작업의 토큰 사용량 감소                                                      |
+| `high`      | 토큰 사용량과 지능의 균형을 맞춥니다. 지능 민감 작업의 최소값으로 사용하거나 `xhigh`에 비해 토큰 지출을 줄이기 위해 사용                 |
+| `xhigh`     | 대부분의 코딩 및 에이전트 작업에 최고의 결과. Opus 4.7에서 권장 기본값                                             |
+| `max`       | 까다로운 작업의 성능을 개선할 수 있지만 수익 감소를 보일 수 있으며 과도한 생각에 취약합니다. 광범위하게 채택하기 전에 테스트하세요               |
+| `ultracode` | 각 실질적인 작업에 대해 `xhigh` 메시지별 추론으로 [동적 워크플로우](/ko/workflows)를 계획하는 Claude Code 설정입니다. 세션 전용 |
 
 노력 척도는 모델별로 보정되므로 동일한 수준 이름이 모델 전체에서 동일한 기본 값을 나타내지 않습니다.
 
-세션 설정을 변경하지 않고 일회성 깊은 추론을 위해 프롬프트에 "ultrathink"를 포함하세요. 이는 모델에 해당 턴에서 더 많이 추론하도록 지시하는 컨텍스트 내 지시를 추가합니다. 노력 수준을 변경하지 않습니다.
+#### 일회성 깊은 추론을 위해 ultrathink 사용
+
+프롬프트에 `ultrathink`를 포함하여 세션 노력 설정을 변경하지 않고 해당 턴에서 더 깊은 추론을 요청하세요. Claude Code는 키워드를 인식하고 컨텍스트 내 지시를 추가합니다. API로 전송되는 노력 수준은 변경되지 않습니다. "think", "think hard", "think more"와 같은 다른 구문은 일반 프롬프트 텍스트로 전달되며 키워드로 인식되지 않습니다.
 
 #### 노력 수준 설정
 
@@ -194,7 +212,7 @@ Opus 4.7을 처음 실행할 때 Claude Code는 이전에 Opus 4.6 또는 Sonnet
 * **`/model`에서**: 모델을 선택할 때 좌우 화살표 키를 사용하여 노력 슬라이더 조정
 * **`--effort` 플래그**: Claude Code를 시작할 때 단일 세션에 대한 수준 이름을 전달
 * **환경 변수**: `CLAUDE_CODE_EFFORT_LEVEL`을 수준 이름 또는 `auto`로 설정
-* **설정**: 설정 파일에서 `effortLevel`을 설정
+* **설정**: 설정 파일에서 `effortLevel`을 `low`, `medium`, `high` 또는 `xhigh`로 설정합니다. `max` 및 `ultracode`는 [세션 전용](#adjust-effort-level)이며 여기서는 허용되지 않습니다
 * **Skill 및 subagent frontmatter**: [skill](/ko/skills#frontmatter-reference) 또는 [subagent](/ko/sub-agents#supported-frontmatter-fields) markdown 파일에서 `effort`를 설정하여 해당 skill 또는 subagent가 실행될 때 노력 수준을 재정의
 
 환경 변수가 모든 다른 방법보다 우선하고, 그 다음 구성된 수준, 그 다음 모델 기본값입니다. Frontmatter 노력은 해당 skill 또는 subagent가 활성화될 때 적용되어 세션 수준을 재정의하지만 환경 변수는 재정의하지 않습니다.
@@ -209,11 +227,23 @@ Opus 4.7은 항상 적응형 추론을 사용합니다. 고정 사고 예산 모
 
 Opus 4.6 및 Sonnet 4.6에서 `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1`을 설정하여 `MAX_THINKING_TOKENS`로 제어되는 이전의 고정 사고 예산으로 되돌릴 수 있습니다. [환경 변수](/ko/env-vars)를 참조하세요.
 
+### 확장 사고
+
+확장 사고는 Claude가 응답하기 전에 내보내는 추론입니다. [적응형 추론](#adjust-effort-level)을 지원하는 모델에서 노력 수준은 얼마나 많은 사고가 발생하는지에 대한 주요 제어입니다. 아래 설정은 사고를 켜거나 끄고 표시 방식을 제어합니다.
+
+| 제어            | 설정 방법                                                                                                                    |
+| :------------ | :----------------------------------------------------------------------------------------------------------------------- |
+| 현재 세션에 대한 토글  | macOS에서 `Option+T` 또는 Windows 및 Linux에서 `Alt+T`를 누릅니다                                                                    |
+| 전역 기본값 설정     | `/config`를 실행하고 사고 모드를 토글합니다. `~/.claude/settings.json`에 `alwaysThinkingEnabled`로 저장됩니다                                  |
+| 노력에 관계없이 비활성화 | [`MAX_THINKING_TOKENS=0`](/ko/env-vars)을 설정합니다. 다른 값은 [고정 사고 예산](#adaptive-reasoning-and-fixed-thinking-budgets)에만 적용됩니다 |
+
+사고 출력은 기본적으로 축소됩니다. `Ctrl+O`를 눌러 자세한 모드를 토글하고 추론을 회색 기울임꼴 텍스트로 봅니다. Anthropic API의 대화형 세션은 기본적으로 편집된 사고 블록을 수신하므로 확장할 때 전체 요약을 사용할 수 있도록 하려면 [설정](/ko/settings)에서 `showThinkingSummaries: true`를 설정하세요. 축소되거나 편집된 경우에도 생성된 모든 사고 토큰에 대해 요금이 청구됩니다.
+
 ### 확장 컨텍스트
 
 Opus 4.7, Opus 4.6 및 Sonnet 4.6은 대규모 코드베이스를 사용한 긴 세션을 위해 [100만 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 지원합니다.
 
-가용성은 모델 및 플랜에 따라 다릅니다. Max, Team 및 Enterprise 플랜에서 Opus는 추가 구성 없이 자동으로 1M 컨텍스트로 업그레이드됩니다. 이는 Team Standard 및 Team Premium 시트 모두에 적용됩니다.
+가용성은 모델 및 플랜에 따라 다릅니다. Max, Team 및 Enterprise 플랜에서 Opus는 추가 구성 없이 자동으로 1M 컨텍스트로 업그레이드됩니다. 이는 Team Standard 및 Team Premium 시트 모두에 적용됩니다. 1M 컨텍스트를 사용하는 Sonnet은 자동 업그레이드의 일부가 아니며 모든 구독 플랜(Max 포함)에서 [추가 사용](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)이 필요합니다.
 
 | 플랜                     | 1M 컨텍스트를 사용하는 Opus                                                                            | 1M 컨텍스트를 사용하는 Sonnet                                                                          |
 | ---------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
@@ -247,7 +277,7 @@ Opus 4.7, Opus 4.6 및 Sonnet 4.6은 대규모 코드베이스를 사용한 긴 
 
 ## 사용자 정의 모델 옵션 추가
 
-`ANTHROPIC_CUSTOM_MODEL_OPTION`을 사용하여 기본 제공 별칭을 대체하지 않고 `/model` 선택기에 단일 사용자 정의 항목을 추가합니다. 이는 LLM 게이트웨이 배포 또는 Claude Code가 기본적으로 나열하지 않는 모델 ID 테스트에 유용합니다.
+`ANTHROPIC_CUSTOM_MODEL_OPTION`을 사용하여 기본 제공 별칭을 대체하지 않고 `/model` 선택기에 단일 사용자 정의 항목을 추가합니다. 이는 Claude Code가 기본적으로 나열하지 않는 모델 ID를 테스트하는 데 유용합니다. LLM 게이트웨이 배포의 경우, Claude Code는 `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`이 설정되어 있을 때 게이트웨이의 `/v1/models` 엔드포인트에서 선택기를 자동으로 채울 수 있으므로, 이 변수는 검색이 비활성화되었거나 원하는 모델을 반환하지 않을 때만 필요합니다. [LLM 게이트웨이 모델 선택](/ko/llm-gateway#model-selection)을 참조하십시오.
 
 이 예시는 게이트웨이 라우팅된 Opus 배포를 선택 가능하게 하기 위해 세 가지 변수를 모두 설정합니다:
 
@@ -265,20 +295,20 @@ Claude Code는 `ANTHROPIC_CUSTOM_MODEL_OPTION`에 설정된 모델 ID에 대한 
 
 다음 환경 변수를 사용할 수 있으며, 이는 별칭이 매핑되는 모델 이름을 제어하기 위해 전체 **모델 이름**(또는 API 제공자에 해당하는 이름)이어야 합니다.
 
-| 환경 변수                            | 설명                                                              |
-| -------------------------------- | --------------------------------------------------------------- |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL`   | `opus`에 사용할 모델 또는 Plan Mode가 활성화되었을 때 `opusplan`에 사용할 모델        |
-| `ANTHROPIC_DEFAULT_SONNET_MODEL` | `sonnet`에 사용할 모델 또는 Plan Mode가 활성화되지 않았을 때 `opusplan`에 사용할 모델   |
-| `ANTHROPIC_DEFAULT_HAIKU_MODEL`  | `haiku`에 사용할 모델 또는 [백그라운드 기능](/ko/costs#background-token-usage) |
-| `CLAUDE_CODE_SUBAGENT_MODEL`     | [subagents](/ko/sub-agents)에 사용할 모델                             |
+| 환경 변수                            | 설명                                                                                                                                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL`   | `opus`에 사용할 모델 또는 Plan Mode가 활성화되었을 때 `opusplan`에 사용할 모델입니다.                                                                                                                                |
+| `ANTHROPIC_DEFAULT_SONNET_MODEL` | `sonnet`에 사용할 모델 또는 Plan Mode가 활성화되지 않았을 때 `opusplan`에 사용할 모델입니다.                                                                                                                           |
+| `ANTHROPIC_DEFAULT_HAIKU_MODEL`  | `haiku`에 사용할 모델 또는 [백그라운드 기능](/ko/costs#background-token-usage)입니다.                                                                                                                         |
+| `CLAUDE_CODE_SUBAGENT_MODEL`     | 모든 [subagents](/ko/sub-agents#choose-a-model) 및 [agent teams](/ko/agent-teams)에 사용할 모델입니다. 호출별 `model` 매개변수와 subagent 정의의 `model` frontmatter를 재정의합니다. 대신 일반 모델 해석을 사용하려면 `inherit`로 설정합니다. |
 
 참고: `ANTHROPIC_SMALL_FAST_MODEL`은 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 위해 더 이상 사용되지 않습니다.
 
 ### 타사 배포를 위한 모델 고정
 
-[Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai) 또는 [Foundry](/ko/microsoft-foundry)를 통해 Claude Code를 배포할 때 사용자에게 롤아웃하기 전에 모델 버전을 고정합니다.
+[Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai), [Foundry](/ko/microsoft-foundry) 또는 [Claude Platform on AWS](/ko/claude-platform-on-aws)를 통해 Claude Code를 배포할 때 사용자에게 롤아웃하기 전에 모델 버전을 고정합니다.
 
-고정하지 않으면 Claude Code는 최신 버전으로 확인되는 모델 별칭(`sonnet`, `opus`, `haiku`)을 사용합니다. Anthropic이 새 모델을 출시할 때 새 버전이 활성화되지 않은 계정의 사용자는 공지 없이 이전 버전으로 폴백되며, Foundry 사용자는 Foundry에 동등한 시작 확인이 없기 때문에 오류를 봅니다.
+고정하지 않으면 Claude Code는 최신 버전으로 확인되는 모델 별칭(`sonnet`, `opus`, `haiku`)을 사용합니다. Anthropic이 새 모델을 출시할 때 새 버전이 아직 사용자 계정에서 활성화되지 않으면 Bedrock 및 Vertex AI 사용자는 공지를 보고 해당 세션에 대해 이전 버전으로 폴백되며, Foundry 사용자는 Foundry에 동등한 시작 확인이 없기 때문에 오류를 봅니다.
 
 <Warning>
   초기 설정의 일부로 세 가지 모델 환경 변수를 모두 특정 버전 ID로 설정합니다. 고정하면 사용자가 새 모델로 이동할 시기를 제어할 수 있습니다.
@@ -300,7 +330,11 @@ Claude Code는 `ANTHROPIC_CUSTOM_MODEL_OPTION`에 설정된 모델 ID에 대한 
 export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-7[1m]'
 ```
 
-`[1m]` 접미사는 `opusplan`을 포함한 해당 별칭의 모든 사용에 1M 컨텍스트 윈도우를 적용합니다. Claude Code는 모델 ID를 제공자에게 보내기 전에 접미사를 제거합니다. Opus 4.7 또는 Sonnet 4.6과 같이 기본 모델이 1M 컨텍스트를 지원할 때만 `[1m]`을 추가합니다.
+`[1m]` 접미사는 `opusplan`을 포함한 해당 별칭의 모든 사용에 1M 컨텍스트 윈도우를 적용합니다.
+
+* Claude Code는 모델 ID를 제공자에게 보내기 전에 접미사를 제거합니다.
+* 기본 모델이 1M 컨텍스트를 [지원할 때만](/ko/build-with-claude/context-windows#1m-token-context-window) `[1m]`을 추가합니다.
+* 접미사는 모델별이 아닌 변수별로 읽혀집니다. Bedrock, Vertex 및 Foundry에서 한 변수의 `[1m]` 없는 모델 ID는 다른 변수가 접미사와 함께 동일한 모델을 설정하더라도 200K 컨텍스트를 사용합니다.
 
 <Note>
   `settings.availableModels` 허용 목록은 타사 제공자를 사용할 때도 적용됩니다. 필터링은 제공자별 모델 ID가 아닌 모델 별칭(`opus`, `sonnet`, `haiku`)과 일치합니다.
@@ -312,24 +346,24 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-7[1m]'
 
 이러한 변수는 Bedrock, Vertex AI 및 Foundry와 같은 타사 제공자에서 적용됩니다. `_NAME` 및 `_DESCRIPTION` 변수는 `ANTHROPIC_BASE_URL`이 [LLM gateway](/ko/llm-gateway)를 가리킬 때도 적용됩니다. `api.anthropic.com`에 직접 연결할 때는 영향을 주지 않습니다.
 
-| 환경 변수                                                 | 설명                                                                         |
-| ----------------------------------------------------- | -------------------------------------------------------------------------- |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL_NAME`                   | `/model` 선택기에서 고정된 Opus 모델의 표시 이름입니다. 설정되지 않으면 모델 ID로 기본값 설정               |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION`            | `/model` 선택기에서 고정된 Opus 모델의 표시 설명입니다. 설정되지 않으면 `Custom Opus model`로 기본값 설정 |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES` | 고정된 Opus 모델이 지원하는 기능의 쉼표로 구분된 목록                                           |
+| 환경 변수                                                 | 설명                                                                             |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL_NAME`                   | `/model` 선택기에서 고정된 Opus 모델의 표시 이름입니다. 설정되지 않으면 모델 ID로 기본값 설정됩니다.               |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION`            | `/model` 선택기에서 고정된 Opus 모델의 표시 설명입니다. 설정되지 않으면 `Custom Opus model`로 기본값 설정됩니다. |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES` | 고정된 Opus 모델이 지원하는 기능의 쉼표로 구분된 목록입니다.                                           |
 
 동일한 `_NAME`, `_DESCRIPTION` 및 `_SUPPORTED_CAPABILITIES` 접미사는 `ANTHROPIC_DEFAULT_SONNET_MODEL`, `ANTHROPIC_DEFAULT_HAIKU_MODEL` 및 `ANTHROPIC_CUSTOM_MODEL_OPTION`에 사용 가능합니다.
 
-Claude Code는 모델 ID를 알려진 패턴과 비교하여 [노력 수준](#adjust-effort-level) 및 [확장 사고](/ko/common-workflows#use-extended-thinking-thinking-mode)와 같은 기능을 활성화합니다. Bedrock ARN 또는 사용자 정의 배포 이름과 같은 제공자별 ID는 종종 이러한 패턴과 일치하지 않아 지원되는 기능이 비활성화됩니다. `_SUPPORTED_CAPABILITIES`를 설정하여 Claude Code에 모델이 실제로 지원하는 기능을 알립니다:
+Claude Code는 모델 ID를 알려진 패턴과 비교하여 [노력 수준](#adjust-effort-level) 및 [확장 사고](#extended-thinking)와 같은 기능을 활성화합니다. Bedrock ARN 또는 사용자 정의 배포 이름과 같은 제공자별 ID는 종종 이러한 패턴과 일치하지 않아 지원되는 기능이 비활성화됩니다. `_SUPPORTED_CAPABILITIES`를 설정하여 Claude Code에 모델이 실제로 지원하는 기능을 알립니다:
 
-| 기능 값                   | 활성화                                                               |
-| ---------------------- | ----------------------------------------------------------------- |
-| `effort`               | [노력 수준](#adjust-effort-level) 및 `/effort` 명령                      |
-| `xhigh_effort`         | {/* min-version: 2.1.111 */}`xhigh` 노력 수준                         |
-| `max_effort`           | `max` 노력 수준                                                       |
-| `thinking`             | [확장 사고](/ko/common-workflows#use-extended-thinking-thinking-mode) |
-| `adaptive_thinking`    | 작업 복잡도에 따라 동적으로 사고를 할당하는 적응형 추론                                   |
-| `interleaved_thinking` | 도구 호출 간의 사고                                                       |
+| 기능 값                   | 활성화                                          |
+| ---------------------- | -------------------------------------------- |
+| `effort`               | [노력 수준](#adjust-effort-level) 및 `/effort` 명령 |
+| `xhigh_effort`         | {/* min-version: 2.1.111 */}`xhigh` 노력 수준    |
+| `max_effort`           | `max` 노력 수준                                  |
+| `thinking`             | [확장 사고](#extended-thinking)                  |
+| `adaptive_thinking`    | 작업 복잡도에 따라 동적으로 사고를 할당하는 적응형 추론              |
+| `interleaved_thinking` | 도구 호출 간의 사고                                  |
 
 `_SUPPORTED_CAPABILITIES`가 설정되면 나열된 기능이 활성화되고 나열되지 않은 기능은 일치하는 고정된 모델에 대해 비활성화됩니다. 변수가 설정되지 않으면 Claude Code는 모델 ID를 기반으로 한 기본 제공 감지로 폴백합니다.
 
@@ -370,13 +404,13 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES='effort,xhigh_effort,
 
 ### Prompt caching 구성
 
-Claude Code는 성능을 최적화하고 비용을 절감하기 위해 [prompt caching](https://platform.claude.com/docs/ko/build-with-claude/prompt-caching)을 자동으로 사용합니다. 전역적으로 또는 특정 모델 계층에 대해 prompt caching을 비활성화할 수 있습니다:
+Claude Code는 성능을 최적화하고 비용을 절감하기 위해 [prompt caching](/ko/prompt-caching)을 자동으로 사용합니다. 전역적으로 또는 특정 모델 계층에 대해 prompt caching을 비활성화할 수 있습니다:
 
-| 환경 변수                           | 설명                                                     |
-| ------------------------------- | ------------------------------------------------------ |
-| `DISABLE_PROMPT_CACHING`        | 모든 모델에 대해 prompt caching을 비활성화하려면 `1`로 설정(모델별 설정보다 우선) |
-| `DISABLE_PROMPT_CACHING_HAIKU`  | Haiku 모델에 대해서만 prompt caching을 비활성화하려면 `1`로 설정         |
-| `DISABLE_PROMPT_CACHING_SONNET` | Sonnet 모델에 대해서만 prompt caching을 비활성화하려면 `1`로 설정        |
-| `DISABLE_PROMPT_CACHING_OPUS`   | Opus 모델에 대해서만 prompt caching을 비활성화하려면 `1`로 설정          |
+| 환경 변수                           | 설명                                                            |
+| ------------------------------- | ------------------------------------------------------------- |
+| `DISABLE_PROMPT_CACHING`        | 모든 모델에 대해 prompt caching을 비활성화하려면 `1`로 설정합니다. 모델별 설정보다 우선합니다. |
+| `DISABLE_PROMPT_CACHING_HAIKU`  | Haiku 모델에 대해서만 prompt caching을 비활성화하려면 `1`로 설정합니다.            |
+| `DISABLE_PROMPT_CACHING_SONNET` | Sonnet 모델에 대해서만 prompt caching을 비활성화하려면 `1`로 설정합니다.           |
+| `DISABLE_PROMPT_CACHING_OPUS`   | Opus 모델에 대해서만 prompt caching을 비활성화하려면 `1`로 설정합니다.             |
 
-이러한 환경 변수는 prompt caching 동작에 대한 세밀한 제어를 제공합니다. 전역 `DISABLE_PROMPT_CACHING` 설정은 모델별 설정보다 우선하므로 필요할 때 모든 캐싱을 빠르게 비활성화할 수 있습니다. 모델별 설정은 특정 모델 디버깅 또는 다양한 캐싱 구현을 가질 수 있는 클라우드 제공자와 작업할 때와 같이 선택적 제어에 유용합니다.
+캐시 TTL을 변경하거나 캐시 미스를 트리거하는 것이 무엇인지 알아보려면 [Claude Code가 prompt caching을 사용하는 방법](/ko/prompt-caching)을 참조하세요.

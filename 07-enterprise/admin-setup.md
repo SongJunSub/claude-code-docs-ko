@@ -24,7 +24,7 @@ Claude Code는 로컬 개발자 구성보다 우선하는 관리 설정을 통�
 
 ## API 제공자 선택
 
-Claude Code는 여러 API 제공자 중 하나를 통해 Claude에 연결됩니다. 선택에 따라 청구, 인증 및 상속하는 규정 준수 태세가 결정됩니다.
+Claude Code는 여러 API 제공자 중 하나를 통해 Claude에 연결됩니다. 선택에 따라 청구, 인증, 상속하는 규정 준수 태세 및 개발자가 사용할 수 있는 Claude Code 기능이 결정됩니다.
 
 | 제공자                           | 다음의 경우 선택                                                                 |
 | :---------------------------- | :------------------------------------------------------------------------ |
@@ -33,6 +33,8 @@ Claude Code는 여러 API 제공자 중 하나를 통해 Claude에 연결됩니�
 | Amazon Bedrock                | 기존 AWS 규정 준수 제어 및 청구를 상속하려는 경우                                            |
 | Google Vertex AI              | 기존 GCP 규정 준수 제어 및 청구를 상속하려는 경우                                            |
 | Microsoft Foundry             | 기존 Azure 규정 준수 제어 및 청구를 상속하려는 경우                                          |
+
+일부 Claude Code 기능에는 Claude.ai 계정이 필요합니다. [Claude Code on the web](/ko/claude-code-on-the-web), [Routines](/ko/routines), [Code Review](/ko/code-review), [Remote Control](/ko/remote-control) 및 [Chrome extension](/ko/chrome)은 Console API 키 또는 클라우드 제공자 자격증명만으로는 사용할 수 없습니다. Bedrock, Vertex 또는 Foundry를 통해 배포하는 경우 개발자가 Claude for Teams 또는 Enterprise 시트도 필요한지 계획하세요. 각 기능 페이지에는 해당 플랜 요구사항이 나열되어 있습니다.
 
 인증, 지역 및 기능 패리티를 다루는 전체 제공자 비교는 [enterprise deployment overview](/ko/third-party-integrations)를 참조하세요. 각 제공자의 인증 설정은 [Authentication](/ko/authentication)에 있습니다.
 
@@ -65,16 +67,18 @@ plist 및 HKLM 레지스트리 위치는 모든 제공자와 함께 작동하며
 
 관리 설정은 도구, 샌드박스 실행, MCP 서버 및 플러그인 소스 제한, 실행되는 hooks 제어를 잠글 수 있습니다. 각 행은 이를 구동하는 설정 키가 있는 제어 표면입니다.
 
-| 제어                                                                                     | 기능                                                  | 주요 설정                                                                         |
-| :------------------------------------------------------------------------------------- | :-------------------------------------------------- | :---------------------------------------------------------------------------- |
-| [Permission rules](/ko/permissions)                                                    | 특정 도구 및 명령 허용, 요청 또는 거부                             | `permissions.allow`, `permissions.deny`                                       |
-| [Permission lockdown](/ko/permissions#managed-only-settings)                           | 관리 권한 규칙만 적용; `--dangerously-skip-permissions` 비활성화 | `allowManagedPermissionRulesOnly`, `permissions.disableBypassPermissionsMode` |
-| [Sandboxing](/ko/sandboxing)                                                           | 도메인 허용 목록이 있는 OS 수준 파일 시스템 및 네트워크 격리                | `sandbox.enabled`, `sandbox.network.allowedDomains`                           |
-| [Managed policy CLAUDE.md](/ko/memory#deploy-organization-wide-claude-md)              | 모든 세션에서 로드되는 조직 전체 지침, 제외할 수 없음                     | 관리 정책 경로의 파일                                                                  |
-| [MCP server control](/ko/mcp#managed-mcp-configuration)                                | 사용자가 추가하거나 연결할 수 있는 MCP 서버 제한                       | `allowedMcpServers`, `deniedMcpServers`, `allowManagedMcpServersOnly`         |
-| [Plugin marketplace control](/ko/plugin-marketplaces#managed-marketplace-restrictions) | 사용자가 추가하고 설치할 수 있는 마켓플레이스 소스 제한                     | `strictKnownMarketplaces`, `blockedMarketplaces`                              |
-| [Hook restrictions](/ko/settings#hook-configuration)                                   | 관리 hooks만 로드; HTTP hook URL 제한                      | `allowManagedHooksOnly`, `allowedHttpHookUrls`                                |
-| [Version floor](/ko/settings)                                                          | 자동 업데이트가 조직 전체 최소값 아래로 설치되는 것을 방지                   | `minimumVersion`                                                              |
+| 제어                                                                                     | 기능                                                                            | 주요 설정                                                                                               |
+| :------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| [Permission rules](/ko/permissions)                                                    | 특정 도구 및 명령 허용, 요청 또는 거부                                                       | `permissions.allow`, `permissions.deny`                                                             |
+| [Permission lockdown](/ko/permissions#managed-only-settings)                           | 관리 권한 규칙만 적용; `--dangerously-skip-permissions` 비활성화                           | `allowManagedPermissionRulesOnly`, `permissions.disableBypassPermissionsMode`                       |
+| [Sandboxing](/ko/sandboxing)                                                           | 도메인 허용 목록이 있는 OS 수준 파일 시스템 및 네트워크 격리                                          | `sandbox.enabled`, `sandbox.network.allowedDomains`                                                 |
+| [Managed policy CLAUDE.md](/ko/memory#deploy-organization-wide-claude-md)              | 모든 세션에서 로드되는 조직 전체 지침, 제외할 수 없음                                               | 관리 정책 경로의 파일                                                                                        |
+| [MCP server control](/ko/managed-mcp)                                                  | 사용자가 추가하거나 연결할 수 있는 MCP 서버 제한, 또는 고정된 집합 배포                                   | `allowedMcpServers`, `deniedMcpServers`, `allowManagedMcpServersOnly`, 또는 배포된 `managed-mcp.json` 파일 |
+| [Plugin marketplace control](/ko/plugin-marketplaces#managed-marketplace-restrictions) | 사용자가 추가하고 설치할 수 있는 마켓플레이스 소스 제한                                               | `strictKnownMarketplaces`, `blockedMarketplaces`                                                    |
+| [Customization lockdown](/ko/settings#strictpluginonlycustomization)                   | skills, agents, hooks 및 MCP 서버를 사용자 및 프로젝트 소스에서 차단하여 플러그인 또는 관리 설정에서만 제공되도록 함 | `strictPluginOnlyCustomization`                                                                     |
+| [Hook restrictions](/ko/settings#hook-configuration)                                   | 관리 hooks만 로드; HTTP hook URL 제한                                                | `allowManagedHooksOnly`, `allowedHttpHookUrls`                                                      |
+| [Disable agent view](/ko/agent-view#how-background-sessions-are-hosted)                | `claude agents`, `--bg`, `/background` 및 온디맨드 감독자 비활성화                        | `disableAgentView`                                                                                  |
+| [Version floor](/ko/settings)                                                          | 자동 업데이트가 조직 전체 최소값 아래로 설치되는 것을 방지                                             | `minimumVersion`                                                                                    |
 
 권한 규칙 및 샌드박싱은 다양한 계층을 다룹니다. WebFetch를 거부하면 Claude의 fetch 도구가 차단되지만 Bash가 허용되면 `curl` 및 `wget`은 여전히 모든 URL에 도달할 수 있습니다. 샌드박싱은 OS 수준에서 시행되는 네트워크 도메인 허용 목록으로 그 격차를 닫습니다.
 
@@ -106,15 +110,15 @@ Team, Enterprise, Claude API 및 클라우드 제공자 플랜에서 Anthropic�
 
 ## 확인 및 온보딩
 
-관리 설정을 구성한 후 개발자가 Claude Code 내에서 `/status`를 실행하도록 하세요. 출력에는 `Enterprise managed settings`로 시작하는 줄이 포함되며 그 뒤에 괄호 안의 소스가 `(remote)`, `(plist)`, `(HKLM)`, `(HKCU)` 또는 `(file)` 중 하나입니다. [Verify active settings](/ko/settings#verify-active-settings)를 참조하세요.
+관리 설정을 구성한 후 개발자가 Claude Code 내에서 `/status`를 실행하도록 하세요. 출력에는 `Enterprise managed settings`로 시작하는 줄이 포함되며 그 뒤에 괄호 안의 소스가 `(remote)`, `(plist)`, `(HKLM)`, `(HKCU)` 또는 `(file)` 중 하나입니다. [활성 설정 확인](/ko/settings#verify-active-settings)을 참조하세요.
 
 개발자가 시작하는 데 도움이 되도록 다음 리소스를 공유하세요:
 
-* [Quickstart](/ko/quickstart): 설치부터 프로젝트 작업까지의 첫 세션 안내
-* [Common workflows](/ko/common-workflows): 코드 검토, 리팩토링 및 디버깅과 같은 일상적인 작업의 패턴
+* [빠른 시작](/ko/quickstart): 설치부터 프로젝트 작업까지의 첫 세션 안내
+* [일반적인 워크플로우](/ko/common-workflows): 코드 검토, 리팩토링 및 디버깅과 같은 일상적인 작업의 패턴
 * [Claude 101](https://anthropic.skilljar.com/claude-101) 및 [Claude Code in Action](https://anthropic.skilljar.com/claude-code-in-action): 자기 주도식 Anthropic Academy 과정
 
-로그인 문제의 경우 개발자에게 [authentication troubleshooting](/ko/troubleshooting#authentication-issues)을 참조하도록 안내하세요. 가장 일반적인 해결 방법은 다음과 같습니다:
+로그인 문제의 경우 개발자에게 [인증 문제 해결](/ko/troubleshoot-install#login-and-authentication)을 참조하도록 안내하세요. 가장 일반적인 해결 방법은 다음과 같습니다:
 
 * `/logout`을 실행한 후 `/login`을 실행하여 계정 전환
 * 엔터프라이즈 인증 옵션이 누락된 경우 `claude update` 실행
@@ -128,5 +132,6 @@ Team, Enterprise, Claude API 및 클라우드 제공자 플랜에서 Anthropic�
 
 * [Server-managed settings](/ko/server-managed-settings): Claude 관리자 콘솔에서 관리 정책 전달
 * [Settings reference](/ko/settings): 모든 설정 키, 파일 위치 및 우선순위 규칙
+* [Monorepos and large repos](/ko/large-codebases): 모노레포에 배포하는 조직을 위한 디렉터리별 구성 패턴
 * [Amazon Bedrock](/ko/amazon-bedrock), [Google Vertex AI](/ko/google-vertex-ai), [Microsoft Foundry](/ko/microsoft-foundry): 제공자별 배포
 * [Claude Enterprise Administrator Guide](https://claude.com/resources/tutorials/claude-enterprise-administrator-guide): SSO, SCIM, 시트 관리 및 롤아웃 플레이북

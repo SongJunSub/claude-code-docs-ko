@@ -40,6 +40,8 @@ discover-plugins	03-extending
 output-styles	03-extending
 claude-directory	03-extending
 commands	03-extending
+mcp-quickstart	03-extending
+plugin-hints	03-extending
 agent-sdk/overview	04-agent-sdk
 agent-sdk/quickstart	04-agent-sdk
 agent-sdk/agent-loop	04-agent-sdk
@@ -69,6 +71,7 @@ agent-sdk/migration-guide	04-agent-sdk
 agent-sdk/python	04-agent-sdk
 agent-sdk/typescript	04-agent-sdk
 agent-sdk/typescript-v2-preview	04-agent-sdk
+agent-sdk/session-storage	04-agent-sdk
 common-workflows	05-workflows
 best-practices	05-workflows
 code-review	05-workflows
@@ -89,6 +92,13 @@ fast-mode	05-workflows
 context-window	05-workflows
 debug-your-config	05-workflows
 troubleshooting	05-workflows
+advisor	05-workflows
+large-codebases	05-workflows
+prompt-caching	05-workflows
+prompt-library	05-workflows
+security-guidance	05-workflows
+sessions	05-workflows
+workflows	05-workflows
 cli-reference	06-config-reference
 env-vars	06-config-reference
 settings	06-config-reference
@@ -101,6 +111,7 @@ auto-mode-config	06-config-reference
 sandboxing	06-config-reference
 server-managed-settings	06-config-reference
 glossary	06-config-reference
+sandbox-environments	06-config-reference
 admin-setup	07-enterprise
 amazon-bedrock	07-enterprise
 claude-platform-on-aws	07-enterprise
@@ -120,6 +131,7 @@ data-usage	07-enterprise
 zero-data-retention	07-enterprise
 champion-kit	07-enterprise
 communications-kit	07-enterprise
+managed-mcp	07-enterprise
 changelog	08-whats-new
 whats-new/index	08-whats-new
 whats-new/2026-w13	08-whats-new
@@ -129,3 +141,6 @@ whats-new/2026-w16	08-whats-new
 whats-new/2026-w17	08-whats-new
 whats-new/2026-w18	08-whats-new
 whats-new/2026-w19	08-whats-new
+whats-new/2026-w20	08-whats-new
+whats-new/2026-w21	08-whats-new
+whats-new/2026-w22	08-whats-new

@@ -129,6 +129,8 @@ Create a team with 4 teammates to refactor these modules in parallel.
 Use Sonnet for each teammate.
 ```
 
+팀원들은 기본적으로 리더의 `/model` 선택을 상속하지 않습니다. 프롬프트가 지정하지 않을 때 사용되는 모델을 변경하려면, `/config`에서 **기본 팀원 모델**을 설정합니다. \*\*기본값(리더의 모델)\*\*을 선택하여 팀원들이 리더의 현재 모델을 따르도록 합니다.
+
 ### 팀원을 위한 계획 승인 요구
 
 복잡하거나 위험한 작업의 경우, 팀원들이 구현하기 전에 계획하도록 요구할 수 있습니다. 팀원은 리더가 접근 방식을 승인할 때까지 읽기 전용 계획 모드에서 작동합니다:
@@ -420,5 +422,5 @@ tmux kill-session -t <session-name>
 병렬 작업 및 위임을 위한 관련 접근 방식을 탐색합니다:
 
 * **경량 위임**: [subagents](/ko/sub-agents)는 세션 내에서 연구 또는 검증을 위해 도우미 에이전트를 생성하며, 에이전트 간 조율이 필요하지 않은 작업에 더 좋습니다
-* **수동 병렬 세션**: [Git worktrees](/ko/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees)를 사용하면 자동화된 팀 조율 없이 여러 Claude Code 세션을 직접 실행할 수 있습니다
+* **수동 병렬 세션**: [Git worktrees](/ko/worktrees)를 사용하면 자동화된 팀 조율 없이 여러 Claude Code 세션을 직접 실행할 수 있습니다
 * **접근 방식 비교**: [subagent vs 에이전트 팀](/ko/features-overview#compare-similar-features) 비교를 참조하여 나란히 비교합니다

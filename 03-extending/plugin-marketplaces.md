@@ -10,7 +10,9 @@
 
 기존 마켓플레이스에서 플러그인을 설치하려고 하시나요? [미리 빌드된 플러그인 검색 및 설치](/ko/discover-plugins)를 참조하세요.
 
-## 개요
+<h2 id="overview">
+  개요
+</h2>
 
 마켓플레이스를 생성하고 배포하는 과정은 다음과 같습니다:
 
@@ -21,9 +23,11 @@
 
 마켓플레이스가 라이브 상태가 되면 저장소에 변경 사항을 푸시하여 업데이트할 수 있습니다. 사용자는 `/plugin marketplace update`로 로컬 복사본을 새로 고칩니다.
 
-## 연습: 로컬 마켓플레이스 생성
+<h2 id="walkthrough-create-a-local-marketplace">
+  연습: 로컬 마켓플레이스 생성
+</h2>
 
-이 예제에서는 하나의 플러그인으로 마켓플레이스를 생성합니다: 코드 리뷰를 위한 `/quality-review` skill입니다. 디렉터리 구조를 생성하고, skill을 추가하고, 플러그인 매니페스트와 마켓플레이스 카탈로그를 생성한 다음, 설치하고 테스트합니다.
+이 예제에서는 하나의 플러그인으로 마켓플레이스를 생성합니다: 코드 리뷰를 위한 `quality-review` skill입니다. 디렉터리 구조를 생성하고, skill을 추가하고, 플러그인 매니페스트와 마켓플레이스 카탈로그를 생성한 다음, 설치하고 테스트합니다.
 
 <Steps>
   <Step title="디렉터리 구조 생성">
@@ -35,7 +39,7 @@
   </Step>
 
   <Step title="skill 생성">
-    `/quality-review` skill이 수행하는 작업을 정의하는 `SKILL.md` 파일을 생성합니다.
+    `quality-review` skill이 수행하는 작업을 정의하는 `SKILL.md` 파일을 생성합니다.
 
     ```markdown my-marketplace/plugins/quality-review-plugin/skills/quality-review/SKILL.md theme={null}
     ---
@@ -59,7 +63,7 @@
     ```json my-marketplace/plugins/quality-review-plugin/.claude-plugin/plugin.json theme={null}
     {
       "name": "quality-review-plugin",
-      "description": "빠른 코드 리뷰를 위한 /quality-review skill 추가",
+      "description": "빠른 코드 리뷰를 위한 quality-review skill 추가",
       "version": "1.0.0"
     }
     ```
@@ -82,7 +86,7 @@
         {
           "name": "quality-review-plugin",
           "source": "./plugins/quality-review-plugin",
-          "description": "빠른 코드 리뷰를 위한 /quality-review skill 추가"
+          "description": "빠른 코드 리뷰를 위한 quality-review skill 추가"
         }
       ]
     }
@@ -99,10 +103,10 @@
   </Step>
 
   <Step title="시도해보기">
-    편집기에서 일부 코드를 선택하고 새 skill을 실행합니다.
+    편집기에서 일부 코드를 선택하고 새 skill을 실행합니다. 플러그인 skill은 플러그인 이름으로 네임스페이스됩니다.
 
     ```shell theme={null}
-    /quality-review
+    /quality-review-plugin:quality-review
     ```
   </Step>
 </Steps>
@@ -115,7 +119,9 @@
   플러그인 간에 파일을 공유해야 하는 경우 symlink를 사용합니다. 자세한 내용은 [플러그인 캐싱 및 파일 해석](/ko/plugins-reference#plugin-caching-and-file-resolution)을 참조하세요.
 </Note>
 
-## 마켓플레이스 파일 생성
+<h2 id="create-the-marketplace-file">
+  마켓플레이스 파일 생성
+</h2>
 
 저장소 루트에 `.claude-plugin/marketplace.json`을 생성합니다. 이 파일은 마켓플레이스의 이름, 소유자 정보 및 소스가 있는 플러그인 목록을 정의합니다.
 
@@ -150,63 +156,82 @@
 }
 ```
 
-## 마켓플레이스 스키마
+<h2 id="marketplace-schema">
+  마켓플레이스 스키마
+</h2>
 
-### 필수 필드
+<h3 id="required-fields">
+  필수 필드
+</h3>
 
-| 필드        | 유형     | 설명                                                                                                                  | 예제             |
-| :-------- | :----- | :------------------------------------------------------------------------------------------------------------------ | :------------- |
-| `name`    | string | 마켓플레이스 식별자(kebab-case, 공백 없음). 이는 공개 대면입니다: 사용자는 플러그인을 설치할 때 이를 봅니다(예: `/plugin install my-tool@your-marketplace`). | `"acme-tools"` |
-| `owner`   | object | 마켓플레이스 유지 관리자 정보([아래 필드 참조](#owner-fields))                                                                         |                |
-| `plugins` | array  | 사용 가능한 플러그인 목록                                                                                                      | 아래 참조          |
+| 필드        | 유형     | 설명                                                                                                                                                                                                                                                                                               | 예제             |
+| :-------- | :----- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
+| `name`    | string | 마켓플레이스 식별자(kebab-case, 공백 없음). 이는 공개 대면입니다: 사용자는 플러그인을 설치할 때 이를 봅니다(예: `/plugin install my-tool@your-marketplace`). 각 사용자는 이름당 하나의 마켓플레이스만 등록할 수 있습니다: 동일한 이름으로 두 번째 마켓플레이스를 추가하면 첫 번째를 대체합니다. 하나의 마켓플레이스 이름 아래에 여러 플러그인을 게시하려면 [단일 `marketplace.json`](#create-the-marketplace-file)에 모두 나열하세요. | `"acme-tools"` |
+| `owner`   | object | 마켓플레이스 유지 관리자 정보([아래 필드 참조](#owner-fields))                                                                                                                                                                                                                                                      |                |
+| `plugins` | array  | 사용 가능한 플러그인 목록                                                                                                                                                                                                                                                                                   | 아래 참조          |
 
 <Note>
-  **예약된 이름**: 다음 마켓플레이스 이름은 공식 Anthropic 사용을 위해 예약되어 있으며 타사 마켓플레이스에서 사용할 수 없습니다: `claude-code-marketplace`, `claude-code-plugins`, `claude-plugins-official`, `anthropic-marketplace`, `anthropic-plugins`, `agent-skills`, `knowledge-work-plugins`, `life-sciences`. 공식 마켓플레이스를 사칭하는 이름(예: `official-claude-plugins` 또는 `anthropic-tools-v2`)도 차단됩니다.
+  **예약된 이름**: 다음 마켓플레이스 이름은 공식 Anthropic 사용을 위해 예약되어 있으며 타사 마켓플레이스에서 사용할 수 없습니다: `claude-code-marketplace`, `claude-code-plugins`, `claude-plugins-official`, `anthropic-marketplace`, `anthropic-plugins`, `agent-skills`, `anthropic-agent-skills`, `knowledge-work-plugins`, `life-sciences`, `claude-for-legal`, `claude-for-financial-services`, `financial-services-plugins`. 공식 마켓플레이스를 사칭하는 이름(예: `official-claude-plugins` 또는 `anthropic-tools-v2`)도 차단됩니다.
 </Note>
 
-### 소유자 필드
+<h3 id="owner-fields">
+  소유자 필드
+</h3>
 
 | 필드      | 유형     | 필수  | 설명              |
 | :------ | :----- | :-- | :-------------- |
 | `name`  | string | 예   | 유지 관리자 또는 팀의 이름 |
 | `email` | string | 아니오 | 유지 관리자의 연락처 이메일 |
 
-### 선택적 필드
+<h3 id="optional-fields">
+  선택적 필드
+</h3>
 
-| 필드                                    | 유형     | 설명                                                                                                                                                                          |
-| :------------------------------------ | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `metadata.description`                | string | 간단한 마켓플레이스 설명                                                                                                                                                               |
-| `metadata.version`                    | string | 마켓플레이스 버전                                                                                                                                                                   |
-| `metadata.pluginRoot`                 | string | 상대 플러그인 소스 경로에 앞에 붙는 기본 디렉터리(예: `"./plugins"`를 사용하면 `"source": "./plugins/formatter"` 대신 `"source": "formatter"`를 작성할 수 있습니다)                                               |
-| `allowCrossMarketplaceDependenciesOn` | array  | 이 마켓플레이스의 플러그인이 의존할 수 있는 다른 마켓플레이스. 여기에 나열되지 않은 마켓플레이스의 종속성은 설치 시 차단됩니다. [다른 마켓플레이스의 플러그인에 의존](/ko/plugin-dependencies#depend-on-a-plugin-from-another-marketplace)을 참조하세요. |
+| 필드                                    | 유형     | 설명                                                                                                                                                                             |
+| :------------------------------------ | :----- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$schema`                             | string | 편집기 자동 완성 및 유효성 검사를 위한 JSON Schema URL입니다. Claude Code는 로드 시 이 필드를 무시합니다.                                                                                                      |
+| `description`                         | string | 간단한 마켓플레이스 설명                                                                                                                                                                  |
+| `version`                             | string | 마켓플레이스 매니페스트 버전                                                                                                                                                                |
+| `metadata.pluginRoot`                 | string | 상대 플러그인 소스 경로에 앞에 붙는 기본 디렉터리(예: `"./plugins"`를 사용하면 `"source": "./plugins/formatter"` 대신 `"source": "formatter"`를 작성할 수 있습니다)                                                  |
+| `allowCrossMarketplaceDependenciesOn` | array  | 이 마켓플레이스의 플러그인이 의존할 수 있는 다른 마켓플레이스입니다. 여기에 나열되지 않은 마켓플레이스의 종속성은 설치 시 차단됩니다. [다른 마켓플레이스의 플러그인에 의존](/ko/plugin-dependencies#depend-on-a-plugin-from-another-marketplace)을 참조하세요. |
 
-## 플러그인 항목
+`description` 및 `version`은 이전 버전과의 호환성을 위해 `metadata` 아래에서도 허용됩니다.
+
+<h2 id="plugin-entries">
+  플러그인 항목
+</h2>
 
 `plugins` 배열의 각 플러그인 항목은 플러그인과 플러그인을 찾을 위치를 설명합니다. [플러그인 매니페스트 스키마](/ko/plugins-reference#plugin-manifest-schema)의 모든 필드(예: `description`, `version`, `author`, `commands`, `hooks` 등)와 이러한 마켓플레이스 특정 필드를 포함할 수 있습니다: `source`, `category`, `tags` 및 `strict`.
 
-### 필수 필드
+<h3 id="required-fields">
+  필수 필드
+</h3>
 
 | 필드       | 유형             | 설명                                                                                                       |
 | :------- | :------------- | :------------------------------------------------------------------------------------------------------- |
 | `name`   | string         | 플러그인 식별자(kebab-case, 공백 없음). 이는 공개 대면입니다: 사용자는 설치할 때 이를 봅니다(예: `/plugin install my-plugin@marketplace`). |
 | `source` | string\|object | 플러그인을 가져올 위치([아래 플러그인 소스](#plugin-sources) 참조)                                                           |
 
-### 선택적 플러그인 필드
+<h3 id="optional-plugin-fields">
+  선택적 플러그인 필드
+</h3>
 
 **표준 메타데이터 필드:**
 
-| 필드            | 유형      | 설명                                                                                                                                                                  |
-| :------------ | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `description` | string  | 간단한 플러그인 설명                                                                                                                                                         |
-| `version`     | string  | 플러그인 버전. 설정된 경우(여기 또는 `plugin.json`에서), 플러그인은 이 문자열로 고정되며 사용자는 변경될 때만 업데이트를 받습니다. 생략하면 git 커밋 SHA로 돌아갑니다. [버전 해석](#version-resolution-and-release-channels)을 참조하세요. |
-| `author`      | object  | 플러그인 작성자 정보(`name` 필수, `email` 선택)                                                                                                                                  |
-| `homepage`    | string  | 플러그인 홈페이지 또는 문서 URL                                                                                                                                                 |
-| `repository`  | string  | 소스 코드 저장소 URL                                                                                                                                                       |
-| `license`     | string  | SPDX 라이선스 식별자(예: MIT, Apache-2.0)                                                                                                                                   |
-| `keywords`    | array   | 플러그인 검색 및 분류를 위한 태그                                                                                                                                                 |
-| `category`    | string  | 조직을 위한 플러그인 카테고리                                                                                                                                                    |
-| `tags`        | array   | 검색 가능성을 위한 태그                                                                                                                                                       |
-| `strict`      | boolean | `plugin.json`이 구성 요소 정의의 권한인지 여부를 제어합니다(기본값: true). 아래의 [Strict 모드](#strict-mode)를 참조하세요.                                                                           |
+| 필드               | 유형      | 설명                                                                                                                                                                                                                                                  |
+| :--------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `displayName`    | string  | {/* min-version: 2.1.143 */}UI 표면에 표시되는 사람이 읽을 수 있는 이름입니다. 생략하면 `name`으로 돌아갑니다. 공백과 모든 대소문자를 포함할 수 있습니다. 네임스페이싱이나 조회에 사용되지 않습니다. Claude Code v2.1.143 이상이 필요합니다.                                                                                    |
+| `description`    | string  | 간단한 플러그인 설명                                                                                                                                                                                                                                         |
+| `version`        | string  | 플러그인 버전. 설정된 경우(여기 또는 `plugin.json`에서), 플러그인은 이 문자열로 고정되며 사용자는 변경될 때만 업데이트를 받습니다. 생략하면 git 커밋 SHA로 돌아갑니다. [버전 해석](#version-resolution-and-release-channels)을 참조하세요.                                                                                 |
+| `author`         | object  | 플러그인 작성자 정보(`name` 필수, `email` 선택)                                                                                                                                                                                                                  |
+| `homepage`       | string  | 플러그인 홈페이지 또는 문서 URL                                                                                                                                                                                                                                 |
+| `repository`     | string  | 소스 코드 저장소 URL                                                                                                                                                                                                                                       |
+| `license`        | string  | SPDX 라이선스 식별자(예: MIT, Apache-2.0)                                                                                                                                                                                                                   |
+| `keywords`       | array   | 플러그인 검색 및 분류를 위한 태그                                                                                                                                                                                                                                 |
+| `category`       | string  | 조직을 위한 플러그인 카테고리                                                                                                                                                                                                                                    |
+| `tags`           | array   | 검색 가능성을 위한 태그                                                                                                                                                                                                                                       |
+| `strict`         | boolean | `plugin.json`이 구성 요소 정의의 권한인지 여부를 제어합니다(기본값: true). 아래의 [Strict 모드](#strict-mode)를 참조하세요.                                                                                                                                                           |
+| `defaultEnabled` | boolean | {/* min-version: 2.1.154 */}플러그인이 설치 후 활성화되는지 여부(기본값: true). 사용자가 옵트인할 때까지 플러그인을 비활성화된 상태로 설치하려면 `false`로 설정합니다. 플러그인의 `plugin.json`에 있는 동일한 필드보다 우선합니다. [기본 활성화](/ko/plugins-reference#default-enablement)를 참조하세요. Claude Code v2.1.154 이상이 필요합니다. |
 
 **구성 요소 구성 필드:**
 
@@ -219,7 +244,9 @@
 | `mcpServers` | string\|object | MCP 서버 구성 또는 MCP 구성 경로                        |
 | `lspServers` | string\|object | LSP 서버 구성 또는 LSP 구성 경로                        |
 
-## 플러그인 소스
+<h2 id="plugin-sources">
+  플러그인 소스
+</h2>
 
 플러그인 소스는 Claude Code에 마켓플레이스에 나열된 각 개별 플러그인을 가져올 위치를 알려줍니다. 이는 `marketplace.json`의 각 플러그인 항목의 `source` 필드에 설정됩니다.
 
@@ -242,7 +269,9 @@
   예를 들어, `acme-corp/plugin-catalog`에서 호스팅되는 마켓플레이스(마켓플레이스 소스)는 `acme-corp/code-formatter`에서 가져온 플러그인을 나열할 수 있습니다(플러그인 소스). 마켓플레이스 소스와 플러그인 소스는 다양한 저장소를 가리키며 독립적으로 고정됩니다.
 </Note>
 
-### 상대 경로
+<h3 id="relative-paths">
+  상대 경로
+</h3>
 
 동일한 저장소의 플러그인의 경우 `./`로 시작하는 경로를 사용합니다:
 
@@ -259,7 +288,9 @@
   상대 경로는 사용자가 Git(GitHub, GitLab 또는 git URL)을 통해 마켓플레이스를 추가할 때만 작동합니다. 사용자가 `marketplace.json` 파일에 대한 직접 URL을 통해 마켓플레이스를 추가하면 상대 경로가 올바르게 해석되지 않습니다. URL 기반 배포의 경우 GitHub, npm 또는 git URL 소스를 대신 사용합니다. 자세한 내용은 [문제 해결](#plugins-with-relative-paths-fail-in-url-based-marketplaces)을 참조하세요.
 </Note>
 
-### GitHub 저장소
+<h3 id="github-repositories">
+  GitHub 저장소
+</h3>
 
 ```json theme={null}
 {
@@ -291,7 +322,9 @@
 | `ref`  | string | 선택. Git 분기 또는 태그(저장소 기본 분기로 기본값)      |
 | `sha`  | string | 선택. 정확한 버전에 고정하기 위한 전체 40자 git 커밋 SHA |
 
-### Git 저장소
+<h3 id="git-repositories">
+  Git 저장소
+</h3>
 
 ```json theme={null}
 {
@@ -323,7 +356,9 @@
 | `ref` | string | 선택. Git 분기 또는 태그(저장소 기본 분기로 기본값)                                                                                |
 | `sha` | string | 선택. 정확한 버전에 고정하기 위한 전체 40자 git 커밋 SHA                                                                           |
 
-### Git 하위 디렉터리
+<h3 id="git-subdirectories">
+  Git 하위 디렉터리
+</h3>
 
 `git-subdir`을 사용하여 git 저장소의 하위 디렉터리 내에 있는 플러그인을 가리킵니다. Claude Code는 희소하고 부분적인 복제를 사용하여 하위 디렉터리만 가져오므로 대규모 모노레포의 대역폭을 최소화합니다.
 
@@ -362,7 +397,9 @@
 | `ref`  | string | 선택. Git 분기 또는 태그(저장소 기본 분기로 기본값)                             |
 | `sha`  | string | 선택. 정확한 버전에 고정하기 위한 전체 40자 git 커밋 SHA                        |
 
-### npm 패키지
+<h3 id="npm-packages">
+  npm 패키지
+</h3>
 
 npm 패키지로 배포되는 플러그인은 `npm install`을 사용하여 설치됩니다. 이는 공개 npm 레지스트리 또는 팀이 호스팅하는 개인 레지스트리의 모든 패키지에서 작동합니다.
 
@@ -409,7 +446,9 @@ npm 패키지로 배포되는 플러그인은 `npm install`을 사용하여 설�
 | `version`  | string | 선택. 버전 또는 버전 범위(예: `2.1.0`, `^2.0.0`, `~1.5.0`)               |
 | `registry` | string | 선택. 사용자 정의 npm 레지스트리 URL. 시스템 npm 레지스트리(일반적으로 npmjs.org)로 기본값 |
 
-### 고급 플러그인 항목
+<h3 id="advanced-plugin-entries">
+  고급 플러그인 항목
+</h3>
 
 이 예제는 명령어, 에이전트, hooks 및 MCP 서버의 사용자 정의 경로를 포함하여 많은 선택적 필드를 사용하는 플러그인 항목을 보여줍니다:
 
@@ -466,7 +505,9 @@ npm 패키지로 배포되는 플러그인은 `npm install`을 사용하여 설�
 * **`${CLAUDE_PLUGIN_ROOT}`**: hooks 및 MCP 서버 구성에서 이 변수를 사용하여 플러그인의 설치 디렉터리 내의 파일을 참조합니다. 플러그인이 설치될 때 캐시 위치에 복사되기 때문에 필요합니다. 플러그인 업데이트를 통해 유지되어야 하는 종속성 또는 상태의 경우 [`${CLAUDE_PLUGIN_DATA}`](/ko/plugins-reference#persistent-data-directory)를 대신 사용합니다.
 * **`strict: false`**: 이것이 false로 설정되어 있으므로 플러그인은 자신의 `plugin.json`이 필요하지 않습니다. 마켓플레이스 항목이 모든 것을 정의합니다. 아래의 [Strict 모드](#strict-mode)를 참조하세요.
 
-### Strict 모드
+<h3 id="strict-mode">
+  Strict 모드
+</h3>
 
 `strict` 필드는 `plugin.json`이 구성 요소 정의(skills, 에이전트, hooks, MCP 서버, 출력 스타일)의 권한인지 여부를 제어합니다.
 
@@ -480,9 +521,13 @@ npm 패키지로 배포되는 플러그인은 `npm install`을 사용하여 설�
 * **`strict: true`**: 플러그인은 자신의 `plugin.json`을 가지고 있으며 자신의 구성 요소를 관리합니다. 마켓플레이스 항목은 맨 위에 추가 skills 또는 hooks를 추가할 수 있습니다. 이것이 기본값이며 대부분의 플러그인에서 작동합니다.
 * **`strict: false`**: 마켓플레이스 운영자가 완전한 제어를 원합니다. 플러그인 저장소는 원본 파일을 제공하고 마켓플레이스 항목은 이러한 파일 중 어느 것이 skills, 에이전트, hooks 등으로 노출되는지 정의합니다. 마켓플레이스가 플러그인 작성자의 의도와 다르게 플러그인의 구성 요소를 재구성하거나 큐레이션할 때 유용합니다.
 
-## 마켓플레이스 호스팅 및 배포
+<h2 id="host-and-distribute-marketplaces">
+  마켓플레이스 호스팅 및 배포
+</h2>
 
-### GitHub에서 호스팅(권장)
+<h3 id="host-on-github-recommended">
+  GitHub에서 호스팅(권장)
+</h3>
 
 GitHub는 가장 쉬운 배포 방법을 제공합니다:
 
@@ -492,7 +537,9 @@ GitHub는 가장 쉬운 배포 방법을 제공합니다:
 
 **이점**: 기본 제공 버전 제어, 문제 추적 및 팀 협업 기능.
 
-### 다른 git 서비스에서 호스팅
+<h3 id="host-on-other-git-services">
+  다른 git 서비스에서 호스팅
+</h3>
 
 GitLab, Bitbucket 및 자체 호스팅 서버와 같은 모든 git 호스팅 서비스가 작동합니다. 사용자는 전체 저장소 URL로 추가합니다:
 
@@ -500,7 +547,9 @@ GitLab, Bitbucket 및 자체 호스팅 서버와 같은 모든 git 호스팅 서
 /plugin marketplace add https://gitlab.com/company/plugins.git
 ```
 
-### 개인 저장소
+<h3 id="private-repositories">
+  개인 저장소
+</h3>
 
 Claude Code는 개인 저장소에서 플러그인 설치를 지원합니다. 수동 설치 및 업데이트의 경우 Claude Code는 기존 git 자격 증명 도우미를 사용합니다. 따라서 HTTPS 액세스는 `gh auth login`, macOS Keychain 또는 `git-credential-store`를 통해 터미널에서와 동일하게 작동합니다. SSH 액세스는 호스트가 이미 `known_hosts` 파일에 있고 키가 `ssh-agent`에 로드되어 있는 한 작동합니다. Claude Code는 호스트 지문 및 키 암호에 대한 대화형 SSH 프롬프트를 억제하기 때문입니다.
 
@@ -522,7 +571,9 @@ export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
   CI/CD 환경의 경우 토큰을 비밀 환경 변수로 구성합니다. GitHub Actions는 동일한 조직의 저장소에 대해 자동으로 `GITHUB_TOKEN`을 제공합니다.
 </Note>
 
-### 배포 전에 로컬에서 테스트
+<h3 id="test-locally-before-distribution">
+  배포 전에 로컬에서 테스트
+</h3>
 
 공유하기 전에 마켓플레이스를 로컬에서 테스트합니다:
 
@@ -533,7 +584,9 @@ export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 
 추가 명령어의 전체 범위(GitHub, Git URL, 로컬 경로, 원격 URL)는 [마켓플레이스 추가](/ko/discover-plugins#add-marketplaces)를 참조하세요.
 
-### 팀을 위한 마켓플레이스 필수
+<h3 id="require-marketplaces-for-your-team">
+  팀을 위한 마켓플레이스 필수
+</h3>
 
 프로젝트 폴더를 신뢰할 때 팀 구성원이 자동으로 마켓플레이스를 설치하도록 저장소를 구성할 수 있습니다. 마켓플레이스를 `.claude/settings.json`에 추가합니다:
 
@@ -567,7 +620,9 @@ export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
   로컬 `directory` 또는 `file` 소스를 상대 경로와 함께 사용하는 경우 경로는 저장소의 주 체크아웃에 대해 해석됩니다. git worktree에서 Claude Code를 실행할 때 경로는 여전히 주 체크아웃을 가리키므로 모든 worktree가 동일한 마켓플레이스 위치를 공유합니다. 마켓플레이스 상태는 프로젝트당이 아니라 사용자당 한 번 `~/.claude/plugins/known_marketplaces.json`에 저장됩니다.
 </Note>
 
-### 컨테이너에 대한 플러그인 사전 채우기
+<h3 id="pre-populate-plugins-for-containers">
+  컨테이너에 대한 플러그인 사전 채우기
+</h3>
 
 컨테이너 이미지 및 CI 환경의 경우 빌드 시간에 플러그인 디렉터리를 사전 채우므로 Claude Code가 런타임에 아무것도 복제하지 않고도 마켓플레이스 및 플러그인이 이미 사용 가능한 상태로 시작됩니다. `CLAUDE_CODE_PLUGIN_SEED_DIR` 환경 변수를 이 디렉터리를 가리키도록 설정합니다.
 
@@ -603,7 +658,9 @@ CLAUDE_CODE_PLUGIN_CACHE_DIR=/opt/claude-seed claude plugin install my-tool@your
 * **변경 차단**: 시드 관리 마켓플레이스에 대해 `/plugin marketplace remove` 또는 `/plugin marketplace update`를 실행하면 시드 이미지를 업데이트하도록 관리자에게 문의하라는 지침과 함께 실패합니다.
 * **설정과 구성**: `extraKnownMarketplaces` 또는 `enabledPlugins`이 시드에 이미 존재하는 마켓플레이스를 선언하면 Claude Code는 복제하는 대신 시드 복사본을 사용합니다.
 
-### 관리되는 마켓플레이스 제한
+<h3 id="managed-marketplace-restrictions">
+  관리되는 마켓플레이스 제한
+</h3>
 
 플러그인 소스에 대한 엄격한 제어가 필요한 조직의 경우 관리자는 관리되는 설정에서 [`strictKnownMarketplaces`](/ko/settings#strictknownmarketplaces) 설정을 사용하여 사용자가 추가할 수 있는 플러그인 마켓플레이스를 제한할 수 있습니다.
 
@@ -615,7 +672,9 @@ CLAUDE_CODE_PLUGIN_CACHE_DIR=/opt/claude-seed claude plugin install my-tool@your
 | 빈 배열 `[]`    | 완전한 잠금. 사용자는 새 마켓플레이스를 추가할 수 없습니다       |
 | 소스 목록        | 사용자는 허용 목록과 정확히 일치하는 마켓플레이스만 추가할 수 있습니다 |
 
-#### 일반적인 구성
+<h4 id="common-configurations">
+  일반적인 구성
+</h4>
 
 모든 마켓플레이스 추가 비활성화:
 
@@ -679,7 +738,9 @@ CLAUDE_CODE_PLUGIN_CACHE_DIR=/opt/claude-seed claude plugin install my-tool@your
   `strictKnownMarketplaces`는 사용자가 추가할 수 있는 것을 제한하지만 자체적으로 마켓플레이스를 등록하지는 않습니다. 허용된 마켓플레이스를 사용자가 `/plugin marketplace add`를 실행하지 않고도 자동으로 사용 가능하게 하려면 동일한 `managed-settings.json`에서 [`extraKnownMarketplaces`](/ko/settings#extraknownmarketplaces)와 쌍을 이룹니다. [둘 다 함께 사용](/ko/settings#strictknownmarketplaces)을 참조하세요.
 </Note>
 
-#### 제한 작동 방식
+<h4 id="how-restrictions-work">
+  제한 작동 방식
+</h4>
 
 제한은 네트워크 또는 파일 시스템 작업이 발생하기 전에 확인됩니다. 확인은 마켓플레이스 추가 및 플러그인 설치, 업데이트, 새로고침 및 자동 업데이트 시 실행됩니다. 마켓플레이스가 정책 구성 전에 추가되었고 해당 소스가 더 이상 허용 목록과 일치하지 않으면 Claude Code는 해당 마켓플레이스에서 플러그인을 설치하거나 업데이트하기를 거부합니다. 동일한 적용이 `blockedMarketplaces`에도 적용됩니다.
 
@@ -690,11 +751,15 @@ CLAUDE_CODE_PLUGIN_CACHE_DIR=/opt/claude-seed claude plugin install my-tool@your
 * `hostPattern` 소스의 경우: 마켓플레이스 호스트가 정규식 패턴과 일치합니다
 * `pathPattern` 소스의 경우: 마켓플레이스의 파일 시스템 경로가 정규식 패턴과 일치합니다
 
+정확한 일치는 URL을 정규화하지 않습니다. 후행 슬래시, `.git` 접미사 또는 `ssh://` 대 `https://` 형식은 다른 값으로 취급됩니다. 조직의 마켓플레이스를 둘 이상의 URL 형식으로 복제할 수 있는 경우 모든 형식이 일치하도록 리터럴 URL보다 `hostPattern` 항목을 선호합니다.
+
 `strictKnownMarketplaces`는 [관리되는 설정](/ko/settings#settings-files)에서 설정되므로 개별 사용자 및 프로젝트 구성은 이러한 제한을 재정의할 수 없습니다.
 
 전체 구성 세부 정보(지원되는 모든 소스 유형 및 `extraKnownMarketplaces`와의 비교 포함)는 [strictKnownMarketplaces 참조](/ko/settings#strictknownmarketplaces)를 참조하세요.
 
-### 버전 해석 및 릴리스 채널
+<h3 id="version-resolution-and-release-channels">
+  버전 해석 및 릴리스 채널
+</h3>
 
 플러그인 버전은 캐시 경로 및 업데이트 감지를 결정합니다. 해석된 버전이 사용자가 이미 가지고 있는 것과 일치하면 `/plugin update` 및 자동 업데이트는 플러그인을 건너뜁니다.
 
@@ -712,7 +777,9 @@ git 기반 소스 유형 `github`, `url`, `git-subdir` 및 git 호스팅 마켓�
   `plugin.json` 및 마켓플레이스 항목 모두에서 `version`을 설정하지 마세요. `plugin.json` 값이 항상 자동으로 우선하므로 오래된 매니페스트 버전이 `marketplace.json`에서 설정한 버전을 숨길 수 있습니다.
 </Warning>
 
-#### 릴리스 채널 설정
+<h4 id="set-up-release-channels">
+  릴리스 채널 설정
+</h4>
 
 플러그인에 대한 "stable" 및 "latest" 릴리스 채널을 지원하려면 동일한 저장소의 다양한 refs 또는 SHA를 가리키는 두 개의 마켓플레이스를 설정할 수 있습니다. 그런 다음 [관리되는 설정](/ko/settings#settings-files)을 통해 두 마켓플레이스를 다양한 사용자 그룹에 할당할 수 있습니다.
 
@@ -720,7 +787,9 @@ git 기반 소스 유형 `github`, `url`, `git-subdir` 및 git 호스팅 마켓�
   각 채널은 다른 버전으로 해석되어야 합니다. 명시적 버전을 사용하는 경우 `plugin.json`은 각 고정된 ref에서 다른 `version`을 선언해야 합니다. `version`을 생략하면 서로 다른 커밋 SHA가 이미 채널을 구분합니다. 두 refs가 동일한 버전 문자열로 해석되면 Claude Code는 이들을 동일한 것으로 취급하고 업데이트를 건너뜁니다.
 </Warning>
 
-##### 예제
+<h5 id="example">
+  예제
+</h5>
 
 ```json theme={null}
 {
@@ -754,7 +823,9 @@ git 기반 소스 유형 `github`, `url`, `git-subdir` 및 git 호스팅 마켓�
 }
 ```
 
-##### 사용자 그룹에 채널 할당
+<h5 id="assign-channels-to-user-groups">
+  사용자 그룹에 채널 할당
+</h5>
 
 관리되는 설정을 통해 각 마켓플레이스를 적절한 사용자 그룹에 할당합니다. 예를 들어 stable 그룹은 다음을 받습니다:
 
@@ -786,11 +857,15 @@ early-access 그룹은 대신 `latest-tools`를 받습니다:
 }
 ```
 
-#### 의존성 버전 고정
+<h4 id="pin-dependency-versions">
+  의존성 버전 고정
+</h4>
 
 플러그인은 의존성에 대한 semver 범위를 제한하여 의존성 업데이트가 종속 플러그인을 손상시키지 않도록 할 수 있습니다. `{plugin-name}--v{version}` git 태그 규칙, 범위 구문 및 동일한 의존성에 대한 여러 제약 조건이 어떻게 결합되는지에 대해서는 [플러그인 의존성 버전 제한](/ko/plugin-dependencies)을 참조하세요.
 
-## 검증 및 테스트
+<h2 id="validation-and-testing">
+  검증 및 테스트
+</h2>
 
 공유하기 전에 마켓플레이스를 테스트합니다.
 
@@ -820,11 +895,15 @@ claude plugin validate .
 
 전체 플러그인 테스트 워크플로우는 [플러그인을 로컬에서 테스트](/ko/plugins#test-your-plugins-locally)를 참조하세요. 기술적 문제 해결은 [플러그인 참조](/ko/plugins-reference)를 참조하세요.
 
-## CLI에서 마켓플레이스 관리
+<h2 id="manage-marketplaces-from-the-cli">
+  CLI에서 마켓플레이스 관리
+</h2>
 
 Claude Code는 스크립팅 및 자동화를 위한 비대화형 `claude plugin marketplace` 하위 명령어를 제공합니다. 이는 대화형 세션 내에서 사용 가능한 `/plugin marketplace` 명령어와 동일합니다.
 
-### 플러그인 마켓플레이스 추가
+<h3 id="plugin-marketplace-add">
+  플러그인 마켓플레이스 추가
+</h3>
 
 GitHub 저장소, git URL, 원격 URL 또는 로컬 경로에서 마켓플레이스를 추가합니다.
 
@@ -885,7 +964,9 @@ claude plugin marketplace add acme-corp/claude-plugins --scope project
 claude plugin marketplace add acme-corp/monorepo --sparse .claude-plugin plugins
 ```
 
-### 플러그인 마켓플레이스 목록
+<h3 id="plugin-marketplace-list">
+  플러그인 마켓플레이스 목록
+</h3>
 
 구성된 모든 마켓플레이스를 나열합니다.
 
@@ -899,23 +980,35 @@ claude plugin marketplace list [options]
 | :------- | :-------- |
 | `--json` | JSON으로 출력 |
 
-### 플러그인 마켓플레이스 제거
+`--json`을 사용하면 각 항목에는 `name`, `source` 및 소스별 필드가 포함됩니다: GitHub 소스의 경우 `repo`, git 및 URL 소스의 경우 `url`, 로컬 소스의 경우 `path`. GitHub 및 git 소스는 마켓플레이스가 고정된 분기 또는 태그로 추가된 경우 `ref` 필드도 포함합니다.
+
+<h3 id="plugin-marketplace-remove">
+  플러그인 마켓플레이스 제거
+</h3>
 
 구성된 마켓플레이스를 제거합니다. 별칭 `rm`도 허용됩니다.
 
 ```bash theme={null}
-claude plugin marketplace remove <name>
+claude plugin marketplace remove <name> [options]
 ```
 
 **인수:**
 
 * `<name>`: `claude plugin marketplace list`에 표시된 마켓플레이스 이름을 제거합니다. 이는 `add`에 전달한 소스가 아니라 `marketplace.json`의 `name`입니다
 
+**옵션:**
+
+| 옵션                | 설명                                                                                                                                                                                                                                 | 기본값     |
+| :---------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `--scope <scope>` | 제거를 단일 설정 범위로 제한: `user`, `project` 또는 `local`. [플러그인 설치 범위](/ko/plugins-reference#plugin-installation-scopes) 참조. 생략하면 모든 편집 가능한 범위에서 선언이 제거됩니다. 지정하면 해당 범위의 선언만 제거되고, 마켓플레이스가 다른 범위에서 여전히 선언된 경우 공유 상태, 캐시 및 설치된 플러그인 데이터는 유지됩니다 | (모든 범위) |
+
 <Warning>
-  마켓플레이스를 제거하면 해당 마켓플레이스에서 설치한 모든 플러그인도 제거됩니다. 설치된 플러그인을 잃지 않고 마켓플레이스를 새로 고치려면 `claude plugin marketplace update`를 대신 사용합니다.
+  마켓플레이스를 마지막 남은 범위에서 제거하면 해당 마켓플레이스에서 설치한 모든 플러그인도 제거됩니다. 설치된 플러그인을 잃지 않고 마켓플레이스를 새로 고치려면 `claude plugin marketplace update`를 대신 사용합니다.
 </Warning>
 
-### 플러그인 마켓플레이스 업데이트
+<h3 id="plugin-marketplace-update">
+  플러그인 마켓플레이스 업데이트
+</h3>
 
 소스에서 마켓플레이스를 새로 고쳐 새 플러그인 및 버전 변경을 검색합니다.
 
@@ -929,9 +1022,13 @@ claude plugin marketplace update [name]
 
 `remove`와 `update` 모두 시드 관리 마켓플레이스에 대해 실행할 때 실패합니다. 이는 읽기 전용입니다. 모든 마켓플레이스를 업데이트할 때 시드 관리 항목은 건너뛰고 다른 마켓플레이스는 여전히 업데이트됩니다. 시드 제공 플러그인을 변경하려면 관리자에게 시드 이미지를 업데이트하도록 요청합니다. [컨테이너에 대한 플러그인 사전 채우기](#pre-populate-plugins-for-containers)를 참조하세요.
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
-### 마켓플레이스가 로드되지 않음
+<h3 id="marketplace-not-loading">
+  마켓플레이스가 로드되지 않음
+</h3>
 
 **증상**: 마켓플레이스를 추가할 수 없거나 플러그인을 볼 수 없습니다
 
@@ -939,29 +1036,35 @@ claude plugin marketplace update [name]
 
 * 마켓플레이스 URL이 액세스 가능한지 확인합니다
 * `.claude-plugin/marketplace.json`이 지정된 경로에 있는지 확인합니다
-* `claude plugin validate` 또는 `/plugin validate`를 사용하여 JSON 구문이 유효한지 확인합니다
+* `claude plugin validate` 또는 `/plugin validate`를 사용하여 JSON 구문이 유효한지 확인합니다. skill, agent 및 command frontmatter를 확인하려면 각 플러그인 디렉터리에 대해 명령을 실행합니다
 * 개인 저장소의 경우 액세스 권한이 있는지 확인합니다
 
-### 마켓플레이스 검증 오류
+<h3 id="marketplace-validation-errors">
+  마켓플레이스 검증 오류
+</h3>
 
-마켓플레이스 디렉터리에서 `claude plugin validate .` 또는 `/plugin validate .`를 실행하여 문제를 확인합니다. 검증자는 `plugin.json`, skill/agent/command frontmatter 및 `hooks/hooks.json`에서 구문 및 스키마 오류를 확인합니다. 일반적인 오류:
+마켓플레이스 디렉터리에서 `claude plugin validate .` 또는 `/plugin validate .`를 실행하여 문제를 확인합니다. 마켓플레이스 디렉터리를 가리킬 때 검증자는 `marketplace.json`만 확인합니다: 스키마, 중복 플러그인 이름, 소스 경로 순회 및 각 참조된 `plugin.json`에 대한 버전 불일치.
 
-| 오류                                                | 원인                                  | 해결책                                                                |
-| :------------------------------------------------ | :---------------------------------- | :----------------------------------------------------------------- |
-| `File not found: .claude-plugin/marketplace.json` | 누락된 매니페스트                           | 필수 필드를 사용하여 `.claude-plugin/marketplace.json` 생성                   |
-| `Invalid JSON syntax: Unexpected token...`        | JSON 구문 오류 marketplace.json에서       | 누락된 쉼표, 추가 쉼표 또는 인용되지 않은 문자열 확인                                    |
-| `Duplicate plugin name "x" found in marketplace`  | 두 플러그인이 동일한 이름을 공유합니다               | 각 플러그인에 고유한 `name` 값 지정                                            |
-| `plugins[0].source: Path contains ".."`           | 소스 경로에 `..` 포함                      | 마켓플레이스 루트에 상대적인 경로를 `..` 없이 사용합니다. [상대 경로](#relative-paths) 참조     |
-| `YAML frontmatter failed to parse: ...`           | skill, agent 또는 command 파일의 YAML 무효 | frontmatter 블록의 YAML 구문을 수정합니다. 런타임에 이 파일은 메타데이터 없이 로드됩니다.         |
-| `Invalid JSON syntax: ...` (hooks.json)           | 형식이 잘못된 `hooks/hooks.json`          | JSON 구문을 수정합니다. 형식이 잘못된 `hooks/hooks.json`은 전체 플러그인이 로드되지 않도록 합니다. |
+개별 플러그인의 `plugin.json` 및 해당 skill, agent, command 및 hook 파일을 검증하려면 플러그인 디렉터리 자체에 대해 명령을 실행합니다(예: `claude plugin validate ./plugins/my-plugin`). 일반적인 오류:
+
+| 오류                                                | 원인                                  | 해결책                                                                                        |
+| :------------------------------------------------ | :---------------------------------- | :----------------------------------------------------------------------------------------- |
+| `File not found: .claude-plugin/marketplace.json` | 누락된 매니페스트                           | 필수 필드를 사용하여 `.claude-plugin/marketplace.json` 생성                                           |
+| `Invalid JSON syntax: Unexpected token...`        | marketplace.json의 JSON 구문 오류        | 누락된 쉼표, 추가 쉼표 또는 인용되지 않은 문자열 확인                                                            |
+| `Duplicate plugin name "x" found in marketplace`  | 두 플러그인이 동일한 이름을 공유합니다               | 각 플러그인에 고유한 `name` 값 지정                                                                    |
+| `plugins[0].source: Path contains ".."`           | 소스 경로에 `..` 포함                      | 마켓플레이스 루트에 상대적인 경로를 `..` 없이 사용합니다. [상대 경로](#relative-paths) 참조                             |
+| `YAML frontmatter failed to parse: ...`           | skill, agent 또는 command 파일의 YAML 무효 | frontmatter 블록의 YAML 구문을 수정합니다. 런타임에 이 파일은 메타데이터 없이 로드됩니다. 플러그인 디렉터리를 검증할 때만 보고됩니다         |
+| `Invalid JSON syntax: ...` (hooks.json)           | 형식이 잘못된 `hooks/hooks.json`          | JSON 구문을 수정합니다. 형식이 잘못된 `hooks/hooks.json`은 전체 플러그인이 로드되지 않도록 합니다. 플러그인 디렉터리를 검증할 때만 보고됩니다 |
 
 **경고**(차단하지 않음):
 
 * `Marketplace has no plugins defined`: `plugins` 배열에 최소한 하나의 플러그인 추가
-* `No marketplace description provided`: 사용자가 마켓플레이스를 이해하도록 돕기 위해 `metadata.description` 추가
+* `No marketplace description provided`: 사용자가 마켓플레이스를 이해하도록 돕기 위해 최상위 `description` 추가
 * `Plugin name "x" is not kebab-case`: 플러그인 이름에 대문자, 공백 또는 특수 문자가 포함되어 있습니다. 소문자, 숫자 및 하이픈만 사용하도록 이름을 바꿉니다(예: `my-plugin`). Claude Code는 다른 형식을 허용하지만 Claude.ai 마켓플레이스 동기화는 이를 거부합니다.
 
-### 플러그인 설치 실패
+<h3 id="plugin-installation-failures">
+  플러그인 설치 실패
+</h3>
 
 **증상**: 마켓플레이스가 나타나지만 플러그인 설치가 실패합니다
 
@@ -972,7 +1075,9 @@ claude plugin marketplace update [name]
 * GitHub 소스의 경우 저장소가 공개이거나 액세스 권한이 있는지 확인합니다
 * 플러그인 소스를 수동으로 복제/다운로드하여 테스트합니다
 
-### 개인 저장소 인증 실패
+<h3 id="private-repository-authentication-fails">
+  개인 저장소 인증 실패
+</h3>
 
 **증상**: 개인 저장소에서 플러그인을 설치할 때 인증 오류
 
@@ -992,7 +1097,9 @@ claude plugin marketplace update [name]
 * GitLab의 경우 토큰에 최소한 `read_repository` 범위가 있는지 확인합니다
 * 토큰이 만료되지 않았는지 확인합니다
 
-### 마켓플레이스 업데이트가 오프라인 환경에서 실패합니다
+<h3 id="marketplace-updates-fail-in-offline-environments">
+  마켓플레이스 업데이트가 오프라인 환경에서 실패합니다
+</h3>
 
 **증상**: 마켓플레이스 `git pull`이 실패하고 Claude Code가 기존 캐시를 삭제하여 플러그인을 사용할 수 없게 됩니다.
 
@@ -1006,7 +1113,9 @@ export CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE=1
 
 이 변수가 설정되면 Claude Code는 `git pull` 실패 시 오래된 마켓플레이스 복제본을 유지하고 마지막으로 알려진 좋은 상태를 계속 사용합니다. 저장소에 절대 도달할 수 없는 완전히 오프라인 배포의 경우 대신 [`CLAUDE_CODE_PLUGIN_SEED_DIR`](#pre-populate-plugins-for-containers)을 사용하여 빌드 시간에 플러그인 디렉터리를 사전 채웁니다.
 
-### Git 작업 시간 초과
+<h3 id="git-operations-time-out">
+  Git 작업 시간 초과
+</h3>
 
 **증상**: 플러그인 설치 또는 마켓플레이스 업데이트가 "Git clone timed out after 120s" 또는 "Git pull timed out after 120s"와 같은 시간 초과 오류로 실패합니다.
 
@@ -1018,7 +1127,9 @@ export CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE=1
 export CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS=300000  # 5분
 ```
 
-### 상대 경로가 있는 플러그인이 URL 기반 마켓플레이스에서 실패합니다
+<h3 id="plugins-with-relative-paths-fail-in-url-based-marketplaces">
+  상대 경로가 있는 플러그인이 URL 기반 마켓플레이스에서 실패합니다
+</h3>
 
 **증상**: URL을 통해 마켓플레이스를 추가했습니다(예: `https://example.com/marketplace.json`). 하지만 `"./plugins/my-plugin"`과 같은 상대 경로 소스가 있는 플러그인이 "path not found" 오류로 설치되지 않습니다.
 
@@ -1032,7 +1143,9 @@ export CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS=300000  # 5분
   ```
 * **Git 기반 마켓플레이스 사용**: 마켓플레이스를 Git 저장소에서 호스팅하고 git URL로 추가합니다. Git 기반 마켓플레이스는 전체 저장소를 복제하므로 상대 경로가 올바르게 작동합니다.
 
-### 설치 후 파일을 찾을 수 없음
+<h3 id="files-not-found-after-installation">
+  설치 후 파일을 찾을 수 없음
+</h3>
 
 **증상**: 플러그인이 설치되지만 파일 참조가 실패합니다. 특히 플러그인 디렉터리 외부의 파일
 
@@ -1042,7 +1155,9 @@ export CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS=300000  # 5분
 
 추가 디버깅 도구 및 일반적인 문제는 [디버깅 및 개발 도구](/ko/plugins-reference#debugging-and-development-tools)를 참조하세요.
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [미리 빌드된 플러그인 검색 및 설치](/ko/discover-plugins) - 기존 마켓플레이스에서 플러그인 설치
 * [플러그인](/ko/plugins) - 자신의 플러그인 생성

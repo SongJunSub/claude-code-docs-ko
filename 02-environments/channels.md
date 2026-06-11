@@ -7,7 +7,7 @@
 > 채널을 사용하여 MCP 서버에서 실행 중인 Claude Code 세션으로 메시지, 알림 및 웹훅을 푸시합니다. CI 결과, 채팅 메시지 및 모니터링 이벤트를 전달하여 Claude가 자리를 비웠을 때 반응할 수 있도록 합니다.
 
 <Note>
-  채널은 [연구 미리보기](#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. claude.ai 로그인이 필요합니다. 콘솔 및 API 키 인증은 지원되지 않습니다. Team 및 Enterprise 조직은 [명시적으로 활성화](#enterprise-controls)해야 합니다.
+  채널은 [연구 미리보기](#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. Anthropic 인증이 필요하며 claude.ai 또는 Console API 키를 통해 인증합니다. Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry에서는 사용할 수 없습니다. Team 및 Enterprise 조직은 [명시적으로 활성화](#enterprise-controls)해야 합니다.
 </Note>
 
 채널은 실행 중인 Claude Code 세션으로 이벤트를 푸시하는 MCP 서버이므로 Claude는 터미널에 없을 때 발생하는 일에 반응할 수 있습니다. 채널은 양방향일 수 있습니다. Claude는 이벤트를 읽고 동일한 채널을 통해 다시 회신합니다(채팅 브리지처럼). 이벤트는 세션이 열려 있는 동안에만 도착하므로 항상 켜진 설정의 경우 Claude를 백그라운드 프로세스 또는 지속적인 터미널에서 실행합니다.
@@ -23,12 +23,14 @@ Claude가 채널을 통해 회신할 때 터미널에서 인바운드 메시지�
 * [지원되는 채널](#supported-channels): Telegram, Discord 및 iMessage 설정
 * [채널 설치 및 실행](#quickstart): localhost 데모인 fakechat 사용
 * [메시지를 푸시할 수 있는 사람](#security): 발신자 허용 목록 및 페어링 방법
-* [조직에 대해 채널 활성화](#enterprise-controls): Team 및 Enterprise
+* [조직에 대해 채널 활성화](#enterprise-controls): Team, Enterprise 또는 Console 조직을 관리하는 경우
 * [채널이 어떻게 비교되는지](#how-channels-compare): 웹 세션, Slack, MCP 및 Remote Control과 비교
 
 자신의 채널을 구축하려면 [채널 참조](/ko/channels-reference)를 참조하세요.
 
-## 지원되는 채널
+<h2 id="supported-channels">
+  지원되는 채널
+</h2>
 
 각 지원되는 채널은 [Bun](https://bun.sh)이 필요한 플러그인입니다. 실제 플랫폼을 연결하기 전에 플러그인 흐름의 실습 데모를 보려면 [fakechat 빠른 시작](#quickstart)을 시도하세요.
 
@@ -217,7 +219,9 @@ Claude가 채널을 통해 회신할 때 터미널에서 인바운드 메시지�
 
 아직 플러그인이 없는 시스템의 경우 [자신의 채널을 구축](/ko/channels-reference)할 수도 있습니다.
 
-## 빠른 시작
+<h2 id="quickstart">
+  빠른 시작
+</h2>
 
 Fakechat은 localhost에서 채팅 UI를 실행하는 공식적으로 지원되는 데모 채널이며 인증할 것도 없고 구성할 외부 서비스도 없습니다.
 
@@ -225,9 +229,9 @@ fakechat을 설치하고 활성화한 후 브라우저에서 입력하면 메시
 
 fakechat 데모를 시도하려면 다음이 필요합니다:
 
-* Claude Code [설치 및 인증](/ko/quickstart#step-1-install-claude-code): claude.ai 계정 사용
+* Claude Code [설치 및 인증](/ko/quickstart#step-1-install-claude-code): claude.ai 계정 또는 Claude Console API 키 사용
 * [Bun](https://bun.sh) 설치됨. 사전 구축된 채널 플러그인은 Bun 스크립트입니다. `bun --version`으로 확인하세요. 실패하면 [Bun 설치](https://bun.sh/docs/installation)하세요.
-* **Team/Enterprise 사용자**: 조직 관리자가 관리 설정에서 [채널을 활성화](#enterprise-controls)해야 합니다.
+* **Team, Enterprise 또는 관리 Console 조직**: 조직 관리자가 관리 설정에서 [채널을 활성화](#enterprise-controls)해야 합니다.
 
 <Steps>
   <Step title="fakechat 채널 플러그인 설치">
@@ -267,7 +271,11 @@ fakechat 데모를 시도하려면 다음이 필요합니다:
 
 Claude가 터미널에서 멀리 있을 때 권한 프롬프트에 도달하면 세션이 응답할 때까지 일시 중지됩니다. [권한 릴레이 기능](/ko/channels-reference#relay-permission-prompts)을 선언하는 채널 서버는 이러한 프롬프트를 사용자에게 전달하여 원격으로 승인하거나 거부할 수 있습니다. 무인 사용의 경우 [`--dangerously-skip-permissions`](/ko/permission-modes#skip-all-checks-with-bypasspermissions-mode)는 프롬프트를 완전히 우회하지만 신뢰하는 환경에서만 사용하세요.
 
-## 보안
+비대화형 모드에서 `-p`로 채널을 실행할 때 여러 선택지 질문 및 계획 모드 승인과 같이 터미널 입력이 필요한 도구는 비활성화되므로 세션이 입력을 기다리며 멈추지 않습니다.
+
+<h2 id="security">
+  보안
+</h2>
 
 승인된 모든 채널 플러그인은 발신자 허용 목록을 유지합니다. 추가한 ID만 메시지를 푸시할 수 있으며 다른 모든 것은 자동으로 삭제됩니다.
 
@@ -275,35 +283,46 @@ Telegram 및 Discord는 페어링으로 목록을 부트스트랩합니다:
 
 1. Telegram 또는 Discord에서 봇을 찾고 메시지를 보냅니다.
 2. 봇이 페어링 코드로 회신합니다.
-3. Claude Code 세션에서 메시지가 표시될 때 코드를 승인합니다.
+3. Claude Code 세션에서 코드를 승인합니다.
 4. 발신자 ID가 허용 목록에 추가됩니다.
 
 iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동으로 게이트를 우회하고 `/imessage:access allow`로 다른 연락처를 핸들로 추가합니다.
 
-그 위에 `--channels`로 각 세션에서 활성화된 서버를 제어하고 Team 및 Enterprise 계획에서 조직은 [`channelsEnabled`](#enterprise-controls)로 가용성을 제어합니다.
+그 위에 `--channels`로 각 세션에서 활성화된 서버를 제어하고 조직은 [`channelsEnabled`](#enterprise-controls)로 가용성을 제어합니다. claude.ai Team 및 Enterprise 계획과 관리 설정을 배포하는 Console 조직에서 가능합니다.
 
 `.mcp.json`에 있는 것만으로는 메시지를 푸시하기에 충분하지 않습니다. 서버도 `--channels`에서 명명되어야 합니다.
 
 허용 목록은 채널이 선언하는 경우 [권한 릴레이](/ko/channels-reference#relay-permission-prompts)도 게이트합니다. 채널을 통해 회신할 수 있는 모든 사람이 세션에서 도구 사용을 승인하거나 거부할 수 있으므로 해당 권한을 신뢰하는 발신자만 허용 목록에 추가하세요.
 
-## Enterprise 제어
+<h2 id="enterprise-controls">
+  Enterprise 제어
+</h2>
 
-Team 및 Enterprise 계획에서 채널은 기본적으로 꺼져 있습니다. 관리자는 사용자가 재정의할 수 없는 두 가지 [관리 설정](/ko/settings)을 통해 가용성을 제어합니다:
+관리자는 사용자가 재정의할 수 없는 두 가지 [관리 설정](/ko/settings)을 통해 가용성을 제어합니다. 기본값은 인증 방식에 따라 다릅니다:
 
-| 설정                      | 목적                                                                                                                                                                     | 구성되지 않은 경우         |
-| :---------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------- |
-| `channelsEnabled`       | 마스터 스위치. 채널이 메시지를 전달하려면 `true`여야 합니다. [claude.ai Admin 콘솔](https://claude.ai/admin-settings/claude-code) 토글을 통해 또는 관리 설정에서 직접 설정합니다. 꺼져 있을 때 개발 플래그를 포함한 모든 채널을 차단합니다. | 채널 차단됨             |
-| `allowedChannelPlugins` | 채널이 활성화되면 등록할 수 있는 플러그인. 설정되면 Anthropic 유지 관리 목록을 대체합니다. `channelsEnabled`가 `true`일 때만 적용됩니다.                                                                          | Anthropic 기본 목록 적용 |
+* **claude.ai Team 및 Enterprise**: 관리자가 활성화할 때까지 채널이 차단됩니다.
+* **Anthropic Console with API key authentication**: 채널이 기본적으로 허용됩니다. 조직이 관리 설정을 배포하는 경우에만 이 설정이 필요합니다.
+
+모든 경우에 사용자가 `--channels`로 세션에 옵트인할 때까지 채널이 실행되지 않습니다.
+
+| 설정                      | 목적                                                                                                                                                                     | 구성되지 않은 경우                                                                                          |
+| :---------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| `channelsEnabled`       | 마스터 스위치. 채널이 메시지를 전달하려면 `true`여야 합니다. [claude.ai Admin 콘솔](https://claude.ai/admin-settings/claude-code) 토글을 통해 또는 관리 설정에서 직접 설정합니다. 꺼져 있을 때 개발 플래그를 포함한 모든 채널을 차단합니다. | claude.ai Team 및 Enterprise: 채널 차단됨. Console: 조직이 관리 설정을 배포하지 않는 한 채널 허용됨. 이 경우 이 키가 설정될 때까지 채널 차단됨 |
+| `allowedChannelPlugins` | 채널이 활성화되면 등록할 수 있는 플러그인. 설정되면 Anthropic 유지 관리 목록을 대체합니다. `channelsEnabled`가 `true`일 때만 적용됩니다.                                                                          | Anthropic 기본 목록 적용                                                                                  |
 
 조직이 없는 Pro 및 Max 사용자는 이러한 검사를 완전히 건너뜁니다. 채널을 사용할 수 있으며 사용자는 `--channels`로 세션당 옵트인합니다.
 
-### 조직에 대해 채널 활성화
+<h3 id="enable-channels-for-your-organization">
+  조직에 대해 채널 활성화
+</h3>
 
 관리자는 [**claude.ai → Admin settings → Claude Code → Channels**](https://claude.ai/admin-settings/claude-code)에서 채널을 활성화하거나 관리 설정에서 `channelsEnabled`를 `true`로 설정할 수 있습니다.
 
 활성화되면 조직의 사용자는 `--channels`를 사용하여 개별 세션에 채널 서버를 옵트인할 수 있습니다. 설정이 비활성화되었거나 설정되지 않은 경우 MCP 서버는 여전히 연결되고 해당 도구가 작동하지만 채널 메시지는 도착하지 않습니다. 시작 경고는 사용자에게 관리자가 설정을 활성화하도록 합니다.
 
-### 실행할 수 있는 채널 플러그인 제한
+<h3 id="restrict-which-channel-plugins-can-run">
+  실행할 수 있는 채널 플러그인 제한
+</h3>
 
 기본적으로 Anthropic 유지 관리 허용 목록의 모든 플러그인이 채널로 등록할 수 있습니다. Team 및 Enterprise 계획의 관리자는 관리 설정에서 `allowedChannelPlugins`을 설정하여 해당 허용 목록을 자신의 목록으로 바꿀 수 있습니다. 이를 사용하여 허용되는 공식 플러그인을 제한하거나 자신의 내부 마켓플레이스에서 채널을 승인하거나 둘 다 수행합니다. 각 항목은 플러그인과 그것이 나오는 마켓플레이스의 이름을 지정합니다:
 
@@ -322,7 +341,9 @@ Team 및 Enterprise 계획에서 채널은 기본적으로 꺼져 있습니다. 
 
 이 설정에는 `channelsEnabled: true`가 필요합니다. 사용자가 `--channels`에 조직 목록에 없는 플러그인을 전달하면 Claude Code가 정상적으로 시작되지만 채널이 등록되지 않으며 시작 알림이 플러그인이 조직의 승인된 목록에 없음을 설명합니다.
 
-## 연구 미리보기
+<h2 id="research-preview">
+  연구 미리보기
+</h2>
 
 채널은 연구 미리보기 기능입니다. 가용성은 점진적으로 출시되고 있으며 `--channels` 플래그 구문 및 프로토콜 계약은 피드백에 따라 변경될 수 있습니다.
 
@@ -332,7 +353,9 @@ Team 및 Enterprise 계획에서 채널은 기본적으로 꺼져 있습니다. 
 
 [Claude Code GitHub 저장소](https://github.com/anthropics/claude-code/issues)에서 문제 또는 피드백을 보고합니다.
 
-## 채널이 어떻게 비교되는지
+<h2 id="how-channels-compare">
+  채널이 어떻게 비교되는지
+</h2>
 
 여러 Claude Code 기능이 터미널 외부의 시스템에 연결되며 각각 다른 종류의 작업에 적합합니다:
 
@@ -348,7 +371,9 @@ Team 및 Enterprise 계획에서 채널은 기본적으로 꺼져 있습니다. 
 * **채팅 브리지**: Telegram, Discord 또는 iMessage를 통해 휴대폰에서 Claude에 무언가를 물어보고 답변이 같은 채팅으로 돌아오는 동안 작업이 기계에서 실제 파일에 대해 실행됩니다.
 * **[웹훅 수신기](/ko/channels-reference#example-build-a-webhook-receiver)**: CI, 오류 추적기, 배포 파이프라인 또는 기타 외부 서비스의 웹훅이 Claude가 이미 파일을 열고 있고 디버깅 중인 것을 기억하는 곳에 도착합니다.
 
-## 다음 단계
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
 채널이 실행 중이면 다음 관련 기능을 살펴보세요:
 

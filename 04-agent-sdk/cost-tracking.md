@@ -20,7 +20,9 @@ Claude Agent SDK는 Claude와의 각 상호작용에 대한 상세한 토큰 사
   이 필드는 개발 통찰력 및 대략적인 예산 책정을 위해 사용하십시오. 권위 있는 청구의 경우 [Usage and Cost API](https://platform.claude.com/docs/en/build-with-claude/usage-cost-api) 또는 [Claude Console](https://platform.claude.com/usage)의 Usage 페이지를 사용하십시오. 이 필드에서 최종 사용자에게 청구하거나 재정 결정을 트리거하지 마십시오.
 </Warning>
 
-## 토큰 사용량 이해
+<h2 id="understand-token-usage">
+  토큰 사용량 이해
+</h2>
 
 TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데이터를 노출합니다:
 
@@ -31,7 +33,7 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
 
 비용 추적은 SDK가 사용량 데이터를 어떻게 범위 지정하는지 이해하는 것에 달려 있습니다:
 
-* **`query()` 호출:** SDK의 `query()` 함수 한 번의 호출입니다. 단일 호출은 여러 단계를 포함할 수 있습니다(Claude가 응답하고, 도구를 사용하고, 결과를 받고, 다시 응답합니다). 각 호출은 끝에 하나의 [`result`](/ko/agent-sdk/typescript#sdk-result-message) 메시지를 생성합니다.
+* **`query()` 호출:** SDK의 `query()` 함수 한 번의 호출입니다. 단일 호출은 여러 단계를 포함할 수 있습니다(Claude가 응답하고, 도구를 사용하고, 결과를 받고, 다시 응답합니다). 각 호출은 끝에 하나의 [`result`](/ko/agent-sdk/typescript#sdkresultmessage) 메시지를 생성합니다.
 * **단계:** `query()` 호출 내의 단일 요청/응답 사이클입니다. 각 단계는 토큰 사용량이 있는 어시스턴트 메시지를 생성합니다.
 * **세션:** 세션 ID로 연결된 일련의 `query()` 호출입니다(`resume` 옵션 사용). 세션 내의 각 `query()` 호출은 자신의 비용을 독립적으로 보고합니다.
 
@@ -45,13 +47,15 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
   </Step>
 
   <Step title="결과 메시지는 누적 추정값을 제공합니다">
-    `query()` 호출이 완료되면, SDK는 `total_cost_usd` 및 누적 `usage`가 있는 결과 메시지를 내보냅니다. 이는 TypeScript([`SDKResultMessage`](/ko/agent-sdk/typescript#sdk-result-message)) 및 Python([`ResultMessage`](/ko/agent-sdk/python#result-message)) 모두에서 사용 가능합니다. 여러 `query()` 호출을 수행하는 경우(예: 다중 턴 세션에서), 각 결과는 해당 개별 호출의 비용만 반영합니다. 추정된 합계만 필요한 경우, 단계별 사용량을 무시하고 이 단일 값을 읽을 수 있습니다.
+    `query()` 호출이 완료되면, SDK는 `total_cost_usd` 및 누적 `usage`가 있는 결과 메시지를 내보냅니다. 이는 TypeScript([`SDKResultMessage`](/ko/agent-sdk/typescript#sdkresultmessage)) 및 Python([`ResultMessage`](/ko/agent-sdk/python#resultmessage)) 모두에서 사용 가능합니다. 여러 `query()` 호출을 수행하는 경우(예: 다중 턴 세션에서), 각 결과는 해당 개별 호출의 비용만 반영합니다. 추정된 합계만 필요한 경우, 단계별 사용량을 무시하고 이 단일 값을 읽을 수 있습니다.
   </Step>
 </Steps>
 
-## 쿼리의 총 비용 얻기
+<h2 id="get-the-total-cost-of-a-query">
+  쿼리의 총 비용 얻기
+</h2>
 
-결과 메시지([TypeScript](/ko/agent-sdk/typescript#sdk-result-message), [Python](/ko/agent-sdk/python#result-message))는 `query()` 호출에 대한 에이전트 루프의 끝을 표시합니다. 여기에는 `total_cost_usd`가 포함되어 있으며, 이는 해당 호출의 모든 단계에 걸친 누적 추정 비용입니다. 이는 성공 및 오류 결과 모두에 대해 작동합니다. 세션을 사용하여 여러 `query()` 호출을 수행하는 경우, 각 결과는 해당 개별 호출의 비용만 반영합니다.
+결과 메시지([TypeScript](/ko/agent-sdk/typescript#sdkresultmessage), [Python](/ko/agent-sdk/python#resultmessage))는 `query()` 호출에 대한 에이전트 루프의 끝을 표시합니다. 여기에는 `total_cost_usd`가 포함되어 있으며, 이는 해당 호출의 모든 단계에 걸친 누적 추정 비용입니다. 이는 성공 및 오류 결과 모두에 대해 작동합니다. 세션을 사용하여 여러 `query()` 호출을 수행하는 경우, 각 결과는 해당 개별 호출의 비용만 반영합니다.
 
 다음 예제는 `query()` 호출의 메시지 스트림을 반복하고 `result` 메시지가 도착할 때 총 비용을 인쇄합니다:
 
@@ -81,11 +85,15 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
   ```
 </CodeGroup>
 
-## 단계별 및 모델별 사용량 추적
+<h2 id="track-per-step-and-per-model-usage">
+  단계별 및 모델별 사용량 추적
+</h2>
 
-이 섹션의 예제는 TypeScript 필드 이름을 사용합니다. Python에서 동등한 필드는 단계별 사용량의 경우 [`AssistantMessage.usage`](/ko/agent-sdk/python#assistant-message) 및 `AssistantMessage.message_id`이고, 모델별 분석의 경우 [`ResultMessage.model_usage`](/ko/agent-sdk/python#result-message)입니다.
+이 섹션의 예제는 TypeScript 필드 이름을 사용합니다. Python에서 동등한 필드는 단계별 사용량의 경우 [`AssistantMessage.usage`](/ko/agent-sdk/python#assistantmessage) 및 `AssistantMessage.message_id`이고, 모델별 분석의 경우 [`ResultMessage.model_usage`](/ko/agent-sdk/python#resultmessage)입니다.
 
-### 단계별 사용량 추적
+<h3 id="track-per-step-usage">
+  단계별 사용량 추적
+</h3>
 
 각 어시스턴트 메시지는 `id` 및 토큰 개수가 있는 `usage` 객체를 포함하는 중첩된 `BetaMessage`(`message.message`를 통해 액세스)를 포함합니다. Claude가 도구를 병렬로 사용할 때, 여러 메시지는 동일한 `id`를 공유하고 동일한 사용량 데이터를 가집니다. 이미 계산한 ID를 추적하고 중복을 건너뛰어 부풀려진 합계를 피하십시오.
 
@@ -120,9 +128,11 @@ console.log(`Input tokens: ${totalInputTokens}`);
 console.log(`Output tokens: ${totalOutputTokens}`);
 ```
 
-### 모델별 사용량 분석
+<h3 id="break-down-usage-per-model">
+  모델별 사용량 분석
+</h3>
 
-결과 메시지는 [`modelUsage`](/ko/agent-sdk/typescript#model-usage)를 포함하며, 이는 모델 이름을 모델별 토큰 개수 및 비용에 매핑합니다. 이는 여러 모델을 실행할 때(예: 서브에이전트의 경우 Haiku, 메인 에이전트의 경우 Opus) 토큰이 어디로 가는지 확인하려는 경우 유용합니다.
+결과 메시지는 [`modelUsage`](/ko/agent-sdk/typescript#modelusage)를 포함하며, 이는 모델 이름을 모델별 토큰 개수 및 비용에 매핑합니다. 이는 여러 모델을 실행할 때(예: 서브에이전트의 경우 Haiku, 메인 에이전트의 경우 Opus) 토큰이 어디로 가는지 확인하려는 경우 유용합니다.
 
 다음 예제는 쿼리를 실행하고 사용된 각 모델에 대한 비용 및 토큰 분석을 인쇄합니다:
 
@@ -142,7 +152,9 @@ for await (const message of query({ prompt: "Summarize this project" })) {
 }
 ```
 
-## 여러 호출에 걸쳐 비용 누적
+<h2 id="accumulate-costs-across-multiple-calls">
+  여러 호출에 걸쳐 비용 누적
+</h2>
 
 각 `query()` 호출은 자신의 `total_cost_usd`를 반환합니다. SDK는 세션 수준 합계를 제공하지 않으므로, 애플리케이션이 여러 `query()` 호출을 수행하는 경우(예: 다중 턴 세션 또는 다양한 사용자에 걸쳐), 합계를 직접 누적하십시오.
 
@@ -200,11 +212,15 @@ for await (const message of query({ prompt: "Summarize this project" })) {
   ```
 </CodeGroup>
 
-## 오류, 캐싱 및 토큰 불일치 처리
+<h2 id="handle-errors-caching-and-token-discrepancies">
+  오류, 캐싱 및 토큰 불일치 처리
+</h2>
 
 정확한 비용 추적을 위해 실패한 대화, 캐시 토큰 가격 책정 및 가끔 발생하는 보고 불일치를 고려하십시오.
 
-### 출력 토큰 불일치 해결
+<h3 id="resolve-output-token-discrepancies">
+  출력 토큰 불일치 해결
+</h3>
 
 드물게 동일한 ID를 가진 메시지에 대해 다른 `output_tokens` 값을 관찰할 수 있습니다. 이 경우:
 
@@ -212,20 +228,26 @@ for await (const message of query({ prompt: "Summarize this project" })) {
 2. **결과 메시지 선호:** 결과 메시지의 `total_cost_usd`는 모든 단계에 걸친 SDK의 누적 추정값을 반영하므로, 단계별 값을 직접 합산하는 것보다 더 신뢰할 수 있습니다. 여전히 추정값이며 실제 청구와 다를 수 있습니다.
 3. **불일치 보고:** [Claude Code GitHub 저장소](https://github.com/anthropics/claude-code/issues)에서 문제를 제출하십시오.
 
-### 실패한 대화의 비용 추적
+<h3 id="track-costs-on-failed-conversations">
+  실패한 대화의 비용 추적
+</h3>
 
 성공 및 오류 결과 메시지 모두 `usage` 및 `total_cost_usd`를 포함합니다. 대화가 중간에 실패하면, 실패 지점까지 토큰을 소비했습니다. 항상 `subtype`에 관계없이 결과 메시지에서 비용 데이터를 읽으십시오.
 
-### 캐시 토큰 추적
+<h3 id="track-cache-tokens">
+  캐시 토큰 추적
+</h3>
 
 Agent SDK는 반복된 콘텐츠에 대한 비용을 줄이기 위해 [프롬프트 캐싱](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)을 자동으로 사용합니다. 캐싱을 직접 구성할 필요가 없습니다. 사용량 객체는 캐시 추적을 위한 두 가지 추가 필드를 포함합니다:
 
 * `cache_creation_input_tokens`: 새 캐시 항목을 생성하는 데 사용된 토큰(표준 입력 토큰보다 높은 요금으로 청구됨).
 * `cache_read_input_tokens`: 기존 캐시 항목에서 읽은 토큰(감소된 요금으로 청구됨).
 
-캐싱 절감액을 이해하려면 이들을 `input_tokens`과 별도로 추적하십시오. TypeScript에서 이 필드는 [`Usage`](/ko/agent-sdk/typescript#usage) 객체에 입력됩니다. Python에서 이들은 [`ResultMessage.usage`](/ko/agent-sdk/python#result-message) dict의 키로 나타납니다(예: `message.usage.get("cache_read_input_tokens", 0)`).
+캐싱 절감액을 이해하려면 이들을 `input_tokens`과 별도로 추적하십시오. TypeScript에서 이 필드는 [`Usage`](/ko/agent-sdk/typescript#usage) 객체에 입력됩니다. Python에서 이들은 [`ResultMessage.usage`](/ko/agent-sdk/python#resultmessage) dict의 키로 나타납니다(예: `message.usage.get("cache_read_input_tokens", 0)`).
 
-### 프롬프트 캐시 TTL을 1시간으로 연장
+<h3 id="extend-the-prompt-cache-ttl-to-one-hour">
+  프롬프트 캐시 TTL을 1시간으로 연장
+</h3>
 
 SDK에서 작성한 캐시 항목은 API 키로 인증하거나 Amazon Bedrock, Google Cloud Vertex AI 또는 Microsoft Foundry에서 실행할 때 기본적으로 5분 TTL을 사용합니다. 워크로드가 동일한 시스템 프롬프트 및 컨텍스트에 대해 많은 짧은 세션을 실행하고 세션 간에 5분보다 긴 간격이 있는 경우, 캐시는 세션 간에 만료되고 각 새 세션은 전체 입력 가격을 지불합니다.
 
@@ -256,7 +278,9 @@ SDK에서 작성한 캐시 항목은 API 키로 인증하거나 Amazon Bedrock, 
 
 1시간 TTL을 가진 캐시 쓰기는 5분 쓰기보다 높은 요금으로 청구되므로, 이를 활성화하면 더 높은 쓰기 비용으로 더 많은 캐시 읽기를 거래합니다. 자세한 내용은 [프롬프트 캐싱 가격 책정](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)을 참조하십시오. Claude 구독 사용자는 이미 자동으로 1시간 TTL을 받으며 이 변수를 설정할 필요가 없습니다.
 
-## 관련 문서
+<h2 id="related-documentation">
+  관련 문서
+</h2>
 
 * [TypeScript SDK 참조](/ko/agent-sdk/typescript) - 완전한 API 문서
 * [SDK 개요](/ko/agent-sdk/overview) - SDK 시작하기

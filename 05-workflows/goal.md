@@ -6,6 +6,10 @@
 
 > /goal로 완료 조건을 설정하면 Claude가 조건이 충족될 때까지 여러 턴에 걸쳐 계속 작동합니다.
 
+<Note>
+  `/goal`은 Claude Code v2.1.139 이상이 필요합니다.
+</Note>
+
 `/goal` 명령은 완료 조건을 설정하고 Claude가 사용자가 각 단계를 프롬프트하지 않아도 그 조건을 향해 계속 작동하도록 합니다. 각 턴 후에 작은 빠른 모델이 조건이 충족되었는지 확인합니다. 충족되지 않으면 Claude는 제어를 사용자에게 반환하는 대신 다른 턴을 시작합니다. 조건이 충족되면 목표는 자동으로 지워집니다.
 
 검증 가능한 최종 상태가 있는 실질적인 작업에 목표를 사용합니다:
@@ -17,12 +21,14 @@
 
 이 페이지에서 다루는 내용:
 
-* [자율 워크플로우 접근 방식 비교](#compare-to-other-autonomous-workflows): `/loop`, Stop hook, 자동 모드
+* [자율 워크플로우 접근 방식 비교](#compare-ways-to-keep-a-session-running): `/loop`, Stop hook, 자동 모드
 * [목표 설정](#set-a-goal) 및 [효과적인 조건 작성](#write-an-effective-condition)
 * [상태 확인](#check-status), [조기 지우기](#clear-a-goal), [비대화형으로 실행](#run-non-interactively)
 * [평가 작동 방식](#how-evaluation-works) 및 [요구 사항](#requirements) 확인
 
-## 다른 자율 워크플로우와 비교
+<h2 id="compare-ways-to-keep-a-session-running">
+  세션을 계속 실행하는 방법 비교
+</h2>
 
 세 가지 접근 방식이 프롬프트 사이의 현재 세션을 계속 실행합니다. 다음 턴을 시작해야 할 때를 기준으로 선택합니다:
 
@@ -40,11 +46,15 @@
   위의 접근 방식은 현재 세션을 계속 실행합니다. 야간 테스트나 아침 분류와 같이 열린 세션과 무관하게 실행되는 작업을 예약할 수도 있습니다. 클라우드 루틴 및 데스크톱 예약된 작업에 대해 [예약 옵션](/ko/scheduled-tasks#compare-scheduling-options)을 참조하세요.
 </Tip>
 
-## `/goal` 사용
+<h2 id="use-/goal">
+  `/goal` 사용
+</h2>
 
 세션당 하나의 목표만 활성화될 수 있습니다. 동일한 명령이 인수에 따라 설정, 확인, 지웁니다.
 
-### 목표 설정
+<h3 id="set-a-goal">
+  목표 설정
+</h3>
 
 `/goal` 다음에 만족하려는 조건을 입력합니다. 목표가 이미 활성화되어 있으면 새 목표가 이를 대체합니다.
 
@@ -60,21 +70,25 @@
   목표는 조건이 충족되거나 `/goal clear`를 실행할 때까지 계속 실행됩니다. 인수 없이 `/goal`을 실행하면 지금까지 소비한 턴과 토큰을 볼 수 있습니다.
 </Note>
 
-### 효과적인 조건 작성
+<h3 id="write-an-effective-condition">
+  효과적인 조건 작성
+</h3>
 
 [평가자](#how-evaluation-works)는 Claude가 대화에서 표시한 내용에 대해 조건을 판단합니다. 독립적으로 명령을 실행하거나 파일을 읽지 않으므로 Claude의 자체 출력이 입증할 수 있는 것으로 조건을 작성합니다. "`test/auth`의 모든 테스트 통과"는 Claude가 테스트를 실행하고 결과가 평가자가 읽을 수 있도록 대화 기록에 나타나기 때문에 작동합니다.
 
 많은 턴에 걸쳐 유지되는 조건은 일반적으로 다음을 포함합니다:
 
 * **하나의 측정 가능한 최종 상태**: 테스트 결과, 빌드 종료 코드, 파일 수, 빈 큐
-* **명시된 확인**: Claude가 이를 증명하는 방법(예: "`npm test` 종료 0" 또는 "`git status`가 깨끗함")
+* **명시된 확인**: Claude가 이를 입증하는 방법(예: "`npm test` 종료 0" 또는 "`git status`가 깨끗함")
 * **중요한 제약 조건**: 그 과정에서 변경되지 않아야 하는 모든 것(예: "다른 테스트 파일은 수정되지 않음")
 
 조건은 최대 4,000자까지 가능합니다.
 
 목표가 실행되는 시간을 제한하려면 조건에 턴 또는 시간 절을 포함합니다(예: `or stop after 20 turns`). Claude는 매 턴마다 해당 절에 대한 진행 상황을 보고하고 평가자는 대화에서 이를 판단합니다.
 
-### 상태 확인
+<h3 id="check-status">
+  상태 확인
+</h3>
 
 인수 없이 `/goal`을 실행하여 현재 상태를 확인합니다.
 
@@ -92,7 +106,9 @@
 
 목표가 활성화되지 않았지만 세션 초반에 달성된 경우 상태는 달성된 조건과 함께 지속 시간, 턴 수, 토큰 소비를 표시합니다.
 
-### 목표 지우기
+<h3 id="clear-a-goal">
+  목표 지우기
+</h3>
 
 `/goal clear`를 실행하여 조건이 충족되기 전에 활성 목표를 제거합니다.
 
@@ -102,13 +118,17 @@
 
 `stop`, `off`, `reset`, `none`, `cancel`은 `clear`의 별칭으로 허용됩니다. `/clear`를 실행하여 새 대화를 시작하면 활성 목표도 제거됩니다.
 
-### 활성 목표로 재개
+<h3 id="resume-with-an-active-goal">
+  활성 목표로 재개
+</h3>
 
 세션이 종료될 때 여전히 활성 상태였던 목표는 `--resume` 또는 `--continue`로 해당 세션을 재개할 때 복원됩니다. 조건은 유지되지만 턴 수, 타이머, 토큰 소비 기준선은 모두 재개 시 재설정됩니다. 이미 달성되었거나 지워진 목표는 복원되지 않습니다.
 
-### 비대화형으로 실행
+<h3 id="run-non-interactively">
+  비대화형으로 실행
+</h3>
 
-`/goal`은 [비대화형 모드](/ko/headless)와 [원격 제어](/ko/remote-control)에서 작동합니다. `-p`로 목표를 설정하면 단일 호출에서 루프를 완료까지 실행합니다:
+`/goal`은 [비대화형 모드](/ko/headless), [데스크톱 앱](/ko/desktop), [원격 제어](/ko/remote-control)에서 작동합니다. `-p`로 목표를 설정하면 단일 호출에서 루프를 완료까지 실행합니다:
 
 ```bash theme={null}
 claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"
@@ -116,7 +136,9 @@ claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"
 
 Ctrl+C로 프로세스를 중단하여 조건이 충족되기 전에 비대화형 목표를 중지합니다.
 
-## 평가 작동 방식
+<h2 id="how-evaluation-works">
+  평가 작동 방식
+</h2>
 
 `/goal`은 세션 범위의 [프롬프트 기반 Stop hook](/ko/hooks#prompt-based-hooks) 주위의 래퍼입니다. Claude가 턴을 완료할 때마다 조건과 지금까지의 대화가 구성된 [작은 빠른 모델](/ko/model-config)로 전송되며, 기본값은 Haiku입니다. 모델은 예 또는 아니오 결정과 짧은 이유를 반환합니다. "아니오"는 Claude에게 계속 작동하도록 지시하고 다음 턴의 지침으로 이유를 포함합니다. "예"는 목표를 지우고 대화 기록에 달성된 항목을 기록합니다.
 
@@ -126,11 +148,15 @@ Ctrl+C로 프로세스를 중단하여 조건이 충족되기 전에 비대화�
   평가 토큰은 공급자에 대해 구성된 작은 빠른 모델에서 청구되며 일반적으로 주 턴 소비에 비해 무시할 수 있습니다.
 </Note>
 
-## 요구 사항
+<h2 id="requirements">
+  요구 사항
+</h2>
 
 `/goal`은 평가자가 hooks 시스템의 일부이기 때문에 신뢰 대화를 수락한 워크스페이스에서만 실행됩니다. [`disableAllHooks`](/ko/hooks#disable-or-remove-hooks)가 모든 설정 수준에서 설정되거나 관리 설정에서 [`allowManagedHooksOnly`](/ko/settings#hook-configuration)가 설정되면 `/goal`을 사용할 수 없습니다. 각 경우에 명령은 조용히 아무것도 하지 않는 대신 이유를 알려줍니다.
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [프롬프트를 `/loop`로 반복 실행](/ko/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop): 조건이 충족될 때까지가 아닌 시간 간격으로 다시 실행
 * [프롬프트 기반 hooks](/ko/hooks-guide#prompt-based-hooks): 사용자 정의 평가 로직이 필요할 때 자신의 Stop hook 작성

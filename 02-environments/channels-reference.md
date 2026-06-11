@@ -7,7 +7,7 @@
 > 웹훅, 알림, 채팅 메시지를 Claude Code 세션으로 푸시하는 MCP 서버를 구축합니다. 채널 계약 참조: 기능 선언, 알림 이벤트, 회신 도구, 발신자 게이팅, 권한 릴레이.
 
 <Note>
-  채널은 [연구 미리보기](/ko/channels#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. claude.ai 로그인이 필요합니다. 콘솔 및 API 키 인증은 지원되지 않습니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](/ko/channels#enterprise-controls)해야 합니다.
+  채널은 [연구 미리보기](/ko/channels#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](/ko/channels#enterprise-controls)해야 합니다.
 </Note>
 
 채널은 Claude Code 세션으로 이벤트를 푸시하는 MCP 서버이므로 Claude는 터미널 외부에서 발생하는 일에 반응할 수 있습니다.
@@ -20,14 +20,16 @@
 * [필요한 것](#what-you-need): 요구 사항 및 일반 단계
 * [예: 웹훅 수신기 구축](#example-build-a-webhook-receiver): 최소 단방향 연습
 * [서버 옵션](#server-options): 생성자 필드
-* [알림 형식](#notification-format): 이벤트 페이로드
+* [알림 형식](#notification-format): 이벤트 페이로드 및 전달 동작
 * [회신 도구 노출](#expose-a-reply-tool): Claude가 메시지를 다시 보낼 수 있도록 함
 * [인바운드 메시지 게이팅](#gate-inbound-messages): 프롬프트 주입을 방지하기 위한 발신자 확인
 * [권한 프롬프트 릴레이](#relay-permission-prompts): 도구 승인 프롬프트를 원격 채널로 전달
 
 기존 채널을 사용하는 대신 구축하려면 [채널](/ko/channels)을 참조하세요. Telegram, Discord, iMessage 및 fakechat은 연구 미리보기에 포함되어 있습니다.
 
-## 개요
+<h2 id="overview">
+  개요
+</h2>
 
 채널은 Claude Code와 동일한 머신에서 실행되는 [MCP](https://modelcontextprotocol.io) 서버입니다. Claude Code는 이를 서브프로세스로 생성하고 stdio를 통해 통신합니다. 채널 서버는 외부 시스템과 Claude Code 세션 간의 브리지입니다:
 
@@ -36,7 +38,9 @@
 
 <img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/ko/images/channel-architecture.svg" alt="외부 시스템이 로컬 채널 서버에 연결되고 stdio를 통해 Claude Code와 통신하는 아키텍처 다이어그램" />
 
-## 필요한 것
+<h2 id="what-you-need">
+  필요한 것
+</h2>
 
 유일한 하드 요구 사항은 [`@modelcontextprotocol/sdk`](https://www.npmjs.com/package/@modelcontextprotocol/sdk) 패키지와 Node.js 호환 런타임입니다. [Bun](https://bun.sh), [Node](https://nodejs.org), [Deno](https://deno.com) 모두 작동합니다. 연구 미리보기의 사전 구축된 플러그인은 Bun을 사용하지만 채널이 반드시 그럴 필요는 없습니다.
 
@@ -50,7 +54,9 @@
 
 연구 미리보기 중에 사용자 정의 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없습니다. `--dangerously-load-development-channels`를 사용하여 로컬에서 테스트합니다. 자세한 내용은 [연구 미리보기 중 테스트](#test-during-the-research-preview)를 참조하세요.
 
-## 예: 웹훅 수신기 구축
+<h2 id="example-build-a-webhook-receiver">
+  예: 웹훅 수신기 구축
+</h2>
 
 이 연습은 HTTP 요청을 수신하고 Claude Code 세션으로 전달하는 단일 파일 서버를 구축합니다. 마지막에는 CI 파이프라인, 모니터링 알림 또는 `curl` 명령과 같이 HTTP POST를 보낼 수 있는 모든 것이 Claude로 이벤트를 푸시할 수 있습니다.
 
@@ -138,7 +144,7 @@
 
     Claude Code가 시작되면 MCP 구성을 읽고 `webhook.ts`를 서브프로세스로 생성하며 구성한 포트(이 예제에서는 8788)에서 HTTP 리스너가 자동으로 시작됩니다. 서버를 직접 실행할 필요가 없습니다.
 
-    "조직 정책에 의해 차단됨"이 표시되면 팀 또는 엔터프라이즈 관리자가 먼저 [채널을 활성화](/ko/channels#enterprise-controls)해야 합니다.
+    "조직 정책에 의해 차단됨"이 표시되면 조직 관리자가 먼저 [채널을 활성화](/ko/channels#enterprise-controls)해야 합니다.
 
     별도의 터미널에서 HTTP POST를 메시지와 함께 서버로 보내 웹훅을 시뮬레이션합니다. 이 예제는 CI 실패 알림을 포트 8788로 보냅니다 (또는 구성한 포트):
 
@@ -163,7 +169,9 @@
 
 [fakechat 서버](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)는 웹 UI, 파일 첨부 및 양방향 채팅을 위한 회신 도구로 이 패턴을 확장합니다.
 
-## 연구 미리보기 중 테스트
+<h2 id="test-during-the-research-preview">
+  연구 미리보기 중 테스트
+</h2>
 
 연구 미리보기 중에 모든 채널은 등록하기 위해 [승인된 허용 목록](/ko/channels#research-preview)에 있어야 합니다. 개발 플래그는 확인 프롬프트 후 특정 항목에 대한 허용 목록을 우회합니다. 이 예제는 두 항목 유형을 모두 보여줍니다:
 
@@ -181,7 +189,9 @@ claude --dangerously-load-development-channels server:webhook
   이 플래그는 허용 목록만 건너뜁니다. `channelsEnabled` 조직 정책은 여전히 적용됩니다. 신뢰할 수 없는 소스의 채널을 실행하는 데 사용하지 마세요.
 </Note>
 
-## 서버 옵션
+<h2 id="server-options">
+  서버 옵션
+</h2>
 
 채널은 [`Server`](https://modelcontextprotocol.io/docs/concepts/servers) 생성자에서 이러한 옵션을 설정합니다. `instructions` 및 `capabilities.tools` 필드는 [표준 MCP](https://modelcontextprotocol.io/docs/concepts/servers)입니다. `capabilities.experimental['claude/channel']` 및 `capabilities.experimental['claude/channel/permission']`은 채널 특정 추가 사항입니다:
 
@@ -212,7 +222,9 @@ const mcp = new Server(
 
 이벤트를 푸시하려면 메서드 `notifications/claude/channel`으로 `mcp.notification()`을 호출합니다. 매개변수는 다음 섹션에 있습니다.
 
-## 알림 형식
+<h2 id="notification-format">
+  알림 형식
+</h2>
 
 서버는 두 개의 매개변수로 `notifications/claude/channel`을 내보냅니다:
 
@@ -241,7 +253,15 @@ build failed on main: https://ci.example.com/run/1234
 </channel>
 ```
 
-## 회신 도구 노출
+알림은 승인되지 않습니다. `mcp.notification()`의 `await`는 메시지가 전송으로 기록될 때 해결되며, Claude가 처리했을 때가 아닙니다. 세션이 채널로 서버를 로드하지 않았거나 조직 정책이 이를 차단한 경우 이벤트는 서버로 반환된 오류 없이 자동으로 삭제됩니다.
+
+전달 확인이 필요한 경우 서버에서 이벤트 상태를 추적하고 Claude가 상태를 다시 보고하기 위해 호출할 수 있는 [회신 도구](#expose-a-reply-tool)를 노출합니다.
+
+이벤트는 세션으로 큐에 들어가고 순서대로 처리됩니다. Claude가 바쁜 동안 여러 알림이 도착하면 다음 턴에 함께 전달되고 Claude는 이들을 그룹으로 처리합니다. 독립적인 이벤트 스트림을 동시에 처리하려면 별도의 세션을 실행합니다.
+
+<h2 id="expose-a-reply-tool">
+  회신 도구 노출
+</h2>
 
 채널이 양방향인 경우(알림 포워더가 아닌 채팅 브리지), Claude가 메시지를 다시 보낼 수 있도록 표준 [MCP 도구](https://modelcontextprotocol.io/docs/concepts/tools)를 노출합니다. 도구 등록에 대해 채널 특정 사항은 없습니다. 회신 도구에는 세 가지 구성 요소가 있습니다:
 
@@ -403,7 +423,9 @@ Bun.serve({
 
 [fakechat 서버](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)는 파일 첨부 및 메시지 편집이 있는 더 완전한 예제를 보여줍니다.
 
-## 인바운드 메시지 게이팅
+<h2 id="gate-inbound-messages">
+  인바운드 메시지 게이팅
+</h2>
 
 게이트되지 않은 채널은 프롬프트 주입 벡터입니다. 엔드포인트에 도달할 수 있는 모든 사람이 Claude 앞에 텍스트를 넣을 수 있습니다. 채팅 플랫폼 또는 공개 엔드포인트를 수신하는 채널은 무언가를 내보내기 전에 실제 발신자 확인이 필요합니다.
 
@@ -423,7 +445,9 @@ await mcp.notification({ ... })
 
 [Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) 및 [Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord) 채널은 동일한 방식으로 발신자 허용 목록에 게이트합니다. 페어링으로 목록을 부트스트랩합니다: 사용자가 봇에 DM을 보내면 봇이 페어링 코드로 회신하고 사용자가 Claude Code 세션에서 승인하며 플랫폼 ID가 추가됩니다. 전체 페어링 흐름은 구현 중 하나를 참조하세요. [iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) 채널은 다른 접근 방식을 취합니다: 시작 시 메시지 데이터베이스에서 사용자의 자신의 주소를 감지하고 자동으로 통과시키며 다른 발신자는 핸들로 추가됩니다.
 
-## 권한 프롬프트 릴레이
+<h2 id="relay-permission-prompts">
+  권한 프롬프트 릴레이
+</h2>
 
 <Note>
   권한 릴레이는 Claude Code v2.1.81 이상이 필요합니다. 이전 버전은 `claude/channel/permission` 기능을 무시합니다.
@@ -433,7 +457,9 @@ Claude가 승인이 필요한 도구를 호출할 때 로컬 터미널 대화가
 
 릴레이는 `Bash`, `Write` 및 `Edit`과 같은 도구 사용 승인을 다룹니다. 프로젝트 신뢰 및 MCP 서버 동의 대화는 릴레이되지 않습니다. 이들은 로컬 터미널에만 나타납니다.
 
-### 릴레이 작동 방식
+<h3 id="how-relay-works">
+  릴레이 작동 방식
+</h3>
 
 권한 프롬프트가 열리면 릴레이 루프에는 네 가지 단계가 있습니다:
 
@@ -446,7 +472,9 @@ Claude가 승인이 필요한 도구를 호출할 때 로컬 터미널 대화가
 
 <img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/ko/images/channel-permission-relay.svg" alt="시퀀스 다이어그램: Claude Code가 permission_request 알림을 채널 서버로 보내고, 서버가 프롬프트를 채팅 앱으로 포맷하고 보내며, 인간이 판정으로 회신하고, 서버가 해당 회신을 Claude Code로 다시 권한 알림으로 구문 분석합니다" />
 
-### 권한 요청 필드
+<h3 id="permission-request-fields">
+  권한 요청 필드
+</h3>
 
 Claude Code의 아웃바운드 알림은 `notifications/claude/channel/permission_request`입니다. [채널 알림](#notification-format)과 같이 전송은 표준 MCP이지만 메서드 및 스키마는 Claude Code 확장입니다. `params` 객체에는 서버가 아웃바운드 프롬프트로 포맷하는 네 개의 문자열 필드가 있습니다:
 
@@ -459,7 +487,9 @@ Claude Code의 아웃바운드 알림은 `notifications/claude/channel/permissio
 
 서버가 다시 보내는 판정은 `notifications/claude/channel/permission`이며 두 필드가 있습니다: 위의 ID를 에코하는 `request_id` 및 `'allow'` 또는 `'deny'`로 설정된 `behavior`. Allow는 도구 호출을 진행하도록 합니다. Deny는 이를 거부하며 로컬 대화에서 아니오로 답변하는 것과 동일합니다. 어느 판정도 향후 호출에 영향을 주지 않습니다.
 
-### 채팅 브리지에 릴레이 추가
+<h3 id="add-relay-to-a-chat-bridge">
+  채팅 브리지에 릴레이 추가
+</h3>
 
 양방향 채널에 권한 릴레이를 추가하려면 세 가지 구성 요소가 필요합니다:
 
@@ -559,7 +589,9 @@ Claude Code는 로컬 터미널 대화도 열어 두므로 어느 쪽이든 답�
 * **다른 형식**: 인바운드 핸들러의 정규식이 일치하지 않으므로 `approve it` 또는 ID 없는 `yes`와 같은 텍스트는 Claude로 일반 메시지로 넘어갑니다.
 * **올바른 형식, 잘못된 ID**: 서버가 판정을 내보내지만 Claude Code는 해당 ID를 가진 열린 요청을 찾지 못하고 자동으로 삭제합니다.
 
-### 전체 예제
+<h3 id="full-example">
+  전체 예제
+</h3>
 
 아래의 조립된 `webhook.ts`는 이 페이지의 세 가지 확장을 모두 결합합니다: 회신 도구, 발신자 게이팅 및 권한 릴레이. 여기서 시작하는 경우 초기 연습에서 [프로젝트 설정 및 `.mcp.json` 항목](#example-build-a-webhook-receiver)도 필요합니다.
 
@@ -735,13 +767,17 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 * **아웃바운드 경로**: `reply` 도구 핸들러는 Claude가 대화형 응답을 위해 호출하는 것입니다. `PermissionRequestSchema` 알림 핸들러는 권한 대화가 열릴 때 Claude Code가 호출하는 것입니다. 둘 다 `send()`를 호출하여 `/events`를 통해 브로드캐스트하지만 시스템의 다른 부분에 의해 트리거됩니다.
 * **HTTP 핸들러**: `GET /events`는 SSE 스트림을 열어 두므로 curl이 아웃바운드를 실시간으로 볼 수 있습니다. `POST`는 인바운드이며 `X-Sender` 헤더에 게이트됩니다. `yes <id>` 또는 `no <id>` 본문은 Claude Code로 판정 알림으로 이동하며 Claude에 도달하지 않습니다. 다른 모든 것은 채널 이벤트로 Claude로 전달됩니다.
 
-## 플러그인으로 패키징
+<h2 id="package-as-a-plugin">
+  플러그인으로 패키징
+</h2>
 
 채널을 설치 가능하고 공유 가능하게 하려면 [플러그인](/ko/plugins)으로 래핑하고 [마켓플레이스](/ko/plugin-marketplaces)에 게시합니다. 사용자는 `/plugin install`로 설치한 다음 `--channels plugin:<name>@<marketplace>`로 세션별로 활성화합니다.
 
-자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 추가되려면 [공식 마켓플레이스에 제출](/ko/plugins#submit-your-plugin-to-the-official-marketplace)합니다. 채널 플러그인은 승인되기 전에 보안 검토를 거칩니다. 팀 및 엔터프라이즈 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
+자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 공식 마켓플레이스에 추가되려면 [공식 마켓플레이스에 제출](/ko/plugins#submit-your-plugin-to-the-official-marketplace)합니다. 채널 플러그인은 승인되기 전에 보안 검토를 거칩니다. 팀 및 엔터프라이즈 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [채널](/ko/channels)을 설치하고 Telegram, Discord, iMessage 또는 fakechat 데모를 사용하며 팀 또는 엔터프라이즈 조직에 대해 채널을 활성화합니다
 * [작동하는 채널 구현](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)은 페어링 흐름, 회신 도구 및 파일 첨부가 있는 완전한 서버 코드입니다

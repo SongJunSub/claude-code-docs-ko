@@ -8,23 +8,29 @@
 
 Claude Code는 조직이 개발자 사용 패턴을 이해하고, 기여도 지표를 추적하며, Claude Code가 엔지니어링 속도에 미치는 영향을 측정할 수 있도록 분석 대시보드를 제공합니다. 귀사의 플랜에 맞는 대시보드에 접근하세요:
 
-| 플랜                            | 대시보드 URL                                                                   | 포함 사항                                         | 자세히 알아보기                                            |
-| ----------------------------- | -------------------------------------------------------------------------- | --------------------------------------------- | --------------------------------------------------- |
-| Claude for Teams / Enterprise | [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) | 사용량 지표, GitHub 통합을 포함한 기여도 지표, 리더보드, 데이터 내보내기 | [세부 정보](#access-analytics-for-teams-and-enterprise) |
-| API (Claude Console)          | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 사용량 지표, 지출 추적, 팀 인사이트                         | [세부 정보](#access-analytics-for-api-customers)        |
+| 플랜                            | 대시보드 URL                                                                   | 포함 사항                                         | 자세히 알아보기                                           |
+| ----------------------------- | -------------------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------- |
+| Claude for Teams / Enterprise | [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) | 사용량 지표, GitHub 통합을 포함한 기여도 지표, 리더보드, 데이터 내보내기 | [세부 정보](#access-analytics-for-team-and-enterprise) |
+| API (Claude Console)          | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 사용량 지표, 지출 추적, 팀 인사이트                         | [세부 정보](#access-analytics-for-api-customers)       |
 
-## Teams 및 Enterprise를 위한 분석 접근
+<h2 id="access-analytics-for-team-and-enterprise">
+  Team 및 Enterprise를 위한 분석 접근
+</h2>
 
 [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code)로 이동합니다. 관리자 및 소유자가 대시보드를 볼 수 있습니다.
 
-Teams 및 Enterprise 대시보드에는 다음이 포함됩니다:
+Team 및 Enterprise 대시보드에는 다음이 포함됩니다:
 
 * **사용량 지표**: 수락된 코드 라인, 제안 수락률, 일일 활성 사용자 및 세션
 * **기여도 지표**: Claude Code 지원으로 배포된 PR 및 코드 라인([GitHub 통합](#enable-contribution-metrics) 포함)
 * **리더보드**: Claude Code 사용량으로 순위가 매겨진 상위 기여자
 * **데이터 내보내기**: 사용자 정의 보고를 위해 기여도 데이터를 CSV로 다운로드
 
-### 기여도 지표 활성화
+사용자별 토큰 수 및 비용 추정치는 [OpenTelemetry 내보내기](/ko/monitoring-usage)를 구성하세요.
+
+<h3 id="enable-contribution-metrics">
+  기여도 지표 활성화
+</h3>
 
 <Note>
   기여도 지표는 공개 베타 상태이며 Claude for Teams 및 Claude for Enterprise 플랜에서 사용할 수 있습니다. 이러한 지표는 claude.ai 조직 내의 사용자만 포함합니다. Claude Console API 또는 타사 통합을 통한 사용량은 포함되지 않습니다.
@@ -35,7 +41,7 @@ Teams 및 Enterprise 대시보드에는 다음이 포함됩니다:
 분석 설정을 구성하려면 소유자 역할이 필요합니다. GitHub 관리자가 GitHub 앱을 설치해야 합니다.
 
 <Warning>
-  [Zero Data Retention](/ko/zero-data-retention)이 활성화된 조직에서는 기여도 지표를 사용할 수 없습니다. 분석 대시보드는 사용량 지표만 표시합니다.
+  기여도 지표는 [Zero Data Retention](/ko/zero-data-retention)이 활성화된 조직에서는 사용할 수 없습니다. 분석 대시보드는 사용량 지표만 표시합니다.
 </Warning>
 
 <Steps>
@@ -63,7 +69,9 @@ Teams 및 Enterprise 대시보드에는 다음이 포함됩니다:
 
 기여도 지표는 GitHub Cloud 및 GitHub Enterprise Server를 지원합니다.
 
-### 요약 지표 검토
+<h3 id="review-summary-metrics">
+  요약 지표 검토
+</h3>
 
 <Note>
   이러한 지표는 의도적으로 보수적이며 Claude Code의 실제 영향을 과소평가합니다. Claude Code의 관여도가 높은 라인 및 PR만 계산됩니다.
@@ -77,18 +85,24 @@ Teams 및 Enterprise 대시보드에는 다음이 포함됩니다:
 * **제안 수락률**: 사용자가 Claude Code의 코드 편집 제안을 수락하는 횟수의 백분율(Edit, Write, NotebookEdit 도구 사용 포함)
 * **수락된 코드 라인**: 사용자가 세션에서 수락한 Claude Code로 작성된 총 코드 라인 수입니다. 거부된 제안은 제외되며 후속 삭제는 추적하지 않습니다.
 
-### 차트 탐색
+<h3 id="explore-the-charts">
+  차트 탐색
+</h3>
 
 대시보드에는 시간 경과에 따른 추세를 시각화하는 여러 차트가 포함되어 있습니다.
 
-#### 채택 추적
+<h4 id="track-adoption">
+  채택 추적
+</h4>
 
 채택 차트는 일일 사용 추세를 보여줍니다:
 
 * **사용자**: 일일 활성 사용자
 * **세션**: 일일 활성 Claude Code 세션 수
 
-#### 사용자당 PR 측정
+<h4 id="measure-prs-per-user">
+  사용자당 PR 측정
+</h4>
 
 이 차트는 시간 경과에 따른 개별 개발자 활동을 표시합니다:
 
@@ -97,7 +111,9 @@ Teams 및 Enterprise 대시보드에는 다음이 포함됩니다:
 
 이를 사용하여 Claude Code 채택이 증가함에 따라 개별 생산성이 어떻게 변하는지 이해할 수 있습니다.
 
-#### 풀 요청 분석 보기
+<h4 id="view-pull-requests-breakdown">
+  풀 요청 분석 보기
+</h4>
 
 풀 요청 차트는 병합된 PR의 일일 분석을 보여줍니다:
 
@@ -106,7 +122,9 @@ Teams 및 Enterprise 대시보드에는 다음이 포함됩니다:
 
 **코드 라인** 보기로 전환하여 PR 개수가 아닌 코드 라인으로 동일한 분석을 확인합니다.
 
-#### 상위 기여자 찾기
+<h4 id="find-top-contributors">
+  상위 기여자 찾기
+</h4>
 
 리더보드는 기여도 볼륨으로 순위가 매겨진 상위 10명의 사용자를 보여줍니다. 다음 사이를 전환합니다:
 
@@ -115,15 +133,21 @@ Teams 및 Enterprise 대시보드에는 다음이 포함됩니다:
 
 **모든 사용자 내보내기**를 클릭하여 모든 사용자의 완전한 기여도 데이터를 CSV 파일로 다운로드합니다. 내보내기에는 표시된 상위 10명뿐만 아니라 모든 사용자가 포함됩니다.
 
-### PR 속성
+<h3 id="pr-attribution">
+  PR 속성
+</h3>
 
 기여도 지표가 활성화되면 Claude Code는 병합된 풀 요청을 분석하여 Claude Code 지원으로 작성된 코드를 결정합니다. 이는 Claude Code 세션 활동을 각 PR의 코드와 일치시켜 수행됩니다.
 
-#### 태깅 기준
+<h4 id="tagging-criteria">
+  태깅 기준
+</h4>
 
 PR은 Claude Code 세션 중에 작성된 코드 라인이 하나 이상 포함되어 있으면 "Claude Code 포함"으로 태깅됩니다. 시스템은 보수적인 일치를 사용합니다: Claude Code의 관여도가 높은 코드만 지원되는 것으로 계산됩니다.
 
-#### 속성 프로세스
+<h4 id="attribution-process">
+  속성 프로세스
+</h4>
 
 풀 요청이 병합될 때:
 
@@ -136,11 +160,15 @@ PR은 Claude Code 세션 중에 작성된 코드 라인이 하나 이상 포함�
 
 Claude Code 지원 라인을 포함하는 병합된 풀 요청은 GitHub에서 `claude-code-assisted`로 레이블이 지정됩니다.
 
-#### 시간 창
+<h4 id="time-window">
+  시간 창
+</h4>
 
 PR 병합 날짜 21일 전부터 2일 후까지의 세션이 속성 일치를 위해 고려됩니다.
 
-#### 제외된 파일
+<h4 id="excluded-files">
+  제외된 파일
+</h4>
 
 특정 파일은 자동 생성되기 때문에 분석에서 자동으로 제외됩니다:
 
@@ -150,7 +178,9 @@ PR 병합 날짜 21일 전부터 2일 후까지의 세션이 속성 일치를 �
 * 테스트 픽스처: 스냅샷, 카세트, 모의 데이터
 * 1,000자 이상의 라인(축소되거나 생성된 가능성이 높음)
 
-#### 속성 참고 사항
+<h4 id="attribution-notes">
+  속성 참고 사항
+</h4>
 
 속성 데이터를 해석할 때 다음 추가 세부 정보를 염두에 두세요:
 
@@ -158,11 +188,15 @@ PR 병합 날짜 21일 전부터 2일 후까지의 세션이 속성 일치를 �
 * 21일 창 외의 세션은 고려되지 않습니다
 * 알고리즘은 속성을 수행할 때 PR 소스 또는 대상 분기를 고려하지 않습니다
 
-### 분석에서 최대한 활용하기
+<h3 id="get-the-most-from-analytics">
+  분석에서 최대한 활용하기
+</h3>
 
 기여도 지표를 사용하여 ROI를 입증하고, 채택 패턴을 식별하며, 다른 사람이 시작하도록 도울 수 있는 팀 구성원을 찾습니다.
 
-#### 채택 모니터링
+<h4 id="monitor-adoption">
+  채택 모니터링
+</h4>
 
 채택 차트 및 사용자 수를 추적하여 다음을 식별합니다:
 
@@ -170,7 +204,9 @@ PR 병합 날짜 21일 전부터 2일 후까지의 세션이 속성 일치를 �
 * 조직 전체의 전반적인 채택 추세
 * 마찰이나 문제를 나타낼 수 있는 사용량 감소
 
-#### ROI 측정
+<h4 id="measure-roi">
+  ROI 측정
+</h4>
 
 기여도 지표는 자신의 코드베이스의 데이터로 "이 도구가 투자할 가치가 있는가?"라는 질문에 답하는 데 도움이 됩니다:
 
@@ -178,7 +214,9 @@ PR 병합 날짜 21일 전부터 2일 후까지의 세션이 속성 일치를 �
 * Claude Code 포함 및 미포함으로 배포된 PR 및 코드 라인을 비교합니다
 * [DORA 지표](https://dora.dev/), 스프린트 속도 또는 기타 엔지니어링 KPI와 함께 사용하여 Claude Code 채택으로 인한 변화를 이해합니다
 
-#### 파워 사용자 식별
+<h4 id="identify-power-users">
+  파워 사용자 식별
+</h4>
 
 리더보드는 높은 Claude Code 채택을 가진 팀 구성원을 찾는 데 도움이 되며, 이들은 다음을 수행할 수 있습니다:
 
@@ -186,11 +224,15 @@ PR 병합 날짜 21일 전부터 2일 후까지의 세션이 속성 일치를 �
 * 잘 작동하는 것에 대한 피드백 제공
 * 새 사용자 온보딩 지원
 
-#### 프로그래매틱 방식으로 데이터 접근
+<h4 id="access-data-programmatically">
+  프로그래매틱 방식으로 데이터 접근
+</h4>
 
 GitHub를 통해 이 데이터를 쿼리하려면 `claude-code-assisted` 레이블이 지정된 PR을 검색합니다.
 
-## API 고객을 위한 분석 접근
+<h2 id="access-analytics-for-api-customers">
+  API 고객을 위한 분석 접근
+</h2>
 
 Claude Console을 사용하는 API 고객은 [platform.claude.com/claude-code](https://platform.claude.com/claude-code)에서 분석에 접근할 수 있습니다. 대시보드에 접근하려면 UsageView 권한이 필요하며, 이는 개발자, 청구, 관리자, 소유자 및 기본 소유자 역할에 부여됩니다.
 
@@ -205,7 +247,9 @@ Console 대시보드는 다음을 표시합니다:
 * **활동**: 차트에 표시된 일일 활성 사용자 및 세션.
 * **지출**: 사용자 수와 함께 일일 API 비용(달러).
 
-### 팀 인사이트 보기
+<h3 id="view-team-insights">
+  팀 인사이트 보기
+</h3>
 
 팀 인사이트 테이블은 사용자별 지표를 표시합니다:
 
@@ -217,7 +261,9 @@ Console 대시보드는 다음을 표시합니다:
   Console 대시보드의 지출 수치는 분석 목적의 추정치입니다. 실제 비용은 청구 페이지를 참조하세요.
 </Note>
 
-## 관련 리소스
+<h2 id="related-resources">
+  관련 리소스
+</h2>
 
 * [OpenTelemetry를 사용한 모니터링](/ko/monitoring-usage): 실시간 지표 및 이벤트를 관찰성 스택으로 내보내기
 * [비용 효과적으로 관리하기](/ko/costs): 지출 한도 설정 및 토큰 사용량 최적화

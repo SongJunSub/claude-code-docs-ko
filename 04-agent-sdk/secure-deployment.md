@@ -2,113 +2,131 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Securely deploying AI agents
+# AI 에이전트 안전하게 배포하기
 
-> A guide to securing Claude Code and Agent SDK deployments with isolation, credential management, and network controls
+> 격리, 자격증명 관리, 네트워크 제어를 통해 Claude Code 및 Agent SDK 배포를 보호하는 가이드
 
-Claude Code and the Agent SDK are powerful tools that can execute code, access files, and interact with external services on your behalf. Like any tool with these capabilities, deploying them thoughtfully ensures you get the benefits while maintaining appropriate controls.
+Claude Code와 Agent SDK는 코드를 실행하고, 파일에 접근하며, 외부 서비스와 상호작용할 수 있는 강력한 도구입니다. 이러한 기능을 가진 모든 도구와 마찬가지로, 신중하게 배포하면 이점을 얻으면서도 적절한 제어를 유지할 수 있습니다.
 
-Unlike traditional software that follows predetermined code paths, these tools generate their actions dynamically based on context and goals. This flexibility is what makes them useful, but it also means their behavior can be influenced by the content they process: files, webpages, or user input. This is sometimes called prompt injection. For example, if a repository's README contains unusual instructions, Claude Code might incorporate those into its actions in ways the operator didn't anticipate. This guide covers practical ways to reduce this risk.
+미리 정해진 코드 경로를 따르는 기존 소프트웨어와 달리, 이러한 도구는 컨텍스트와 목표에 따라 동적으로 작업을 생성합니다. 이러한 유연성이 유용한 이유이지만, 처리하는 콘텐츠(파일, 웹페이지 또는 사용자 입력)에 의해 동작이 영향을 받을 수 있다는 의미이기도 합니다. 이를 때때로 프롬프트 주입이라고 부릅니다. 예를 들어, 저장소의 README에 비정상적인 지시사항이 포함되어 있으면, Claude Code가 운영자가 예상하지 못한 방식으로 이를 작업에 포함시킬 수 있습니다. 이 가이드는 이러한 위험을 줄이는 실질적인 방법을 다룹니다.
 
-The good news is that securing an agent deployment doesn't require exotic infrastructure. The same principles that apply to running any semi-trusted code apply here: isolation, least privilege, and defense in depth. Claude Code includes several security features that help with common concerns, and this guide walks through these along with additional hardening options for those who need them.
+좋은 소식은 에이전트 배포를 보호하기 위해 특이한 인프라가 필요하지 않다는 것입니다. 반신뢰 코드를 실행할 때 적용되는 동일한 원칙이 여기에도 적용됩니다: 격리, 최소 권한, 심층 방어입니다. Claude Code에는 일반적인 문제를 해결하는 데 도움이 되는 여러 보안 기능이 포함되어 있으며, 이 가이드는 이러한 기능과 추가 강화 옵션을 다룹니다.
 
-Not every deployment needs maximum security. A developer running Claude Code on their laptop has different requirements than a company processing customer data in a multi-tenant environment. This guide presents options ranging from Claude Code's built-in security features to hardened production architectures, so you can choose what fits your situation.
+모든 배포가 최대 보안이 필요한 것은 아닙니다. 개발자가 노트북에서 Claude Code를 실행하는 경우와 회사가 다중 테넌트 환경에서 고객 데이터를 처리하는 경우는 요구사항이 다릅니다. 이 가이드는 Claude Code의 기본 제공 보안 기능부터 강화된 프로덕션 아키텍처까지 다양한 옵션을 제시하므로, 상황에 맞는 것을 선택할 수 있습니다.
 
-## Threat model
+<h2 id="threat-model">
+  위협 모델
+</h2>
 
-Agents can take unintended actions due to prompt injection (instructions embedded in content they process) or model error. Claude models are designed to resist this; see the [model overview](https://platform.claude.com/docs/en/about-claude/models/overview) and the system card for the model you deploy for evaluation details.
+에이전트는 프롬프트 주입(처리하는 콘텐츠에 포함된 지시사항) 또는 모델 오류로 인해 의도하지 않은 작업을 수행할 수 있습니다. Claude 모델은 이에 저항하도록 설계되었습니다. 자세한 평가는 [모델 개요](https://platform.claude.com/docs/en/about-claude/models/overview) 및 배포하는 모델의 시스템 카드를 참조하십시오.
 
-Defense in depth is still good practice though. For example, if an agent processes a malicious file that instructs it to send customer data to an external server, network controls can block that request entirely.
+그럼에도 불구하고 심층 방어는 좋은 관행입니다. 예를 들어, 에이전트가 고객 데이터를 외부 서버로 보내도록 지시하는 악성 파일을 처리하는 경우, 네트워크 제어가 해당 요청을 완전히 차단할 수 있습니다.
 
-## Built-in security features
+<h2 id="built-in-security-features">
+  기본 제공 보안 기능
+</h2>
 
-Claude Code includes several security features that address common concerns. See the [security documentation](/en/security) for full details.
+Claude Code에는 일반적인 문제를 해결하는 여러 보안 기능이 포함되어 있습니다. 전체 세부사항은 [보안 설명서](/ko/security)를 참조하십시오.
 
-* **Permissions system**: Every tool and bash command can be configured to allow, block, or prompt the user for approval. Use glob patterns to create rules like "allow all npm commands" or "block any command with sudo". Organizations can set policies that apply across all users. See [permissions](/en/permissions).
-* **Command parsing for permissions**: Before executing bash commands, Claude Code parses them into an AST and matches the result against your permission rules. Commands that cannot be parsed cleanly, or that do not match an allow rule, require explicit approval. A small set of constructs such as `eval` always require approval regardless of allow rules. This is a permission gate, not a sandbox; it does not infer whether a command is dangerous from its target path or effects.
-* **Web search summarization**: Search results are summarized rather than passing raw content directly into the context, reducing the risk of prompt injection from malicious web content.
-* **Sandbox mode**: Bash commands can run in a sandboxed environment that restricts filesystem and network access. See the [sandboxing documentation](/en/sandboxing) for details.
+* **권한 시스템**: 모든 도구 및 bash 명령을 허용, 차단 또는 사용자 승인 요청으로 구성할 수 있습니다. glob 패턴을 사용하여 "모든 npm 명령 허용" 또는 "sudo가 있는 모든 명령 차단"과 같은 규칙을 만듭니다. 조직은 모든 사용자에게 적용되는 정책을 설정할 수 있습니다. [권한](/ko/permissions)을 참조하십시오.
+* **권한을 위한 명령 파싱**: bash 명령을 실행하기 전에 Claude Code는 이를 AST로 파싱하고 결과를 권한 규칙과 비교합니다. 깔끔하게 파싱할 수 없거나 허용 규칙과 일치하지 않는 명령은 명시적 승인이 필요합니다. `eval`과 같은 작은 구성 집합은 허용 규칙에 관계없이 항상 승인이 필요합니다. 이는 권한 게이트이지 샌드박스가 아닙니다. 대상 경로나 효과에서 명령이 위험한지 여부를 추론하지 않습니다.
+* **웹 검색 요약**: 검색 결과는 원본 콘텐츠를 컨텍스트에 직접 전달하는 대신 요약되어 악성 웹 콘텐츠로부터의 프롬프트 주입 위험을 줄입니다.
+* **샌드박스 모드**: Bash 명령은 파일 시스템 및 네트워크 접근을 제한하는 샌드박스 환경에서 실행될 수 있습니다. 자세한 내용은 [샌드박싱 설명서](/ko/sandboxing)를 참조하십시오.
 
-## Security principles
+<h2 id="security-principles">
+  보안 원칙
+</h2>
 
-For deployments that require additional hardening beyond Claude Code's defaults, these principles guide the available options.
+Claude Code의 기본값을 넘어 추가 강화가 필요한 배포의 경우, 이러한 원칙이 사용 가능한 옵션을 안내합니다.
 
-### Security boundaries
+<h3 id="security-boundaries">
+  보안 경계
+</h3>
 
-A security boundary separates components with different trust levels. For high-security deployments, you can place sensitive resources (like credentials) outside the boundary containing the agent. If something goes wrong in the agent's environment, resources outside that boundary remain protected.
+보안 경계는 신뢰 수준이 다른 구성 요소를 분리합니다. 높은 보안 배포의 경우, 민감한 리소스(자격증명 등)를 에이전트를 포함하는 경계 외부에 배치할 수 있습니다. 에이전트의 환경에서 문제가 발생하면, 해당 경계 외부의 리소스는 보호된 상태로 유지됩니다.
 
-For example, rather than giving an agent direct access to an API key, you could run a proxy outside the agent's environment that injects the key into requests. The agent can make API calls, but it never sees the credential itself. This pattern is useful for multi-tenant deployments or when processing untrusted content.
+예를 들어, 에이전트에 API 키에 대한 직접 접근을 제공하는 대신, 에이전트의 환경 외부에서 실행되는 프록시를 실행하여 요청에 키를 주입할 수 있습니다. 에이전트는 API 호출을 할 수 있지만 자격증명 자체는 볼 수 없습니다. 이 패턴은 다중 테넌트 배포 또는 신뢰할 수 없는 콘텐츠를 처리할 때 유용합니다.
 
-### Least privilege
+<h3 id="least-privilege">
+  최소 권한
+</h3>
 
-When needed, you can restrict the agent to only the capabilities required for its specific task:
+필요한 경우, 에이전트를 특정 작업에 필요한 기능으로만 제한할 수 있습니다:
 
-| Resource            | Restriction options                             |
-| ------------------- | ----------------------------------------------- |
-| Filesystem          | Mount only needed directories, prefer read-only |
-| Network             | Restrict to specific endpoints via proxy        |
-| Credentials         | Inject via proxy rather than exposing directly  |
-| System capabilities | Drop Linux capabilities in containers           |
+| 리소스    | 제한 옵션                   |
+| ------ | ----------------------- |
+| 파일 시스템 | 필요한 디렉토리만 마운트, 읽기 전용 선호 |
+| 네트워크   | 프록시를 통해 특정 엔드포인트로 제한    |
+| 자격증명   | 직접 노출하는 대신 프록시를 통해 주입   |
+| 시스템 기능 | 컨테이너에서 Linux 기능 제거      |
 
-### Defense in depth
+<h3 id="defense-in-depth">
+  심층 방어
+</h3>
 
-For high-security environments, layering multiple controls provides additional protection. Options include:
+높은 보안 환경의 경우, 여러 제어를 계층화하면 추가 보호를 제공합니다. 옵션은 다음을 포함합니다:
 
-* Container isolation
-* Network restrictions
-* Filesystem controls
-* Request validation at a proxy
+* 컨테이너 격리
+* 네트워크 제한
+* 파일 시스템 제어
+* 프록시에서의 요청 검증
 
-The right combination depends on your threat model and operational requirements.
+올바른 조합은 위협 모델과 운영 요구사항에 따라 다릅니다.
 
-## Isolation technologies
+<h2 id="isolation-technologies">
+  격리 기술
+</h2>
 
-Different isolation technologies offer different tradeoffs between security strength, performance, and operational complexity.
+다양한 격리 기술은 보안 강도, 성능, 운영 복잡성 간의 다양한 트레이드오프를 제공합니다.
 
 <Info>
-  In all of these configurations, Claude Code (or your Agent SDK application) runs inside the isolation boundary (the sandbox, container, or VM). The security controls described below restrict what the agent can access from within that boundary.
+  이러한 모든 구성에서 Claude Code(또는 Agent SDK 애플리케이션)는 격리 경계(샌드박스, 컨테이너 또는 VM) 내부에서 실행됩니다. 아래에 설명된 보안 제어는 에이전트가 해당 경계 내에서 접근할 수 있는 것을 제한합니다.
 </Info>
 
-| Technology              | Isolation strength             | Performance overhead | Complexity  |
-| ----------------------- | ------------------------------ | -------------------- | ----------- |
-| Sandbox runtime         | Good (secure defaults)         | Very low             | Low         |
-| Containers (Docker)     | Setup dependent                | Low                  | Medium      |
-| gVisor                  | Excellent (with correct setup) | Medium/High          | Medium      |
-| VMs (Firecracker, QEMU) | Excellent (with correct setup) | High                 | Medium/High |
+| 기술                    | 격리 강도         | 성능 오버헤드 | 복잡성   |
+| --------------------- | ------------- | ------- | ----- |
+| 샌드박스 런타임              | 좋음(안전한 기본값)   | 매우 낮음   | 낮음    |
+| 컨테이너(Docker)          | 설정 종속         | 낮음      | 중간    |
+| gVisor                | 우수(올바른 설정 포함) | 중간/높음   | 중간    |
+| VM(Firecracker, QEMU) | 우수(올바른 설정 포함) | 높음      | 중간/높음 |
 
-### Sandbox runtime
+<h3 id="sandbox-runtime">
+  샌드박스 런타임
+</h3>
 
-For lightweight isolation without containers, [sandbox-runtime](https://github.com/anthropic-experimental/sandbox-runtime) enforces filesystem and network restrictions at the OS level.
+컨테이너 없이 경량 격리를 위해 [sandbox-runtime](https://github.com/anthropic-experimental/sandbox-runtime)은 OS 수준에서 파일 시스템 및 네트워크 제한을 적용합니다.
 
-The main advantage is simplicity: no Docker configuration, container images, or networking setup required. The proxy and filesystem restrictions are built in. You provide a settings file specifying allowed domains and paths.
+주요 장점은 단순성입니다: Docker 구성, 컨테이너 이미지 또는 네트워킹 설정이 필요하지 않습니다. 프록시 및 파일 시스템 제한이 기본 제공됩니다. 허용된 도메인 및 경로를 지정하는 설정 파일을 제공합니다.
 
-**How it works:**
+**작동 방식:**
 
-* **Filesystem**: Uses OS primitives (`bubblewrap` on Linux, `sandbox-exec` on macOS) to restrict read/write access to configured paths
-* **Network**: Removes network namespace (Linux) or uses Seatbelt profiles (macOS) to route network traffic through a built-in proxy
-* **Configuration**: JSON-based allowlists for domains and filesystem paths
+* **파일 시스템**: OS 기본 요소(`bubblewrap` on Linux, `sandbox-exec` on macOS)를 사용하여 구성된 경로에 대한 읽기/쓰기 접근을 제한합니다
+* **네트워크**: 네트워크 네임스페이스(Linux)를 제거하거나 Seatbelt 프로필(macOS)을 사용하여 네트워크 트래픽을 기본 제공 프록시를 통해 라우팅합니다
+* **구성**: 도메인 및 파일 시스템 경로에 대한 JSON 기반 허용 목록
 
-**Setup:**
+**설정:**
 
 ```bash theme={null}
 npm install @anthropic-ai/sandbox-runtime
 ```
 
-Then create a configuration file specifying allowed paths and domains.
+그런 다음 허용된 경로 및 도메인을 지정하는 구성 파일을 만듭니다.
 
-**Security considerations:**
+**보안 고려사항:**
 
-1. **Same-host kernel**: Unlike VMs, sandboxed processes share the host kernel. A kernel vulnerability could theoretically enable escape. For some threat models this is acceptable, but if you need kernel-level isolation, use gVisor or a separate VM.
+1. **동일 호스트 커널**: VM과 달리 샌드박스 프로세스는 호스트 커널을 공유합니다. 커널 취약점은 이론적으로 탈출을 가능하게 할 수 있습니다. 일부 위협 모델의 경우 이는 허용되지만, 커널 수준 격리가 필요한 경우 gVisor 또는 별도의 VM을 사용하십시오.
 
-2. **No TLS inspection**: The proxy allowlists domains but doesn't inspect encrypted traffic. If the agent has permissive credentials for an allowed domain, ensure it isn't possible to use that domain to trigger other network requests or to exfiltrate data.
+2. **TLS 검사 없음**: 프록시는 클라이언트가 제공한 호스트명을 기반으로 도메인을 허용 목록에 추가하며 암호화된 트래픽을 종료하거나 검사하지 않습니다. 샌드박스 내부에서 실행되는 코드는 잠재적으로 [도메인 프론팅](https://en.wikipedia.org/wiki/Domain_fronting) 또는 유사한 기술을 사용하여 허용 목록 외부의 호스트에 도달할 수 있습니다. 위협 모델이 더 강력한 보장을 요구하는 경우, [TLS 종료 프록시](#traffic-forwarding)를 구성하십시오. 자세한 내용은 [샌드박싱 보안 제한사항](/ko/sandboxing#security-limitations)을 참조하십시오. 별도로, 에이전트가 허용된 도메인에 대한 허용 자격증명을 가지고 있는 경우, 해당 도메인을 사용하여 다른 네트워크 요청을 트리거하거나 데이터를 유출할 수 없도록 하십시오.
 
-For many single-developer and CI/CD use cases, sandbox-runtime raises the bar significantly with minimal setup. The sections below cover containers and VMs for deployments requiring stronger isolation.
+많은 단일 개발자 및 CI/CD 사용 사례의 경우, sandbox-runtime은 최소한의 설정으로 상당히 높은 수준을 제공합니다. 아래 섹션은 더 강력한 격리가 필요한 배포를 위해 컨테이너 및 VM을 다룹니다.
 
-### Containers
+<h3 id="containers">
+  컨테이너
+</h3>
 
-Containers provide isolation through Linux namespaces. Each container has its own view of the filesystem, process tree, and network stack, while sharing the host kernel.
+컨테이너는 Linux 네임스페이스를 통해 격리를 제공합니다. 각 컨테이너는 파일 시스템, 프로세스 트리 및 네트워크 스택의 자체 보기를 가지면서 호스트 커널을 공유합니다.
 
-A security-hardened container configuration might look like this:
+보안 강화 컨테이너 구성은 다음과 같을 수 있습니다:
 
 ```bash theme={null}
 docker run \
@@ -128,42 +146,44 @@ docker run \
   agent-image
 ```
 
-Here's what each option does:
+각 옵션이 수행하는 작업은 다음과 같습니다:
 
-| Option                             | Purpose                                                                                                                                                 |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--cap-drop ALL`                   | Removes Linux capabilities like `NET_ADMIN` and `SYS_ADMIN` that could enable privilege escalation                                                      |
-| `--security-opt no-new-privileges` | Prevents processes from gaining privileges through setuid binaries                                                                                      |
-| `--security-opt seccomp=...`       | Restricts available syscalls; Docker's default blocks \~44, custom profiles can block more                                                              |
-| `--read-only`                      | Makes the container's root filesystem immutable, preventing the agent from persisting changes                                                           |
-| `--tmpfs /tmp:...`                 | Provides a writable temporary directory that's cleared when the container stops                                                                         |
-| `--network none`                   | Removes all network interfaces; the agent communicates through the mounted Unix socket below                                                            |
-| `--memory 2g`                      | Limits memory usage to prevent resource exhaustion                                                                                                      |
-| `--pids-limit 100`                 | Limits process count to prevent fork bombs                                                                                                              |
-| `--user 1000:1000`                 | Runs as a non-root user                                                                                                                                 |
-| `-v ...:/workspace:ro`             | Mounts code read-only so the agent can analyze but not modify it. **Avoid mounting sensitive host directories like `~/.ssh`, `~/.aws`, or `~/.config`** |
-| `-v .../proxy.sock:...`            | Mounts a Unix socket connected to a proxy running outside the container (see below)                                                                     |
+| 옵션                                 | 목적                                                                                                               |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `--cap-drop ALL`                   | `NET_ADMIN` 및 `SYS_ADMIN`과 같은 권한 상승을 가능하게 할 수 있는 Linux 기능을 제거합니다                                                 |
+| `--security-opt no-new-privileges` | 프로세스가 setuid 바이너리를 통해 권한을 얻는 것을 방지합니다                                                                            |
+| `--security-opt seccomp=...`       | 사용 가능한 시스템 호출을 제한합니다. Docker의 기본값은 \~44개를 차단하며, 사용자 정의 프로필은 더 많이 차단할 수 있습니다                                      |
+| `--read-only`                      | 컨테이너의 루트 파일 시스템을 불변으로 만들어 에이전트가 변경사항을 유지하는 것을 방지합니다                                                              |
+| `--tmpfs /tmp:...`                 | 컨테이너가 중지될 때 지워지는 쓰기 가능한 임시 디렉토리를 제공합니다                                                                           |
+| `--network none`                   | 모든 네트워크 인터페이스를 제거합니다. 에이전트는 아래에 마운트된 Unix 소켓을 통해 통신합니다                                                           |
+| `--memory 2g`                      | 메모리 사용을 2GB로 제한하여 리소스 고갈을 방지합니다                                                                                  |
+| `--pids-limit 100`                 | 프로세스 수를 100으로 제한하여 포크 폭탄을 방지합니다                                                                                  |
+| `--user 1000:1000`                 | 루트가 아닌 사용자로 실행합니다                                                                                                |
+| `-v ...:/workspace:ro`             | 코드를 읽기 전용으로 마운트하여 에이전트가 분석할 수 있지만 수정할 수 없도록 합니다. **`~/.ssh`, `~/.aws`, `~/.config`와 같은 민감한 호스트 디렉토리 마운트를 피하십시오** |
+| `-v .../proxy.sock:...`            | 컨테이너 외부에서 실행되는 프록시에 연결된 Unix 소켓을 마운트합니다(아래 참조)                                                                   |
 
-**Unix socket architecture:**
+**Unix 소켓 아키텍처:**
 
-With `--network none`, the container has no network interfaces at all. The only way for the agent to reach the outside world is through the mounted Unix socket, which connects to a proxy running on the host. This proxy can enforce domain allowlists, inject credentials, and log all traffic.
+`--network none`을 사용하면 컨테이너에는 네트워크 인터페이스가 전혀 없습니다. 에이전트가 외부 세계에 도달할 수 있는 유일한 방법은 호스트에서 실행되는 프록시에 연결된 마운트된 Unix 소켓을 통하는 것입니다. 이 프록시는 도메인 허용 목록을 적용하고, 자격증명을 주입하며, 모든 트래픽을 기록할 수 있습니다.
 
-This is the same architecture used by [sandbox-runtime](https://github.com/anthropic-experimental/sandbox-runtime). Even if the agent is compromised via prompt injection, it cannot exfiltrate data to arbitrary servers. It can only communicate through the proxy, which controls what domains are reachable. For more details, see the [Claude Code sandboxing blog post](https://www.anthropic.com/engineering/claude-code-sandboxing).
+이는 [sandbox-runtime](https://github.com/anthropic-experimental/sandbox-runtime)에서 사용하는 것과 동일한 아키텍처입니다. 에이전트가 프롬프트 주입을 통해 손상되더라도, 임의의 서버로 데이터를 유출할 수 없습니다. 프록시를 통해서만 통신할 수 있으며, 프록시는 어떤 도메인에 도달할 수 있는지 제어합니다. 자세한 내용은 [Claude Code 샌드박싱 블로그 게시물](https://www.anthropic.com/engineering/claude-code-sandboxing)을 참조하십시오.
 
-**Additional hardening options:**
+**추가 강화 옵션:**
 
-| Option           | Purpose                                                                                                              |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `--userns-remap` | Maps container root to unprivileged host user; requires daemon configuration but limits damage from container escape |
-| `--ipc private`  | Isolates inter-process communication to prevent cross-container attacks                                              |
+| 옵션               | 목적                                                                 |
+| ---------------- | ------------------------------------------------------------------ |
+| `--userns-remap` | 컨테이너 루트를 권한 없는 호스트 사용자에게 매핑합니다. 데몬 구성이 필요하지만 컨테이너 탈출로부터의 손상을 제한합니다 |
+| `--ipc private`  | 프로세스 간 통신을 격리하여 컨테이너 간 공격을 방지합니다                                   |
 
-### gVisor
+<h3 id="gvisor">
+  gVisor
+</h3>
 
-Standard containers share the host kernel: when code inside a container makes a system call, it goes directly to the same kernel that runs the host. This means a kernel vulnerability could allow container escape. gVisor addresses this by intercepting system calls in userspace before they reach the host kernel, implementing its own compatibility layer that handles most syscalls without involving the real kernel.
+표준 컨테이너는 호스트 커널을 공유합니다: 컨테이너 내부의 코드가 시스템 호출을 할 때, 호스트를 실행하는 동일한 커널로 직접 이동합니다. 이는 커널 취약점이 컨테이너 탈출을 허용할 수 있다는 의미입니다. gVisor는 시스템 호출을 사용자 공간에서 호스트 커널에 도달하기 전에 가로채서 이를 해결하며, 실제 커널을 포함하지 않고 대부분의 시스템 호출을 처리하는 자체 호환성 계층을 구현합니다.
 
-If an agent runs malicious code (perhaps due to prompt injection), that code runs in the container and could attempt kernel exploits. With gVisor, the attack surface is much smaller: the malicious code would need to exploit gVisor's userspace implementation first and would have limited access to the real kernel.
+에이전트가 악성 코드를 실행하는 경우(아마도 프롬프트 주입으로 인해), 해당 코드는 컨테이너에서 실행되고 커널 익스플로잇을 시도할 수 있습니다. gVisor를 사용하면 공격 표면이 훨씬 더 작습니다: 악성 코드는 먼저 gVisor의 사용자 공간 구현을 익스플로잇해야 하며 실제 커널에 대한 접근이 제한됩니다.
 
-To use gVisor with Docker, install the `runsc` runtime and configure the daemon:
+Docker에서 gVisor를 사용하려면 `runsc` 런타임을 설치하고 데몬을 구성하십시오:
 
 ```json theme={null}
 // /etc/docker/daemon.json
@@ -176,156 +196,180 @@ To use gVisor with Docker, install the `runsc` runtime and configure the daemon:
 }
 ```
 
-Then run containers with:
+그런 다음 다음을 사용하여 컨테이너를 실행하십시오:
 
 ```bash theme={null}
 docker run --runtime=runsc agent-image
 ```
 
-**Performance considerations:**
+**성능 고려사항:**
 
-| Workload              | Overhead                                           |
-| --------------------- | -------------------------------------------------- |
-| CPU-bound computation | \~0% (no syscall interception)                     |
-| Simple syscalls       | \~2× slower                                        |
-| File I/O intensive    | Up to 10-200× slower for heavy open/close patterns |
+| 워크로드       | 오버헤드                           |
+| ---------- | ------------------------------ |
+| CPU 바운드 계산 | \~0%(시스템 호출 가로채기 없음)           |
+| 간단한 시스템 호출 | \~2배 느림                        |
+| 파일 I/O 집약적 | 무거운 열기/닫기 패턴의 경우 최대 10-200배 느림 |
 
-For multi-tenant environments or when processing untrusted content, the additional isolation is often worth the overhead.
+다중 테넌트 환경이나 신뢰할 수 없는 콘텐츠를 처리할 때, 추가 격리는 종종 오버헤드의 가치가 있습니다.
 
-### Virtual machines
+<h3 id="virtual-machines">
+  가상 머신
+</h3>
 
-VMs provide hardware-level isolation through CPU virtualization extensions. Each VM runs its own kernel, creating a strong boundary. A vulnerability in the guest kernel doesn't directly compromise the host. However, VMs aren't automatically "more secure" than alternatives like gVisor. VM security depends heavily on the hypervisor and device emulation code.
+VM은 CPU 가상화 확장을 통해 하드웨어 수준 격리를 제공합니다. 각 VM은 자체 커널을 실행하여 강력한 경계를 만듭니다. 게스트 커널의 취약점은 호스트를 직접 손상시키지 않습니다. 그러나 VM이 자동으로 gVisor와 같은 대안보다 "더 안전한" 것은 아닙니다. VM 보안은 하이퍼바이저 및 장치 에뮬레이션 코드에 크게 달려 있습니다.
 
-Firecracker is designed for lightweight microVM isolation. It can boot VMs in under 125ms with less than 5 MiB memory overhead, stripping away unnecessary device emulation to reduce attack surface.
+Firecracker는 경량 microVM 격리를 위해 설계되었습니다. 125ms 미만에 VM을 부팅할 수 있으며 메모리 오버헤드는 5MiB 미만이며, 불필요한 장치 에뮬레이션을 제거하여 공격 표면을 줄입니다.
 
-With this approach, the agent VM has no external network interface. Instead, it communicates through `vsock` (virtual sockets). All traffic routes through vsock to a proxy on the host, which enforces allowlists and injects credentials before forwarding requests.
+이 접근 방식을 사용하면 에이전트 VM에는 외부 네트워크 인터페이스가 없습니다. 대신 `vsock`(가상 소켓)을 통해 통신합니다. 모든 트래픽은 vsock을 통해 호스트의 프록시로 라우팅되며, 프록시는 허용 목록을 적용하고 요청을 전달하기 전에 자격증명을 주입합니다.
 
-### Cloud deployments
+<h3 id="cloud-deployments">
+  클라우드 배포
+</h3>
 
-For cloud deployments, you can combine any of the above isolation technologies with cloud-native network controls:
+클라우드 배포의 경우, 위의 격리 기술 중 하나를 클라우드 네이티브 네트워크 제어와 결합할 수 있습니다:
 
-1. Run agent containers in a private subnet with no internet gateway
-2. Configure cloud firewall rules (AWS Security Groups, GCP VPC firewall) to block all egress except to your proxy
-3. Run a proxy (such as [Envoy](https://www.envoyproxy.io/) with its `credential_injector` filter) that validates requests, enforces domain allowlists, injects credentials, and forwards to external APIs
-4. Assign minimal IAM permissions to the agent's service account, routing sensitive access through the proxy where possible
-5. Log all traffic at the proxy for audit purposes
+1. 에이전트 컨테이너를 인터넷 게이트웨이가 없는 프라이빗 서브넷에서 실행합니다
+2. 클라우드 방화벽 규칙(AWS 보안 그룹, GCP VPC 방화벽)을 구성하여 프록시를 제외한 모든 송신을 차단합니다
+3. 요청을 검증하고, 도메인 허용 목록을 적용하며, 자격증명을 주입하고, 외부 API로 전달하는 프록시(예: `credential_injector` 필터가 있는 [Envoy](https://www.envoyproxy.io/))를 실행합니다
+4. 에이전트의 서비스 계정에 최소 IAM 권한을 할당하여 가능한 경우 민감한 접근을 프록시를 통해 라우팅합니다
+5. 감사 목적으로 프록시에서 모든 트래픽을 기록합니다
 
-## Credential management
+<h2 id="credential-management">
+  자격증명 관리
+</h2>
 
-Agents often need credentials to call APIs, access repositories, or interact with cloud services. The challenge is providing this access without exposing the credentials themselves.
+에이전트는 종종 API를 호출하고, 저장소에 접근하거나, 클라우드 서비스와 상호작용하기 위해 자격증명이 필요합니다. 과제는 자격증명 자체를 노출하지 않으면서 이러한 접근을 제공하는 것입니다.
 
-### The proxy pattern
+<h3 id="the-proxy-pattern">
+  프록시 패턴
+</h3>
 
-The recommended approach is to run a proxy outside the agent's security boundary that injects credentials into outgoing requests. The agent sends requests without credentials, the proxy adds them, and forwards the request to its destination.
+권장되는 접근 방식은 에이전트의 보안 경계 외부에서 실행되는 프록시를 실행하여 나가는 요청에 자격증명을 주입하는 것입니다. 에이전트는 자격증명 없이 요청을 보내고, 프록시가 이를 추가하며, 요청을 대상으로 전달합니다.
 
-This pattern has several benefits:
+이 패턴에는 여러 이점이 있습니다:
 
-1. The agent never sees the actual credentials
-2. The proxy can enforce an allowlist of permitted endpoints
-3. The proxy can log all requests for auditing
-4. Credentials are stored in one secure location rather than distributed to each agent
+1. 에이전트는 실제 자격증명을 볼 수 없습니다
+2. 프록시는 허용된 엔드포인트의 허용 목록을 적용할 수 있습니다
+3. 프록시는 감사를 위해 모든 요청을 기록할 수 있습니다
+4. 자격증명은 각 에이전트에 분산되는 대신 하나의 안전한 위치에 저장됩니다
 
-### Configuring Claude Code to use a proxy
+<h3 id="configuring-claude-code-to-use-a-proxy">
+  Claude Code를 프록시를 사용하도록 구성
+</h3>
 
-Claude Code supports two methods for routing sampling requests through a proxy:
+Claude Code는 샘플링 요청을 프록시를 통해 라우팅하기 위한 두 가지 방법을 지원합니다:
 
-**Option 1: ANTHROPIC\_BASE\_URL (simple but only for sampling API requests)**
+**옵션 1: ANTHROPIC\_BASE\_URL(간단하지만 샘플링 API 요청만 해당)**
 
 ```bash theme={null}
 export ANTHROPIC_BASE_URL="http://localhost:8080"
 ```
 
-This tells Claude Code and the Agent SDK to send sampling requests to your proxy instead of the Claude API directly. Your proxy receives plaintext HTTP requests, can inspect and modify them (including injecting credentials), then forwards to the real API.
+이는 Claude Code 및 Agent SDK에 샘플링 요청을 Claude API에 직접 보내는 대신 프록시로 보내도록 지시합니다. 프록시는 평문 HTTP 요청을 수신하고, 검사 및 수정(자격증명 주입 포함)한 다음, 실제 API로 전달할 수 있습니다.
 
-**Option 2: HTTP\_PROXY / HTTPS\_PROXY (system-wide)**
+**옵션 2: HTTP\_PROXY / HTTPS\_PROXY(시스템 전체)**
 
 ```bash theme={null}
 export HTTP_PROXY="http://localhost:8080"
 export HTTPS_PROXY="http://localhost:8080"
 ```
 
-Claude Code and the Agent SDK respect these standard environment variables, routing all HTTP traffic through the proxy. For HTTPS, the proxy creates an encrypted CONNECT tunnel: it cannot see or modify request contents without TLS interception.
+Claude Code 및 Agent SDK는 이러한 표준 환경 변수를 존중하여 모든 HTTP 트래픽을 프록시를 통해 라우팅합니다. HTTPS의 경우, 프록시는 암호화된 CONNECT 터널을 만듭니다: TLS 검사 없이는 요청 내용을 보거나 수정할 수 없습니다.
 
-### Implementing a proxy
+<h3 id="implementing-a-proxy">
+  프록시 구현
+</h3>
 
-You can build your own proxy or use an existing one:
+자신의 프록시를 구축하거나 기존 프록시를 사용할 수 있습니다:
 
-* [Envoy Proxy](https://www.envoyproxy.io/): production-grade proxy with `credential_injector` filter for adding auth headers
-* [mitmproxy](https://mitmproxy.org/): TLS-terminating proxy for inspecting and modifying HTTPS traffic
-* [Squid](http://www.squid-cache.org/): caching proxy with access control lists
-* [LiteLLM](https://github.com/BerriAI/litellm): LLM gateway with credential injection and rate limiting
+* [Envoy Proxy](https://www.envoyproxy.io/): 인증 헤더를 추가하기 위한 `credential_injector` 필터가 있는 프로덕션 등급 프록시
+* [mitmproxy](https://mitmproxy.org/): HTTPS 트래픽을 검사하고 수정하기 위한 TLS 종료 프록시
+* [Squid](http://www.squid-cache.org/): 접근 제어 목록이 있는 캐싱 프록시
+* [LiteLLM](https://github.com/BerriAI/litellm): 자격증명 주입 및 속도 제한이 있는 LLM 게이트웨이
 
-### Credentials for other services
+<h3 id="credentials-for-other-services">
+  다른 서비스를 위한 자격증명
+</h3>
 
-Beyond sampling from the Claude API, agents often need authenticated access to other services, such as git repositories, databases, and internal APIs. There are two main approaches:
+Claude API에서 샘플링하는 것 외에도, 에이전트는 종종 git 저장소, 데이터베이스, 내부 API와 같은 다른 서비스에 대한 인증된 접근이 필요합니다. 두 가지 주요 접근 방식이 있습니다:
 
-#### Custom tools
+<h4 id="custom-tools">
+  사용자 정의 도구
+</h4>
 
-Provide access through an MCP server or custom tool that routes requests to a service running outside the agent's security boundary. The agent calls the tool, but the actual authenticated request happens outside. The tool calls to a proxy which injects the credentials.
+에이전트의 보안 경계 외부에서 실행되는 서비스에 대한 요청을 라우팅하는 MCP 서버 또는 사용자 정의 도구를 통해 접근을 제공합니다. 에이전트는 도구를 호출하지만, 실제 인증된 요청은 외부에서 발생합니다. 도구 호출은 자격증명을 주입하는 프록시로 이동합니다.
 
-For example, a git MCP server could accept commands from the agent but forward them to a git proxy running on the host, which adds authentication before contacting the remote repository. The agent never sees the credentials.
+예를 들어, git MCP 서버는 에이전트로부터 명령을 수락할 수 있지만 호스트에서 실행되는 git 프록시로 전달하여 원격 저장소에 연결하기 전에 인증을 추가합니다. 에이전트는 자격증명을 볼 수 없습니다.
 
-Advantages:
+장점:
 
-* **No TLS interception**: The external service makes authenticated requests directly
-* **Credentials stay outside**: The agent only sees the tool interface, not the underlying credentials
+* **TLS 검사 없음**: 외부 서비스는 인증된 요청을 직접 만듭니다
+* **자격증명이 외부에 유지됨**: 에이전트는 기본 자격증명이 아닌 도구 인터페이스만 봅니다
 
-#### Traffic forwarding
+<h4 id="traffic-forwarding">
+  트래픽 전달
+</h4>
 
-For Claude API calls, `ANTHROPIC_BASE_URL` lets you route requests to a proxy that can inspect and modify them in plaintext. But for other HTTPS services (GitHub, npm registries, internal APIs), the traffic is often encrypted end-to-end. Even if you route it through a proxy via `HTTP_PROXY`, the proxy only sees an opaque TLS tunnel and can't inject credentials.
+Claude API 호출의 경우, `ANTHROPIC_BASE_URL`을 사용하면 평문으로 요청을 검사하고 수정할 수 있는 프록시로 요청을 라우팅할 수 있습니다. 그러나 다른 HTTPS 서비스(GitHub, npm 레지스트리, 내부 API)의 경우, 트래픽은 종종 엔드 투 엔드로 암호화됩니다. `HTTP_PROXY`를 통해 프록시로 라우팅하더라도, 프록시는 불투명한 TLS 터널만 보고 자격증명을 주입할 수 없습니다.
 
-To modify HTTPS traffic to arbitrary services, without using a custom tool, you need a TLS-terminating proxy that decrypts traffic, inspects or modifies it, then re-encrypts it before forwarding. This requires:
+사용자 정의 도구를 사용하지 않고 임의의 서비스에 대한 HTTPS 트래픽을 수정하려면, 트래픽을 해독하고, 검사하거나 수정한 다음, 전달하기 전에 다시 암호화하는 TLS 종료 프록시가 필요합니다. 이는 다음이 필요합니다:
 
-1. Running the proxy outside the agent's container
-2. Installing the proxy's CA certificate in the agent's trust store (so the agent trusts the proxy's certificates)
-3. Configuring `HTTP_PROXY`/`HTTPS_PROXY` to route traffic through the proxy
+1. 에이전트의 컨테이너 외부에서 프록시를 실행합니다
+2. 프록시의 CA 인증서를 에이전트의 신뢰 저장소에 설치합니다(에이전트가 프록시의 인증서를 신뢰하도록)
+3. `HTTP_PROXY`/`HTTPS_PROXY`를 구성하여 트래픽을 프록시를 통해 라우팅합니다
 
-This approach handles any HTTP-based service without writing custom tools, but adds complexity around certificate management.
+이 접근 방식은 사용자 정의 도구를 작성하지 않고 모든 HTTP 기반 서비스를 처리하지만, 인증서 관리 주변의 복잡성을 추가합니다.
 
-Note that not all programs respect `HTTP_PROXY`/`HTTPS_PROXY`. Most tools (curl, pip, npm, git) do, but some may bypass these variables and connect directly. For example, Node.js `fetch()` ignores these variables by default; in Node 24+ you can set `NODE_USE_ENV_PROXY=1` to enable support. For comprehensive coverage, you can use [proxychains](https://github.com/haad/proxychains) to intercept network calls, or configure iptables to redirect outbound traffic to a transparent proxy.
+모든 프로그램이 `HTTP_PROXY`/`HTTPS_PROXY`를 존중하는 것은 아닙니다. 대부분의 도구(curl, pip, npm, git)는 존중하지만, 일부는 이러한 변수를 무시하고 직접 연결할 수 있습니다. 예를 들어, Node.js `fetch()`는 기본적으로 이러한 변수를 무시합니다. Node 24+에서는 `NODE_USE_ENV_PROXY=1`을 설정하여 지원을 활성화할 수 있습니다. 포괄적인 범위를 위해 [proxychains](https://github.com/haad/proxychains)를 사용하여 네트워크 호출을 가로채거나, iptables를 구성하여 아웃바운드 트래픽을 투명 프록시로 리디렉션할 수 있습니다.
 
 <Info>
-  A **transparent proxy** intercepts traffic at the network level, so the client doesn't need to be configured to use it. Regular proxies require clients to explicitly connect and speak HTTP CONNECT or SOCKS. Transparent proxies (like Squid or mitmproxy in transparent mode) can handle raw redirected TCP connections.
+  **투명 프록시**는 네트워크 수준에서 트래픽을 가로채므로 클라이언트가 이를 사용하도록 구성할 필요가 없습니다. 일반 프록시는 클라이언트가 명시적으로 연결하고 HTTP CONNECT 또는 SOCKS를 말해야 합니다. 투명 프록시(Squid 또는 투명 모드의 mitmproxy와 같은)는 리디렉션된 원본 TCP 연결을 처리할 수 있습니다.
 </Info>
 
-Both approaches still require the TLS-terminating proxy and trusted CA certificate. They just ensure traffic actually reaches the proxy.
+두 접근 방식 모두 여전히 TLS 종료 프록시 및 신뢰된 CA 인증서가 필요합니다. 이들은 단지 트래픽이 실제로 프록시에 도달하도록 보장합니다.
 
-## Filesystem configuration
+<h2 id="filesystem-configuration">
+  파일 시스템 구성
+</h2>
 
-Filesystem controls determine what files the agent can read and write.
+파일 시스템 제어는 에이전트가 읽고 쓸 수 있는 파일을 결정합니다.
 
-### Read-only code mounting
+<h3 id="read-only-code-mounting">
+  읽기 전용 코드 마운트
+</h3>
 
-When the agent needs to analyze code but not modify it, mount the directory read-only:
+에이전트가 코드를 분석해야 하지만 수정하지 않아야 할 때, 디렉토리를 읽기 전용으로 마운트합니다:
 
 ```bash theme={null}
 docker run -v /path/to/code:/workspace:ro agent-image
 ```
 
 <Warning>
-  Even read-only access to a code directory can expose credentials. Common files to exclude or sanitize before mounting:
+  코드 디렉토리에 대한 읽기 전용 접근도 자격증명을 노출할 수 있습니다. 마운트하기 전에 제외하거나 정제할 일반적인 파일:
 
-  | File                                                    | Risk                                  |
-  | ------------------------------------------------------- | ------------------------------------- |
-  | `.env`, `.env.local`                                    | API keys, database passwords, secrets |
-  | `~/.git-credentials`                                    | Git passwords/tokens in plaintext     |
-  | `~/.aws/credentials`                                    | AWS access keys                       |
-  | `~/.config/gcloud/application_default_credentials.json` | Google Cloud ADC tokens               |
-  | `~/.azure/`                                             | Azure CLI credentials                 |
-  | `~/.docker/config.json`                                 | Docker registry auth tokens           |
-  | `~/.kube/config`                                        | Kubernetes cluster credentials        |
-  | `.npmrc`, `.pypirc`                                     | Package registry tokens               |
-  | `*-service-account.json`                                | GCP service account keys              |
-  | `*.pem`, `*.key`                                        | Private keys                          |
+  | 파일                                                      | 위험                   |
+  | ------------------------------------------------------- | -------------------- |
+  | `.env`, `.env.local`                                    | API 키, 데이터베이스 암호, 비밀 |
+  | `~/.git-credentials`                                    | 평문의 Git 암호/토큰        |
+  | `~/.aws/credentials`                                    | AWS 접근 키             |
+  | `~/.config/gcloud/application_default_credentials.json` | Google Cloud ADC 토큰  |
+  | `~/.azure/`                                             | Azure CLI 자격증명       |
+  | `~/.docker/config.json`                                 | Docker 레지스트리 인증 토큰   |
+  | `~/.kube/config`                                        | Kubernetes 클러스터 자격증명 |
+  | `.npmrc`, `.pypirc`                                     | 패키지 레지스트리 토큰         |
+  | `*-service-account.json`                                | GCP 서비스 계정 키         |
+  | `*.pem`, `*.key`                                        | 개인 키                 |
 
-  Consider copying only the source files needed, or using `.dockerignore`-style filtering.
+  필요한 소스 파일만 복사하거나 `.dockerignore` 스타일 필터링을 사용하는 것을 고려하십시오.
 </Warning>
 
-### Writable locations
+<h3 id="writable-locations">
+  쓰기 가능한 위치
+</h3>
 
-If the agent needs to write files, you have a few options depending on whether you want changes to persist:
+에이전트가 파일을 작성해야 하는 경우, 변경사항을 유지할지 여부에 따라 몇 가지 옵션이 있습니다:
 
-For ephemeral workspaces in containers, use `tmpfs` mounts that exist only in memory and are cleared when the container stops:
+컨테이너의 임시 워크스페이스의 경우, 메모리에만 존재하고 컨테이너가 중지될 때 지워지는 `tmpfs` 마운트를 사용합니다:
 
 ```bash theme={null}
 docker run \
@@ -335,16 +379,18 @@ docker run \
   agent-image
 ```
 
-If you want to review changes before persisting them, an overlay filesystem lets the agent write without modifying underlying files. Changes are stored in a separate layer you can inspect, apply, or discard. For fully persistent output, mount a dedicated volume but keep it separate from sensitive directories.
+변경사항을 유지하기 전에 검토하려면, 오버레이 파일 시스템을 사용하면 에이전트가 기본 파일을 수정하지 않고 쓸 수 있습니다. 변경사항은 검사, 적용 또는 폐기할 수 있는 별도의 계층에 저장됩니다. 완전히 지속적인 출력의 경우, 전용 볼륨을 마운트하되 민감한 디렉토리와 분리된 상태로 유지합니다.
 
-## Further reading
+<h2 id="further-reading">
+  추가 읽기
+</h2>
 
-* [Claude Code security documentation](/en/security)
-* [Hosting the Agent SDK](/en/agent-sdk/hosting)
-* [Handling permissions](/en/agent-sdk/permissions)
-* [Sandbox runtime](https://github.com/anthropic-experimental/sandbox-runtime)
-* [The Lethal Trifecta for AI Agents](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)
+* [Claude Code 보안 설명서](/ko/security)
+* [Agent SDK 호스팅](/ko/agent-sdk/hosting)
+* [권한 처리](/ko/agent-sdk/permissions)
+* [샌드박스 런타임](https://github.com/anthropic-experimental/sandbox-runtime)
+* [AI 에이전트를 위한 치명적인 삼중주](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)
 * [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
-* [Docker Security Best Practices](https://docs.docker.com/engine/security/)
-* [gVisor Documentation](https://gvisor.dev/docs/)
-* [Firecracker Documentation](https://firecracker-microvm.github.io/)
+* [Docker 보안 모범 사례](https://docs.docker.com/engine/security/)
+* [gVisor 설명서](https://gvisor.dev/docs/)
+* [Firecracker 설명서](https://firecracker-microvm.github.io/)

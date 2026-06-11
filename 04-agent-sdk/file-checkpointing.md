@@ -2,51 +2,55 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Rewind file changes with checkpointing
+# 체크포인팅으로 파일 변경 사항 되돌리기
 
-> Track file changes during agent sessions and restore files to any previous state
+> 에이전트 세션 중 파일 변경 사항을 추적하고 파일을 이전의 모든 상태로 복원합니다
 
-File checkpointing tracks file modifications made through the Write, Edit, and NotebookEdit tools during an agent session, allowing you to rewind files to any previous state. Want to try it out? Jump to the [interactive example](#try-it-out).
+파일 체크포인팅은 에이전트 세션 중 Write, Edit, NotebookEdit 도구를 통해 수행된 파일 수정 사항을 추적하여 파일을 이전의 모든 상태로 되돌릴 수 있게 합니다. 직접 시도해보고 싶으신가요? [대화형 예제](#try-it-out)로 이동하세요.
 
-With checkpointing, you can:
+체크포인팅을 사용하면 다음을 수행할 수 있습니다:
 
-* **Undo unwanted changes** by restoring files to a known good state
-* **Explore alternatives** by restoring to a checkpoint and trying a different approach
-* **Recover from errors** when the agent makes incorrect modifications
+* **원치 않는 변경 사항 실행 취소** - 파일을 알려진 양호한 상태로 복원
+* **대안 탐색** - 체크포인트로 복원한 후 다른 접근 방식 시도
+* **오류 복구** - 에이전트가 잘못된 수정을 수행했을 때
 
 <Warning>
-  Only changes made through the Write, Edit, and NotebookEdit tools are tracked. Changes made through Bash commands (like `echo > file.txt` or `sed -i`) are not captured by the checkpoint system.
+  Write, Edit, NotebookEdit 도구를 통해 수행된 변경 사항만 추적됩니다. Bash 명령어(예: `echo > file.txt` 또는 `sed -i`)를 통해 수행된 변경 사항은 체크포인트 시스템에서 캡처되지 않습니다.
 </Warning>
 
-## How checkpointing works
+<h2 id="how-checkpointing-works">
+  체크포인팅 작동 방식
+</h2>
 
-When you enable file checkpointing, the SDK creates backups of files before modifying them through the Write, Edit, or NotebookEdit tools. User messages in the response stream include a checkpoint UUID that you can use as a restore point.
+파일 체크포인팅을 활성화하면 SDK는 Write, Edit 또는 NotebookEdit 도구를 통해 파일을 수정하기 전에 파일의 백업을 생성합니다. 응답 스트림의 사용자 메시지에는 복원 지점으로 사용할 수 있는 체크포인트 UUID가 포함됩니다.
 
-Checkpoint works with these built-in tools that the agent uses to modify files:
+체크포인트는 에이전트가 파일을 수정하는 데 사용하는 다음의 기본 제공 도구와 함께 작동합니다:
 
-| Tool         | Description                                                        |
-| ------------ | ------------------------------------------------------------------ |
-| Write        | Creates a new file or overwrites an existing file with new content |
-| Edit         | Makes targeted edits to specific parts of an existing file         |
-| NotebookEdit | Modifies cells in Jupyter notebooks (`.ipynb` files)               |
+| 도구           | 설명                                 |
+| ------------ | ---------------------------------- |
+| Write        | 새 파일을 생성하거나 기존 파일을 새 콘텐츠로 덮어씁니다    |
+| Edit         | 기존 파일의 특정 부분에 대한 대상 편집을 수행합니다      |
+| NotebookEdit | Jupyter 노트북(`.ipynb` 파일)의 셀을 수정합니다 |
 
 <Note>
-  File rewinding restores files on disk to a previous state. It does not rewind the conversation itself. The conversation history and context remain intact after calling `rewindFiles()` (TypeScript) or `rewind_files()` (Python).
+  파일 되돌리기는 디스크의 파일을 이전 상태로 복원합니다. 대화 자체를 되돌리지는 않습니다. `rewindFiles()`(TypeScript) 또는 `rewind_files()`(Python)를 호출한 후에도 대화 기록과 컨텍스트는 그대로 유지됩니다.
 </Note>
 
-The checkpoint system tracks:
+체크포인트 시스템은 다음을 추적합니다:
 
-* Files created during the session
-* Files modified during the session
-* The original content of modified files
+* 세션 중에 생성된 파일
+* 세션 중에 수정된 파일
+* 수정된 파일의 원본 콘텐츠
 
-When you rewind to a checkpoint, created files are deleted and modified files are restored to their content at that point.
+체크포인트로 되돌리면 생성된 파일은 삭제되고 수정된 파일은 해당 시점의 콘텐츠로 복원됩니다.
 
-## Implement checkpointing
+<h2 id="implement-checkpointing">
+  체크포인팅 구현
+</h2>
 
-To use file checkpointing, enable it in your options, capture checkpoint UUIDs from the response stream, then call `rewindFiles()` (TypeScript) or `rewind_files()` (Python) when you need to restore.
+파일 체크포인팅을 사용하려면 옵션에서 활성화하고, 응답 스트림에서 체크포인트 UUID를 캡처한 다음, 복원이 필요할 때 `rewindFiles()`(TypeScript) 또는 `rewind_files()`(Python)를 호출합니다.
 
-The following example shows the complete flow: enable checkpointing, capture the checkpoint UUID and session ID from the response stream, then resume the session later to rewind files. Each step is explained in detail below.
+다음 예제는 전체 흐름을 보여줍니다: 체크포인팅을 활성화하고, 응답 스트림에서 체크포인트 UUID와 세션 ID를 캡처한 다음, 나중에 세션을 재개하여 파일을 되돌립니다. 각 단계는 아래에서 자세히 설명됩니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -147,13 +151,13 @@ The following example shows the complete flow: enable checkpointing, capture the
 </CodeGroup>
 
 <Steps>
-  <Step title="Enable checkpointing">
-    Configure your SDK options to enable checkpointing and receive checkpoint UUIDs:
+  <Step title="체크포인팅 활성화">
+    체크포인팅을 활성화하고 체크포인트 UUID를 수신하도록 SDK 옵션을 구성합니다:
 
-    | Option                   | Python                                      | TypeScript                                    | Description                                      |
-    | ------------------------ | ------------------------------------------- | --------------------------------------------- | ------------------------------------------------ |
-    | Enable checkpointing     | `enable_file_checkpointing=True`            | `enableFileCheckpointing: true`               | Tracks file changes for rewinding                |
-    | Receive checkpoint UUIDs | `extra_args={"replay-user-messages": None}` | `extraArgs: { 'replay-user-messages': null }` | Required to get user message UUIDs in the stream |
+    | 옵션            | Python                                      | TypeScript                                    | 설명                               |
+    | ------------- | ------------------------------------------- | --------------------------------------------- | -------------------------------- |
+    | 체크포인팅 활성화     | `enable_file_checkpointing=True`            | `enableFileCheckpointing: true`               | 되돌리기 위해 파일 변경 사항을 추적합니다          |
+    | 체크포인트 UUID 수신 | `extra_args={"replay-user-messages": None}` | `extraArgs: { 'replay-user-messages': null }` | 스트림에서 사용자 메시지 UUID를 가져오는 데 필요합니다 |
 
     <CodeGroup>
       ```python Python theme={null}
@@ -180,12 +184,12 @@ The following example shows the complete flow: enable checkpointing, capture the
     </CodeGroup>
   </Step>
 
-  <Step title="Capture checkpoint UUID and session ID">
-    With the `replay-user-messages` option set (shown above), each user message in the response stream has a UUID that serves as a checkpoint.
+  <Step title="체크포인트 UUID 및 세션 ID 캡처">
+    `replay-user-messages` 옵션이 설정되면(위에 표시됨), 응답 스트림의 각 사용자 메시지에는 체크포인트로 사용되는 UUID가 있습니다.
 
-    For most use cases, capture the first user message UUID (`message.uuid`); rewinding to it restores all files to their original state. To store multiple checkpoints and rewind to intermediate states, see [Multiple restore points](#multiple-restore-points).
+    대부분의 사용 사례에서 첫 번째 사용자 메시지 UUID(`message.uuid`)를 캡처합니다. 이로 되돌리면 모든 파일이 원본 상태로 복원됩니다. 여러 체크포인트를 저장하고 중간 상태로 되돌리려면 [여러 복원 지점](#multiple-restore-points)을 참조하세요.
 
-    Capturing the session ID (`message.session_id`) is optional; you only need it if you want to rewind later, after the stream completes. If you're calling `rewindFiles()` immediately while still processing messages (as the example in [Checkpoint before risky operations](#checkpoint-before-risky-operations) does), you can skip capturing the session ID.
+    세션 ID(`message.session_id`)를 캡처하는 것은 선택 사항입니다. 스트림이 완료된 후 나중에 되돌리려는 경우에만 필요합니다. [체크포인트 전에 위험한 작업](#checkpoint-before-risky-operations) 예제처럼 메시지를 처리하는 동안 `rewindFiles()`를 즉시 호출하는 경우 세션 ID 캡처를 건너뛸 수 있습니다.
 
     <CodeGroup>
       ```python Python theme={null}
@@ -219,8 +223,8 @@ The following example shows the complete flow: enable checkpointing, capture the
     </CodeGroup>
   </Step>
 
-  <Step title="Rewind files">
-    To rewind after the stream completes, resume the session with an empty prompt and call `rewind_files()` (Python) or `rewindFiles()` (TypeScript) with your checkpoint UUID. You can also rewind during the stream; see [Checkpoint before risky operations](#checkpoint-before-risky-operations) for that pattern.
+  <Step title="파일 되돌리기">
+    스트림이 완료된 후 되돌리려면 빈 프롬프트로 세션을 재개하고 체크포인트 UUID와 함께 `rewind_files()`(Python) 또는 `rewindFiles()`(TypeScript)를 호출합니다. 스트림 중에도 되돌릴 수 있습니다. [체크포인트 전에 위험한 작업](#checkpoint-before-risky-operations)에서 해당 패턴을 참조하세요.
 
     <CodeGroup>
       ```python Python theme={null}
@@ -246,7 +250,7 @@ The following example shows the complete flow: enable checkpointing, capture the
       ```
     </CodeGroup>
 
-    If you capture the session ID and checkpoint ID, you can also rewind from the CLI:
+    세션 ID와 체크포인트 ID를 캡처한 경우 CLI에서도 되돌릴 수 있습니다:
 
     ```bash theme={null}
     claude -p --resume <session-id> --rewind-files <checkpoint-uuid>
@@ -254,13 +258,17 @@ The following example shows the complete flow: enable checkpointing, capture the
   </Step>
 </Steps>
 
-## Common patterns
+<h2 id="common-patterns">
+  일반적인 패턴
+</h2>
 
-These patterns show different ways to capture and use checkpoint UUIDs depending on your use case.
+이러한 패턴은 사용 사례에 따라 체크포인트 UUID를 캡처하고 사용하는 다양한 방법을 보여줍니다.
 
-### Checkpoint before risky operations
+<h3 id="checkpoint-before-risky-operations">
+  위험한 작업 전에 체크포인트
+</h3>
 
-This pattern keeps only the most recent checkpoint UUID, updating it before each agent turn. If something goes wrong during processing, you can immediately rewind to the last safe state and break out of the loop.
+이 패턴은 가장 최근의 체크포인트 UUID만 유지하며, 각 에이전트 턴 전에 업데이트합니다. 처리 중에 문제가 발생하면 마지막 안전한 상태로 즉시 되돌리고 루프를 벗어날 수 있습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -333,11 +341,13 @@ This pattern keeps only the most recent checkpoint UUID, updating it before each
   ```
 </CodeGroup>
 
-### Multiple restore points
+<h3 id="multiple-restore-points">
+  여러 복원 지점
+</h3>
 
-If Claude makes changes across multiple turns, you might want to rewind to a specific point rather than all the way back. For example, if Claude refactors a file in turn one and adds tests in turn two, you might want to keep the refactor but undo the tests.
+Claude가 여러 턴에 걸쳐 변경을 수행하는 경우, 모든 방식으로 되돌리기보다는 특정 지점으로 되돌리고 싶을 수 있습니다. 예를 들어, Claude가 첫 번째 턴에서 파일을 리팩토링하고 두 번째 턴에서 테스트를 추가하는 경우, 리팩토링은 유지하되 테스트는 실행 취소하고 싶을 수 있습니다.
 
-This pattern stores all checkpoint UUIDs in an array with metadata. After the session completes, you can rewind to any previous checkpoint:
+이 패턴은 모든 체크포인트 UUID를 메타데이터와 함께 배열에 저장합니다. 세션이 완료된 후 이전의 모든 체크포인트로 되돌릴 수 있습니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -459,15 +469,17 @@ This pattern stores all checkpoint UUIDs in an array with metadata. After the se
   ```
 </CodeGroup>
 
-## Try it out
+<h2 id="try-it-out">
+  직접 시도해보기
+</h2>
 
-This complete example creates a small utility file, has the agent add documentation comments, shows you the changes, then asks if you want to rewind.
+이 완전한 예제는 작은 유틸리티 파일을 생성하고, 에이전트가 문서 주석을 추가하도록 하며, 변경 사항을 표시한 다음, 되돌리고 싶은지 묻습니다.
 
-Before you begin, make sure you have the [Claude Agent SDK installed](/en/agent-sdk/quickstart).
+시작하기 전에 [Claude Agent SDK가 설치](/ko/agent-sdk/quickstart)되어 있는지 확인하세요.
 
 <Steps>
-  <Step title="Create a test file">
-    Create a new file called `utils.py` (Python) or `utils.ts` (TypeScript) and paste the following code:
+  <Step title="테스트 파일 생성">
+    `utils.py`(Python) 또는 `utils.ts`(TypeScript)라는 새 파일을 생성하고 다음 코드를 붙여넣습니다:
 
     <CodeGroup>
       ```python utils.py theme={null}
@@ -512,10 +524,10 @@ Before you begin, make sure you have the [Claude Agent SDK installed](/en/agent-
     </CodeGroup>
   </Step>
 
-  <Step title="Run the interactive example">
-    Create a new file called `try_checkpointing.py` (Python) or `try_checkpointing.ts` (TypeScript) in the same directory as your utility file, and paste the following code.
+  <Step title="대화형 예제 실행">
+    유틸리티 파일과 같은 디렉토리에 `try_checkpointing.py`(Python) 또는 `try_checkpointing.ts`(TypeScript)라는 새 파일을 생성하고 다음 코드를 붙여넣습니다.
 
-    This script asks Claude to add doc comments to your utility file, then gives you the option to rewind and restore the original.
+    이 스크립트는 Claude에게 유틸리티 파일에 문서 주석을 추가하도록 요청한 다음 원본을 복원하기 위해 되돌리고 싶은지 선택할 수 있는 옵션을 제공합니다.
 
     <CodeGroup>
       ```python try_checkpointing.py theme={null}
@@ -656,19 +668,19 @@ Before you begin, make sure you have the [Claude Agent SDK installed](/en/agent-
       ```
     </CodeGroup>
 
-    This example demonstrates the complete checkpointing workflow:
+    이 예제는 완전한 체크포인팅 워크플로우를 보여줍니다:
 
-    1. **Enable checkpointing**: configure the SDK with `enable_file_checkpointing=True` and `permission_mode="acceptEdits"` to auto-approve file edits
-    2. **Capture checkpoint data**: as the agent runs, store the first user message UUID (your restore point) and the session ID
-    3. **Prompt for rewind**: after the agent finishes, check your utility file to see the doc comments, then decide if you want to undo the changes
-    4. **Resume and rewind**: if yes, resume the session with an empty prompt and call `rewind_files()` to restore the original file
+    1. **체크포인팅 활성화**: `enable_file_checkpointing=True` 및 `permission_mode="acceptEdits"`로 SDK를 구성하여 파일 편집을 자동으로 승인합니다
+    2. **체크포인트 데이터 캡처**: 에이전트가 실행되는 동안 첫 번째 사용자 메시지 UUID(복원 지점) 및 세션 ID를 저장합니다
+    3. **되돌리기 프롬프트**: 에이전트가 완료된 후 유틸리티 파일을 확인하여 문서 주석을 보고 변경 사항을 실행 취소할지 결정합니다
+    4. **재개 및 되돌리기**: 예인 경우 빈 프롬프트로 세션을 재개하고 `rewind_files()`를 호출하여 원본 파일을 복원합니다
   </Step>
 
-  <Step title="Run the example">
-    Run the script from the same directory as your utility file.
+  <Step title="예제 실행">
+    유틸리티 파일과 같은 디렉토리에서 스크립트를 실행합니다.
 
     <Tip>
-      Open your utility file (`utils.py` or `utils.ts`) in your IDE or editor before running the script. You'll see the file update in real-time as the agent adds doc comments, then revert back to the original when you choose to rewind.
+      스크립트를 실행하기 전에 IDE 또는 편집기에서 유틸리티 파일(`utils.py` 또는 `utils.ts`)을 엽니다. 에이전트가 문서 주석을 추가할 때 파일이 실시간으로 업데이트되는 것을 볼 수 있으며, 되돌리기를 선택하면 원본으로 되돌아갑니다.
     </Tip>
 
     <Tabs>
@@ -685,56 +697,68 @@ Before you begin, make sure you have the [Claude Agent SDK installed](/en/agent-
       </Tab>
     </Tabs>
 
-    You'll see the agent add doc comments, then a prompt asking if you want to rewind. If you choose yes, the file is restored to its original state.
+    에이전트가 문서 주석을 추가한 다음 되돌리고 싶은지 묻는 프롬프트가 표시됩니다. 예를 선택하면 파일이 원본 상태로 복원됩니다.
   </Step>
 </Steps>
 
-## Limitations
+<h2 id="limitations">
+  제한 사항
+</h2>
 
-File checkpointing has the following limitations:
+파일 체크포인팅에는 다음과 같은 제한 사항이 있습니다:
 
-| Limitation                         | Description                                                          |
-| ---------------------------------- | -------------------------------------------------------------------- |
-| Write/Edit/NotebookEdit tools only | Changes made through Bash commands are not tracked                   |
-| Same session                       | Checkpoints are tied to the session that created them                |
-| File content only                  | Creating, moving, or deleting directories is not undone by rewinding |
-| Local files                        | Remote or network files are not tracked                              |
+| 제한 사항                       | 설명                                    |
+| --------------------------- | ------------------------------------- |
+| Write/Edit/NotebookEdit 도구만 | Bash 명령어를 통해 수행된 변경 사항은 추적되지 않습니다     |
+| 동일한 세션                      | 체크포인트는 이를 생성한 세션에 연결됩니다               |
+| 파일 콘텐츠만                     | 디렉토리 생성, 이동 또는 삭제는 되돌리기로 실행 취소되지 않습니다 |
+| 로컬 파일                       | 원격 또는 네트워크 파일은 추적되지 않습니다              |
 
-## Troubleshooting
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
-### Checkpointing options not recognized
+<h3 id="checkpointing-options-not-recognized">
+  체크포인팅 옵션이 인식되지 않음
+</h3>
 
-If `enableFileCheckpointing` or `rewindFiles()` isn't available, you may be on an older SDK version.
+`enableFileCheckpointing` 또는 `rewindFiles()`를 사용할 수 없는 경우 이전 SDK 버전을 사용 중일 수 있습니다.
 
-**Solution**: Update to the latest SDK version:
+**해결책**: 최신 SDK 버전으로 업데이트합니다:
 
 * **Python**: `pip install --upgrade claude-agent-sdk`
 * **TypeScript**: `npm install @anthropic-ai/claude-agent-sdk@latest`
 
-### User messages don't have UUIDs
+<h3 id="user-messages-don-t-have-uuids">
+  사용자 메시지에 UUID가 없음
+</h3>
 
-If `message.uuid` is `undefined` or missing, you're not receiving checkpoint UUIDs.
+`message.uuid`가 `undefined`이거나 누락된 경우 체크포인트 UUID를 수신하지 못하고 있습니다.
 
-**Cause**: The `replay-user-messages` option isn't set.
+**원인**: `replay-user-messages` 옵션이 설정되지 않았습니다.
 
-**Solution**: Add `extra_args={"replay-user-messages": None}` (Python) or `extraArgs: { 'replay-user-messages': null }` (TypeScript) to your options.
+**해결책**: 옵션에 `extra_args={"replay-user-messages": None}`(Python) 또는 `extraArgs: { 'replay-user-messages': null }`(TypeScript)을 추가합니다.
 
-### "No file checkpoint found for message" error
+<h3 id="no-file-checkpoint-found-for-message-error">
+  "No file checkpoint found for message" 오류
+</h3>
 
-This error occurs when the checkpoint data doesn't exist for the specified user message UUID.
+이 오류는 지정된 사용자 메시지 UUID에 대한 체크포인트 데이터가 없을 때 발생합니다.
 
-**Common causes**:
+**일반적인 원인**:
 
-* File checkpointing was not enabled on the original session (`enable_file_checkpointing` or `enableFileCheckpointing` was not set to `true`)
-* The session wasn't properly completed before attempting to resume and rewind
+* 원본 세션에서 파일 체크포인팅이 활성화되지 않았습니다(`enable_file_checkpointing` 또는 `enableFileCheckpointing`이 `true`로 설정되지 않음)
+* 재개 및 되돌리기를 시도하기 전에 세션이 제대로 완료되지 않았습니다
 
-**Solution**: Ensure `enable_file_checkpointing=True` (Python) or `enableFileCheckpointing: true` (TypeScript) was set on the original session, then use the pattern shown in the examples: capture the first user message UUID, complete the session fully, then resume with an empty prompt and call `rewindFiles()` once.
+**해결책**: 원본 세션에서 `enable_file_checkpointing=True`(Python) 또는 `enableFileCheckpointing: true`(TypeScript)가 설정되었는지 확인한 다음, 예제에 표시된 패턴을 사용합니다: 첫 번째 사용자 메시지 UUID를 캡처하고, 세션을 완전히 완료한 다음, 빈 프롬프트로 재개하고 `rewindFiles()`를 한 번 호출합니다.
 
-### "ProcessTransport is not ready for writing" error
+<h3 id="processtransport-is-not-ready-for-writing-error">
+  "ProcessTransport is not ready for writing" 오류
+</h3>
 
-This error occurs when you call `rewindFiles()` or `rewind_files()` after you've finished iterating through the response. The connection to the CLI process closes when the loop completes.
+이 오류는 응답을 반복하는 것을 완료한 후 `rewindFiles()` 또는 `rewind_files()`를 호출할 때 발생합니다. 루프가 완료되면 CLI 프로세스에 대한 연결이 닫힙니다.
 
-**Solution**: Resume the session with an empty prompt, then call rewind on the new query:
+**해결책**: 빈 프롬프트로 세션을 재개한 다음 새 쿼리에서 되돌리기를 호출합니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -762,9 +786,11 @@ This error occurs when you call `rewindFiles()` or `rewind_files()` after you've
   ```
 </CodeGroup>
 
-## Next steps
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
-* **[Sessions](/en/agent-sdk/sessions)**: learn how to resume sessions, which is required for rewinding after the stream completes. Covers session IDs, resuming conversations, and session forking.
-* **[Permissions](/en/agent-sdk/permissions)**: configure which tools Claude can use and how file modifications are approved. Useful if you want more control over when edits happen.
-* **[TypeScript SDK reference](/en/agent-sdk/typescript)**: complete API reference including all options for `query()` and the `rewindFiles()` method.
-* **[Python SDK reference](/en/agent-sdk/python)**: complete API reference including all options for `ClaudeAgentOptions` and the `rewind_files()` method.
+* **[세션](/ko/agent-sdk/sessions)**: 세션을 재개하는 방법을 알아봅니다. 이는 스트림이 완료된 후 되돌리기에 필요합니다. 세션 ID, 대화 재개 및 세션 포킹을 다룹니다.
+* **[권한](/ko/agent-sdk/permissions)**: Claude가 사용할 수 있는 도구와 파일 수정이 승인되는 방식을 구성합니다. 편집이 발생하는 시기를 더 많이 제어하려는 경우 유용합니다.
+* **[TypeScript SDK 참조](/ko/agent-sdk/typescript)**: `query()` 및 `rewindFiles()` 메서드의 모든 옵션을 포함한 완전한 API 참조입니다.
+* **[Python SDK 참조](/ko/agent-sdk/python)**: `ClaudeAgentOptions` 및 `rewind_files()` 메서드의 모든 옵션을 포함한 완전한 API 참조입니다.

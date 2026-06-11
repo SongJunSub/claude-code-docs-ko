@@ -6,189 +6,9 @@
 
 > 설정, 구성 및 문제 해결을 포함하여 Microsoft Foundry를 통해 Claude Code를 구성하는 방법을 알아봅니다.
 
-export const ContactSalesCard = ({surface}) => {
-  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
-  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>;
-  const STYLES = `
-.cc-cs {
-  --cs-slate: #141413;
-  --cs-clay: #d97757;
-  --cs-clay-deep: #c6613f;
-  --cs-gray-000: #ffffff;
-  --cs-gray-700: #3d3d3a;
-  --cs-border-default: rgba(31, 30, 29, 0.15);
-  font-family: inherit;
-}
-.dark .cc-cs {
-  --cs-slate: #f0eee6;
-  --cs-gray-000: #262624;
-  --cs-gray-700: #bfbdb4;
-  --cs-border-default: rgba(240, 238, 230, 0.14);
-}
-.cc-cs-card {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px; padding: 14px 16px; margin: 0;
-  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; flex-wrap: wrap;
-}
-.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
-.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
-.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.cc-cs-btn-clay {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--cs-clay-deep); color: #fff; border: none;
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-  transition: background-color 0.15s; white-space: nowrap;
-}
-.cc-cs-btn-clay:hover { background: var(--cs-clay); }
-.cc-cs-btn-ghost {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--cs-gray-700);
-  border: 0.5px solid var(--cs-border-default);
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 13px; font-weight: 500;
-}
-.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
-.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
-@media (max-width: 720px) {
-  .cc-cs-actions { width: 100%; }
-}
-`;
-  return <div className="cc-cs not-prose">
-      <style>{STYLES}</style>
-      <div className="cc-cs-card">
-        <div className="cc-cs-text">
-          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
-        </div>
-        <div className="cc-cs-actions">
-          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
-            View plans
-          </a>
-          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
-            Contact sales {iconArrowRight()}
-          </a>
-        </div>
-      </div>
-    </div>;
-};
-
-export const Experiment = ({flag, treatment, children}) => {
-  const VID_KEY = 'exp_vid';
-  const CONSENT_COUNTRIES = new Set(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'RE', 'GP', 'MQ', 'GF', 'YT', 'BL', 'MF', 'PM', 'WF', 'PF', 'NC', 'AW', 'CW', 'SX', 'FO', 'GL', 'AX', 'GB', 'UK', 'AI', 'BM', 'IO', 'VG', 'KY', 'FK', 'GI', 'MS', 'PN', 'SH', 'TC', 'GG', 'JE', 'IM', 'CA', 'BR', 'IN']);
-  const fnv1a = s => {
-    let h = 0x811c9dc5;
-    for (let i = 0; i < s.length; i++) {
-      h ^= s.charCodeAt(i);
-      h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
-    }
-    return h >>> 0;
-  };
-  const bucket = (seed, vid) => fnv1a(fnv1a(seed + vid) + '') % 10000 < 5000 ? 'control' : 'treatment';
-  const [decision] = useState(() => {
-    const params = new URLSearchParams(location.search);
-    const preBucketed = document.documentElement.dataset['gb_' + flag.replace(/-/g, '_')];
-    const force = params.get('gb-force');
-    if (force) {
-      for (const p of force.split(',')) {
-        const [k, v] = p.split(':');
-        if (k === flag) return {
-          variant: v || 'treatment',
-          track: false
-        };
-      }
-    }
-    if (navigator.globalPrivacyControl) {
-      return {
-        variant: 'control',
-        track: false
-      };
-    }
-    const prefsMatch = document.cookie.match(/(?:^|; )anthropic-consent-preferences=([^;]+)/);
-    if (prefsMatch) {
-      try {
-        if (JSON.parse(decodeURIComponent(prefsMatch[1])).analytics !== true) {
-          return {
-            variant: 'control',
-            track: false
-          };
-        }
-      } catch {
-        return {
-          variant: 'control',
-          track: false
-        };
-      }
-    } else {
-      const country = params.get('country')?.toUpperCase() || (document.cookie.match(/(?:^|; )cf_geo=([A-Z]{2})/) || [])[1];
-      if (!country || CONSENT_COUNTRIES.has(country)) {
-        return {
-          variant: 'control',
-          track: false
-        };
-      }
-    }
-    let vid;
-    try {
-      const ajsMatch = document.cookie.match(/(?:^|; )ajs_anonymous_id=([^;]+)/);
-      if (ajsMatch) {
-        vid = decodeURIComponent(ajsMatch[1]).replace(/^"|"$/g, '');
-      } else {
-        vid = localStorage.getItem(VID_KEY);
-        if (!vid) {
-          vid = crypto.randomUUID();
-        }
-        document.cookie = `ajs_anonymous_id=${vid}; domain=.claude.com; path=/; Secure; SameSite=Lax; max-age=31536000`;
-      }
-      try {
-        localStorage.setItem(VID_KEY, vid);
-      } catch {}
-    } catch {
-      return {
-        variant: 'control',
-        track: false
-      };
-    }
-    const variant = preBucketed === '1' ? 'treatment' : preBucketed === '0' ? 'control' : bucket(flag, vid);
-    return {
-      variant,
-      track: true,
-      vid
-    };
-  });
-  useEffect(() => {
-    if (!decision.track) return;
-    fetch('https://api.anthropic.com/api/event_logging/v2/batch', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-service-name': 'claude_code_docs'
-      },
-      body: JSON.stringify({
-        events: [{
-          event_type: 'GrowthbookExperimentEvent',
-          event_data: {
-            device_id: decision.vid,
-            anonymous_id: decision.vid,
-            timestamp: new Date().toISOString(),
-            experiment_id: flag,
-            variation_id: decision.variant === 'treatment' ? 1 : 0,
-            environment: 'production'
-          }
-        }]
-      }),
-      keepalive: true
-    }).catch(() => {});
-  }, []);
-  return decision.variant === 'treatment' ? treatment : children;
-};
-
-<Experiment flag="docs-contact-sales-cta" treatment={<ContactSalesCard surface="foundry" />} />
-
-## 필수 조건
+<h2 id="prerequisites">
+  필수 조건
+</h2>
 
 Microsoft Foundry로 Claude Code를 구성하기 전에 다음을 확인하세요:
 
@@ -200,9 +20,13 @@ Microsoft Foundry로 Claude Code를 구성하기 전에 다음을 확인하세�
   Claude Code를 여러 사용자에게 배포하는 경우 Anthropic이 새 모델을 출시할 때 중단을 방지하기 위해 [모델 버전을 고정](#4-pin-model-versions)하세요.
 </Note>
 
-## 설정
+<h2 id="setup">
+  설정
+</h2>
 
-### 1. Microsoft Foundry 리소스 프로비저닝
+<h3 id="1-provision-microsoft-foundry-resource">
+  1. Microsoft Foundry 리소스 프로비저닝
+</h3>
 
 먼저 Azure에서 Claude 리소스를 만듭니다:
 
@@ -213,7 +37,9 @@ Microsoft Foundry로 Claude Code를 구성하기 전에 다음을 확인하세�
    * Claude Sonnet
    * Claude Haiku
 
-### 2. Azure 자격 증명 구성
+<h3 id="2-configure-azure-credentials">
+  2) Azure 자격 증명 구성
+</h3>
 
 Claude Code는 Microsoft Foundry에 대해 두 가지 인증 방법을 지원합니다. 보안 요구 사항에 가장 적합한 방법을 선택하세요.
 
@@ -240,10 +66,12 @@ az login
 ```
 
 <Note>
-  Microsoft Foundry를 사용할 때 `/login` 및 `/logout` 명령은 Azure 자격 증명을 통해 인증이 처리되므로 비활성화됩니다.
+  Microsoft Foundry를 사용할 때 `/logout` 명령은 Azure 자격 증명을 통해 인증이 처리되므로 사용할 수 없습니다.
 </Note>
 
-### 3. Claude Code 구성
+<h3 id="3-configure-claude-code">
+  3. Claude Code 구성
+</h3>
 
 Microsoft Foundry를 활성화하려면 다음 환경 변수를 설정합니다:
 
@@ -257,7 +85,9 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 # export ANTHROPIC_FOUNDRY_BASE_URL=https://{resource}.services.ai.azure.com/anthropic
 ```
 
-### 4. 모델 버전 고정
+<h3 id="4-pin-model-versions">
+  4. 모델 버전 고정
+</h3>
 
 <Warning>
   모든 배포에 대해 특정 모델 버전을 고정합니다. 고정하지 않고 모델 별칭(`sonnet`, `opus`, `haiku`)을 사용하면 Claude Code가 Foundry 계정에서 사용할 수 없는 최신 모델 버전을 사용하려고 시도하여 Anthropic이 업데이트를 출시할 때 기존 사용자가 중단될 수 있습니다. Azure 배포를 만들 때 "최신으로 자동 업데이트" 대신 특정 모델 버전을 선택합니다.
@@ -265,23 +95,39 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 
 모델 변수를 1단계에서 만든 배포 이름과 일치하도록 설정합니다.
 
-`ANTHROPIC_DEFAULT_OPUS_MODEL`이 없으면 Foundry의 `opus` 별칭은 Opus 4.6으로 확인됩니다. 최신 모델을 사용하려면 Opus 4.7 ID로 설정합니다:
+`ANTHROPIC_DEFAULT_OPUS_MODEL`이 없으면 Foundry의 `opus` 별칭은 Opus 4.6으로 확인됩니다. 최신 모델을 사용하려면 Opus 4.8 ID로 설정합니다:
 
 ```bash theme={null}
-export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-7'
+export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'
 export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-4-6'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5'
 ```
 
+백그라운드 작업(예: 세션 제목 생성)은 일반적으로 Haiku 클래스 모델인 소형/빠른 모델을 사용합니다. Foundry에서 Claude Code는 모든 계정이 Haiku 배포를 가지고 있지 않기 때문에 기본 모델로 기본 설정됩니다. 백그라운드 작업에 Haiku를 사용하려면 위에 표시된 대로 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 계정에서 사용 가능한 Haiku 배포로 설정합니다.
+
 현재 및 레거시 모델 ID는 [모델 개요](https://platform.claude.com/docs/en/about-claude/models/overview)를 참조하세요. 전체 환경 변수 목록은 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하세요.
 
-[Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)은 자동으로 활성화됩니다. 기본 5분 대신 1시간 캐시 TTL을 요청하려면 다음 변수를 설정합니다. 1시간 TTL로 캐시 쓰기는 더 높은 요금으로 청구됩니다:
+[Prompt caching](/ko/prompt-caching)은 자동으로 활성화됩니다. 기본 5분 대신 1시간 캐시 TTL을 요청하려면 다음 변수를 설정합니다. 1시간 TTL로 캐시 쓰기는 더 높은 요금으로 청구됩니다:
 
 ```bash theme={null}
 export ENABLE_PROMPT_CACHING_1H=1
 ```
 
-## Azure RBAC 구성
+<h3 id="5-run-claude-code">
+  5. Claude Code 실행
+</h3>
+
+환경 변수가 설정되면 프로젝트 디렉터리에서 Claude Code를 시작합니다:
+
+```bash theme={null}
+claude
+```
+
+Claude Code는 환경에서 `CLAUDE_CODE_USE_FOUNDRY` 및 기타 Foundry 변수를 읽고 첫 번째 프롬프트에서 Azure 리소스에 연결합니다. Bedrock 및 Vertex AI와 달리 Foundry는 대화형 설정 마법사가 없으므로 3단계와 4단계의 환경 변수가 유일한 구성 경로입니다.
+
+<h2 id="azure-rbac-configuration">
+  Azure RBAC 구성
+</h2>
 
 `Azure AI User` 및 `Cognitive Services User` 기본 역할에는 Claude 모델을 호출하는 데 필요한 모든 권한이 포함됩니다.
 
@@ -301,13 +147,17 @@ export ENABLE_PROMPT_CACHING_1H=1
 
 자세한 내용은 [Microsoft Foundry RBAC 설명서](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry)를 참조하세요.
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
 "Failed to get token from azureADTokenProvider: ChainedTokenCredential authentication failed" 오류가 발생하면:
 
 * 환경에서 Entra ID를 구성하거나 `ANTHROPIC_FOUNDRY_API_KEY`를 설정합니다.
 
-## 추가 리소스
+<h2 id="additional-resources">
+  추가 리소스
+</h2>
 
 * [Microsoft Foundry 설명서](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-azure-ai-foundry)
 * [Microsoft Foundry 모델](https://ai.azure.com/explore/models)

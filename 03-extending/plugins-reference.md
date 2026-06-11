@@ -14,13 +14,17 @@
 
 **플러그인**은 Claude Code를 사용자 정의 기능으로 확장하는 자체 포함된 컴포넌트 디렉토리입니다. 플러그인 컴포넌트에는 skills, agents, hooks, MCP servers, LSP servers 및 monitors가 포함됩니다.
 
-## 플러그인 컴포넌트 참조
+<h2 id="plugin-components-reference">
+  플러그인 컴포넌트 참조
+</h2>
 
-### Skills
+<h3 id="skills">
+  Skills
+</h3>
 
 플러그인은 Claude Code에 skills를 추가하여 사용자나 Claude가 호출할 수 있는 `/name` 바로가기를 생성합니다.
 
-**위치**: 플러그인 루트의 `skills/` 또는 `commands/` 디렉토리
+**위치**: 플러그인 루트의 `skills/` 또는 `commands/` 디렉토리, 또는 플러그인 루트의 단일 `SKILL.md` 파일
 
 **파일 형식**: Skills는 `SKILL.md`가 있는 디렉토리이고, commands는 간단한 마크다운 파일입니다.
 
@@ -44,7 +48,9 @@ skills/
 
 완전한 세부 정보는 [Skills](/ko/skills)를 참조하세요.
 
-### Agents
+<h3 id="agents">
+  Agents
+</h3>
 
 플러그인은 Claude가 적절할 때 자동으로 호출할 수 있는 특정 작업을 위한 특화된 subagents를 제공할 수 있습니다.
 
@@ -78,7 +84,9 @@ disallowedTools: Write, Edit
 
 완전한 세부 정보는 [Subagents](/ko/sub-agents)를 참조하세요.
 
-### Hooks
+<h3 id="hooks">
+  Hooks
+</h3>
 
 플러그인은 Claude Code 이벤트에 자동으로 응답하는 이벤트 핸들러를 제공할 수 있습니다.
 
@@ -97,7 +105,7 @@ disallowedTools: Write, Edit
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/format-code.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/format-code.sh"
           }
         ]
       }
@@ -111,6 +119,7 @@ disallowedTools: Write, Edit
 | Event                 | When it fires                                                                                                                                          |
 | :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SessionStart`        | When a session begins or resumes                                                                                                                       |
+| `Setup`               | When you start Claude Code with `--init-only`, or with `--init` or `--maintenance` in `-p` mode. For one-time preparation in CI or scripts             |
 | `UserPromptSubmit`    | When you submit a prompt, before Claude processes it                                                                                                   |
 | `UserPromptExpansion` | When a user-typed command expands into a prompt, before it reaches Claude. Can block the expansion                                                     |
 | `PreToolUse`          | Before a tool call executes. Can block it                                                                                                              |
@@ -120,6 +129,7 @@ disallowedTools: Write, Edit
 | `PostToolUseFailure`  | After a tool call fails                                                                                                                                |
 | `PostToolBatch`       | After a full batch of parallel tool calls resolves, before the next model call                                                                         |
 | `Notification`        | When Claude Code sends a notification                                                                                                                  |
+| `MessageDisplay`      | While assistant message text is displayed                                                                                                              |
 | `SubagentStart`       | When a subagent is spawned                                                                                                                             |
 | `SubagentStop`        | When a subagent finishes                                                                                                                               |
 | `TaskCreated`         | When a task is being created via `TaskCreate`                                                                                                          |
@@ -147,7 +157,9 @@ disallowedTools: Write, Edit
 * `prompt`: LLM으로 프롬프트 평가 (컨텍스트에 대해 `$ARGUMENTS` 플레이스홀더 사용)
 * `agent`: 복잡한 검증 작업을 위해 도구가 있는 에이전트 검증자 실행
 
-### MCP servers
+<h3 id="mcp-servers">
+  MCP servers
+</h3>
 
 플러그인은 Claude Code를 외부 도구 및 서비스와 연결하기 위해 Model Context Protocol (MCP) servers를 번들로 제공할 수 있습니다.
 
@@ -183,7 +195,9 @@ disallowedTools: Write, Edit
 * 서버 기능은 Claude의 기존 도구와 원활하게 통합됩니다.
 * 플러그인 servers는 사용자 MCP servers와 독립적으로 구성할 수 있습니다.
 
-### LSP servers
+<h3 id="lsp-servers">
+  LSP servers
+</h3>
 
 <Tip>
   LSP 플러그인을 사용하려고 하시나요? 공식 마켓플레이스에서 설치하세요: `/plugin` Discover 탭에서 "lsp"를 검색하세요. 이 섹션은 공식 마켓플레이스에서 다루지 않는 언어에 대해 LSP 플러그인을 만드는 방법을 문서화합니다.
@@ -250,8 +264,6 @@ LSP 통합은 다음을 제공합니다:
 | `settings`              | `workspace/didChangeConfiguration`을 통해 전달되는 설정 |
 | `workspaceFolder`       | 서버의 작업 공간 폴더 경로                                |
 | `startupTimeout`        | 서버 시작을 기다릴 최대 시간 (밀리초)                         |
-| `shutdownTimeout`       | 정상 종료를 기다릴 최대 시간 (밀리초)                         |
-| `restartOnCrash`        | 서버가 충돌하면 자동으로 다시 시작할지 여부                       |
 | `maxRestarts`           | 포기하기 전 최대 재시작 시도 횟수                            |
 
 <Warning>
@@ -260,15 +272,17 @@ LSP 통합은 다음을 제공합니다:
 
 **사용 가능한 LSP 플러그인:**
 
-| 플러그인             | 언어 서버                      | 설치 명령어                                                                          |
-| :--------------- | :------------------------- | :------------------------------------------------------------------------------ |
-| `pyright-lsp`    | Pyright (Python)           | `pip install pyright` 또는 `npm install -g pyright`                               |
-| `typescript-lsp` | TypeScript Language Server | `npm install -g typescript-language-server typescript`                          |
-| `rust-lsp`       | rust-analyzer              | [rust-analyzer 설치 참조](https://rust-analyzer.github.io/manual.html#installation) |
+| 플러그인                | 언어 서버                      | 설치 명령어                                                                          |
+| :------------------ | :------------------------- | :------------------------------------------------------------------------------ |
+| `pyright-lsp`       | Pyright (Python)           | `pip install pyright` 또는 `npm install -g pyright`                               |
+| `typescript-lsp`    | TypeScript Language Server | `npm install -g typescript-language-server typescript`                          |
+| `rust-analyzer-lsp` | rust-analyzer              | [rust-analyzer 설치 참조](https://rust-analyzer.github.io/manual.html#installation) |
 
 먼저 언어 서버를 설치한 다음 마켓플레이스에서 플러그인을 설치하세요.
 
-### Monitors
+<h3 id="monitors">
+  Monitors
+</h3>
 
 플러그인은 플러그인이 활성화될 때 Claude Code가 자동으로 시작하는 백그라운드 monitors를 선언할 수 있습니다. 각 monitor는 세션 동안 셸 명령어를 실행하고 모든 stdout 라인을 Claude에게 알림으로 전달하므로 Claude는 로그 항목, 상태 변경 또는 폴링된 이벤트에 반응할 수 있으며 자신이 watch를 시작하도록 요청받을 필요가 없습니다.
 
@@ -288,7 +302,7 @@ LSP 통합은 다음을 제공합니다:
 [
   {
     "name": "deploy-status",
-    "command": "${CLAUDE_PLUGIN_ROOT}/scripts/poll-deploy.sh ${user_config.api_endpoint}",
+    "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/poll-deploy.sh ${user_config.api_endpoint}",
     "description": "배포 상태 변경"
   },
   {
@@ -300,7 +314,7 @@ LSP 통합은 다음을 제공합니다:
 ]
 ```
 
-monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 동일한 배열로 설정하세요. 기본이 아닌 경로에서 로드하려면 `monitors`를 `"./config/monitors.json"`과 같은 상대 경로 문자열로 설정하세요.
+monitors를 인라인으로 선언하려면 `plugin.json`의 `experimental.monitors`를 동일한 배열로 설정하세요. 기본이 아닌 경로에서 로드하려면 `experimental.monitors`를 `"./config/monitors.json"`과 같은 상대 경로 문자열로 설정하세요. Monitors는 [실험적 컴포넌트](#experimental-components)입니다.
 
 **필수 필드:**
 
@@ -316,13 +330,15 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 | :----- | :------------------------------------------------------------------------------------------------------------------------------------------ |
 | `when` | monitor가 시작되는 시기를 제어합니다. `"always"`는 세션 시작 및 플러그인 다시 로드 시 시작하며 기본값입니다. `"on-skill-invoke:<skill-name>"`은 이 플러그인의 명명된 skill이 처음 발송될 때 시작합니다. |
 
-`command` 값은 MCP 및 LSP 서버 구성과 동일한 [변수 대체](#environment-variables)를 지원합니다: `${CLAUDE_PLUGIN_ROOT}`, `${CLAUDE_PLUGIN_DATA}`, `${user_config.*}` 및 환경의 모든 `${ENV_VAR}`. 스크립트가 플러그인 자체 디렉토리에서 실행되어야 하는 경우 명령어 앞에 `cd "${CLAUDE_PLUGIN_ROOT}" && `를 붙이세요.
+`command` 값은 MCP 및 LSP 서버 구성과 동일한 [변수 대체](#environment-variables)를 지원합니다: `${CLAUDE_PLUGIN_ROOT}`, `${CLAUDE_PLUGIN_DATA}`, `${CLAUDE_PROJECT_DIR}`, `${user_config.*}` 및 환경의 모든 `${ENV_VAR}`. 스크립트가 플러그인 자체 디렉토리에서 실행되어야 하는 경우 명령어 앞에 `cd "${CLAUDE_PLUGIN_ROOT}" && `를 붙이세요.
 
 세션 중간에 플러그인을 비활성화해도 이미 실행 중인 monitors는 중지되지 않습니다. 세션이 끝날 때 중지됩니다.
 
-### Themes
+<h3 id="themes">
+  Themes
+</h3>
 
-플러그인은 `/theme`에 기본 제공 프리셋 및 사용자의 로컬 테마와 함께 나타나는 색상 테마를 제공할 수 있습니다. 테마는 `themes/` 디렉토리의 JSON 파일로, `base` 프리셋과 색상 토큰의 sparse `overrides` 맵을 포함합니다.
+플러그인은 `/theme`에 기본 제공 프리셋 및 사용자의 로컬 테마와 함께 나타나는 색상 테마를 제공할 수 있습니다. 테마는 `themes/` 디렉토리의 JSON 파일로, `base` 프리셋과 색상 토큰의 sparse `overrides` 맵을 포함합니다. Themes는 [실험적 컴포넌트](#experimental-components)입니다.
 
 ```json theme={null}
 {
@@ -340,7 +356,9 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 
 ***
 
-## 플러그인 설치 범위
+<h2 id="plugin-installation-scopes">
+  플러그인 설치 범위
+</h2>
 
 플러그인을 설치할 때 플러그인이 사용 가능한 위치와 다른 사람이 사용할 수 있는지를 결정하는 **범위**를 선택합니다:
 
@@ -355,21 +373,75 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 
 ***
 
-## 플러그인 매니페스트 스키마
+<h2 id="skills-directory-plugins">
+  Skills-directory 플러그인
+</h2>
+
+skills 디렉토리 아래의 모든 폴더가 `.claude-plugin/plugin.json` 매니페스트를 포함하면 다음 세션에서 `<name>@skills-dir`이라는 플러그인으로 로드되며, 마켓플레이스나 설치 단계가 없습니다. [`plugin init`](#plugin-init)으로 스캐폴드하세요. 마켓플레이스 설치와 달리 플러그인은 플러그인 캐시에 복사되지 않고 제자리에서 발견됩니다.
+
+skills 디렉토리 트리는 세 가지 서로 다른 것을 지원합니다:
+
+| 무엇을 가지고 있는지                                   | 무엇인지                                                                 |
+| :-------------------------------------------- | :------------------------------------------------------------------- |
+| 매니페스트가 없는 `<skills-dir>/foo/SKILL.md`         | `foo`라는 일반 [skill](/ko/skills)                                       |
+| `<skills-dir>/foo/.claude-plugin/plugin.json` | `foo@skills-dir` 플러그인으로, 자체 skills, agents, hooks 등을 번들로 제공할 수 있습니다. |
+| `<plugin>/skills/bar/SKILL.md`                | 플러그인 내에 패키지된 `bar` skill                                             |
+
+<h3 id="choose-where-the-plugin-loads-from">
+  플러그인이 로드되는 위치 선택
+</h3>
+
+| Skills 디렉토리             | 범위       | 로드                                             |
+| :---------------------- | :------- | :--------------------------------------------- |
+| `~/.claude/skills/`     | personal | 위치가 당신의 것이므로 모든 프로젝트에서                         |
+| `<cwd>/.claude/skills/` | project  | 해당 폴더에 대한 작업 공간 [신뢰 대화](/ko/settings)를 수락한 후에만 |
+
+프로젝트 범위 플러그인은 저장소에 체크인되고 복제하는 모든 협력자에게 도달합니다. 해당 콘텐츠는 저장소에서 오므로 `.claude/settings.json`을 관리하는 것과 동일한 신뢰 게이트 후에만 로드되며, 코드를 실행하는 컴포넌트는 추가로 제한됩니다:
+
+* 선언하는 MCP servers는 프로젝트 `.mcp.json`과 동일한 [서버별 승인](/ko/mcp)을 거칩니다.
+* LSP servers는 작업 공간을 신뢰한 후에만 시작됩니다.
+* [백그라운드 monitors](#monitors)는 로드되지 않습니다.
+
+개인 범위 플러그인에는 이러한 제한이 없습니다.
+
+<Warning>
+  프로젝트 범위 `@skills-dir` 플러그인은 Claude Code를 시작하는 디렉토리의 `.claude/skills/`에서만 로드됩니다. 일반 skills 및 commands가 하는 것처럼 [저장소 루트로 이동](/ko/skills#automatic-discovery-from-parent-and-nested-directories)하지 않으므로 서브디렉토리에서 시작하면 저장소 루트에 있는 플러그인을 놓칩니다. 저장소 루트에서 시작하거나 디렉토리를 변경한 후 `/reload-plugins`를 실행하세요.
+</Warning>
+
+<h3 id="edit-reload-and-disable-a-skills-directory-plugin">
+  Skills-directory 플러그인 편집, 다시 로드 및 비활성화
+</h3>
+
+skill의 `SKILL.md`에 대한 변경 사항은 현재 세션에서 즉시 적용됩니다. `hooks/`, `.mcp.json`, `agents/` 및 `output-styles/`와 같은 플러그인의 다른 컴포넌트에 대한 변경 사항은 그렇지 않습니다. `/reload-plugins`를 실행하거나 Claude Code를 다시 시작하여 이들을 선택하세요. [라이브 변경 감지](/ko/skills#live-change-detection)를 참조하세요.
+
+skills-directory 플러그인 로드를 중지하려면 해당 폴더를 삭제하거나 이름으로 비활성화하세요. 마켓플레이스에서 아무것도 설치되지 않았으므로 `uninstall` 단계가 없습니다.
+
+```bash theme={null}
+claude plugin disable my-tool@skills-dir
+```
+
+***
+
+<h2 id="plugin-manifest-schema">
+  플러그인 매니페스트 스키마
+</h2>
 
 `.claude-plugin/plugin.json` 파일은 플러그인의 메타데이터 및 구성을 정의합니다. 이 섹션은 지원되는 모든 필드 및 옵션을 문서화합니다.
 
 매니페스트는 선택사항입니다. 생략하면 Claude Code는 [기본 위치](#file-locations-reference)에서 컴포넌트를 자동으로 발견하고 디렉토리 이름에서 플러그인 이름을 파생합니다. 메타데이터를 제공하거나 사용자 정의 컴포넌트 경로가 필요할 때 매니페스트를 사용하세요.
 
-### 완전한 스키마
+<h3 id="complete-schema">
+  완전한 스키마
+</h3>
 
 ```json theme={null}
 {
   "name": "plugin-name",
+  "displayName": "Plugin Name",
   "version": "1.2.0",
-  "description": "간단한 플러그인 설명",
+  "description": "Brief plugin description",
   "author": {
-    "name": "작성자 이름",
+    "name": "Author Name",
     "email": "author@example.com",
     "url": "https://github.com/author"
   },
@@ -379,13 +451,15 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
   "keywords": ["keyword1", "keyword2"],
   "skills": "./custom/skills/",
   "commands": ["./custom/commands/special.md"],
-  "agents": "./custom/agents/",
+  "agents": ["./custom/agents/reviewer.md"],
   "hooks": "./config/hooks.json",
   "mcpServers": "./mcp-config.json",
   "outputStyles": "./styles/",
-  "themes": "./themes/",
   "lspServers": "./.lsp.json",
-  "monitors": "./monitors.json",
+  "experimental": {
+    "themes": "./themes/",
+    "monitors": "./monitors.json"
+  },
   "dependencies": [
     "helper-lib",
     { "name": "secrets-vault", "version": "~2.1.0" }
@@ -393,7 +467,9 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 }
 ```
 
-### 필수 필드
+<h3 id="required-fields">
+  필수 필드
+</h3>
 
 매니페스트를 포함하는 경우 `name`이 유일한 필수 필드입니다.
 
@@ -403,36 +479,80 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 
 이 이름은 컴포넌트 네임스페이싱에 사용됩니다. 예를 들어 UI에서 이름이 `plugin-dev`인 플러그인의 agent `agent-creator`는 `plugin-dev:agent-creator`로 나타납니다.
 
-### 메타데이터 필드
+<h3 id="unrecognized-fields">
+  인식되지 않은 필드
+</h3>
 
-| 필드            | 타입     | 설명                                                                                                                                                                                                               | 예시                                                 |
-| :------------ | :----- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------- |
-| `version`     | string | 선택사항. 의미 있는 버전. 이를 설정하면 플러그인이 해당 버전 문자열로 고정되므로 사용자는 버전을 올릴 때만 업데이트를 받습니다. 생략하면 Claude Code는 git 커밋 SHA로 폴백되므로 모든 커밋이 새 버전으로 취급됩니다. 마켓플레이스 항목에도 설정된 경우 `plugin.json`이 우선합니다. [버전 관리](#version-management)를 참조하세요. | `"2.1.0"`                                          |
-| `description` | string | 플러그인 목적에 대한 간단한 설명                                                                                                                                                                                               | `"배포 자동화 도구"`                                      |
-| `author`      | object | 작성자 정보                                                                                                                                                                                                           | `{"name": "Dev Team", "email": "dev@company.com"}` |
-| `homepage`    | string | 문서 URL                                                                                                                                                                                                           | `"https://docs.example.com"`                       |
-| `repository`  | string | 소스 코드 URL                                                                                                                                                                                                        | `"https://github.com/user/plugin"`                 |
-| `license`     | string | 라이선스 식별자                                                                                                                                                                                                         | `"MIT"`, `"Apache-2.0"`                            |
-| `keywords`    | array  | 발견 태그                                                                                                                                                                                                            | `["deployment", "ci-cd"]`                          |
+Claude Code는 인식하지 못하는 최상위 필드를 무시합니다. 다른 생태계의 메타데이터를 `plugin.json`에 유지할 수 있으며 플러그인은 여전히 로드됩니다. 이를 통해 VS Code 또는 Cursor 확장 매니페스트, npm `package.json` 또는 MCPB/DXT 번들 매니페스트로도 작동하는 하나의 매니페스트를 유지하는 것이 실용적입니다.
 
-### 컴포넌트 경로 필드
+`claude plugin validate`는 인식되지 않은 필드를 오류가 아닌 경고로 보고합니다. 필드가 인식된 필드와 한두 글자 차이나면 경고는 의도된 이름을 제안합니다. 인식되지 않은 필드 경고만 있는 플러그인은 여전히 검증을 통과하고 런타임에 로드됩니다.
 
-| 필드             | 타입                    | 설명                                                                                                              | 예시                                                   |
-| :------------- | :-------------------- | :-------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
-| `skills`       | string\|array         | `<name>/SKILL.md`를 포함하는 사용자 정의 skill 디렉토리 (기본 `skills/` 대체)                                                     | `"./custom/skills/"`                                 |
-| `commands`     | string\|array         | 사용자 정의 평면 `.md` skill 파일 또는 디렉토리 (기본 `commands/` 대체)                                                            | `"./custom/cmd.md"` 또는 `["./cmd1.md"]`               |
-| `agents`       | string\|array         | 사용자 정의 agent 파일 (기본 `agents/` 대체)                                                                               | `"./custom/agents/reviewer.md"`                      |
-| `hooks`        | string\|array\|object | Hook 구성 경로 또는 인라인 구성                                                                                            | `"./my-extra-hooks.json"`                            |
-| `mcpServers`   | string\|array\|object | MCP 구성 경로 또는 인라인 구성                                                                                             | `"./my-extra-mcp-config.json"`                       |
-| `outputStyles` | string\|array         | 사용자 정의 출력 스타일 파일/디렉토리 (기본 `output-styles/` 대체)                                                                  | `"./styles/"`                                        |
-| `themes`       | string\|array         | 색상 테마 파일/디렉토리 (기본 `themes/` 대체). [테마](#themes) 참조                                                               | `"./themes/"`                                        |
-| `lspServers`   | string\|array\|object | [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) 코드 인텔리전스 구성 (정의로 이동, 참조 찾기 등) | `"./.lsp.json"`                                      |
-| `monitors`     | string\|array         | 플러그인이 활성화될 때 자동으로 시작되는 백그라운드 [Monitor](/ko/tools-reference#monitor-tool) 구성. [Monitors](#monitors) 참조           | `"./monitors.json"`                                  |
-| `userConfig`   | object                | 플러그인이 활성화될 때 사용자에게 프롬프트하는 사용자 구성 가능 값. [사용자 구성](#user-configuration) 참조                                         | 아래 참조                                                |
-| `channels`     | array                 | 메시지 주입을 위한 채널 선언 (Telegram, Slack, Discord 스타일). [채널](#channels) 참조                                             | 아래 참조                                                |
-| `dependencies` | array                 | 이 플러그인이 필요로 하는 다른 플러그인, 선택적으로 semver 버전 제약 포함. [플러그인 종속성 버전 제약](/ko/plugin-dependencies) 참조                     | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
+잘못된 타입의 필드는 여전히 실패합니다. 예를 들어 `keywords` 값이 배열 대신 문자열인 경우 로드 오류이며 `claude plugin validate`는 이를 오류로 보고합니다.
 
-### 사용자 구성
+`--strict`를 전달하여 경고를 오류로 취급합니다. CI에서 이를 사용하여 플러그인이 런타임에 로드되더라도 게시하기 전에 오타가 난 필드 이름이나 다른 도구의 매니페스트에서 남겨진 필드를 포착합니다.
+
+```bash theme={null}
+claude plugin validate ./my-plugin --strict
+```
+
+<h3 id="metadata-fields">
+  메타데이터 필드
+</h3>
+
+| 필드               | 타입      | 설명                                                                                                                                                                                                                  | 예시                                                                |
+| :--------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------- |
+| `$schema`        | string  | 편집기 자동 완성 및 검증을 위한 JSON Schema URL. Claude Code는 로드 시 이 필드를 무시합니다.                                                                                                                                                  | `"https://json.schemastore.org/claude-code-plugin-manifest.json"` |
+| `displayName`    | string  | {/* min-version: 2.1.143 */}`/plugin` 선택기 및 기타 UI 표면에 표시되는 사람이 읽을 수 있는 이름입니다. 생략하면 `name`으로 폴백됩니다. `name`과 달리 공백과 모든 대소문자를 포함할 수 있습니다. 네임스페이싱 또는 조회에 사용되지 않습니다. Claude Code v2.1.143 이상이 필요합니다.                     | `"Deployment Tools"`                                              |
+| `version`        | string  | 선택사항. 의미 있는 버전입니다. 이를 설정하면 플러그인이 해당 버전 문자열로 고정되므로 사용자는 버전을 올릴 때만 업데이트를 받습니다. 생략하면 Claude Code는 git 커밋 SHA로 폴백되므로 모든 커밋이 새 버전으로 취급됩니다. 마켓플레이스 항목에도 설정된 경우 `plugin.json`이 우선합니다. [버전 관리](#version-management)를 참조하세요. | `"2.1.0"`                                                         |
+| `description`    | string  | 플러그인 목적에 대한 간단한 설명                                                                                                                                                                                                  | `"배포 자동화 도구"`                                                     |
+| `author`         | object  | 작성자 정보                                                                                                                                                                                                              | `{"name": "Dev Team", "email": "dev@company.com"}`                |
+| `homepage`       | string  | 문서 URL                                                                                                                                                                                                              | `"https://docs.example.com"`                                      |
+| `repository`     | string  | 소스 코드 URL                                                                                                                                                                                                           | `"https://github.com/user/plugin"`                                |
+| `license`        | string  | 라이선스 식별자                                                                                                                                                                                                            | `"MIT"`, `"Apache-2.0"`                                           |
+| `keywords`       | array   | 발견 태그                                                                                                                                                                                                               | `["deployment", "ci-cd"]`                                         |
+| `defaultEnabled` | boolean | {/* min-version: 2.1.154 */}사용자가 설정하지 않았을 때 플러그인이 활성화된 상태로 시작할지 여부입니다. 기본값은 `true`입니다. [기본 활성화](#default-enablement)를 참조하세요. Claude Code v2.1.154 이상이 필요합니다.                                                        | `false`                                                           |
+
+<h3 id="default-enablement">
+  기본 활성화
+</h3>
+
+`plugin.json`에서 `defaultEnabled: false`를 설정하여 비활성화된 상태로 설치되는 플러그인을 제공하세요. 사용자는 `claude plugin enable <plugin>` 또는 `/plugin` 인터페이스로 켭니다. 외부 서비스에 연결하는 플러그인과 같이 사용자가 옵트인해야 하는 비용이나 범위를 추가하는 플러그인에 사용하세요. 이는 Claude Code v2.1.154 이상이 필요합니다. 이전 버전은 필드를 무시하고 설치 시 플러그인을 활성화합니다.
+
+`defaultEnabled`는 다른 것이 플러그인의 상태를 결정하지 않았을 때의 폴백입니다. 두 가지가 이를 우선합니다:
+
+* **사용자의 설정**: 모든 설정 범위에서 플러그인에 대한 `enabledPlugins`의 항목입니다. 작성되면 플러그인 업데이트 및 재설치 전체에서 유지되므로 나중 릴리스에서 `defaultEnabled`를 변경해도 기존 사용자를 뒤집지 않습니다.
+* **종속성 요구 사항**: 플러그인이 활성화된 다른 플러그인에 의해 필요할 때 Claude Code는 설치 또는 활성화 시 `true`를 작성합니다. 이는 명시적 설정을 제공하므로 자체 기본값이 더 이상 적용되지 않습니다. [종속성이 있는 플러그인 활성화 또는 비활성화](/ko/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies)를 참조하세요.
+
+동일한 필드가 플러그인의 마켓플레이스 항목에 나타날 수 있으며, 여기서 `plugin.json`의 값보다 우선합니다. [선택사항 플러그인 필드](/ko/plugin-marketplaces#optional-plugin-fields)를 참조하세요.
+
+<h3 id="component-path-fields">
+  컴포넌트 경로 필드
+</h3>
+
+| 필드                      | 타입                    | 설명                                                                                                              | 예시                                                   |
+| :---------------------- | :-------------------- | :-------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
+| `skills`                | string\|array         | `<name>/SKILL.md`를 포함하는 사용자 정의 skill 디렉토리 (기본 `skills/` 외에 추가)                                                  | `"./custom/skills/"`                                 |
+| `commands`              | string\|array         | 사용자 정의 평면 `.md` skill 파일 또는 디렉토리 (기본 `commands/` 대체)                                                            | `"./custom/cmd.md"` 또는 `["./cmd1.md"]`               |
+| `agents`                | string\|array         | 사용자 정의 agent 파일 (기본 `agents/` 대체)                                                                               | `"./custom/agents/reviewer.md"`                      |
+| `hooks`                 | string\|array\|object | Hook 구성 경로 또는 인라인 구성                                                                                            | `"./my-extra-hooks.json"`                            |
+| `mcpServers`            | string\|array\|object | MCP 구성 경로 또는 인라인 구성                                                                                             | `"./my-extra-mcp-config.json"`                       |
+| `outputStyles`          | string\|array         | 사용자 정의 출력 스타일 파일/디렉토리 (기본 `output-styles/` 대체)                                                                  | `"./styles/"`                                        |
+| `lspServers`            | string\|array\|object | [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) 코드 인텔리전스 구성 (정의로 이동, 참조 찾기 등) | `"./.lsp.json"`                                      |
+| `experimental.themes`   | string\|array         | 색상 테마 파일/디렉토리 (기본 `themes/` 대체). [테마](#themes) 참조                                                               | `"./themes/"`                                        |
+| `experimental.monitors` | string\|array         | 플러그인이 활성화될 때 자동으로 시작되는 백그라운드 [Monitor](/ko/tools-reference#monitor-tool) 구성. [Monitors](#monitors) 참조           | `"./monitors.json"`                                  |
+| `userConfig`            | object                | 플러그인이 활성화될 때 사용자에게 프롬프트하는 사용자 구성 가능 값. [사용자 구성](#user-configuration) 참조                                         | 아래 참조                                                |
+| `channels`              | array                 | 메시지 주입을 위한 채널 선언 (Telegram, Slack, Discord 스타일). [채널](#channels) 참조                                             | 아래 참조                                                |
+| `dependencies`          | array                 | 이 플러그인이 필요로 하는 다른 플러그인, 선택적으로 semver 버전 제약 포함. [플러그인 종속성 버전 제약](/ko/plugin-dependencies) 참조                     | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
+
+<h3 id="experimental-components">
+  실험적 컴포넌트
+</h3>
+
+`experimental` 키 아래의 컴포넌트인 `themes` 및 `monitors`는 안정화되는 동안 릴리스 간에 변경될 수 있는 매니페스트 스키마를 가집니다. 이들을 선언하는 위치는 별도의 마이그레이션입니다. 최상위 수준은 여전히 작동하고, `claude plugin validate`는 경고하며, 향후 릴리스에서는 `experimental.*`이 필요합니다.
+
+<h3 id="user-configuration">
+  사용자 구성
+</h3>
 
 `userConfig` 필드는 플러그인이 활성화될 때 Claude Code가 사용자에게 프롬프트하는 값을 선언합니다. 사용자가 `settings.json`을 수동으로 편집하도록 요구하는 대신 이를 사용하세요.
 
@@ -471,7 +591,9 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 
 민감하지 않은 값은 `settings.json`의 `pluginConfigs[<plugin-id>].options` 아래에 저장됩니다. 민감한 값은 시스템 키체인 (또는 키체인을 사용할 수 없는 경우 `~/.claude/.credentials.json`)으로 이동합니다. 키체인 저장소는 OAuth 토큰과 공유되며 약 2 KB의 총 제한이 있으므로 민감한 값을 작게 유지하세요.
 
-### 채널
+<h3 id="channels">
+  채널
+</h3>
 
 `channels` 필드를 사용하면 플러그인이 하나 이상의 메시지 채널을 선언하여 대화에 콘텐츠를 주입할 수 있습니다. 각 채널은 플러그인이 제공하는 MCP 서버에 바인딩됩니다.
 
@@ -500,15 +622,26 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 
 `server` 필드는 필수이며 플러그인의 `mcpServers`의 키와 일치해야 합니다. 선택사항인 채널별 `userConfig`는 최상위 필드와 동일한 스키마를 사용하여 플러그인이 플러그인이 활성화될 때 봇 토큰 또는 소유자 ID를 프롬프트할 수 있습니다.
 
-### 경로 동작 규칙
+<h3 id="path-behavior-rules">
+  경로 동작 규칙
+</h3>
 
-`skills`, `commands`, `agents`, `outputStyles`, `themes` 및 `monitors`의 경우 사용자 정의 경로는 기본값을 대체합니다. 매니페스트가 `skills`를 지정하면 기본 `skills/` 디렉토리는 스캔되지 않습니다. 매니페스트가 `monitors`를 지정하면 기본 `monitors/monitors.json`은 로드되지 않습니다. [Hooks](#hooks), [MCP servers](#mcp-servers) 및 [LSP servers](#lsp-servers)는 여러 소스를 처리하기 위한 다른 의미를 가집니다.
+사용자 정의 경로가 플러그인의 기본 디렉토리를 대체하는지 확장하는지는 필드에 따라 다릅니다:
+
+* **기본값 대체**: `commands`, `agents`, `outputStyles`, `experimental.themes`, `experimental.monitors`. 예를 들어 매니페스트가 `commands`를 지정하면 기본 `commands/` 디렉토리는 스캔되지 않습니다. 기본값을 유지하고 더 많은 것을 추가하려면 명시적으로 나열하세요: `"commands": ["./commands/", "./extras/"]`
+* **기본값에 추가**: `skills`. 기본 `skills/` 디렉토리는 항상 스캔되며, `skills`에 나열된 디렉토리는 함께 로드됩니다.
+* **자체 병합 규칙**: [hooks](#hooks), [MCP servers](#mcp-servers) 및 [LSP servers](#lsp-servers). 각 섹션에서 여러 소스가 어떻게 결합되는지 참조하세요.
+
+플러그인에 기본 폴더와 일치하는 매니페스트 키가 모두 있으면 Claude Code v2.1.140 이상은 `/doctor`, `claude plugin list` 및 `/plugin` 상세 보기에서 무시된 폴더에 플래그를 지정합니다. 플러그인은 여전히 매니페스트 경로를 사용하여 로드됩니다. 매니페스트 키가 기본 폴더를 가리킬 때는 경고가 표시되지 않습니다 (예: `"commands": ["./commands/deploy.md"]`). 이 경우 폴더가 명시적으로 처리되기 때문입니다.
+
+모든 경로 필드의 경우:
 
 * 모든 경로는 플러그인 루트에 상대적이어야 하며 `./`로 시작해야 합니다.
 * 사용자 정의 경로의 컴포넌트는 동일한 명명 및 네임스페이싱 규칙을 사용합니다.
 * 여러 경로를 배열로 지정할 수 있습니다.
-* skills, commands, agents 또는 output styles의 기본 디렉토리를 유지하고 더 많은 경로를 추가하려면 배열에 기본값을 포함하세요: `"skills": ["./skills/", "./extras/"]`
 * skill 경로가 `SKILL.md`를 직접 포함하는 디렉토리를 가리킬 때 (예: 플러그인 루트를 가리키는 `"skills": ["./"]`), frontmatter의 `name` 필드가 skill의 호출 이름을 결정합니다. 이는 설치 디렉토리와 관계없이 안정적인 이름을 제공합니다. `name`이 frontmatter에 설정되지 않으면 디렉토리 basename이 폴백으로 사용됩니다.
+
+플러그인이 루트에 `SKILL.md`를 가지고 있고, `skills/` 서브디렉토리가 없으며, `skills` 매니페스트 필드가 없으면 Claude Code v2.1.142 이상에서 자동으로 단일 skill 플러그인으로 로드됩니다. 이 레이아웃에 대해 `plugin.json`에서 `"skills": ["./"]`를 설정할 필요가 없습니다. skill의 호출 이름은 위와 동일한 규칙을 따릅니다: frontmatter `name` 필드 또는 디렉토리 basename을 폴백으로 사용합니다.
 
 **경로 예시**:
 
@@ -525,13 +658,19 @@ monitors를 인라인으로 선언하려면 `plugin.json`의 `monitors` 키를 �
 }
 ```
 
-### 환경 변수
+<h3 id="environment-variables">
+  환경 변수
+</h3>
 
-Claude Code는 플러그인 경로를 참조하기 위한 두 가지 변수를 제공합니다. 둘 다 skill 콘텐츠, agent 콘텐츠, hook 명령어, monitor 명령어 및 MCP 또는 LSP 서버 구성에 나타나는 모든 곳에서 인라인으로 대체됩니다. 둘 다 hook 프로세스 및 MCP 또는 LSP 서버 서브프로세스에 환경 변수로 내보내집니다.
+Claude Code는 플러그인 경로를 참조하기 위한 세 가지 변수를 제공합니다. 모두 skill 콘텐츠, agent 콘텐츠, hook 명령어, monitor 명령어 및 MCP 또는 LSP 서버 구성에 나타나는 모든 곳에서 인라인으로 대체됩니다. 모두 hook 프로세스 및 MCP 또는 LSP 서버 서브프로세스에 환경 변수로 내보내집니다.
 
-**`${CLAUDE_PLUGIN_ROOT}`**: 플러그인 설치 디렉토리의 절대 경로입니다. 플러그인과 함께 번들로 제공되는 스크립트, 바이너리 및 구성 파일을 참조하는 데 사용하세요. 이 경로는 플러그인이 업데이트될 때 변경되므로 여기에 작성하는 파일은 업데이트 후 유지되지 않습니다.
+**`${CLAUDE_PLUGIN_ROOT}`**: 플러그인 설치 디렉토리의 절대 경로입니다. 플러그인과 함께 번들로 제공되는 스크립트, 바이너리 및 구성 파일을 참조하는 데 사용하세요. hook 명령어에서 [exec form](/ko/hooks#exec-form-and-shell-form)을 `args`와 함께 사용하여 경로가 따옴표 없이 하나의 인수로 전달되도록 하세요. shell-form hook 및 monitor 명령어에서 `"${CLAUDE_PLUGIN_ROOT}"`와 같이 큰따옴표로 감싸세요. 이 경로는 플러그인이 업데이트될 때 변경됩니다. 이전 버전의 디렉토리는 업데이트 후 약 7일 동안 디스크에 남아 있지만 이를 임시로 취급하고 여기에 상태를 작성하지 마세요.
+
+플러그인이 세션 중에 업데이트될 때 hook 명령어, monitors, MCP 서버 및 LSP 서버는 이전 버전의 경로를 계속 사용합니다. `/reload-plugins`를 실행하여 hook, MCP 서버 및 LSP 서버를 새 경로로 전환하세요. monitors는 세션 재시작이 필요합니다.
 
 **`${CLAUDE_PLUGIN_DATA}`**: 업데이트 후에도 유지되는 플러그인 상태를 위한 영구 디렉토리입니다. `node_modules` 또는 Python 가상 환경과 같은 설치된 종속성, 생성된 코드, 캐시 및 플러그인 버전 전체에서 유지되어야 하는 기타 파일에 사용하세요. 이 변수가 처음 참조될 때 디렉토리가 자동으로 생성됩니다.
+
+**`${CLAUDE_PROJECT_DIR}`**: 프로젝트 루트입니다. 이는 hook이 `CLAUDE_PROJECT_DIR` 변수에서 받는 것과 동일한 디렉토리입니다. 프로젝트 로컬 스크립트 또는 구성 파일을 참조하는 데 사용하세요. 공백이 있는 경로를 처리하기 위해 따옴표로 감싸세요 (예: `"${CLAUDE_PROJECT_DIR}/scripts/server.sh"`). MCP 서버는 MCP `roots/list` 요청을 호출할 수도 있으며, 이는 Claude Code가 시작된 디렉토리를 반환합니다.
 
 ```json theme={null}
 {
@@ -541,7 +680,7 @@ Claude Code는 플러그인 경로를 참조하기 위한 두 가지 변수를 �
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/process.sh"
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/process.sh"
           }
         ]
       }
@@ -550,7 +689,9 @@ Claude Code는 플러그인 경로를 참조하기 위한 두 가지 변수를 �
 }
 ```
 
-#### 영구 데이터 디렉토리
+<h4 id="persistent-data-directory">
+  영구 데이터 디렉토리
+</h4>
 
 `${CLAUDE_PLUGIN_DATA}` 디렉토리는 `~/.claude/plugins/data/{id}/`로 확인되며, 여기서 `{id}`는 `a-z`, `A-Z`, `0-9`, `_` 및 `-` 외부의 문자가 `-`로 대체된 플러그인 식별자입니다. `formatter@my-marketplace`로 설치된 플러그인의 경우 디렉토리는 `~/.claude/plugins/data/formatter-my-marketplace/`입니다.
 
@@ -597,11 +738,13 @@ Claude Code는 플러그인 경로를 참조하기 위한 두 가지 변수를 �
 
 ***
 
-## 플러그인 캐싱 및 파일 해석
+<h2 id="plugin-caching-and-file-resolution">
+  플러그인 캐싱 및 파일 해석
+</h2>
 
 플러그인은 두 가지 방법 중 하나로 지정됩니다:
 
-* `claude --plugin-dir`을 통해, 세션 기간 동안.
+* `claude --plugin-dir` 또는 `claude --plugin-url`을 통해, 세션 기간 동안.
 * 마켓플레이스를 통해, 향후 세션을 위해 설치됨.
 
 보안 및 검증 목적으로 Claude Code는 *마켓플레이스* 플러그인을 제자리에서 사용하는 대신 사용자의 로컬 **플러그인 캐시** (`~/.claude/plugins/cache`)에 복사합니다. 외부 파일을 참조하는 플러그인을 개발할 때 이 동작을 이해하는 것이 중요합니다.
@@ -610,25 +753,41 @@ Claude Code는 플러그인 경로를 참조하기 위한 두 가지 변수를 �
 
 Claude의 Glob 및 Grep 도구는 검색 중에 고아 버전 디렉토리를 건너뛰므로 파일 결과에는 오래된 플러그인 코드가 포함되지 않습니다.
 
-### 경로 순회 제한
+<h3 id="path-traversal-limitations">
+  경로 순회 제한
+</h3>
 
-설치된 플러그인은 해당 디렉토리 외부의 파일을 참조할 수 없습니다. 플러그인 루트 외부를 순회하는 경로 (예: `../shared-utils`)는 설치 후 작동하지 않습니다. 왜냐하면 이러한 외부 파일이 캐시에 복사되지 않기 때문입니다.
+설치된 플러그인은 해당 디렉토리 외부의 파일을 참조할 수 없습니다. 플러그인 루트 외부를 순회하는 경로(예: `../shared-utils`)는 설치 후 작동하지 않습니다. 왜냐하면 이러한 외부 파일이 캐시에 복사되지 않기 때문입니다.
 
-### 외부 종속성 작업
+<h3 id="share-files-within-a-marketplace-with-symlinks">
+  마켓플레이스 내에서 심볼릭 링크를 사용하여 파일 공유
+</h3>
 
-플러그인이 디렉토리 외부의 파일에 액세스해야 하는 경우 플러그인 디렉토리 내에서 외부 파일에 대한 심볼릭 링크를 만들 수 있습니다. 심볼릭 링크는 캐시에 보존되며 런타임에 해당 대상으로 확인됩니다. 다음 명령어는 플러그인 디렉토리 내부에서 공유 유틸리티 위치로의 링크를 만듭니다:
+플러그인이 동일한 마켓플레이스의 다른 부분과 파일을 공유해야 하는 경우 플러그인 디렉토리 내에 심볼릭 링크를 만들 수 있습니다. 플러그인이 캐시에 복사될 때 심볼릭 링크가 처리되는 방식은 해당 대상이 어디로 해석되는지에 따라 달라집니다:
+
+* **플러그인 자체 디렉토리 내:** 심볼릭 링크는 캐시에 상대 심볼릭 링크로 보존되므로 런타임에 복사된 대상으로 계속 해석됩니다.
+* **동일한 마켓플레이스 내의 다른 곳:** 심볼릭 링크는 역참조됩니다. 대상의 콘텐츠가 캐시에 복사됩니다. 이를 통해 메타 플러그인의 `skills/` 디렉토리가 마켓플레이스의 다른 플러그인으로 정의된 skills에 링크할 수 있습니다.
+* **마켓플레이스 외부:** 심볼릭 링크는 보안상의 이유로 건너뜁니다. 이는 플러그인이 시스템 경로와 같은 임의의 호스트 파일을 캐시로 가져오는 것을 방지합니다.
+
+`--plugin-dir`으로 설치되거나 로컬 경로에서 설치된 플러그인의 경우 플러그인 자체 디렉토리 내에서 해석되는 심볼릭 링크만 보존됩니다. 다른 모든 것은 건너뜁니다.
+
+다음 명령어는 마켓플레이스 플러그인 내부에서 형제 플러그인으로 정의된 공유 skill로의 링크를 만듭니다. Windows에서는 관리자 권한 명령 프롬프트에서 `mklink /D`를 사용하거나 개발자 모드를 활성화하세요:
 
 ```bash theme={null}
-ln -s /path/to/shared-utils ./shared-utils
+ln -s ../../shared-plugin/skills/foo ./skills/foo
 ```
 
 이는 캐싱 시스템의 보안 이점을 유지하면서 유연성을 제공합니다.
 
 ***
 
-## 플러그인 디렉토리 구조
+<h2 id="plugin-directory-structure">
+  플러그인 디렉토리 구조
+</h2>
 
-### 표준 플러그인 레이아웃
+<h3 id="standard-plugin-layout">
+  표준 플러그인 레이아웃
+</h3>
 
 완전한 플러그인은 다음 구조를 따릅니다:
 
@@ -675,7 +834,11 @@ enterprise-plugin/
   `.claude-plugin/` 디렉토리는 `plugin.json` 파일을 포함합니다. 다른 모든 디렉토리 (commands/, agents/, skills/, output-styles/, themes/, monitors/, hooks/)는 `.claude-plugin/` 내부가 아닌 플러그인 루트에 있어야 합니다.
 </Warning>
 
-### 파일 위치 참조
+`CLAUDE.md` 파일이 플러그인 루트에 있어도 프로젝트 컨텍스트로 로드되지 않습니다. 플러그인은 `CLAUDE.md`가 아닌 skills, agents, hooks를 통해 컨텍스트를 제공합니다. Claude의 컨텍스트에 로드되는 지침을 제공하려면 [skill](#skills)에 배치하십시오.
+
+<h3 id="file-locations-reference">
+  파일 위치 참조
+</h3>
 
 | 컴포넌트              | 기본 위치                        | 목적                                                                                                                            |
 | :---------------- | :--------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
@@ -694,11 +857,71 @@ enterprise-plugin/
 
 ***
 
-## CLI 명령어 참조
+<h2 id="cli-commands-reference">
+  CLI 명령어 참조
+</h2>
 
 Claude Code는 스크립팅 및 자동화에 유용한 비대화형 플러그인 관리를 위한 CLI 명령어를 제공합니다.
 
-### plugin install
+<h3 id="plugin-init">
+  plugin init
+</h3>
+
+`~/.claude/skills/<name>/`에서 새 플러그인을 스캐폴드합니다. 다음 Claude Code 세션에서 `<name>@skills-dir`으로 자동으로 로드되고 설치 단계 없이 `/plugin` 및 `claude plugin list`에 나타납니다.
+
+[Skills-directory 플러그인](#skills-directory-plugins)에서 범위 및 신뢰 요구 사항을 참조하세요.
+
+```bash theme={null}
+claude plugin init <name> [options]
+```
+
+**인수:**
+
+* `<name>`: 플러그인 이름. skill 네임스페이스 및 `~/.claude/skills/` 아래의 디렉토리 이름이 되므로 공백이나 경로 구분자를 포함할 수 없습니다.
+
+**옵션:**
+
+| 옵션                       | 설명                                                                                            | 기본값                     |
+| :----------------------- | :-------------------------------------------------------------------------------------------- | :---------------------- |
+| `--description <text>`   | 매니페스트 설명                                                                                      |                         |
+| `--author <name>`        | 작성자 이름                                                                                        | `git config user.name`  |
+| `--author-email <email>` | 작성자 이메일                                                                                       | `git config user.email` |
+| `--with <components...>` | 컴포넌트 폴더도 스캐폴드합니다. 유효한 값: `skills`, `agents`, `hooks`, `mcp`, `lsp`, `output-style`, `channel` |                         |
+| `-f, --force`            | 대상의 기존 `.claude-plugin/` 덮어쓰기                                                                 |                         |
+| `-h, --help`             | 명령어 도움말 표시                                                                                    |                         |
+
+**별칭:** `new`
+
+각 `--with` 값은 해당 컴포넌트에 대한 스타터 파일을 추가하여 편집할 준비가 됩니다:
+
+| 컴포넌트           | 스캐폴드하는 것                                                                                |
+| :------------- | :-------------------------------------------------------------------------------------- |
+| `skills`       | 기본 skill과 함께 추가 네임스페이스 `<name>:example` skill                                           |
+| `agents`       | `agents/` subagent 정의                                                                   |
+| `hooks`        | 샘플 이벤트 핸들러가 있는 `hooks/hooks.json`                                                       |
+| `mcp`          | HTTP 및 stdio 서버 예시가 있는 `.mcp.json`                                                      |
+| `lsp`          | 언어 서버 예시가 있는 `.lsp.json`                                                                |
+| `output-style` | 플러그인이 활성화된 동안 자동으로 적용되는 `output-styles/<name>.md`                                       |
+| `channel`      | MCP 기반 [channel](/ko/channels): stdio 서버 (`server.ts`), 해당 `.mcp.json` 및 `package.json` |
+
+스캐폴드된 플러그인은 마켓플레이스가 아닌 `@skills-dir` 소스를 사용합니다. 관리자는 [관리되는 설정](/ko/plugin-marketplaces#managed-marketplace-restrictions)에서 `strictKnownMarketplaces`로 이 소스를 차단하거나 `blockedMarketplaces`에 `{"source": "skills-dir"}`을 추가할 수 있습니다. 차단되면 `plugin init`은 작성하기 전에 실패합니다.
+
+**예시:**
+
+```bash theme={null}
+# 최소 플러그인 스캐폴드
+claude plugin init my-helper
+
+# skill 및 hook 폴더로 스캐폴드
+claude plugin init my-helper --with skills hooks
+
+# 기존 스캐폴드 덮어쓰기
+claude plugin init my-helper --force
+```
+
+<h3 id="plugin-install">
+  plugin install
+</h3>
 
 사용 가능한 마켓플레이스에서 플러그인을 설치합니다.
 
@@ -732,7 +955,9 @@ claude plugin install formatter@my-marketplace --scope project
 claude plugin install formatter@my-marketplace --scope local
 ```
 
-### plugin uninstall
+<h3 id="plugin-uninstall">
+  plugin uninstall
+</h3>
 
 설치된 플러그인을 제거합니다.
 
@@ -746,19 +971,50 @@ claude plugin uninstall <plugin> [options]
 
 **옵션:**
 
-| 옵션                    | 설명                                                 | 기본값    |
-| :-------------------- | :------------------------------------------------- | :----- |
-| `-s, --scope <scope>` | 범위에서 제거: `user`, `project` 또는 `local`              | `user` |
-| `--keep-data`         | 플러그인의 [영구 데이터 디렉토리](#persistent-data-directory) 유지 |        |
-| `-h, --help`          | 명령어 도움말 표시                                         |        |
+| 옵션                    | 설명                                                                     | 기본값    |
+| :-------------------- | :--------------------------------------------------------------------- | :----- |
+| `-s, --scope <scope>` | 범위에서 제거: `user`, `project` 또는 `local`                                  | `user` |
+| `--keep-data`         | 플러그인의 [영구 데이터 디렉토리](#persistent-data-directory) 유지                     |        |
+| `--prune`             | 다른 플러그인이 필요로 하지 않는 자동 설치된 종속성도 제거합니다. [plugin prune](#plugin-prune) 참조 |        |
+| `-y, --yes`           | `--prune` 확인 프롬프트 건너뛰기. stdin이 TTY가 아닐 때 필수                            |        |
+| `-h, --help`          | 명령어 도움말 표시                                                             |        |
 
 **별칭:** `remove`, `rm`
 
 기본적으로 마지막 남은 범위에서 제거하면 플러그인의 `${CLAUDE_PLUGIN_DATA}` 디렉토리도 삭제됩니다. 새 버전 테스트 후 재설치할 때와 같이 유지하려면 `--keep-data`를 사용하세요.
 
-### plugin enable
+<h3 id="plugin-prune">
+  plugin prune
+</h3>
 
-비활성화된 플러그인을 활성화합니다.
+더 이상 설치된 플러그인에서 필요로 하지 않는 자동 설치된 플러그인 종속성을 제거합니다. Claude Code가 다른 플러그인의 [`dependencies`](/ko/plugin-dependencies) 필드를 만족하기 위해 가져온 종속성은 제거되며, 직접 설치한 플러그인은 절대 건드리지 않습니다.
+
+```bash theme={null}
+claude plugin prune [options]
+```
+
+**옵션:**
+
+| 옵션                    | 설명                                    | 기본값    |
+| :-------------------- | :------------------------------------ | :----- |
+| `-s, --scope <scope>` | 범위에서 정리: `user`, `project` 또는 `local` | `user` |
+| `--dry-run`           | 제거될 항목을 나열하되 실제로 제거하지 않음              |        |
+| `-y, --yes`           | 확인 프롬프트 건너뛰기. stdin이 TTY가 아닐 때 필수     |        |
+| `-h, --help`          | 명령어 도움말 표시                            |        |
+
+**별칭:** `autoremove`
+
+명령어는 고아 종속성을 나열하고 제거하기 전에 확인을 요청합니다. 플러그인을 제거하고 한 단계에서 종속성을 정리하려면 `claude plugin uninstall <plugin> --prune`을 실행하세요.
+
+<Note>
+  `claude plugin prune`은 Claude Code v2.1.121 이상이 필요합니다.
+</Note>
+
+<h3 id="plugin-enable">
+  plugin enable
+</h3>
+
+비활성화된 플러그인을 활성화합니다. 플러그인이 [종속성](/ko/plugin-dependencies)을 선언하면 Claude Code는 동일한 범위에서 이들을 전이적으로 활성화하며, 종속성이 설치되지 않으면 명령어가 실패합니다.
 
 ```bash theme={null}
 claude plugin enable <plugin> [options]
@@ -775,9 +1031,11 @@ claude plugin enable <plugin> [options]
 | `-s, --scope <scope>` | 활성화할 범위: `user`, `project` 또는 `local` | `user` |
 | `-h, --help`          | 명령어 도움말 표시                            |        |
 
-### plugin disable
+<h3 id="plugin-disable">
+  plugin disable
+</h3>
 
-플러그인을 제거하지 않고 비활성화합니다.
+플러그인을 제거하지 않고 비활성화합니다. 다른 활성화된 플러그인이 대상에 [종속되어](/ko/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies) 있으면 실패합니다. 오류 메시지에는 먼저 모든 종속 플러그인을 비활성화하는 연쇄 명령어가 포함됩니다.
 
 ```bash theme={null}
 claude plugin disable <plugin> [options]
@@ -794,7 +1052,9 @@ claude plugin disable <plugin> [options]
 | `-s, --scope <scope>` | 비활성화할 범위: `user`, `project` 또는 `local` | `user` |
 | `-h, --help`          | 명령어 도움말 표시                             |        |
 
-### plugin update
+<h3 id="plugin-update">
+  plugin update
+</h3>
 
 플러그인을 최신 버전으로 업데이트합니다.
 
@@ -815,7 +1075,9 @@ claude plugin update <plugin> [options]
 
 ***
 
-### plugin list
+<h3 id="plugin-list">
+  plugin list
+</h3>
 
 설치된 플러그인을 버전, 소스 마켓플레이스 및 활성화 상태와 함께 나열합니다.
 
@@ -831,7 +1093,62 @@ claude plugin list [options]
 | `--available` | 마켓플레이스에서 사용 가능한 플러그인 포함. `--json` 필요 |     |
 | `-h, --help`  | 명령어 도움말 표시                           |     |
 
-### plugin tag
+<h3 id="plugin-details">
+  plugin details
+</h3>
+
+플러그인의 컴포넌트 인벤토리 및 예상 토큰 비용을 표시합니다. 출력은 플러그인이 기여하는 모든 컴포넌트를 Skills, Agents, Hooks, MCP 서버 및 LSP 서버로 그룹화하여 나열하며, 각 세션에 추가되는 토큰 수의 추정치를 함께 표시합니다. Skills 그룹에는 `skills/` 및 `commands/` 항목이 모두 포함됩니다.
+
+```bash theme={null}
+claude plugin details <name>
+```
+
+**인수:**
+
+* `<name>`: 플러그인 이름 또는 `plugin-name@marketplace-name`
+
+**옵션:**
+
+| 옵션           | 설명         | 기본값 |
+| :----------- | :--------- | :-- |
+| `-h, --help` | 명령어 도움말 표시 |     |
+
+출력은 각 컴포넌트에 대해 두 가지 비용 수치를 표시합니다:
+
+* **Always-on:** 컴포넌트가 실행되는지 여부와 관계없이 플러그인의 목록 텍스트(예: 스킬 설명, 에이전트 설명, 명령어 이름)에 의해 모든 세션에 추가되는 토큰입니다.
+* **On-invoke:** 컴포넌트가 실행될 때 비용이 드는 토큰입니다. 일반적인 세션에서는 컴포넌트의 일부만 호출되므로 플러그인 전체가 아닌 컴포넌트별로 표시됩니다.
+
+다음 예시는 두 개의 스킬이 있는 플러그인의 출력 모습을 보여줍니다:
+
+```
+dependency-guard 1.2.0
+  Dependency analysis for Claude Code sessions
+  Source: dependency-guard@example-marketplace
+
+Component inventory
+  Skills (2)  scan-dependencies, review-changes
+  Agents (0)
+  Hooks (1)  (harness-only — no model context cost)
+  MCP servers (0)
+  LSP servers (0)
+
+Projected token cost
+  Always-on:   ~180 tok   added to every session
+
+Per-component (rounded)
+  component            always-on  on-invoke
+  scan-dependencies        ~100      ~2400
+  review-changes            ~80      ~1800
+
+  On-invoke cost is paid each time a skill or agent fires.
+  Token counts are estimates and may differ from actual usage.
+```
+
+Always-on 합계는 활성 모델에 대한 `count_tokens` API를 통해 계산됩니다. 컴포넌트별 수치는 해당 합계에서 비례적으로 조정됩니다. API에 연결할 수 없으면 명령어는 문자 기반 추정으로 폴백됩니다.
+
+<h3 id="plugin-tag">
+  plugin tag
+</h3>
 
 현재 디렉토리의 플러그인에 대한 릴리스 git 태그를 생성합니다. 플러그인의 폴더 내에서 실행하세요. [플러그인 릴리스 태그 지정](/ko/plugin-dependencies#tag-plugin-releases-for-version-resolution)을 참조하세요.
 
@@ -850,9 +1167,13 @@ claude plugin tag [options]
 
 ***
 
-## 디버깅 및 개발 도구
+<h2 id="debugging-and-development-tools">
+  디버깅 및 개발 도구
+</h2>
 
-### 디버깅 명령어
+<h3 id="debugging-commands">
+  디버깅 명령어
+</h3>
 
 `claude --debug`를 사용하여 플러그인 로딩 세부 정보를 확인하세요:
 
@@ -863,7 +1184,9 @@ claude plugin tag [options]
 * Skill, agent 및 hook 등록
 * MCP 서버 초기화
 
-### 일반적인 문제
+<h3 id="common-issues">
+  일반적인 문제
+</h3>
 
 | 문제                                  | 원인                         | 해결책                                                                                                                                      |
 | :---------------------------------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
@@ -874,7 +1197,9 @@ claude plugin tag [options]
 | 경로 오류                               | 절대 경로 사용됨                  | 모든 경로는 상대적이어야 하며 `./`로 시작해야 함                                                                                                            |
 | LSP `Executable not found in $PATH` | 언어 서버가 설치되지 않음             | 바이너리 설치 (예: `npm install -g typescript-language-server typescript`)                                                                      |
 
-### 예시 오류 메시지
+<h3 id="example-error-messages">
+  예시 오류 메시지
+</h3>
 
 **매니페스트 검증 오류**:
 
@@ -888,13 +1213,15 @@ claude plugin tag [options]
 * `Plugin directory not found at path: ./plugins/my-plugin. Check that the marketplace entry has the correct path.`: marketplace.json의 `source` 경로가 존재하지 않는 디렉토리를 가리킴
 * `Plugin my-plugin has conflicting manifests: both plugin.json and marketplace entry specify components.`: 중복 컴포넌트 정의 제거 또는 marketplace 항목에서 `strict: false` 제거
 
-### Hook 문제 해결
+<h3 id="hook-troubleshooting">
+  Hook 문제 해결
+</h3>
 
 **Hook 스크립트가 실행되지 않음**:
 
 1. 스크립트가 실행 가능한지 확인: `chmod +x ./scripts/your-script.sh`
 2. shebang 라인 확인: 첫 번째 줄은 `#!/bin/bash` 또는 `#!/usr/bin/env bash`여야 함
-3. 경로가 `${CLAUDE_PLUGIN_ROOT}` 사용하는지 확인: `"command": "${CLAUDE_PLUGIN_ROOT}/scripts/your-script.sh"`
+3. 경로가 `${CLAUDE_PLUGIN_ROOT}` 사용하는지 확인: `"command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/your-script.sh"`
 4. 스크립트를 수동으로 테스트: `./scripts/your-script.sh`
 
 **Hook이 예상 이벤트에서 트리거되지 않음**:
@@ -903,7 +1230,9 @@ claude plugin tag [options]
 2. 매처 패턴이 도구와 일치하는지 확인: 파일 작업의 경우 `"matcher": "Write|Edit"`
 3. Hook 유형이 유효한지 확인: `command`, `http`, `mcp_tool`, `prompt` 또는 `agent`
 
-### MCP 서버 문제 해결
+<h3 id="mcp-server-troubleshooting">
+  MCP 서버 문제 해결
+</h3>
 
 **서버가 시작되지 않음**:
 
@@ -918,7 +1247,9 @@ claude plugin tag [options]
 2. 서버가 MCP 프로토콜을 올바르게 구현하는지 확인
 3. 디버그 출력에서 연결 시간 초과 확인
 
-### 디렉토리 구조 실수
+<h3 id="directory-structure-mistakes">
+  디렉토리 구조 실수
+</h3>
 
 **증상**: 플러그인이 로드되지만 컴포넌트 (skills, agents, hooks)가 누락됨.
 
@@ -943,9 +1274,13 @@ my-plugin/
 
 ***
 
-## 배포 및 버전 관리 참조
+<h2 id="distribution-and-versioning-reference">
+  배포 및 버전 관리 참조
+</h2>
 
-### 버전 관리
+<h3 id="version-management">
+  버전 관리
+</h3>
 
 Claude Code는 플러그인의 버전을 캐시 키로 사용하여 업데이트를 사용할 수 있는지 여부를 결정합니다. `/plugin update`를 실행하거나 자동 업데이트가 실행되면 Claude Code는 현재 버전을 계산하고 이미 설치된 버전과 일치하면 업데이트를 건너뜁니다.
 
@@ -971,7 +1306,9 @@ Claude Code는 플러그인의 버전을 캐시 키로 사용하여 업데이트
 
 ***
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [플러그인](/ko/plugins) - 튜토리얼 및 실제 사용
 * [플러그인 마켓플레이스](/ko/plugin-marketplaces) - 마켓플레이스 생성 및 관리

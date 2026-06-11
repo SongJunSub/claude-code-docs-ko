@@ -32,7 +32,9 @@
   Claude Code는 컨테이너 내에서 실행되므로 프로젝트의 나머지 도구 체인과 동일한 파일, 종속성 및 도구를 봅니다. VS Code에서는 [Claude Code 확장 패널](/ko/vs-code)을 사용하거나 통합 터미널에서 `claude`를 실행할 수 있습니다. 둘 다 컨테이너 내에서 실행되며 동일한 `~/.claude` 구성을 공유합니다.
 </Accordion>
 
-## 개발 컨테이너에 Claude Code 추가
+<h2 id="add-claude-code-to-your-dev-container">
+  개발 컨테이너에 Claude Code 추가
+</h2>
 
 Claude Code는 [Claude Code Dev Container Feature](https://github.com/anthropics/devcontainer-features/tree/main/src/claude-code)를 통해 모든 개발 컨테이너에 설치됩니다.
 
@@ -88,7 +90,9 @@ VS Code 또는 Codespaces에서 컨테이너를 열면 기능이 Claude Code VS 
   브라우저 로그인이 완료되었지만 콜백이 컨테이너에 도달하지 않으면 브라우저에 표시된 코드를 복사하여 터미널의 `Paste code here if prompted` 프롬프트에 붙여넣습니다. 이는 편집기의 포트 포워딩이 localhost 콜백을 라우팅하지 않을 때 발생할 수 있습니다.
 </Note>
 
-## 재구축 시 인증 및 설정 유지
+<h2 id="persist-authentication-and-settings-across-rebuilds">
+  재구축 시 인증 및 설정 유지
+</h2>
 
 기본적으로 컨테이너의 홈 디렉토리는 재구축 시 삭제되므로 엔지니어는 매번 다시 로그인해야 합니다. Claude Code는 인증 토큰, 사용자 설정 및 세션 기록을 [`~/.claude`](/ko/claude-directory) 아래에 저장합니다. 해당 경로에 명명된 볼륨을 마운트하여 재구축 시 이 상태를 유지합니다.
 
@@ -106,7 +110,9 @@ VS Code 또는 Codespaces에서 컨테이너를 열면 기능이 Claude Code VS 
 
 GitHub Codespaces에서 `~/.claude`는 codespace를 중지하고 시작할 때 유지되지만 컨테이너를 재구축할 때는 여전히 지워지므로 위의 볼륨 마운트가 여기에도 적용됩니다. codespace 간에 인증을 유지하려면 [`claude setup-token`](/ko/authentication#generate-a-long-lived-token)에서 `ANTHROPIC_API_KEY` 또는 `CLAUDE_CODE_OAUTH_TOKEN`을 [Codespaces 시크릿](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-your-account-specific-secrets-for-github-codespaces)으로 저장합니다. Codespaces는 시크릿을 컨테이너 내에서 자동으로 환경 변수로 사용 가능하게 합니다.
 
-## 조직 정책 적용
+<h2 id="enforce-organization-policy">
+  조직 정책 적용
+</h2>
 
 개발 컨테이너는 동일한 이미지와 구성이 모든 엔지니어의 머신에서 실행되므로 조직 정책을 적용하기에 편리한 장소입니다.
 
@@ -134,13 +140,17 @@ Dev Container Feature는 항상 최신 Claude Code 릴리스를 설치합니다.
 
 [MCP 서버](/ko/mcp)를 컨테이너 내에서 사용 가능하게 하려면 저장소 루트의 `.mcp.json` 파일에서 [프로젝트 범위](/ko/mcp#mcp-installation-scopes)로 정의하여 개발 컨테이너 구성과 함께 체크인됩니다. 로컬 stdio 서버가 의존하는 모든 바이너리를 Dockerfile에 설치하고 원격 서버 도메인을 네트워크 허용 목록에 추가합니다.
 
-## 네트워크 송신 제한
+<h2 id="restrict-network-egress">
+  네트워크 송신 제한
+</h2>
 
 컨테이너의 아웃바운드 트래픽을 Claude Code가 필요로 하는 도메인으로만 제한할 수 있습니다. 추론 및 인증 도메인은 [네트워크 액세스 요구 사항](/ko/network-config#network-access-requirements)을 참조하고, 선택적 원격 분석 및 오류 보고 연결 및 비활성화 방법은 [원격 분석 서비스](/ko/data-usage#telemetry-services)를 참조하세요.
 
 참조 컨테이너에는 Claude Code 및 개발 도구가 필요로 하는 도메인을 제외한 모든 아웃바운드 트래픽을 차단하는 [`init-firewall.sh`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/init-firewall.sh) 스크립트가 포함되어 있습니다. 컨테이너 내에서 방화벽을 실행하려면 추가 권한이 필요하므로 참조는 `runArgs`를 통해 `NET_ADMIN` 및 `NET_RAW` 기능을 추가합니다. 방화벽 스크립트 및 이러한 기능은 Claude Code 자체에는 필요하지 않습니다. 이를 제외하고 대신 자신의 네트워크 제어에 의존할 수 있습니다.
 
-## 권한 프롬프트 없이 실행
+<h2 id="run-without-permission-prompts">
+  권한 프롬프트 없이 실행
+</h2>
 
 컨테이너가 Claude Code를 비루트 사용자로 실행하고 명령 실행을 컨테이너로 제한하므로 무인 작동을 위해 `--dangerously-skip-permissions`을 전달할 수 있습니다. CLI는 루트로 시작될 때 이 플래그를 거부하므로 `remoteUser`가 비루트 계정으로 설정되어 있는지 확인합니다.
 
@@ -148,7 +158,9 @@ Dev Container Feature는 항상 최신 Claude Code 릴리스를 설치합니다.
 
 안전 검사를 비활성화하지 않고 더 적은 프롬프트를 원하면 대신 [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 고려하세요. 이는 분류기가 실행 전에 작업을 검토합니다. 엔지니어가 `--dangerously-skip-permissions`을 전혀 사용하지 못하도록 하려면 [관리 설정](/ko/settings#permission-settings)에서 `permissions.disableBypassPermissionsMode`를 `"disable"`로 설정합니다.
 
-## 참조 컨테이너 시도
+<h2 id="try-the-reference-container">
+  참조 컨테이너 시도
+</h2>
 
 [`anthropics/claude-code`](https://github.com/anthropics/claude-code/tree/main/.devcontainer) 저장소에는 CLI, 송신 방화벽, 지속적 볼륨 및 Zsh 기반 셸을 결합하는 예제 개발 컨테이너가 포함되어 있습니다. 이는 유지 관리되는 기본 이미지가 아닌 작동 예제로 제공됩니다. 이를 사용하여 자신의 구성에 적용하기 전에 조각들이 어떻게 맞는지 확인하세요.
 
@@ -180,7 +192,9 @@ Dev Container Feature는 항상 최신 Claude Code 릴리스를 설치합니다.
 | [`Dockerfile`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/Dockerfile)               | 기본 이미지, 개발 도구 및 Claude Code 설치                    |
 | [`init-firewall.sh`](https://github.com/anthropics/claude-code/blob/main/.devcontainer/init-firewall.sh)   | 허용된 도메인을 제외한 모든 아웃바운드 네트워크 트래픽 차단                 |
 
-## 다음 단계
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
 Claude Code가 개발 컨테이너에서 실행되면 아래 페이지는 조직 롤아웃의 나머지 부분을 다룹니다. 인증 경로 선택, 저장소 외부에서 관리 정책 제공, 사용량 모니터링 및 Claude Code가 저장하고 전송하는 것 이해:
 

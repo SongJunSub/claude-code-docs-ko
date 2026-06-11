@@ -20,7 +20,9 @@ Ultraplan은 로컬 CLI의 계획 작업을 [계획 모드](/ko/permission-modes
 
 Ultraplan은 [웹의 Claude Code](/ko/claude-code-on-the-web) 계정과 GitHub 저장소가 필요합니다. Anthropic의 클라우드 인프라에서 실행되므로 Amazon Bedrock, Google Cloud Vertex AI 또는 Microsoft Foundry를 사용할 때는 사용할 수 없습니다. 클라우드 세션은 계정의 기본 [클라우드 환경](/ko/claude-code-on-the-web#the-cloud-environment)에서 실행됩니다. 아직 클라우드 환경이 없으면 ultraplan이 처음 시작할 때 자동으로 생성합니다.
 
-## CLI에서 ultraplan 시작하기
+<h2 id="launch-ultraplan-from-the-cli">
+  CLI에서 ultraplan 시작하기
+</h2>
 
 로컬 CLI 세션에서 세 가지 방법으로 ultraplan을 시작할 수 있습니다:
 
@@ -46,7 +48,9 @@ Ultraplan은 [웹의 Claude Code](/ko/claude-code-on-the-web) 계정과 GitHub �
 
 `/tasks`를 실행하고 ultraplan 항목을 선택하여 세션 링크, 에이전트 활동 및 **ultraplan 중지** 작업이 있는 상세 보기를 엽니다. ultraplan을 중지하면 클라우드 세션이 보관되고 표시기가 지워집니다. 터미널에 아무것도 저장되지 않습니다.
 
-## 브라우저에서 계획 검토 및 수정하기
+<h2 id="review-and-revise-the-plan-in-your-browser">
+  브라우저에서 계획 검토 및 수정하기
+</h2>
 
 상태가 `◆ ultraplan ready`로 변경되면 세션 링크를 열어 claude.ai에서 계획을 봅니다. 계획은 전용 검토 보기에 나타납니다:
 
@@ -56,15 +60,21 @@ Ultraplan은 [웹의 Claude Code](/ko/claude-code-on-the-web) 계정과 GitHub �
 
 Claude에게 댓글을 처리하도록 요청하면 계획을 수정하고 업데이트된 초안을 제시합니다. 실행할 위치를 선택하기 전에 필요한 만큼 반복할 수 있습니다.
 
-## 실행 위치 선택하기
+<h2 id="choose-where-to-execute">
+  실행 위치 선택하기
+</h2>
 
 계획이 올바르면 브라우저에서 Claude가 동일한 클라우드 세션에서 구현할지 또는 대기 중인 터미널로 다시 보낼지 선택합니다.
 
-### 웹에서 실행
+<h3 id="execute-on-the-web">
+  웹에서 실행
+</h3>
 
 브라우저에서 **Claude의 계획을 승인하고 코딩 시작**을 선택하여 Claude가 동일한 Claude Code 웹 세션에서 구현하도록 합니다. 터미널에 확인이 표시되고, 상태 표시기가 지워지고, 작업이 클라우드에서 계속됩니다. 구현이 완료되면 [변경 사항 검토](/ko/claude-code-on-the-web#review-changes)하고 웹 인터페이스에서 풀 요청을 만듭니다.
 
-### 계획을 터미널로 다시 보내기
+<h3 id="send-the-plan-back-to-your-terminal">
+  계획을 터미널로 다시 보내기
+</h3>
 
 브라우저에서 **계획을 승인하고 터미널로 텔레포트**를 선택하여 환경에 완전히 액세스하여 계획을 로컬로 구현합니다. 이 옵션은 세션이 CLI에서 시작되었고 터미널이 여전히 폴링 중일 때 나타납니다. 웹 세션이 보관되므로 병렬로 계속 작동하지 않습니다.
 
@@ -76,7 +86,9 @@ Claude에게 댓글을 처리하도록 요청하면 계획을 수정하고 업�
 
 새 세션을 시작하면 Claude가 상단에 `claude --resume` 명령어를 인쇄하므로 나중에 이전 대화로 돌아올 수 있습니다.
 
-## 관련 리소스
+<h2 id="related-resources">
+  관련 리소스
+</h2>
 
 * [웹의 Claude Code](/ko/claude-code-on-the-web): ultraplan이 실행되는 클라우드 인프라
 * [계획 모드](/ko/permission-modes#analyze-before-you-edit-with-plan-mode): 로컬 세션에서 계획이 작동하는 방식

@@ -25,6 +25,7 @@
 | [hooks-guide](hooks-guide.md) | hook 입문/실전 — 자동 포맷, 알림, 검증, 룰 적용 |
 | [hooks](hooks.md) | hook 이벤트·스키마·JSON I/O·exit code·async/HTTP/prompt/MCP hook 전체 레퍼런스 |
 | [mcp](mcp.md) | Model Context Protocol로 외부 도구 연결 |
+| [mcp-quickstart](mcp-quickstart.md) | MCP 서버 추가·연결 확인·디스크상 설정 위치 빠른 시작 |
 
 ### Plugins
 | 페이지 | 한 줄 |
@@ -34,6 +35,7 @@
 | [plugin-marketplaces](plugin-marketplaces.md) | 플러그인 마켓플레이스 구축·배포 |
 | [plugin-dependencies](plugin-dependencies.md) | 플러그인 의존성 버전 제약 선언 |
 | [discover-plugins](discover-plugins.md) | 마켓플레이스에서 플러그인 검색·설치 |
+| [plugin-hints](plugin-hints.md) | CLI에서 한 줄 마커를 emit해 사용자에게 공식 플러그인 설치 안내 |
 
 ### 기타
 | 페이지 | 한 줄 |

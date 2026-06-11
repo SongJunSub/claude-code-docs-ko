@@ -15,9 +15,11 @@ Claude for Enterprise의 ZDR은 엔터프라이즈 고객에게 Zero Data Retent
 * [서버 관리 설정](/ko/server-managed-settings)
 * 감사 로그
 
-Claude for Enterprise의 Claude Code에 대한 ZDR은 Anthropic의 직접 플랫폼에만 적용됩니다. AWS Bedrock, Google Vertex AI 또는 Microsoft Foundry의 Claude 배포의 경우 해당 플랫폼의 데이터 보존 정책을 참조하세요.
+Claude for Enterprise의 Claude Code에 대한 ZDR은 Anthropic의 직접 플랫폼에만 적용됩니다. Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry의 Claude 배포의 경우 해당 플랫폼의 데이터 보존 정책을 참조하세요.
 
-## ZDR 범위
+<h2 id="zdr-scope">
+  ZDR 범위
+</h2>
 
 ZDR은 Claude for Enterprise의 Claude Code 추론을 포함합니다.
 
@@ -25,11 +27,15 @@ ZDR은 Claude for Enterprise의 Claude Code 추론을 포함합니다.
   ZDR은 조직별로 활성화됩니다. 각 새로운 조직은 Anthropic 계정 팀에서 별도로 ZDR을 활성화해야 합니다. ZDR은 동일한 계정 아래에 생성된 새로운 조직에 자동으로 적용되지 않습니다. 새로운 조직에 대해 ZDR을 활성화하려면 계정 팀에 문의하세요.
 </Warning>
 
-### ZDR이 포함하는 것
+<h3 id="what-zdr-covers">
+  ZDR이 포함하는 것
+</h3>
 
 ZDR은 Claude for Enterprise의 Claude Code를 통해 이루어진 모델 추론 호출을 포함합니다. 터미널에서 Claude Code를 사용할 때 전송하는 프롬프트와 Claude가 생성하는 응답은 Anthropic에서 보존되지 않습니다. 이는 사용되는 Claude 모델에 관계없이 적용됩니다.
 
-### ZDR이 포함하지 않는 것
+<h3 id="what-zdr-does-not-cover">
+  ZDR이 포함하지 않는 것
+</h3>
 
 ZDR은 ZDR이 활성화된 조직의 경우에도 다음을 포함하지 않습니다. 이러한 기능은 [표준 데이터 보존 정책](/ko/data-usage#data-retention)을 따릅니다:
 
@@ -41,7 +47,9 @@ ZDR은 ZDR이 활성화된 조직의 경우에도 다음을 포함하지 않습�
 | 사용자 및 시트 관리    | 계정 이메일 및 시트 할당과 같은 관리 데이터는 표준 정책에 따라 보존됩니다.                                                                                         |
 | 타사 통합          | 타사 도구, MCP servers 또는 기타 외부 통합에서 처리한 데이터는 ZDR에 포함되지 않습니다. 해당 서비스의 데이터 처리 관행을 독립적으로 검토하세요.                                           |
 
-## ZDR에서 비활성화된 기능
+<h2 id="features-disabled-under-zdr">
+  ZDR에서 비활성화된 기능
+</h2>
 
 Claude for Enterprise의 Claude Code 조직에 대해 ZDR이 활성화되면 프롬프트 또는 완성을 저장해야 하는 특정 기능이 백엔드 수준에서 자동으로 비활성화됩니다:
 
@@ -55,11 +63,15 @@ Claude for Enterprise의 Claude Code 조직에 대해 ZDR이 활성화되면 프
 
 향후 기능도 프롬프트 또는 완성을 저장해야 하는 경우 비활성화될 수 있습니다.
 
-## 정책 위반에 대한 데이터 보존
+<h2 id="data-retention-for-policy-violations">
+  정책 위반에 대한 데이터 보존
+</h2>
 
 ZDR이 활성화된 경우에도 Anthropic은 법률에서 요구하거나 Usage Policy 위반을 해결하기 위해 필요한 경우 데이터를 보존할 수 있습니다. 세션이 정책 위반으로 플래그되면 Anthropic은 관련 입력 및 출력을 최대 2년 동안 보존할 수 있으며, 이는 Anthropic의 표준 ZDR 정책과 일치합니다.
 
-## ZDR 요청
+<h2 id="request-zdr">
+  ZDR 요청
+</h2>
 
 Claude for Enterprise의 Claude Code에 대해 ZDR을 요청하려면 [영업팀에 문의](https://www.anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=zero_data_retention_request)하거나 Anthropic 계정 팀에 문의하세요. 계정 팀이 내부적으로 요청을 제출하면 Anthropic이 적격성을 확인한 후 조직에서 ZDR을 검토하고 활성화합니다. 모든 활성화 작업은 감사 로그에 기록됩니다.
 

@@ -134,7 +134,7 @@ Claude Code는 스크립트를 실행하고 stdin을 통해 [JSON 세션 데이�
 
 **업데이트 시기**
 
-스크립트는 새로운 어시스턴트 메시지 후, 권한 모드가 변경될 때 또는 vim 모드가 전환될 때 실행됩니다. 업데이트는 300ms에서 디바운스되므로 빠른 변경이 함께 일괄 처리되고 스크립트는 상황이 안정화되면 한 번 실행됩니다. 스크립트가 여전히 실행 중인 동안 새 업데이트가 트리거되면 진행 중인 실행이 취소됩니다. 스크립트를 편집하면 Claude Code와의 다음 상호 작용이 업데이트를 트리거할 때까지 변경 사항이 나타나지 않습니다.
+스크립트는 새로운 어시스턴트 메시지 후, `/compact` 완료 후, 권한 모드가 변경될 때 또는 vim 모드가 전환될 때 실행됩니다. 업데이트는 300ms에서 디바운스되므로 빠른 변경이 함께 일괄 처리되고 스크립트는 상황이 안정화되면 한 번 실행됩니다. 스크립트가 여전히 실행 중인 동안 새 업데이트가 트리거되면 진행 중인 실행이 취소됩니다. 스크립트를 편집하면 Claude Code와의 다음 상호 작용이 업데이트를 트리거할 때까지 변경 사항이 나타나지 않습니다.
 
 이러한 트리거는 주 세션이 유휴 상태일 때(예: 코디네이터가 백그라운드 서브에이전트를 기다릴 때) 조용해질 수 있습니다. 유휴 기간 동안 시간 기반 또는 외부 소스 세그먼트를 최신 상태로 유지하려면 [`refreshInterval`](#manually-configure-a-status-line)을 설정하여 고정 타이머에서도 명령을 다시 실행합니다.
 
@@ -144,45 +144,52 @@ Claude Code는 스크립트를 실행하고 stdin을 통해 [JSON 세션 데이�
 * **색상**: 녹색의 경우 `\033[32m`과 같은 [ANSI 이스케이프 코드](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors)를 사용합니다(터미널이 지원해야 함). [git 상태 예제](#git-status-with-colors)를 참조하세요.
 * **링크**: [OSC 8 이스케이프 시퀀스](https://en.wikipedia.org/wiki/ANSI_escape_code#OSC)를 사용하여 텍스트를 클릭 가능하게 만듭니다(macOS에서는 Cmd+클릭, Windows/Linux에서는 Ctrl+클릭). iTerm2, Kitty 또는 WezTerm과 같이 하이퍼링크를 지원하는 터미널이 필요합니다. [클릭 가능한 링크 예제](#clickable-links)를 참조하세요.
 
+**터미널에 맞게 출력 크기 조정**
+
+Claude Code는 스크립트의 출력을 캡처하므로 터미널에 직접 연결하지 않아 스크립트 내부에서 `tput cols`와 언어 수준의 너비 감지가 터미널 크기를 읽을 수 없습니다. {/* min-version: 2.1.153 */}`COLUMNS` 및 `LINES` 환경 변수를 대신 읽으세요. Claude Code는 스크립트를 실행하기 전에 이러한 변수를 현재 터미널 크기로 설정합니다. Claude Code v2.1.153 이상이 필요합니다.
+
 <Note>상태 표시줄은 로컬에서 실행되며 API 토큰을 소비하지 않습니다. 자동 완성 제안, 도움말 메뉴 및 권한 프롬프트를 포함한 특정 UI 상호 작용 중에 일시적으로 숨겨집니다.</Note>
 
 ## 사용 가능한 데이터
 
 Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니다:
 
-| 필드                                                                               | 설명                                                                                                                                                              |
-| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `model.id`, `model.display_name`                                                 | 현재 모델 식별자 및 표시 이름                                                                                                                                               |
-| `cwd`, `workspace.current_dir`                                                   | 현재 작업 디렉토리. 두 필드 모두 동일한 값을 포함합니다. `workspace.current_dir`은 `workspace.project_dir`과의 일관성을 위해 선호됩니다.                                                             |
-| `workspace.project_dir`                                                          | Claude Code가 시작된 디렉토리로, 세션 중에 작업 디렉토리가 변경되면 `cwd`와 다를 수 있습니다                                                                                                    |
-| `workspace.added_dirs`                                                           | `/add-dir` 또는 `--add-dir`을 통해 추가된 추가 디렉토리. 추가된 것이 없으면 빈 배열                                                                                                      |
-| `workspace.git_worktree`                                                         | `git worktree add`로 생성된 연결된 worktree 내에 현재 디렉토리가 있을 때 Git worktree 이름. 주 작업 트리에는 없습니다. `worktree.*`와 달리 `--worktree` 세션에만 적용되는 것이 아니라 모든 git worktree에 대해 채워집니다 |
-| `cost.total_cost_usd`                                                            | USD 단위의 총 세션 비용(클라이언트 측에서 계산). 실제 청구서와 다를 수 있습니다                                                                                                                |
-| `cost.total_duration_ms`                                                         | 세션 시작 이후의 총 벽시계 시간(밀리초)                                                                                                                                         |
-| `cost.total_api_duration_ms`                                                     | API 응답 대기에 소비된 총 시간(밀리초)                                                                                                                                        |
-| `cost.total_lines_added`, `cost.total_lines_removed`                             | 변경된 코드 줄                                                                                                                                                        |
-| `context_window.total_input_tokens`, `context_window.total_output_tokens`        | 세션 전체의 누적 토큰 수                                                                                                                                                  |
-| `context_window.context_window_size`                                             | 토큰 단위의 최대 컨텍스트 윈도우 크기. 기본값은 200,000이거나 확장된 컨텍스트가 있는 모델의 경우 1,000,000입니다.                                                                                        |
-| `context_window.used_percentage`                                                 | 사용된 컨텍스트 윈도우의 사전 계산된 백분율                                                                                                                                        |
-| `context_window.remaining_percentage`                                            | 남은 컨텍스트 윈도우의 사전 계산된 백분율                                                                                                                                         |
-| `context_window.current_usage`                                                   | 마지막 API 호출의 토큰 수([컨텍스트 윈도우 필드](#context-window-fields)에 설명됨)                                                                                                    |
-| `exceeds_200k_tokens`                                                            | 가장 최근 API 응답의 총 토큰 수(입력, 캐시 및 출력 토큰 결합)가 200k를 초과하는지 여부. 이는 실제 컨텍스트 윈도우 크기와 관계없이 고정된 임계값입니다.                                                                    |
-| `effort.level`                                                                   | 현재 추론 노력(`low`, `medium`, `high`, `xhigh` 또는 `max`). 중간 세션 `/effort` 변경을 포함한 라이브 세션 값을 반영합니다. 현재 모델이 노력 매개변수를 지원하지 않을 때는 없습니다                                   |
-| `thinking.enabled`                                                               | 세션에 대해 확장된 사고가 활성화되어 있는지 여부                                                                                                                                     |
-| `rate_limits.five_hour.used_percentage`, `rate_limits.seven_day.used_percentage` | 5시간 또는 7일 속도 제한의 소비된 백분율(0\~100)                                                                                                                                |
-| `rate_limits.five_hour.resets_at`, `rate_limits.seven_day.resets_at`             | 5시간 또는 7일 속도 제한 윈도우가 재설정되는 Unix epoch 초                                                                                                                         |
-| `session_id`                                                                     | 고유 세션 식별자                                                                                                                                                       |
-| `session_name`                                                                   | `--name` 플래그 또는 `/rename`으로 설정된 사용자 정의 세션 이름. 사용자 정의 이름이 설정되지 않은 경우 없음                                                                                          |
-| `transcript_path`                                                                | 대화 기록 파일의 경로                                                                                                                                                    |
-| `version`                                                                        | Claude Code 버전                                                                                                                                                  |
-| `output_style.name`                                                              | 현재 출력 스타일의 이름                                                                                                                                                   |
-| `vim.mode`                                                                       | [vim 모드](/ko/interactive-mode#vim-editor-mode)가 활성화되어 있을 때 현재 vim 모드(`NORMAL`, `INSERT`, `VISUAL` 또는 `VISUAL LINE`)                                             |
-| `agent.name`                                                                     | `--agent` 플래그 또는 에이전트 설정이 구성되어 있을 때 에이전트 이름                                                                                                                     |
-| `worktree.name`                                                                  | 활성 worktree의 이름. `--worktree` 세션 중에만 표시됩니다                                                                                                                      |
-| `worktree.path`                                                                  | worktree 디렉토리의 절대 경로                                                                                                                                            |
-| `worktree.branch`                                                                | worktree의 Git 브랜치 이름(예: `"worktree-my-feature"`). 훅 기반 worktree의 경우 없음                                                                                          |
-| `worktree.original_cwd`                                                          | worktree에 들어가기 전에 Claude가 있던 디렉토리                                                                                                                               |
-| `worktree.original_branch`                                                       | worktree에 들어가기 전에 체크아웃된 Git 브랜치. 훅 기반 worktree의 경우 없음                                                                                                           |
+| 필드                                                                               | 설명                                                                                                                                                                     |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `model.id`, `model.display_name`                                                 | 현재 모델 식별자 및 표시 이름                                                                                                                                                      |
+| `cwd`, `workspace.current_dir`                                                   | 현재 작업 디렉토리. 두 필드 모두 동일한 값을 포함합니다. `workspace.current_dir`은 `workspace.project_dir`과의 일관성을 위해 선호됩니다.                                                                    |
+| `workspace.project_dir`                                                          | Claude Code가 시작된 디렉토리로, 세션 중에 작업 디렉토리가 변경되면 `cwd`와 다를 수 있습니다                                                                                                           |
+| `workspace.added_dirs`                                                           | `/add-dir` 또는 `--add-dir`을 통해 추가된 추가 디렉토리. 추가된 것이 없으면 빈 배열                                                                                                             |
+| `workspace.git_worktree`                                                         | `git worktree add`로 생성된 연결된 worktree 내에 현재 디렉토리가 있을 때 Git worktree 이름. 주 작업 트리에는 없습니다. `worktree.*`와 달리 `--worktree` 세션에만 적용되는 것이 아니라 모든 git worktree에 대해 채워집니다        |
+| `workspace.repo.host`, `workspace.repo.owner`, `workspace.repo.name`             | `origin` 원격에서 파싱된 저장소 식별자(예: `"github.com"`, `"anthropics"`, `"claude-code"`). git 저장소 외부에 있거나 `origin` 원격이 구성되지 않은 경우 없음                                              |
+| `cost.total_cost_usd`                                                            | USD 단위의 총 세션 비용(클라이언트 측에서 계산). 실제 청구서와 다를 수 있습니다                                                                                                                       |
+| `cost.total_duration_ms`                                                         | 세션 시작 이후의 총 벽시계 시간(밀리초)                                                                                                                                                |
+| `cost.total_api_duration_ms`                                                     | API 응답 대기에 소비된 총 시간(밀리초)                                                                                                                                               |
+| `cost.total_lines_added`, `cost.total_lines_removed`                             | 변경된 코드 줄                                                                                                                                                               |
+| `context_window.total_input_tokens`, `context_window.total_output_tokens`        | 컨텍스트 윈도우에 현재 있는 토큰 수(가장 최근 API 응답에서). 입력에는 캐시 읽기 및 쓰기가 포함됩니다. v2.1.132 이전에는 누적 세션 합계였습니다                                                                               |
+| `context_window.context_window_size`                                             | 토큰 단위의 최대 컨텍스트 윈도우 크기. 기본값은 200,000이거나 확장된 컨텍스트가 있는 모델의 경우 1,000,000입니다.                                                                                               |
+| `context_window.used_percentage`                                                 | 사용된 컨텍스트 윈도우의 사전 계산된 백분율                                                                                                                                               |
+| `context_window.remaining_percentage`                                            | 남은 컨텍스트 윈도우의 사전 계산된 백분율                                                                                                                                                |
+| `context_window.current_usage`                                                   | 마지막 API 호출의 토큰 수([컨텍스트 윈도우 필드](#context-window-fields)에 설명됨)                                                                                                           |
+| `exceeds_200k_tokens`                                                            | 가장 최근 API 응답의 총 토큰 수(입력, 캐시 및 출력 토큰 결합)가 200k를 초과하는지 여부. 이는 실제 컨텍스트 윈도우 크기와 관계없이 고정된 임계값입니다.                                                                           |
+| `effort.level`                                                                   | 현재 추론 노력(`low`, `medium`, `high`, `xhigh` 또는 `max`). 라이브 세션 값을 반영하며, 중간 세션 `/effort` 변경을 포함합니다. Ultracode는 별개의 수준이 아니며 `xhigh`로 보고됩니다. 현재 모델이 노력 매개변수를 지원하지 않을 때는 없습니다 |
+| `thinking.enabled`                                                               | 세션에 대해 확장된 사고가 활성화되어 있는지 여부                                                                                                                                            |
+| `rate_limits.five_hour.used_percentage`, `rate_limits.seven_day.used_percentage` | 5시간 또는 7일 속도 제한의 소비된 백분율(0\~100)                                                                                                                                       |
+| `rate_limits.five_hour.resets_at`, `rate_limits.seven_day.resets_at`             | 5시간 또는 7일 속도 제한 윈도우가 재설정되는 Unix epoch 초                                                                                                                                |
+| `session_id`                                                                     | 고유 세션 식별자                                                                                                                                                              |
+| `session_name`                                                                   | `--name` 플래그 또는 `/rename`으로 설정된 사용자 정의 세션 이름. 사용자 정의 이름이 설정되지 않은 경우 없음                                                                                                 |
+| `transcript_path`                                                                | 대화 기록 파일의 경로                                                                                                                                                           |
+| `version`                                                                        | Claude Code 버전                                                                                                                                                         |
+| `output_style.name`                                                              | 현재 출력 스타일의 이름                                                                                                                                                          |
+| `vim.mode`                                                                       | [vim 모드](/ko/interactive-mode#vim-editor-mode)가 활성화되어 있을 때 현재 vim 모드(`NORMAL`, `INSERT`, `VISUAL` 또는 `VISUAL LINE`)                                                    |
+| `agent.name`                                                                     | `--agent` 플래그 또는 에이전트 설정이 구성되어 있을 때 에이전트 이름                                                                                                                            |
+| `pr.number`, `pr.url`                                                            | 현재 브랜치에 대한 열린 풀 요청. 하단 상태 표시줄의 PR 배지를 반영합니다. PR을 찾을 때까지, git 저장소에 없을 때, 또는 PR이 병합되거나 닫힌 후에는 없음                                                                         |
+| `pr.review_state`                                                                | 열린 PR의 검토 상태: `approved`, `pending`, `changes_requested` 또는 `draft`. `pr`이 있을 때도 독립적으로 없을 수 있음                                                                         |
+| `worktree.name`                                                                  | 활성 worktree의 이름. `--worktree` 세션 중에만 표시됩니다                                                                                                                             |
+| `worktree.path`                                                                  | worktree 디렉토리의 절대 경로                                                                                                                                                   |
+| `worktree.branch`                                                                | worktree의 Git 브랜치 이름(예: `"worktree-my-feature"`). 훅 기반 worktree의 경우 없음                                                                                                 |
+| `worktree.original_cwd`                                                          | worktree에 들어가기 전에 Claude가 있던 디렉토리                                                                                                                                      |
+| `worktree.original_branch`                                                       | worktree에 들어가기 전에 체크아웃된 Git 브랜치. 훅 기반 worktree의 경우 없음                                                                                                                  |
 
 <Accordion title="전체 JSON 스키마">
   상태 표시줄 명령은 stdin을 통해 이 JSON 구조를 수신합니다:
@@ -194,14 +201,19 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
     "session_name": "my-session",
     "transcript_path": "/path/to/transcript.jsonl",
     "model": {
-      "id": "claude-opus-4-7",
+      "id": "claude-opus-4-8",
       "display_name": "Opus"
     },
     "workspace": {
       "current_dir": "/current/working/directory",
       "project_dir": "/original/project/directory",
       "added_dirs": [],
-      "git_worktree": "feature-xyz"
+      "git_worktree": "feature-xyz",
+      "repo": {
+        "host": "github.com",
+        "owner": "anthropics",
+        "name": "claude-code"
+      }
     },
     "version": "2.1.90",
     "output_style": {
@@ -215,8 +227,8 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
       "total_lines_removed": 23
     },
     "context_window": {
-      "total_input_tokens": 15234,
-      "total_output_tokens": 4521,
+      "total_input_tokens": 15500,
+      "total_output_tokens": 1200,
       "context_window_size": 200000,
       "used_percentage": 8,
       "remaining_percentage": 92,
@@ -250,6 +262,11 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
     "agent": {
       "name": "security-reviewer"
     },
+    "pr": {
+      "number": 1234,
+      "url": "https://github.com/anthropics/claude-code/pull/1234",
+      "review_state": "pending"
+    },
     "worktree": {
       "name": "my-feature",
       "path": "/path/to/.claude/worktrees/my-feature",
@@ -264,15 +281,17 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
 
   * `session_name`: `--name` 또는 `/rename`으로 사용자 정의 이름이 설정되었을 때만 나타남
   * `workspace.git_worktree`: 현재 디렉토리가 연결된 git worktree 내에 있을 때만 나타남
+  * `workspace.repo`: git 저장소 내에 있고 `origin` 원격이 구성되어 있을 때만 나타남
   * `effort`: 현재 모델이 추론 노력 매개변수를 지원할 때만 나타남
   * `vim`: vim 모드가 활성화되어 있을 때만 나타남
   * `agent`: `--agent` 플래그 또는 에이전트 설정이 구성되어 있을 때만 나타남
+  * `pr`: 현재 브랜치에 대해 열린 PR을 찾았을 때만 나타나며, PR이 병합되거나 닫히면 제거됩니다. `pr.review_state`는 독립적으로 없을 수 있습니다
   * `worktree`: `--worktree` 세션 중에만 나타남. 존재할 때 `branch` 및 `original_branch`도 훅 기반 worktree의 경우 없을 수 있습니다
   * `rate_limits`: Claude.ai 구독자(Pro/Max)의 경우 첫 번째 API 응답 후에만 나타남. 각 윈도우(`five_hour`, `seven_day`)는 독립적으로 없을 수 있습니다. 부재를 우아하게 처리하려면 `jq -r '.rate_limits.five_hour.used_percentage // empty'`를 사용합니다.
 
   **`null`일 수 있는 필드**:
 
-  * `context_window.current_usage`: 세션의 첫 번째 API 호출 전에 `null`
+  * `context_window.current_usage`: 세션의 첫 번째 API 호출 전에 `null`이고, `/compact` 후에 다시 `null`이 되었다가 다음 API 호출이 이를 다시 채울 때까지 유지됩니다
   * `context_window.used_percentage`, `context_window.remaining_percentage`: 세션 초기에 `null`일 수 있음
 
   스크립트에서 조건부 액세스로 누락된 필드를 처리하고 null 값을 폴백 기본값으로 처리합니다.
@@ -280,10 +299,10 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
 
 ### 컨텍스트 윈도우 필드
 
-`context_window` 객체는 컨텍스트 사용량을 추적하는 두 가지 방법을 제공합니다:
+`context_window` 객체는 가장 최근 API 응답의 라이브 컨텍스트 윈도우를 설명합니다. v2.1.132부터 `total_input_tokens` 및 `total_output_tokens`는 누적 세션 합계가 아닌 현재 컨텍스트 사용량을 반영합니다.
 
-* **누적 합계** (`total_input_tokens`, `total_output_tokens`): 전체 세션 전체의 모든 토큰의 합계로, 총 소비량을 추적하는 데 유용합니다
-* **현재 사용량** (`current_usage`): 가장 최근 API 호출의 토큰 수로, 실제 컨텍스트 상태를 반영하므로 정확한 컨텍스트 백분율에 사용합니다
+* **결합된 합계** (`total_input_tokens`, `total_output_tokens`): 컨텍스트 윈도우에 현재 있는 토큰. `total_input_tokens`는 `input_tokens`, `cache_creation_input_tokens` 및 `cache_read_input_tokens`의 합계입니다. `total_output_tokens`는 가장 최근 응답의 출력 토큰입니다. 둘 다 첫 번째 API 응답 전에는 `0`입니다.
+* **구성 요소별 사용량** (`current_usage`): 카테고리별로 분류된 동일한 토큰 수. 캐시 히트를 새로운 입력과 분리해야 할 때 이를 사용합니다.
 
 `current_usage` 객체에는 다음이 포함됩니다:
 
@@ -292,11 +311,13 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
 * `cache_creation_input_tokens`: 캐시에 기록된 토큰
 * `cache_read_input_tokens`: 캐시에서 읽은 토큰
 
+캐시 필드의 의미와 청구 방식에 대해서는 [캐시 성능 확인](/ko/prompt-caching#check-cache-performance)을 참조하세요.
+
 `used_percentage` 필드는 입력 토큰만으로 계산됩니다: `input_tokens + cache_creation_input_tokens + cache_read_input_tokens`. `output_tokens`는 포함하지 않습니다.
 
 `current_usage`에서 컨텍스트 백분율을 수동으로 계산하는 경우 동일한 입력 전용 공식을 사용하여 `used_percentage`와 일치시킵니다.
 
-`current_usage` 객체는 세션의 첫 번째 API 호출 전에 `null`입니다.
+`current_usage` 객체는 세션의 첫 번째 API 호출 전에 `null`이고, `/compact` 직후에 다시 `null`이 되었다가 다음 API 호출이 이를 다시 채울 때까지 유지됩니다.
 
 ## 예제
 
@@ -916,7 +937,11 @@ Claude.ai 구독 속도 제한 사용량을 상태 표시줄에 표시합니다.
 
 ### Windows 구성
 
-Windows에서 Claude Code는 Git Bash가 설치되어 있을 때 Git Bash를 통해 상태 표시줄 명령을 실행하거나, Git Bash가 없을 때 PowerShell을 통해 실행합니다. PowerShell 스크립트를 상태 표시줄로 실행하려면 `powershell`을 통해 호출하세요. 이는 두 셸 모두에서 작동합니다:
+Windows에서 Claude Code는 Git Bash가 설치되어 있을 때 Git Bash를 통해 상태 표시줄 명령을 실행하거나, Git Bash가 없을 때 PowerShell을 통해 실행합니다.
+
+Git Bash는 따옴표 없는 백슬래시를 이스케이프 문자로 취급하므로, `C:\Users\username\script.mjs`와 같은 Windows 스타일 경로는 구분 기호가 제거된 상태로 스크립트 실행기에 도달하고 명령이 보이는 오류 없이 실패합니다. `command` 문자열에 파일 경로를 정방향 슬래시로 작성하세요(아래 예제에 표시됨). `~` 약자도 작동하며 Windows 홈 디렉토리로 확장됩니다.
+
+PowerShell 스크립트를 상태 표시줄로 실행하려면 `powershell`을 통해 호출하세요. 이는 Claude Code가 명령을 Git Bash 또는 PowerShell을 통해 라우팅하는지 여부에 관계없이 작동합니다:
 
 <CodeGroup>
   ```json settings.json theme={null}
@@ -999,6 +1024,7 @@ Windows에서 Claude Code는 Git Bash가 설치되어 있을 때 Git Bash를 통
 * 스크립트가 실행 가능한지 확인합니다: `chmod +x ~/.claude/statusline.sh`
 * 스크립트가 stderr가 아닌 stdout으로 출력하는지 확인합니다
 * 스크립트를 수동으로 실행하여 출력을 생성하는지 확인합니다
+* Git Bash가 설치된 Windows에서는 `command` 경로의 백슬래시가 스크립트 실행 전에 이스케이프 문자로 처리될 가능성이 높습니다. 경로에서 슬래시를 사용합니다. [Windows 구성](#windows-configuration)을 참조합니다.
 * 설정에서 `disableAllHooks`가 `true`로 설정되어 있으면 상태 표시줄도 비활성화됩니다. 이 설정을 제거하거나 `false`로 설정하여 다시 활성화합니다.
 * `claude --debug`를 실행하여 세션의 첫 번째 상태 표시줄 호출에서 종료 코드 및 stderr를 기록합니다
 * Claude에 설정 파일을 읽고 `statusLine` 명령을 직접 실행하도록 요청하여 오류를 표시합니다
@@ -1011,8 +1037,7 @@ Windows에서 Claude Code는 Git Bash가 설치되어 있을 때 Git Bash를 통
 
 **컨텍스트 백분율이 예상치 못한 값을 표시함**
 
-* 누적 합계 대신 정확한 컨텍스트 상태를 위해 `used_percentage`를 사용합니다
-* `total_input_tokens` 및 `total_output_tokens`는 세션 전체에 누적되며 컨텍스트 윈도우 크기를 초과할 수 있습니다
+* 가장 간단한 정확한 컨텍스트 상태를 위해 `used_percentage`를 사용합니다
 * 각각이 계산되는 시기로 인해 컨텍스트 백분율이 `/context` 출력과 다를 수 있습니다
 
 **OSC 8 링크를 클릭할 수 없음**
@@ -1051,7 +1076,7 @@ Windows에서 Claude Code는 Git Bash가 설치되어 있을 때 Git Bash를 통
 **스크립트 오류 또는 중단**
 
 * 0이 아닌 코드로 종료되거나 출력을 생성하지 않는 스크립트는 상태 표시줄을 공백으로 만듭니다
-* 느린 스크립트는 완료될 때까지 상태 표시줄이 업데이트되지 않도록 차단합니다. 오래된 출력을 피하려면 스크립트를 빠르게 유지합니다.
+* 느린 스크립트는 완료될 때까지 상태 표시줄이 업데이트되지 않도록 차단합니다. 오래된 출력을 피하려면 스크립트를 빠르게 유지합니다
 * 느린 스크립트가 실행 중인 동안 새 업데이트가 트리거되면 진행 중인 스크립트가 취소됩니다
 * 구성하기 전에 모의 입력으로 스크립트를 독립적으로 테스트합니다
 

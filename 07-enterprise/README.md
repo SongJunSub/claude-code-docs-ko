@@ -20,7 +20,7 @@
 | [claude-platform-on-aws](claude-platform-on-aws.md) | AWS 인증·IAM·AWS Marketplace 빌링으로 Anthropic 운영 Claude API 사용 |
 | [google-vertex-ai](google-vertex-ai.md) | Google Vertex AI 설정 |
 | [microsoft-foundry](microsoft-foundry.md) | Microsoft Foundry 설정 |
-| [github-enterprise-server](github-enterprise-server.md) ⓔ | 자가 호스팅 GHES 연결 (web·code review·마켓플레이스) |
+| [github-enterprise-server](github-enterprise-server.md) | 자가 호스팅 GHES 연결 (web·code review·마켓플레이스) |
 | [llm-gateway](llm-gateway.md) | LLM gateway 솔루션과 함께 사용 |
 | [devcontainer](devcontainer.md) | 일관·안전한 환경을 위한 dev container |
 
@@ -29,6 +29,7 @@
 |---|---|
 | [network-config](network-config.md) | 프록시·커스텀 CA·mTLS 인증 |
 | [security](security.md) | 보안 안전장치 + 사용 모범 사례 |
+| [managed-mcp](managed-mcp.md) | 관리 설정·allowlist·denylist로 사용자가 추가·연결 가능한 MCP 서버 제한 |
 | [legal-and-compliance](legal-and-compliance.md) | 법적 동의·컴플라이언스 인증·보안 정보 |
 | [data-usage](data-usage.md) | Anthropic 데이터 사용 정책 |
 | [zero-data-retention](zero-data-retention.md) | ZDR (Claude for Enterprise) — 비활성화 기능·활성화 요청 |
@@ -45,5 +46,3 @@
 |---|---|
 | [champion-kit](champion-kit.md) | 사내에서 Claude Code를 옹호하는 엔지니어용 플레이북 (공유 내용·Q&A·30일 도입 가이드) |
 | [communications-kit](communications-kit.md) | 조직 롤아웃을 위한 출시 공지·드립 캠페인 메시지·FAQ 응답 자료 |
-
-> ⓔ = 영어 원문

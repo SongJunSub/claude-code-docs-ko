@@ -23,7 +23,9 @@
 
 로컬 구성, 도구 또는 환경이 필요한 작업의 경우, Claude Code를 로컬에서 실행하거나 [Remote Control](/ko/remote-control)을 사용하는 것이 더 적합합니다.
 
-## 세션이 실행되는 방식
+<h2 id="how-sessions-run">
+  세션이 실행되는 방식
+</h2>
 
 작업을 제출할 때:
 
@@ -34,7 +36,9 @@
 
 브랜치가 푸시될 때 세션이 닫히지 않습니다. PR 생성 및 추가 편집은 모두 동일한 대화 내에서 발생합니다.
 
-## Claude Code를 실행하는 방법 비교
+<h2 id="compare-ways-to-run-claude-code">
+  Claude Code를 실행하는 방법 비교
+</h2>
 
 Claude Code는 모든 곳에서 동일하게 작동합니다. 변경되는 것은 코드가 실행되는 위치와 로컬 구성을 사용할 수 있는지 여부입니다. Desktop 앱은 로컬 및 클라우드 세션을 모두 제공하므로, 아래의 답변은 선택한 것에 따라 달라집니다:
 
@@ -50,7 +54,9 @@ Claude Code는 모든 곳에서 동일하게 작동합니다. 변경되는 것�
 
 [터미널 빠른 시작](/ko/quickstart), [Desktop 앱](/ko/desktop) 또는 [Remote Control](/ko/remote-control) 문서를 참조하여 설정합니다.
 
-## GitHub 연결 및 환경 생성
+<h2 id="connect-github-and-create-an-environment">
+  GitHub 연결 및 환경 생성
+</h2>
 
 설정은 일회성 프로세스입니다. 이미 GitHub CLI를 사용하는 경우, 브라우저 대신 [터미널에서 이를 수행](#connect-from-your-terminal)할 수 있습니다.
 
@@ -77,7 +83,9 @@ Claude Code는 모든 곳에서 동일하게 작동합니다. 변경되는 것�
   </Step>
 </Steps>
 
-### 터미널에서 연결
+<h3 id="connect-from-your-terminal">
+  터미널에서 연결
+</h3>
 
 이미 GitHub CLI(`gh`)를 사용하는 경우, 브라우저를 열지 않고 웹에서 Claude Code를 설정할 수 있습니다. 이는 [Claude Code CLI](/ko/quickstart)가 필요합니다. `/web-setup`은 로컬 `gh` 토큰을 읽고, Claude 계정에 연결하고, 아직 없는 경우 기본 클라우드 환경을 생성합니다.
 
@@ -109,7 +117,9 @@ Claude Code는 모든 곳에서 동일하게 작동합니다. 변경되는 것�
   </Step>
 </Steps>
 
-## 작업 시작
+<h2 id="start-a-task">
+  작업 시작
+</h2>
 
 GitHub가 연결되고 환경이 생성되면, 작업을 제출할 준비가 되었습니다.
 
@@ -133,7 +143,9 @@ GitHub가 연결되고 환경이 생성되면, 작업을 제출할 준비가 되
   </Step>
 </Steps>
 
-## 세션 미리 채우기
+<h2 id="pre-fill-sessions">
+  세션 미리 채우기
+</h2>
 
 [claude.ai/code](https://claude.ai/code) URL에 쿼리 매개변수를 추가하여 새 세션의 프롬프트, 저장소 및 환경을 미리 채울 수 있습니다. 이를 사용하여 문제 추적기의 버튼과 같은 통합을 구축하여 문제 설명을 프롬프트로 하여 Claude Code를 엽니다.
 
@@ -150,7 +162,9 @@ GitHub가 연결되고 환경이 생성되면, 작업을 제출할 준비가 되
 https://claude.ai/code?prompt=Fix%20the%20login%20bug&repositories=acme/webapp
 ```
 
-## 검토 및 반복
+<h2 id="review-and-iterate">
+  검토 및 반복
+</h2>
 
 Claude가 완료되면, 변경 사항을 검토하고, 특정 줄에 피드백을 남기고, 차이가 올바를 때까지 계속합니다.
 
@@ -172,31 +186,45 @@ Claude가 완료되면, 변경 사항을 검토하고, 특정 줄에 피드백�
   </Step>
 </Steps>
 
-## 설정 문제 해결
+<h2 id="troubleshoot-setup">
+  설정 문제 해결
+</h2>
 
-### GitHub 연결 후 저장소가 나타나지 않음
+<h3 id="no-repositories-appear-after-connecting-github">
+  GitHub 연결 후 저장소가 나타나지 않음
+</h3>
 
-Claude GitHub 앱은 사용하려는 각 저장소에 대한 명시적 접근이 필요합니다. github.com에서 **Settings → Applications → Claude → Configure**를 열고 저장소가 **Repository access** 아래에 나열되어 있는지 확인합니다. 비공개 저장소는 공개 저장소와 동일한 권한이 필요합니다.
+클라우드 세션은 연결된 GitHub 계정이 볼 수 있는 모든 저장소를 사용할 수 있습니다. Claude GitHub 앱이 설치된 저장소와 관계없이 말입니다. 저장소가 누락된 경우, 연결된 GitHub 계정이 GitHub에서 해당 저장소에 접근할 수 있는지 확인합니다. 저장소에 대해 [자동 수정](/ko/claude-code-on-the-web#auto-fix-pull-requests)을 원하는 경우, 앱을 설치합니다: github.com에서 **Settings → Applications → Claude → Configure**를 열고 저장소가 **Repository access** 아래에 나열되어 있는지 확인합니다. 비공개 저장소는 공개 저장소와 동일한 권한이 필요합니다.
 
-### 페이지에 GitHub 로그인 버튼만 표시됨
+<h3 id="the-page-only-shows-a-github-login-button">
+  페이지에 GitHub 로그인 버튼만 표시됨
+</h3>
 
 클라우드 세션은 연결된 GitHub 계정이 필요합니다. 위의 브라우저 흐름을 통해 연결하거나, GitHub CLI를 사용하는 경우 터미널에서 `/web-setup`을 실행합니다. GitHub를 연결하지 않으려면, [Remote Control](/ko/remote-control)을 참조하여 자신의 머신에서 Claude Code를 실행하고 웹에서 모니터링합니다.
 
-### "선택한 조직에서 사용할 수 없음"
+<h3 id="not-available-for-the-selected-organization">
+  "선택한 조직에서 사용할 수 없음"
+</h3>
 
 Enterprise 조직은 관리자가 웹에서 Claude Code를 활성화해야 할 수 있습니다. Anthropic 계정 팀에 문의합니다.
 
-### `/web-setup`이 "Unknown command" 반환
+<h3 id="/web-setup-returns-unknown-command">
+  `/web-setup`이 "Unknown command" 반환
+</h3>
 
 `/web-setup`은 셸이 아닌 Claude Code CLI 내부에서 실행됩니다. 먼저 `claude`를 시작한 다음, 프롬프트에서 `/web-setup`을 입력합니다.
 
 Claude Code 내부에 입력했는데도 오류가 표시되면, CLI가 v2.1.80보다 오래되었거나 API 키 또는 타사 공급자 대신 claude.ai 구독으로 인증되었습니다. `claude update`를 실행한 다음, `/login`을 실행하여 claude.ai 계정으로 로그인합니다.
 
-### `--remote` 또는 ultraplan 사용 시 "클라우드 환경을 생성할 수 없음" 또는 "사용 가능한 클라우드 환경 없음"
+<h3 id="could-not-create-a-cloud-environment-or-no-cloud-environment-available-when-using-remote-or-ultraplan">
+  `--remote` 또는 ultraplan 사용 시 "클라우드 환경을 생성할 수 없음" 또는 "사용 가능한 클라우드 환경 없음"
+</h3>
 
 원격 세션 기능은 아직 없는 경우 기본 클라우드 환경을 자동으로 생성합니다. "클라우드 환경을 생성할 수 없음"이 표시되면, 자동 생성이 실패했습니다. {/* max-version: 2.1.100 */}"사용 가능한 클라우드 환경 없음"이 표시되면, CLI가 자동 생성보다 앞서 있습니다. 어느 경우든, Claude Code CLI에서 `/web-setup`을 실행하여 수동으로 생성하거나, [claude.ai/code](https://claude.ai/code)를 방문하고 위의 **환경 생성** 단계를 따릅니다.
 
-### 설정 스크립트 실패
+<h3 id="setup-script-failed">
+  설정 스크립트 실패
+</h3>
 
 설정 스크립트가 0이 아닌 상태로 종료되어 세션 시작을 차단합니다. 일반적인 원인:
 
@@ -206,11 +234,27 @@ Claude Code 내부에 입력했는데도 오류가 표시되면, CLI가 v2.1.80�
 
 디버깅하려면, 스크립트 상단에 `set -x`를 추가하여 어느 명령이 실패했는지 확인합니다. 중요하지 않은 명령의 경우, `|| true`를 추가하여 세션 시작을 차단하지 않도록 합니다.
 
-### 탭을 닫은 후 세션이 계속 실행됨
+<h3 id="new-sessions-hang-or-time-out-during-setup">
+  새 세션이 설정 중에 중단되거나 시간 초과됨
+</h3>
+
+새 세션이 설정 스크립트 단계에서 정체되거나 스크립트가 완료되기 전에 일반 컨테이너 오류로 실패하면, 스크립트가 [환경 캐시](/ko/claude-code-on-the-web#environment-caching) 구축을 위한 대략 5분의 시간 예산을 초과할 가능성이 높습니다. 큰 Docker 이미지 가져오기, 전체 종속성 트리 동기화 또는 모델 가중치 다운로드와 같은 무거운 단계는 특히 순차적으로 실행될 때 총합을 제한을 초과합니다.
+
+이를 해결하려면, 스크립트를 정리하여 5분 이내에 안정적으로 완료되도록 합니다:
+
+* `&`와 최종 `wait`를 사용하여 독립적인 설치를 병렬로 실행하는 대신 순차적으로 실행합니다.
+* 가장 큰 다운로드를 설정 스크립트에서 [SessionStart hook](/ko/claude-code-on-the-web#setup-scripts-vs-sessionstart-hooks)으로 이동하여 백그라운드에서 시작하도록 하여, 세션이 완료되는 동안 사용 가능해집니다.
+* 설정 스크립트에서 긴 재시도 대기를 제거합니다. 정체된 재시도 루프는 예산에 포함됩니다.
+
+<h3 id="session-keeps-running-after-closing-the-tab">
+  탭을 닫은 후 세션이 계속 실행됨
+</h3>
 
 이는 의도된 동작입니다. 탭을 닫거나 다른 곳으로 이동해도 세션이 중지되지 않습니다. Claude가 현재 작업을 완료한 다음 유휴 상태가 될 때까지 백그라운드에서 계속 실행됩니다. 사이드바에서, [세션을 보관](/ko/claude-code-on-the-web#archive-sessions)하여 목록에서 숨기거나, [삭제](/ko/claude-code-on-the-web#delete-sessions)하여 영구적으로 제거할 수 있습니다.
 
-## 다음 단계
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
 이제 작업을 제출하고 검토할 수 있으므로, 이 페이지들은 다음에 올 것을 다룹니다: 터미널에서 클라우드 세션 시작, 반복 작업 예약, Claude에게 상시 지침 제공.
 

@@ -2,67 +2,71 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Get structured output from agents
+# 에이전트에서 구조화된 출력 얻기
 
-> Return validated JSON from agent workflows using JSON Schema, Zod, or Pydantic. Get type-safe, structured data after multi-turn tool use.
+> JSON Schema, Zod 또는 Pydantic을 사용하여 에이전트 워크플로우에서 검증된 JSON을 반환합니다. 다중 턴 도구 사용 후 타입 안전 구조화된 데이터를 얻습니다.
 
-Structured outputs let you define the exact shape of data you want back from an agent. The agent can use any tools it needs to complete the task, and you still get validated JSON matching your schema at the end. Define a [JSON Schema](https://json-schema.org/understanding-json-schema/about) for the structure you need, and the SDK validates the output against it, re-prompting on mismatch. If validation does not succeed within the retry limit, the result is an error instead of structured data; see [Error handling](#error-handling).
+구조화된 출력을 사용하면 에이전트에서 반환받을 데이터의 정확한 형태를 정의할 수 있습니다. 에이전트는 작업을 완료하기 위해 필요한 모든 도구를 사용할 수 있으며, 마지막에는 여전히 스키마와 일치하는 검증된 JSON을 얻습니다. 필요한 구조에 대한 [JSON Schema](https://json-schema.org/understanding-json-schema/about)를 정의하면, SDK가 출력을 검증하고 불일치 시 다시 프롬프트합니다. 재시도 제한 내에서 검증이 성공하지 않으면 구조화된 데이터 대신 오류가 발생합니다. [오류 처리](#error-handling)를 참조하세요.
 
-For full type safety, use [Zod](#type-safe-schemas-with-zod-and-pydantic) (TypeScript) or [Pydantic](#type-safe-schemas-with-zod-and-pydantic) (Python) to define your schema and get strongly-typed objects back.
+완전한 타입 안전성을 위해 [Zod](#type-safe-schemas-with-zod-and-pydantic)(TypeScript) 또는 [Pydantic](#type-safe-schemas-with-zod-and-pydantic)(Python)을 사용하여 스키마를 정의하고 강타입 객체를 반환받습니다.
 
-## Why structured outputs?
+<h2 id="why-structured-outputs">
+  구조화된 출력이 필요한 이유?
+</h2>
 
-Agents return free-form text by default, which works for chat but not when you need to use the output programmatically. Structured outputs give you typed data you can pass directly to your application logic, database, or UI components.
+에이전트는 기본적으로 자유 형식 텍스트를 반환하므로 채팅에는 적합하지만 출력을 프로그래밍 방식으로 사용해야 할 때는 적합하지 않습니다. 구조화된 출력은 애플리케이션 로직, 데이터베이스 또는 UI 컴포넌트에 직접 전달할 수 있는 타입이 지정된 데이터를 제공합니다.
 
-Consider a recipe app where an agent searches the web and brings back recipes. Without structured outputs, you get free-form text that you'd need to parse yourself. With structured outputs, you define the shape you want and get typed data you can use directly in your app.
+에이전트가 웹을 검색하고 레시피를 가져오는 레시피 앱을 생각해 봅시다. 구조화된 출력이 없으면 직접 파싱해야 하는 자유 형식 텍스트를 얻습니다. 구조화된 출력을 사용하면 원하는 형태를 정의하고 앱에서 직접 사용할 수 있는 타입이 지정된 데이터를 얻습니다.
 
 <AccordionGroup>
-  <Accordion title="Without structured outputs">
+  <Accordion title="구조화된 출력 없음">
     ```text theme={null}
-    Here's a classic chocolate chip cookie recipe!
+    여기 클래식 초콜릿 칩 쿠키 레시피입니다!
 
-    **Chocolate Chip Cookies**
-    Prep time: 15 minutes | Cook time: 10 minutes
+    **초콜릿 칩 쿠키**
+    준비 시간: 15분 | 조리 시간: 10분
 
-    Ingredients:
-    - 2 1/4 cups all-purpose flour
-    - 1 cup butter, softened
+    재료:
+    - 2 1/4컵 다목적 밀가루
+    - 1컵 버터, 부드러워진 상태
     ...
     ```
 
-    To use this in your app, you'd need to parse out the title, convert "15 minutes" to a number, separate ingredients from instructions, and handle inconsistent formatting across responses.
+    이를 앱에서 사용하려면 제목을 파싱하고, "15분"을 숫자로 변환하고, 재료와 지시사항을 분리하고, 응답 전체에서 일관되지 않은 형식을 처리해야 합니다.
   </Accordion>
 
-  <Accordion title="With structured outputs">
+  <Accordion title="구조화된 출력 포함">
     ```json theme={null}
     {
-      "name": "Chocolate Chip Cookies",
+      "name": "초콜릿 칩 쿠키",
       "prep_time_minutes": 15,
       "cook_time_minutes": 10,
       "ingredients": [
-        { "item": "all-purpose flour", "amount": 2.25, "unit": "cups" },
-        { "item": "butter, softened", "amount": 1, "unit": "cup" }
+        { "item": "다목적 밀가루", "amount": 2.25, "unit": "컵" },
+        { "item": "버터, 부드러워진 상태", "amount": 1, "unit": "컵" }
         // ...
       ],
-      "steps": ["Preheat oven to 375°F", "Cream butter and sugar" /* ... */]
+      "steps": ["오븐을 375°F로 예열하기", "버터와 설탕 섞기" /* ... */]
     }
     ```
 
-    Typed data you can use directly in your UI.
+    UI에서 직접 사용할 수 있는 타입이 지정된 데이터입니다.
   </Accordion>
 </AccordionGroup>
 
-## Quick start
+<h2 id="quick-start">
+  빠른 시작
+</h2>
 
-To use structured outputs, define a [JSON Schema](https://json-schema.org/understanding-json-schema/about) describing the shape of data you want, then pass it to `query()` via the `outputFormat` option (TypeScript) or `output_format` option (Python). When the agent finishes, the result message includes a `structured_output` field with validated data matching your schema.
+구조화된 출력을 사용하려면 원하는 데이터의 형태를 설명하는 [JSON Schema](https://json-schema.org/understanding-json-schema/about)를 정의한 다음, `outputFormat` 옵션(TypeScript) 또는 `output_format` 옵션(Python)을 통해 `query()`에 전달합니다. 에이전트가 완료되면 결과 메시지에 스키마와 일치하는 검증된 데이터가 포함된 `structured_output` 필드가 포함됩니다.
 
-The example below asks the agent to research Anthropic and return the company name, year founded, and headquarters as structured output.
+아래 예제는 에이전트에 Anthropic을 조사하고 회사명, 설립 연도 및 본사를 구조화된 출력으로 반환하도록 요청합니다.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Define the shape of data you want back
+  // 반환받을 데이터의 형태 정의
   const schema = {
     type: "object",
     properties: {
@@ -74,7 +78,7 @@ The example below asks the agent to research Anthropic and return the company na
   };
 
   for await (const message of query({
-    prompt: "Research Anthropic and provide key company information",
+    prompt: "Anthropic을 조사하고 주요 회사 정보를 제공하세요",
     options: {
       outputFormat: {
         type: "json_schema",
@@ -82,7 +86,7 @@ The example below asks the agent to research Anthropic and return the company na
       }
     }
   })) {
-    // The result message contains structured_output with validated data
+    // 결과 메시지에는 검증된 데이터가 포함된 structured_output이 포함됩니다
     if (message.type === "result" && message.subtype === "success" && message.structured_output) {
       console.log(message.structured_output);
       // { company_name: "Anthropic", founded_year: 2021, headquarters: "San Francisco, CA" }
@@ -94,7 +98,7 @@ The example below asks the agent to research Anthropic and return the company na
   import asyncio
   from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
-  # Define the shape of data you want back
+  # 반환받을 데이터의 형태 정의
   schema = {
       "type": "object",
       "properties": {
@@ -108,12 +112,12 @@ The example below asks the agent to research Anthropic and return the company na
 
   async def main():
       async for message in query(
-          prompt="Research Anthropic and provide key company information",
+          prompt="Anthropic을 조사하고 주요 회사 정보를 제공하세요",
           options=ClaudeAgentOptions(
               output_format={"type": "json_schema", "schema": schema}
           ),
       ):
-          # The result message contains structured_output with validated data
+          # 결과 메시지에는 검증된 데이터가 포함된 structured_output이 포함됩니다
           if isinstance(message, ResultMessage) and message.structured_output:
               print(message.structured_output)
               # {'company_name': 'Anthropic', 'founded_year': 2021, 'headquarters': 'San Francisco, CA'}
@@ -123,18 +127,20 @@ The example below asks the agent to research Anthropic and return the company na
   ```
 </CodeGroup>
 
-## Type-safe schemas with Zod and Pydantic
+<h2 id="type-safe-schemas-with-zod-and-pydantic">
+  Zod 및 Pydantic을 사용한 타입 안전 스키마
+</h2>
 
-Instead of writing JSON Schema by hand, you can use [Zod](https://zod.dev/) (TypeScript) or [Pydantic](https://docs.pydantic.dev/latest/) (Python) to define your schema. These libraries generate the JSON Schema for you and let you parse the response into a fully-typed object you can use throughout your codebase with autocomplete and type checking.
+JSON Schema를 직접 작성하는 대신 [Zod](https://zod.dev/)(TypeScript) 또는 [Pydantic](https://docs.pydantic.dev/latest/)(Python)을 사용하여 스키마를 정의할 수 있습니다. 이러한 라이브러리는 JSON Schema를 생성하고 응답을 완전히 타입이 지정된 객체로 파싱하여 자동 완성 및 타입 검사를 통해 코드베이스 전체에서 사용할 수 있습니다.
 
-The example below defines a schema for a feature implementation plan with a summary, list of steps (each with complexity level), and potential risks. The agent plans the feature and returns a typed `FeaturePlan` object. You can then access properties like `plan.summary` and iterate over `plan.steps` with full type safety.
+아래 예제는 요약, 단계 목록(각각 복잡도 수준 포함) 및 잠재적 위험이 있는 기능 구현 계획에 대한 스키마를 정의합니다. 에이전트는 기능을 계획하고 타입이 지정된 `FeaturePlan` 객체를 반환합니다. 그런 다음 `plan.summary`와 같은 속성에 액세스하고 완전한 타입 안전성으로 `plan.steps`를 반복할 수 있습니다.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
   import { z } from "zod";
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Define schema with Zod
+  // Zod를 사용하여 스키마 정의
   const FeaturePlan = z.object({
     feature_name: z.string(),
     summary: z.string(),
@@ -150,13 +156,13 @@ The example below defines a schema for a feature implementation plan with a summ
 
   type FeaturePlan = z.infer<typeof FeaturePlan>;
 
-  // Convert to JSON Schema
+  // JSON Schema로 변환
   const schema = z.toJSONSchema(FeaturePlan);
 
-  // Use in query
+  // 쿼리에서 사용
   for await (const message of query({
     prompt:
-      "Plan how to add dark mode support to a React app. Break it into implementation steps.",
+      "React 앱에 다크 모드 지원을 추가하는 방법을 계획하세요. 구현 단계로 나누세요.",
     options: {
       outputFormat: {
         type: "json_schema",
@@ -165,12 +171,12 @@ The example below defines a schema for a feature implementation plan with a summ
     }
   })) {
     if (message.type === "result" && message.subtype === "success" && message.structured_output) {
-      // Validate and get fully typed result
+      // 검증하고 완전히 타입이 지정된 결과 얻기
       const parsed = FeaturePlan.safeParse(message.structured_output);
       if (parsed.success) {
         const plan: FeaturePlan = parsed.data;
-        console.log(`Feature: ${plan.feature_name}`);
-        console.log(`Summary: ${plan.summary}`);
+        console.log(`기능: ${plan.feature_name}`);
+        console.log(`요약: ${plan.summary}`);
         plan.steps.forEach((step) => {
           console.log(`${step.step_number}. [${step.estimated_complexity}] ${step.description}`);
         });
@@ -200,7 +206,7 @@ The example below defines a schema for a feature implementation plan with a summ
 
   async def main():
       async for message in query(
-          prompt="Plan how to add dark mode support to a React app. Break it into implementation steps.",
+          prompt="React 앱에 다크 모드 지원을 추가하는 방법을 계획하세요. 구현 단계로 나누세요.",
           options=ClaudeAgentOptions(
               output_format={
                   "type": "json_schema",
@@ -209,10 +215,10 @@ The example below defines a schema for a feature implementation plan with a summ
           ),
       ):
           if isinstance(message, ResultMessage) and message.structured_output:
-              # Validate and get fully typed result
+              # 검증하고 완전히 타입이 지정된 결과 얻기
               plan = FeaturePlan.model_validate(message.structured_output)
-              print(f"Feature: {plan.feature_name}")
-              print(f"Summary: {plan.summary}")
+              print(f"기능: {plan.feature_name}")
+              print(f"요약: {plan.summary}")
               for step in plan.steps:
                   print(
                       f"{step.step_number}. [{step.estimated_complexity}] {step.description}"
@@ -223,33 +229,37 @@ The example below defines a schema for a feature implementation plan with a summ
   ```
 </CodeGroup>
 
-**Benefits:**
+**이점:**
 
-* Full type inference (TypeScript) and type hints (Python)
-* Runtime validation with `safeParse()` or `model_validate()`
-* Better error messages
-* Composable, reusable schemas
+* 완전한 타입 추론(TypeScript) 및 타입 힌트(Python)
+* `safeParse()` 또는 `model_validate()`를 사용한 런타임 검증
+* 더 나은 오류 메시지
+* 구성 가능하고 재사용 가능한 스키마
 
-## Output format configuration
+<h2 id="output-format-configuration">
+  출력 형식 구성
+</h2>
 
-The `outputFormat` (TypeScript) or `output_format` (Python) option accepts an object with:
+`outputFormat`(TypeScript) 또는 `output_format`(Python) 옵션은 다음을 포함하는 객체를 허용합니다:
 
-* `type`: Set to `"json_schema"` for structured outputs
-* `schema`: A [JSON Schema](https://json-schema.org/understanding-json-schema/about) object defining your output structure. You can generate this from a Zod schema with `z.toJSONSchema()` or a Pydantic model with `.model_json_schema()`
+* `type`: 구조화된 출력의 경우 `"json_schema"`로 설정
+* `schema`: 출력 구조를 정의하는 [JSON Schema](https://json-schema.org/understanding-json-schema/about) 객체입니다. Zod 스키마에서 `z.toJSONSchema()`를 사용하거나 Pydantic 모델에서 `.model_json_schema()`를 사용하여 생성할 수 있습니다.
 
-The SDK supports standard JSON Schema features including all basic types (object, array, string, number, boolean, null), `enum`, `const`, `required`, nested objects, and `$ref` definitions. For the full list of supported features and limitations, see [JSON Schema limitations](https://platform.claude.com/docs/en/build-with-claude/structured-outputs#json-schema-limitations).
+SDK는 모든 기본 타입(object, array, string, number, boolean, null), `enum`, `const`, `required`, 중첩 객체 및 `$ref` 정의를 포함한 표준 JSON Schema 기능을 지원합니다. 지원되는 기능 및 제한사항의 전체 목록은 [JSON Schema 제한사항](https://platform.claude.com/docs/ko/build-with-claude/structured-outputs#json-schema-limitations)을 참조하세요.
 
-## Example: TODO tracking agent
+<h2 id="example-todo-tracking-agent">
+  예제: TODO 추적 에이전트
+</h2>
 
-This example demonstrates how structured outputs work with multi-step tool use. The agent needs to find TODO comments in the codebase, then look up git blame information for each one. It autonomously decides which tools to use (Grep to search, Bash to run git commands) and combines the results into a single structured response.
+이 예제는 구조화된 출력이 다중 단계 도구 사용과 어떻게 작동하는지 보여줍니다. 에이전트는 코드베이스에서 TODO 주석을 찾은 다음 각각에 대한 git blame 정보를 조회해야 합니다. 실행 중에 사용할 도구(검색용 Grep, git 명령 실행용 Bash)를 자율적으로 결정하고 결과를 단일 구조화된 응답으로 결합합니다.
 
-The schema includes optional fields (`author` and `date`) since git blame information might not be available for all files. The agent fills in what it can find and omits the rest.
+스키마에는 모든 파일에 대해 git blame 정보를 사용할 수 없을 수 있으므로 선택적 필드(`author` 및 `date`)가 포함됩니다. 에이전트는 찾을 수 있는 것을 채우고 나머지는 생략합니다.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Define structure for TODO extraction
+  // TODO 추출을 위한 구조 정의
   const todoSchema = {
     type: "object",
     properties: {
@@ -272,9 +282,9 @@ The schema includes optional fields (`author` and `date`) since git blame inform
     required: ["todos", "total_count"]
   };
 
-  // Agent uses Grep to find TODOs, Bash to get git blame info
+  // 에이전트는 Grep을 사용하여 TODO를 찾고, Bash를 사용하여 git blame 정보를 얻습니다
   for await (const message of query({
-    prompt: "Find all TODO comments in this codebase and identify who added them",
+    prompt: "이 코드베이스에서 모든 TODO 주석을 찾고 누가 추가했는지 식별하세요",
     options: {
       outputFormat: {
         type: "json_schema",
@@ -284,11 +294,11 @@ The schema includes optional fields (`author` and `date`) since git blame inform
   })) {
     if (message.type === "result" && message.subtype === "success" && message.structured_output) {
       const data = message.structured_output as { total_count: number; todos: Array<{ file: string; line: number; text: string; author?: string; date?: string }> };
-      console.log(`Found ${data.total_count} TODOs`);
+      console.log(`${data.total_count}개의 TODO를 찾았습니다`);
       data.todos.forEach((todo) => {
         console.log(`${todo.file}:${todo.line} - ${todo.text}`);
         if (todo.author) {
-          console.log(`  Added by ${todo.author} on ${todo.date}`);
+          console.log(`  ${todo.author}가 ${todo.date}에 추가함`);
         }
       });
     }
@@ -299,7 +309,7 @@ The schema includes optional fields (`author` and `date`) since git blame inform
   import asyncio
   from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
-  # Define structure for TODO extraction
+  # TODO 추출을 위한 구조 정의
   todo_schema = {
       "type": "object",
       "properties": {
@@ -324,43 +334,45 @@ The schema includes optional fields (`author` and `date`) since git blame inform
 
 
   async def main():
-      # Agent uses Grep to find TODOs, Bash to get git blame info
+      # 에이전트는 Grep을 사용하여 TODO를 찾고, Bash를 사용하여 git blame 정보를 얻습니다
       async for message in query(
-          prompt="Find all TODO comments in this codebase and identify who added them",
+          prompt="이 코드베이스에서 모든 TODO 주석을 찾고 누가 추가했는지 식별하세요",
           options=ClaudeAgentOptions(
               output_format={"type": "json_schema", "schema": todo_schema}
           ),
       ):
           if isinstance(message, ResultMessage) and message.structured_output:
               data = message.structured_output
-              print(f"Found {data['total_count']} TODOs")
+              print(f"{data['total_count']}개의 TODO를 찾았습니다")
               for todo in data["todos"]:
                   print(f"{todo['file']}:{todo['line']} - {todo['text']}")
                   if "author" in todo:
-                      print(f"  Added by {todo['author']} on {todo['date']}")
+                      print(f"  {todo['author']}가 {todo['date']}에 추가함")
 
 
   asyncio.run(main())
   ```
 </CodeGroup>
 
-## Error handling
+<h2 id="error-handling">
+  오류 처리
+</h2>
 
-Structured output generation can fail when the agent cannot produce valid JSON matching your schema. This typically happens when the schema is too complex for the task, the task itself is ambiguous, or the agent hits its retry limit trying to fix validation errors.
+구조화된 출력 생성은 에이전트가 스키마와 일치하는 유효한 JSON을 생성할 수 없을 때 실패할 수 있습니다. 이는 일반적으로 스키마가 작업에 너무 복잡하거나, 작업 자체가 모호하거나, 에이전트가 검증 오류를 수정하려고 시도하는 동안 재시도 제한에 도달할 때 발생합니다.
 
-When an error occurs, the result message has a `subtype` indicating what went wrong:
+오류가 발생하면 결과 메시지에 무엇이 잘못되었는지 나타내는 `subtype`이 있습니다:
 
-| Subtype                               | Meaning                                                     |
-| ------------------------------------- | ----------------------------------------------------------- |
-| `success`                             | Output was generated and validated successfully             |
-| `error_max_structured_output_retries` | Agent couldn't produce valid output after multiple attempts |
+| Subtype                               | 의미                             |
+| ------------------------------------- | ------------------------------ |
+| `success`                             | 출력이 성공적으로 생성되고 검증됨             |
+| `error_max_structured_output_retries` | 에이전트가 여러 시도 후 유효한 출력을 생성할 수 없음 |
 
-The example below checks the `subtype` field to determine whether the output was generated successfully or if you need to handle a failure:
+아래 예제는 `subtype` 필드를 확인하여 출력이 성공적으로 생성되었는지 또는 실패를 처리해야 하는지 결정합니다:
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
   for await (const msg of query({
-    prompt: "Extract contact info from the document",
+    prompt: "문서에서 연락처 정보를 추출하세요",
     options: {
       outputFormat: {
         type: "json_schema",
@@ -370,11 +382,11 @@ The example below checks the `subtype` field to determine whether the output was
   })) {
     if (msg.type === "result") {
       if (msg.subtype === "success" && msg.structured_output) {
-        // Use the validated output
+        // 검증된 출력 사용
         console.log(msg.structured_output);
       } else if (msg.subtype === "error_max_structured_output_retries") {
-        // Handle the failure - retry with simpler prompt, fall back to unstructured, etc.
-        console.error("Could not produce valid output");
+        // 실패 처리 - 더 간단한 프롬프트로 재시도, 구조화되지 않은 것으로 폴백 등
+        console.error("유효한 출력을 생성할 수 없습니다");
       }
     }
   }
@@ -382,29 +394,31 @@ The example below checks the `subtype` field to determine whether the output was
 
   ```python Python theme={null}
   async for message in query(
-      prompt="Extract contact info from the document",
+      prompt="문서에서 연락처 정보를 추출하세요",
       options=ClaudeAgentOptions(
           output_format={"type": "json_schema", "schema": contact_schema}
       ),
   ):
       if isinstance(message, ResultMessage):
           if message.subtype == "success" and message.structured_output:
-              # Use the validated output
+              # 검증된 출력 사용
               print(message.structured_output)
           elif message.subtype == "error_max_structured_output_retries":
-              # Handle the failure
-              print("Could not produce valid output")
+              # 실패 처리
+              print("유효한 출력을 생성할 수 없습니다")
   ```
 </CodeGroup>
 
-**Tips for avoiding errors:**
+**오류 방지 팁:**
 
-* **Keep schemas focused.** Deeply nested schemas with many required fields are harder to satisfy. Start simple and add complexity as needed.
-* **Match schema to task.** If the task might not have all the information your schema requires, make those fields optional.
-* **Use clear prompts.** Ambiguous prompts make it harder for the agent to know what output to produce.
+* **스키마를 집중적으로 유지하세요.** 많은 필수 필드가 있는 깊게 중첩된 스키마는 만족하기 어렵습니다. 간단하게 시작하고 필요에 따라 복잡성을 추가하세요.
+* **스키마를 작업과 일치시키세요.** 작업에 스키마가 요구하는 모든 정보가 없을 수 있으면 해당 필드를 선택적으로 만드세요.
+* **명확한 프롬프트를 사용하세요.** 모호한 프롬프트는 에이전트가 생성할 출력을 알기 어렵게 합니다.
 
-## Related resources
+<h2 id="related-resources">
+  관련 리소스
+</h2>
 
-* [JSON Schema documentation](https://json-schema.org/): learn JSON Schema syntax for defining complex schemas with nested objects, arrays, enums, and validation constraints
-* [API Structured Outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs): use structured outputs with the Claude API directly for single-turn requests without tool use
-* [Custom tools](/en/agent-sdk/custom-tools): give your agent custom tools to call during execution before returning structured output
+* [JSON Schema 문서](https://json-schema.org/): 중첩 객체, 배열, 열거형 및 검증 제약 조건이 있는 복잡한 스키마를 정의하기 위한 JSON Schema 구문 학습
+* [API 구조화된 출력](https://platform.claude.com/docs/ko/build-with-claude/structured-outputs): 도구 사용 없이 단일 턴 요청에 대해 Claude API와 함께 직접 구조화된 출력 사용
+* [사용자 정의 도구](/ko/agent-sdk/custom-tools): 구조화된 출력을 반환하기 전에 실행 중에 호출할 에이전트 사용자 정의 도구 제공

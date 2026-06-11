@@ -21,11 +21,15 @@
 
 어떤 것이 적용되는지 확실하지 않으면 Claude Code 내에서 `/doctor`를 실행하여 설치, 설정, MCP 서버 및 컨텍스트 사용을 자동으로 확인하세요. `claude`가 전혀 시작되지 않으면 셸에서 `claude doctor`를 대신 실행하세요.
 
-## 성능 및 안정성
+<h2 id="performance-and-stability">
+  성능 및 안정성
+</h2>
 
 이 섹션에서는 리소스 사용, 응답성 및 검색 동작과 관련된 문제를 다룹니다.
 
-### 높은 CPU 또는 메모리 사용량
+<h3 id="high-cpu-or-memory-usage">
+  높은 CPU 또는 메모리 사용량
+</h3>
 
 Claude Code는 대부분의 개발 환경에서 작동하도록 설계되었지만 대규모 코드베이스를 처리할 때 상당한 리소스를 소비할 수 있습니다. 성능 문제가 발생하는 경우:
 
@@ -37,7 +41,9 @@ Claude Code는 대부분의 개발 환경에서 작동하도록 설계되었지�
 
 분석은 상주 집합 크기, JS 힙, 배열 버퍼 및 설명되지 않은 네이티브 메모리를 표시하며, 이는 증가가 JavaScript 객체인지 네이티브 코드인지 식별하는 데 도움이 됩니다. Chrome DevTools의 메모리 → 로드에서 `.heapsnapshot` 파일을 열어 보유자를 검사하세요. [GitHub](https://github.com/anthropics/claude-code/issues)에서 메모리 문제를 보고할 때 두 파일을 모두 첨부하세요.
 
-### 자동 압축이 스래싱 오류로 중단됨
+<h3 id="auto-compaction-stops-with-a-thrashing-error">
+  자동 압축이 스래싱 오류로 중단됨
+</h3>
 
 `Autocompact is thrashing: the context refilled to the limit...`이 표시되면 자동 압축이 성공했지만 파일 또는 도구 출력이 즉시 컨텍스트 창을 여러 번 연속으로 다시 채웠습니다. Claude Code는 진행되지 않는 루프에서 API 호출을 낭비하지 않기 위해 재시도를 중단합니다.
 
@@ -48,7 +54,9 @@ Claude Code는 대부분의 개발 환경에서 작동하도록 설계되었지�
 3. 큰 파일 작업을 [서브에이전트](/ko/sub-agents)로 이동하여 별도의 컨텍스트 창에서 실행하세요
 4. 이전 대화가 더 이상 필요하지 않으면 `/clear`를 실행하세요
 
-### 명령 중단 또는 정지
+<h3 id="command-hangs-or-freezes">
+  명령 중단 또는 정지
+</h3>
 
 Claude Code가 응답하지 않는 것처럼 보이면:
 
@@ -57,7 +65,15 @@ Claude Code가 응답하지 않는 것처럼 보이면:
 
 다시 시작해도 대화가 손실되지 않습니다. 같은 디렉토리에서 `claude --resume`을 실행하여 세션을 다시 시작하세요.
 
-### 검색 및 발견 문제
+<h3 id="garbled-or-corrupted-text-in-an-editor-s-integrated-terminal">
+  편집기의 통합 터미널에서 손상되거나 깨진 텍스트
+</h3>
+
+VS Code, Cursor 또는 Devin Desktop 통합 터미널에서 Claude Code를 실행할 때 문자가 상자, 얼룩 또는 잘못된 글리프로 렌더링되면 터미널의 GPU 렌더러가 원인일 가능성이 높습니다. Claude Code 내에서 `/terminal-setup`을 실행하여 `terminal.integrated.gpuAcceleration`을 `"off"`로 설정하거나 편집기 설정에서 수동으로 설정하고 창을 다시 로드하세요. `/terminal-setup`이 작성하는 다른 설정에 대해서는 [터미널 구성](/ko/terminal-config)을 참조하세요.
+
+<h3 id="search-and-discovery-issues">
+  검색 및 발견 문제
+</h3>
 
 Search 도구, `@file` 언급, 사용자 정의 에이전트 또는 사용자 정의 skills가 파일을 찾지 못하면 번들된 `ripgrep` 바이너리가 시스템에서 실행되지 않을 수 있습니다. 플랫폼의 `ripgrep` 패키지를 설치하고 Claude Code에 대신 사용하도록 지시하세요:
 
@@ -95,7 +111,9 @@ Search 도구, `@file` 언급, 사용자 정의 에이전트 또는 사용자 �
 
 그런 다음 [환경](/ko/env-vars)에서 `USE_BUILTIN_RIPGREP=0`을 설정하세요.
 
-### WSL에서 느리거나 불완전한 검색 결과
+<h3 id="slow-or-incomplete-search-results-on-wsl">
+  WSL에서 느리거나 불완전한 검색 결과
+</h3>
 
 [WSL에서 파일 시스템 간 작업](https://learn.microsoft.com/en-us/windows/wsl/filesystems)할 때 디스크 읽기 성능 저하로 인해 WSL에서 Claude Code를 사용할 때 예상보다 적은 일치 항목이 발생할 수 있습니다. 검색은 여전히 작동하지만 네이티브 파일 시스템보다 적은 결과를 반환합니다.
 
@@ -111,7 +129,9 @@ Search 도구, `@file` 언급, 사용자 정의 에이전트 또는 사용자 �
 
 3. **Windows 기본 사용**: 더 나은 파일 시스템 성능을 위해 WSL 대신 Windows에서 기본적으로 Claude Code를 실행하는 것을 고려하세요.
 
-## 추가 도움 받기
+<h2 id="get-more-help">
+  추가 도움 받기
+</h2>
 
 여기에 다루지 않은 문제가 발생하는 경우:
 

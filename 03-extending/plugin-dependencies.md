@@ -16,7 +16,9 @@
   종속성 버전 제약에는 Claude Code v2.1.110 이상이 필요합니다.
 </Note>
 
-## 종속성 버전을 제약하는 이유
+<h2 id="why-constrain-dependency-versions">
+  종속성 버전을 제약하는 이유
+</h2>
 
 두 팀이 플러그인을 게시하는 내부 마켓플레이스를 생각해 봅시다. 플랫폼 팀은 비밀 백엔드를 래핑하는 MCP 서버인 `secrets-vault`를 유지 관리합니다. 배포 팀은 배포 중에 자격 증명을 가져오기 위해 `secrets-vault`를 호출하는 `deploy-kit`을 유지 관리합니다.
 
@@ -24,7 +26,9 @@
 
 버전 제약을 사용하면 `deploy-kit`은 `~2.1.0` 범위에서 `secrets-vault`가 필요함을 선언합니다. `deploy-kit`이 설치된 엔지니어는 가장 높은 일치하는 `2.1.x` 패치에 머물러 있습니다. 배포 팀은 더 넓은 제약이 있는 새로운 `deploy-kit` 버전을 게시하여 자신의 일정에 따라 업그레이드합니다.
 
-## 버전 제약으로 종속성 선언
+<h2 id="declare-a-dependency-with-a-version-constraint">
+  버전 제약으로 종속성 선언
+</h2>
 
 플러그인의 `.claude-plugin/plugin.json`의 `dependencies` 배열에 종속성을 나열합니다. 각 항목은 플러그인 이름 또는 버전 제약이 있는 객체입니다.
 
@@ -51,7 +55,9 @@
 
 `version` 필드는 캐럿, 틸드, 하이픈 및 비교자 범위를 포함하여 Node의 `semver` 패키지에서 지원하는 모든 표현식을 허용합니다. `^2.0.0-0`과 같은 사전 릴리스 접미사로 옵트인하지 않는 한 `2.0.0-beta.1`과 같은 사전 릴리스 버전은 제외됩니다.
 
-## 다른 마켓플레이스의 플러그인에 종속
+<h2 id="depend-on-a-plugin-from-another-marketplace">
+  다른 마켓플레이스의 플러그인에 종속
+</h2>
 
 기본적으로 Claude Code는 플러그인을 선언하는 플러그인과 다른 마켓플레이스에 있는 종속성을 자동 설치하기를 거부합니다. 이는 한 마켓플레이스가 검토하지 않은 소스의 플러그인을 자동으로 가져오는 것을 방지합니다.
 
@@ -78,7 +84,9 @@
 
 필드가 없거나 대상 마켓플레이스를 포함하지 않으면 설정할 필드의 이름을 지정하는 `cross-marketplace` 오류로 설치가 실패합니다. 사용자는 여전히 종속성을 수동으로 먼저 설치할 수 있으며, 이는 허용 목록을 변경하지 않고 제약을 만족합니다.
 
-## 버전 해결을 위한 플러그인 릴리스 태그
+<h2 id="tag-plugin-releases-for-version-resolution">
+  버전 해결을 위한 플러그인 릴리스 태그
+</h2>
 
 버전 제약은 마켓플레이스 저장소의 git 태그에 대해 해결됩니다. Claude Code가 종속성의 사용 가능한 버전을 찾으려면 업스트림 플러그인의 릴리스가 특정 명명 규칙을 사용하여 태그되어야 합니다.
 
@@ -100,7 +108,9 @@ claude plugin tag --push
   `npm` 마켓플레이스 소스의 경우 태그 기반 해결이 git 지원 소스에만 적용되므로 제약이 가져온 버전을 제어하지 않습니다. 제약은 여전히 로드 시간에 확인되며, 설치된 버전이 이를 만족하지 않으면 종속 플러그인은 `dependency-version-unsatisfied`로 비활성화됩니다.
 </Note>
 
-## 제약이 상호 작용하는 방식
+<h2 id="how-constraints-interact">
+  제약이 상호 작용하는 방식
+</h2>
 
 여러 설치된 플러그인이 동일한 종속성을 제약하면 Claude Code는 해당 범위를 교차하고 모든 범위를 만족하는 가장 높은 버전으로 종속성을 해결합니다. 아래 표는 일반적인 조합이 어떻게 해결되는지 보여줍니다.
 
@@ -114,7 +124,37 @@ claude plugin tag --push
 
 종속성을 제약하는 마지막 플러그인을 제거하면 종속성은 더 이상 유지되지 않으며 다음 업데이트에서 마켓플레이스 항목 추적을 재개합니다.
 
-## 고아 자동 설치 종속성 제거
+<h2 id="enable-or-disable-a-plugin-with-dependencies">
+  플러그인 종속성 활성화 또는 비활성화
+</h2>
+
+플러그인을 활성화하면 이에 종속된 플러그인도 활성화되며, 다른 활성화된 플러그인이 여전히 필요로 하면 플러그인을 비활성화할 수 없습니다. 두 동작 모두 Claude Code v2.1.143 이상이 필요합니다. 이전 버전은 명명된 플러그인만 활성화하거나 비활성화하고 다음 로드에서 `dependency-unsatisfied` 오류를 표시합니다.
+
+플러그인을 활성화하면 Claude Code는 동일한 범위에서 해당 종속성도 활성화합니다. 종속성에 자체 종속성이 있으면 Claude Code는 이들도 활성화합니다. 성공 메시지는 명명한 플러그인과 함께 활성화된 다른 항목을 나열합니다. 종속성을 활성화할 수 없으면 명령이 거부되고 무엇이 차단하고 있는지, 어떻게 해결할지 알려줍니다:
+
+| 조건                                       | 결과                                                         |
+| :--------------------------------------- | :--------------------------------------------------------- |
+| 종속성이 설치되지 않음                             | 활성화가 실패하고 누락된 각 종속성에 대해 `claude plugin install` 명령을 인쇄합니다. |
+| 종속성이 조직의 플러그인 정책에 의해 차단됨                 | 활성화가 실패하고 차단된 종속성의 이름을 지정합니다.                              |
+| 종속성이 대상 범위보다 우선 순위가 높은 범위에서 `false`로 설정됨 | 활성화가 실패합니다. 해당 범위에서 종속성을 활성화하거나 `--scope`를 전달하여 거기에 쓰기합니다. |
+| 모든 종속성이 설치되고 허용됨                         | 활성화가 성공하고 대상 범위에서 아직 활성화되지 않은 플러그인과 각 종속성에 대해 `true`를 씁니다. |
+
+이는 종속성이 매니페스트에서 [`defaultEnabled: false`](/ko/plugins-reference#default-enablement)를 설정하는 경우에도 적용됩니다. Claude Code는 이에 대해 명시적 `true`를 쓰기 때문입니다. 설치 시에도 동일하게 적용됩니다. 활성화된 플러그인을 만족시키기 위해 가져온 종속성은 자체 기본값에 관계없이 `true`로 설치됩니다.
+
+플러그인을 비활성화하면 다른 활성화된 플러그인이 여전히 이에 종속되면 Claude Code가 거부합니다. 오류는 이에 종속된 플러그인의 이름을 지정하고 올바른 순서로 비활성화하는 연쇄 명령을 제공하며, 요청한 것으로 끝납니다.
+
+예를 들어 `deploy-kit`이 `secrets-vault`에 종속되면 `secrets-vault`만 비활성화하면 다음과 유사한 출력으로 실패합니다:
+
+```text theme={null}
+secrets-vault is still required by deploy-kit. Disable that plugin first, or
+disable everything together: claude plugin disable deploy-kit@acme-tools && claude plugin disable secrets-vault@acme-tools
+```
+
+오류에서 연쇄 명령을 복사하여 한 단계에서 전체 집합을 비활성화합니다.
+
+<h2 id="remove-orphaned-auto-installed-dependencies">
+  고아 자동 설치 종속성 제거
+</h2>
 
 자동 설치된 종속성은 이를 설치한 플러그인이 제거된 후에도 디스크에 남아 있으며, 종속 플러그인을 다시 설치하거나 종속성을 직접 계속 사용하려는 경우를 대비합니다. 이를 정리하려면 `claude plugin prune`을 실행하여 더 이상 설치된 플러그인이 필요로 하지 않는 자동 설치된 종속성을 나열하고 확인 프롬프트 후 제거합니다. 이는 Claude Code v2.1.121 이상이 필요합니다.
 
@@ -132,7 +172,9 @@ claude plugin prune
 claude plugin uninstall deploy-kit --prune
 ```
 
-## 종속성 오류 해결
+<h2 id="resolve-dependency-errors">
+  종속성 오류 해결
+</h2>
 
 종속성 문제는 `claude plugin list`, `/plugin` 인터페이스 및 `/doctor`에 표시됩니다. 영향을 받는 플러그인은 오류를 해결할 때까지 비활성화됩니다. 가장 일반적인 오류와 해결 방법은 아래에 나열되어 있습니다.
 
@@ -145,7 +187,9 @@ claude plugin uninstall deploy-kit --prune
 
 이러한 오류를 프로그래밍 방식으로 확인하려면 `claude plugin list --json`을 실행하고 각 플러그인의 `errors` 필드를 읽습니다.
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [플러그인 생성](/ko/plugins): 기술, 에이전트 및 훅으로 플러그인 빌드
 * [플러그인 마켓플레이스 생성 및 배포](/ko/plugin-marketplaces): 팀을 위한 플러그인 호스팅

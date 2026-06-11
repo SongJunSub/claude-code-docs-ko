@@ -16,7 +16,9 @@
 
 이 페이지에서는 CLI에서 컴퓨터 사용이 어떻게 작동하는지 설명합니다. Desktop 앱의 경우 [Desktop의 컴퓨터 사용](/ko/desktop#let-claude-use-your-computer)을 참조하세요.
 
-## 컴퓨터 사용으로 할 수 있는 작업
+<h2 id="what-you-can-do-with-computer-use">
+  컴퓨터 사용으로 할 수 있는 작업
+</h2>
 
 컴퓨터 사용은 GUI가 필요한 작업을 처리합니다. 일반적으로 터미널을 떠나 손으로 직접 해야 하는 모든 작업입니다.
 
@@ -25,7 +27,9 @@
 * **시각적 및 레이아웃 문제 디버깅**: Claude에게 "모달이 작은 창에서 잘려 있어"라고 말합니다. Claude는 창 크기를 조정하고, 버그를 재현하고, 스크린샷을 찍고, CSS를 패치하고, 수정 사항을 확인합니다. Claude는 사용자가 보는 것을 봅니다.
 * **GUI 전용 도구 제어**: 디자인 도구, 하드웨어 제어판, iOS Simulator 또는 CLI나 API가 없는 독점 앱과 상호작용합니다.
 
-## 컴퓨터 사용이 적용되는 경우
+<h2 id="when-computer-use-applies">
+  컴퓨터 사용이 적용되는 경우
+</h2>
 
 Claude는 앱이나 서비스와 상호작용하는 여러 방법을 가지고 있습니다. 컴퓨터 사용은 가장 광범위하고 가장 느리므로 Claude는 가장 정확한 도구를 먼저 시도합니다.
 
@@ -36,7 +40,9 @@ Claude는 앱이나 서비스와 상호작용하는 여러 방법을 가지고 �
 
 화면 제어는 다른 것이 도달할 수 없는 것들을 위해 예약되어 있습니다. 네이티브 앱, 시뮬레이터, API가 없는 도구입니다.
 
-## 컴퓨터 사용 활성화
+<h2 id="enable-computer-use">
+  컴퓨터 사용 활성화
+</h2>
 
 컴퓨터 사용은 `computer-use`라는 기본 제공 MCP 서버로 사용할 수 있습니다. 활성화할 때까지 기본적으로 꺼져 있습니다.
 
@@ -72,7 +78,9 @@ Claude는 앱이나 서비스와 상호작용하는 여러 방법을 가지고 �
 충돌하지 않는지 확인합니다. 발견한 오류 상태를 스크린샷합니다.
 ```
 
-## 세션별 앱 승인
+<h2 id="approve-apps-per-session">
+  세션별 앱 승인
+</h2>
 
 `computer-use` 서버를 활성화해도 Claude에게 컴퓨터의 모든 앱에 대한 액세스 권한이 부여되지는 않습니다. Claude가 세션에서 특정 앱이 필요한 첫 번째 시간에 터미널에 프롬프트가 나타나며 다음을 표시합니다.
 
@@ -94,27 +102,45 @@ Claude는 앱이나 서비스와 상호작용하는 여러 방법을 가지고 �
 
 Claude의 제어 수준은 앱 카테고리에 따라 다릅니다. 브라우저와 거래 플랫폼은 보기 전용이고, 터미널과 IDE는 클릭 전용이며, 다른 모든 것은 전체 제어를 얻습니다. 전체 계층 분석은 [Desktop의 앱 권한](/ko/desktop#app-permissions)을 참조하세요.
 
-## Claude가 화면에서 작동하는 방식
+<h2 id="how-claude-works-on-your-screen">
+  Claude가 화면에서 작동하는 방식
+</h2>
 
 흐름을 이해하면 Claude가 무엇을 할 것인지 예상하고 개입하는 방법을 알 수 있습니다.
 
-### 한 번에 한 세션
+<h3 id="one-session-at-a-time">
+  한 번에 한 세션
+</h3>
 
 컴퓨터 사용은 활성 상태일 때 머신 전체 잠금을 유지합니다. 다른 Claude Code 세션이 이미 컴퓨터를 사용 중이면 새로운 시도는 어느 세션이 잠금을 유지하는지 알려주는 메시지와 함께 실패합니다. 먼저 해당 세션을 완료하거나 종료합니다.
 
-### Claude가 작업하는 동안 앱이 숨겨집니다.
+<h3 id="apps-are-hidden-while-claude-works">
+  Claude가 작업하는 동안 앱이 숨겨집니다.
+</h3>
 
 Claude가 화면 제어를 시작하면 다른 표시되는 앱이 숨겨져 Claude가 승인된 앱하고만 상호작용합니다. 터미널 창은 표시된 상태로 유지되고 스크린샷에서 제외되므로 세션을 볼 수 있고 Claude는 자신의 출력을 절대 보지 않습니다.
 
 Claude가 턴을 완료하면 숨겨진 앱이 자동으로 복원됩니다.
 
-### 언제든지 중지
+<h3 id="screenshots-are-downscaled-automatically">
+  스크린샷이 자동으로 축소됩니다.
+</h3>
+
+Claude Code는 모델로 전송하기 전에 모든 스크린샷을 축소합니다. Retina 또는 기타 고해상도 디스플레이에서 디스플레이 해상도를 낮추거나 창 크기를 조정할 필요가 없습니다. 기본 Retina 해상도의 16인치 MacBook Pro는 3456×2234에서 캡처하고 대략 1372×887로 축소하여 종횡비를 유지합니다.
+
+대상 크기를 변경할 수 있는 설정이 없습니다. 축소 후 화면의 텍스트나 컨트롤이 Claude가 읽기에 너무 작으면 디스플레이 해상도를 변경하는 대신 앱에서 크기를 늘립니다.
+
+<h3 id="stop-at-any-time">
+  언제든지 중지
+</h3>
 
 Claude가 잠금을 획득하면 macOS 알림이 나타납니다. "Claude가 컴퓨터를 사용 중입니다 · Esc를 눌러 중지하세요." 어디서나 `Esc`를 눌러 현재 작업을 즉시 중단하거나 터미널에서 `Ctrl+C`를 누릅니다. 어느 쪽이든 Claude는 잠금을 해제하고, 앱을 표시하고, 제어를 사용자에게 반환합니다.
 
 Claude가 완료되면 두 번째 알림이 나타납니다.
 
-## 안전 및 신뢰 경계
+<h2 id="safety-and-the-trust-boundary">
+  안전 및 신뢰 경계
+</h2>
 
 <Warning>
   [샌드박스된 Bash 도구](/ko/sandboxing)와 달리 컴퓨터 사용은 승인한 앱에 액세스할 수 있는 실제 데스크톱에서 실행됩니다. Claude는 각 작업을 확인하고 화면 콘텐츠에서 잠재적 프롬프트 주입을 플래그하지만 신뢰 경계는 다릅니다. 모범 사례는 [컴퓨터 사용 안전 가이드](https://support.claude.com/en/articles/14128542)를 참조하세요.
@@ -128,11 +154,15 @@ Claude가 완료되면 두 번째 알림이 나타납니다.
 * **전역 이스케이프**: `Esc` 키는 어디서나 컴퓨터 사용을 중단하고 키 누름이 소비되므로 프롬프트 주입이 대화 상자를 닫는 데 사용할 수 없습니다.
 * **잠금 파일**: 한 번에 한 세션만 컴퓨터를 제어할 수 있습니다.
 
-## 예제 워크플로우
+<h2 id="example-workflows">
+  예제 워크플로우
+</h2>
 
 이 예제는 컴퓨터 사용을 코딩 작업과 결합하는 일반적인 방법을 보여줍니다.
 
-### 네이티브 빌드 검증
+<h3 id="validate-a-native-build">
+  네이티브 빌드 검증
+</h3>
 
 macOS 또는 iOS 앱을 변경한 후 Claude에게 한 번에 컴파일하고 확인하도록 합니다.
 
@@ -144,7 +174,9 @@ MenuBarStats 대상을 빌드하고, 실행하고, 기본 설정 창을 열고,
 
 Claude는 `xcodebuild`를 실행하고, 앱을 실행하고, UI와 상호작용하고, 발견한 내용을 보고합니다.
 
-### 레이아웃 버그 재현
+<h3 id="reproduce-a-layout-bug">
+  레이아웃 버그 재현
+</h3>
 
 시각적 버그가 특정 창 크기에서만 나타날 때 Claude에게 찾도록 합니다.
 
@@ -156,7 +188,9 @@ Claude는 `xcodebuild`를 실행하고, 앱을 실행하고, UI와 상호작용�
 
 Claude는 창 크기를 조정하고, 손상된 상태를 캡처하고, 관련 스타일시트를 읽습니다.
 
-### 시뮬레이터 흐름 테스트
+<h3 id="test-a-simulator-flow">
+  시뮬레이터 흐름 테스트
+</h3>
 
 XCTest를 작성하지 않고 iOS Simulator를 제어합니다.
 
@@ -167,38 +201,51 @@ iOS Simulator를 열고, 앱을 실행하고, 온보딩 화면을 탭하고,
 
 Claude는 마우스를 사용하는 것처럼 시뮬레이터를 제어합니다.
 
-## Desktop 앱과의 차이점
+<h2 id="differences-from-the-desktop-app">
+  Desktop 앱과의 차이점
+</h2>
 
-CLI 및 Desktop 표면은 동일한 컴퓨터 사용 엔진을 공유합니다. 몇 가지 Desktop 특정 컨트롤은 아직 CLI에 없습니다.
+CLI 및 Desktop 표면은 동일한 컴퓨터 사용 엔진을 공유합니다. 몇 가지 차이점이 있습니다.
 
 | 기능          | Desktop                             | CLI                         |
 | :---------- | :---------------------------------- | :-------------------------- |
+| 플랫폼         | macOS 및 Windows                     | macOS만 해당                   |
 | 활성화         | **설정 > 일반**의 토글 (**Desktop 앱** 아래)  | `/mcp`에서 `computer-use` 활성화 |
 | 거부된 앱 목록    | 설정에서 구성 가능                          | 아직 사용할 수 없음                 |
 | 자동 표시 토글    | 선택 사항                               | 항상 켜짐                       |
 | Dispatch 통합 | Dispatch에서 생성된 세션이 컴퓨터 사용을 사용할 수 있음 | 해당 없음                       |
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
-### "컴퓨터 사용이 다른 Claude 세션에서 사용 중입니다"
+<h3 id="computer-use-is-in-use-by-another-claude-session">
+  "컴퓨터 사용이 다른 Claude 세션에서 사용 중입니다"
+</h3>
 
 다른 Claude Code 세션이 잠금을 유지합니다. 해당 세션에서 작업을 완료하거나 종료합니다. 다른 세션이 충돌한 경우 Claude가 프로세스가 더 이상 실행 중이 아님을 감지하면 잠금이 자동으로 해제됩니다.
 
-### macOS 권한 프롬프트가 계속 다시 나타남
+<h3 id="macos-permissions-prompt-keeps-reappearing">
+  macOS 권한 프롬프트가 계속 다시 나타남
+</h3>
 
 macOS는 화면 녹화를 부여한 후 요청 프로세스를 다시 시작해야 할 수 있습니다. Claude Code를 완전히 종료하고 새 세션을 시작합니다. 프롬프트가 계속되면 **시스템 설정 > 개인 정보 보호 및 보안 > 화면 녹화**를 열고 터미널 앱이 나열되고 활성화되어 있는지 확인합니다.
 
-### `computer-use`가 `/mcp`에 나타나지 않음
+<h3 id="computer-use-doesn-t-appear-in-/mcp">
+  `computer-use`가 `/mcp`에 나타나지 않음
+</h3>
 
 서버는 적격 설정에서만 나타납니다. 다음을 확인합니다.
 
-* macOS를 사용 중입니다. 컴퓨터 사용은 Linux 또는 Windows에서 사용할 수 없습니다.
+* macOS를 사용 중입니다. 컴퓨터 사용은 Linux 또는 Windows에서 사용할 수 없습니다. Windows에서는 [Desktop의 컴퓨터 사용](/ko/desktop#let-claude-use-your-computer)을 대신 사용합니다.
 * Claude Code v2.1.85 이상을 실행 중입니다. `claude --version`을 실행하여 확인합니다.
 * Pro 또는 Max 플랜을 사용 중입니다. `/status`를 실행하여 구독을 확인합니다.
 * claude.ai를 통해 인증되었습니다. 컴퓨터 사용은 Amazon Bedrock, Google Cloud Vertex AI 또는 Microsoft Foundry와 같은 타사 제공자에서 사용할 수 없습니다. 타사 제공자를 통해서만 Claude에 액세스하는 경우 이 기능을 사용하려면 별도의 claude.ai 계정이 필요합니다.
 * 대화형 세션에 있습니다. 컴퓨터 사용은 `-p` 플래그를 사용한 비대화형 모드에서 사용할 수 없습니다.
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [Desktop의 컴퓨터 사용](/ko/desktop#let-claude-use-your-computer): 그래픽 설정 페이지가 있는 동일한 기능
 * [Claude in Chrome](/ko/chrome): 웹 기반 작업을 위한 브라우저 자동화

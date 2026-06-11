@@ -8,7 +8,10 @@ LOG="$ROOT/.scripts/fetch.log"
 
 fetch_one() {
     local slug="$1" cat="$2"
-    local out="$ROOT/$cat/$slug.md"
+    # organize.sh가 ROOT/<slug>.md 위치를 기대하므로 슬러그 경로 그대로 루트에 받는다.
+    # (agent-sdk/* · whats-new/* 처럼 슬래시 포함 슬러그는 임시 서브디렉토리에 받고,
+    #  이후 organize.sh가 카테고리 폴더로 옮긴 뒤 빈 디렉토리를 정리한다.)
+    local out="$ROOT/$slug.md"
     mkdir -p "$(dirname "$out")"
 
     local url_ko="https://code.claude.com/docs/ko/$slug.md"

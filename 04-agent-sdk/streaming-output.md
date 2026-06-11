@@ -2,27 +2,29 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Stream responses in real-time
+# 실시간으로 응답 스트리밍하기
 
-> Get real-time responses from the Agent SDK as text and tool calls stream in
+> 텍스트와 도구 호출이 스트리밍될 때 Agent SDK에서 실시간 응답 받기
 
-By default, the Agent SDK yields complete `AssistantMessage` objects after Claude finishes generating each response. To receive incremental updates as text and tool calls are generated, enable partial message streaming by setting `include_partial_messages` (Python) or `includePartialMessages` (TypeScript) to `true` in your options.
+기본적으로 Agent SDK는 Claude가 각 응답 생성을 완료한 후 완전한 `AssistantMessage` 객체를 생성합니다. 텍스트와 도구 호출이 생성될 때 증분 업데이트를 받으려면 옵션에서 `include_partial_messages`(Python) 또는 `includePartialMessages`(TypeScript)를 `true`로 설정하여 부분 메시지 스트리밍을 활성화하십시오.
 
 <Tip>
-  This page covers output streaming (receiving tokens in real-time). For input modes (how you send messages), see [Send messages to agents](/en/agent-sdk/streaming-vs-single-mode). You can also [stream responses using the Agent SDK via the CLI](/en/headless).
+  이 페이지는 출력 스트리밍(실시간으로 토큰 수신)을 다룹니다. 입력 모드(메시지 전송 방법)는 [에이전트에 메시지 전송하기](/ko/agent-sdk/streaming-vs-single-mode)를 참조하십시오. [CLI를 통해 Agent SDK를 사용하여 응답 스트리밍하기](/ko/headless)도 가능합니다.
 </Tip>
 
-## Enable streaming output
+<h2 id="enable-streaming-output">
+  스트리밍 출력 활성화
+</h2>
 
-To enable streaming, set `include_partial_messages` (Python) or `includePartialMessages` (TypeScript) to `true` in your options. This causes the SDK to yield `StreamEvent` messages containing raw API events as they arrive, in addition to the usual `AssistantMessage` and `ResultMessage`.
+스트리밍을 활성화하려면 옵션에서 `include_partial_messages`(Python) 또는 `includePartialMessages`(TypeScript)를 `true`로 설정하십시오. 이렇게 하면 SDK가 도착하는 대로 원본 API 이벤트를 포함하는 `StreamEvent` 메시지를 생성하며, 일반적인 `AssistantMessage` 및 `ResultMessage`도 함께 생성합니다.
 
-Your code then needs to:
+코드는 다음을 수행해야 합니다:
 
-1. Check each message's type to distinguish `StreamEvent` from other message types
-2. For `StreamEvent`, extract the `event` field and check its `type`
-3. Look for `content_block_delta` events where `delta.type` is `text_delta`, which contain the actual text chunks
+1. 각 메시지의 유형을 확인하여 `StreamEvent`를 다른 메시지 유형과 구분합니다
+2. `StreamEvent`의 경우 `event` 필드를 추출하고 해당 `type`을 확인합니다
+3. `delta.type`이 `text_delta`인 `content_block_delta` 이벤트를 찾습니다. 이 이벤트에는 실제 텍스트 청크가 포함됩니다
 
-The example below enables streaming and prints text chunks as they arrive. Notice the nested type checks: first for `StreamEvent`, then for `content_block_delta`, then for `text_delta`:
+아래 예제는 스트리밍을 활성화하고 도착하는 텍스트 청크를 인쇄합니다. 중첩된 유형 확인에 주목하십시오: 먼저 `StreamEvent`, 그 다음 `content_block_delta`, 그 다음 `text_delta`:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -71,14 +73,16 @@ The example below enables streaming and prints text chunks as they arrive. Notic
   ```
 </CodeGroup>
 
-## StreamEvent reference
+<h2 id="streamevent-reference">
+  StreamEvent 참조
+</h2>
 
-When partial messages are enabled, you receive raw Claude API streaming events wrapped in an object. The type has different names in each SDK:
+부분 메시지가 활성화되면 객체로 래핑된 원본 Claude API 스트리밍 이벤트를 받습니다. 유형은 각 SDK에서 다른 이름을 가집니다:
 
-* **Python**: `StreamEvent` (import from `claude_agent_sdk.types`)
-* **TypeScript**: `SDKPartialAssistantMessage` with `type: 'stream_event'`
+* **Python**: `StreamEvent` (`claude_agent_sdk.types`에서 가져오기)
+* **TypeScript**: `type: 'stream_event'`를 가진 `SDKPartialAssistantMessage`
 
-Both contain raw Claude API events, not accumulated text. You need to extract and accumulate text deltas yourself. Here's the structure of each type:
+둘 다 누적된 텍스트가 아닌 원본 Claude API 이벤트를 포함합니다. 텍스트 델타를 직접 추출하고 누적해야 합니다. 각 유형의 구조는 다음과 같습니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -93,7 +97,7 @@ Both contain raw Claude API events, not accumulated text. You need to extract an
   ```typescript TypeScript theme={null}
   type SDKPartialAssistantMessage = {
     type: "stream_event";
-    event: RawMessageStreamEvent; // From Anthropic SDK
+    event: BetaRawMessageStreamEvent; // From Anthropic SDK
     parent_tool_use_id: string | null;
     uuid: UUID;
     session_id: string;
@@ -101,20 +105,22 @@ Both contain raw Claude API events, not accumulated text. You need to extract an
   ```
 </CodeGroup>
 
-The `event` field contains the raw streaming event from the [Claude API](https://platform.claude.com/docs/en/build-with-claude/streaming#event-types). Common event types include:
+`event` 필드는 [Claude API](https://platform.claude.com/docs/en/build-with-claude/streaming#event-types)의 원본 스트리밍 이벤트를 포함합니다. 일반적인 이벤트 유형은 다음과 같습니다:
 
-| Event Type            | Description                                     |
-| :-------------------- | :---------------------------------------------- |
-| `message_start`       | Start of a new message                          |
-| `content_block_start` | Start of a new content block (text or tool use) |
-| `content_block_delta` | Incremental update to content                   |
-| `content_block_stop`  | End of a content block                          |
-| `message_delta`       | Message-level updates (stop reason, usage)      |
-| `message_stop`        | End of the message                              |
+| 이벤트 유형                | 설명                         |
+| :-------------------- | :------------------------- |
+| `message_start`       | 새 메시지의 시작                  |
+| `content_block_start` | 새 콘텐츠 블록의 시작(텍스트 또는 도구 사용) |
+| `content_block_delta` | 콘텐츠에 대한 증분 업데이트            |
+| `content_block_stop`  | 콘텐츠 블록의 끝                  |
+| `message_delta`       | 메시지 수준 업데이트(중지 이유, 사용량)    |
+| `message_stop`        | 메시지의 끝                     |
 
-## Message flow
+<h2 id="message-flow">
+  메시지 흐름
+</h2>
 
-With partial messages enabled, you receive messages in this order:
+부분 메시지가 활성화되면 다음 순서로 메시지를 받습니다:
 
 ```text theme={null}
 StreamEvent (message_start)
@@ -132,11 +138,13 @@ AssistantMessage - complete message with all content
 ResultMessage - final result
 ```
 
-Without partial messages enabled (`include_partial_messages` in Python, `includePartialMessages` in TypeScript), you receive all message types except `StreamEvent`. Common types include `SystemMessage` (session initialization), `AssistantMessage` (complete responses), `ResultMessage` (final result), and a compact boundary message indicating when conversation history was compacted (`SDKCompactBoundaryMessage` in TypeScript; `SystemMessage` with subtype `"compact_boundary"` in Python).
+부분 메시지가 활성화되지 않은 경우(Python의 `include_partial_messages`, TypeScript의 `includePartialMessages`), `StreamEvent`를 제외한 모든 메시지 유형을 받습니다. 일반적인 유형에는 `SystemMessage`(세션 초기화), `AssistantMessage`(완전한 응답), `ResultMessage`(최종 결과) 및 대화 기록이 압축된 시점을 나타내는 컴팩트 경계 메시지(TypeScript의 `SDKCompactBoundaryMessage`; Python의 서브타입 `"compact_boundary"`를 가진 `SystemMessage`)가 포함됩니다.
 
-## Stream text responses
+<h2 id="stream-text-responses">
+  텍스트 응답 스트리밍
+</h2>
 
-To display text as it's generated, look for `content_block_delta` events where `delta.type` is `text_delta`. These contain the incremental text chunks. The example below prints each chunk as it arrives:
+생성되는 텍스트를 표시하려면 `delta.type`이 `text_delta`인 `content_block_delta` 이벤트를 찾습니다. 이 이벤트에는 증분 텍스트 청크가 포함됩니다. 아래 예제는 도착하는 각 청크를 인쇄합니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -182,13 +190,15 @@ To display text as it's generated, look for `content_block_delta` events where `
   ```
 </CodeGroup>
 
-## Stream tool calls
+<h2 id="stream-tool-calls">
+  도구 호출 스트리밍
+</h2>
 
-Tool calls also stream incrementally. You can track when tools start, receive their input as it's generated, and see when they complete. The example below tracks the current tool being called and accumulates the JSON input as it streams in. It uses three event types:
+도구 호출도 증분적으로 스트리밍됩니다. 도구가 시작될 때를 추적하고, 생성되는 입력을 받고, 완료될 때를 볼 수 있습니다. 아래 예제는 현재 호출되는 도구를 추적하고 스트리밍되는 JSON 입력을 누적합니다. 세 가지 이벤트 유형을 사용합니다:
 
-* `content_block_start`: tool begins
-* `content_block_delta` with `input_json_delta`: input chunks arrive
-* `content_block_stop`: tool call complete
+* `content_block_start`: 도구 시작
+* `content_block_delta` with `input_json_delta`: 입력 청크 도착
+* `content_block_stop`: 도구 호출 완료
 
 <CodeGroup>
   ```python Python theme={null}
@@ -281,9 +291,11 @@ Tool calls also stream incrementally. You can track when tools start, receive th
   ```
 </CodeGroup>
 
-## Build a streaming UI
+<h2 id="build-a-streaming-ui">
+  스트리밍 UI 구축
+</h2>
 
-This example combines text and tool streaming into a cohesive UI. It tracks whether the agent is currently executing a tool (using an `in_tool` flag) to show status indicators like `[Using Read...]` while tools run. Text streams normally when not in a tool, and tool completion triggers a "done" message. This pattern is useful for chat interfaces that need to show progress during multi-step agent tasks.
+이 예제는 텍스트와 도구 스트리밍을 응집력 있는 UI로 결합합니다. 에이전트가 현재 도구를 실행 중인지 추적하기 위해 `in_tool` 플래그를 사용하여 도구가 실행되는 동안 `[Using Read...]`와 같은 상태 표시기를 표시합니다. 도구에 없을 때 텍스트가 정상적으로 스트리밍되고, 도구 완료가 "done" 메시지를 트리거합니다. 이 패턴은 다단계 에이전트 작업 중에 진행 상황을 표시해야 하는 채팅 인터페이스에 유용합니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -380,17 +392,18 @@ This example combines text and tool streaming into a cohesive UI. It tracks whet
   ```
 </CodeGroup>
 
-## Known limitations
+<h2 id="known-limitations">
+  알려진 제한 사항
+</h2>
 
-Some SDK features are incompatible with streaming:
+* **구조화된 출력**: JSON 결과는 스트리밍 델타가 아닌 최종 `ResultMessage.structured_output`에만 나타납니다. 자세한 내용은 [구조화된 출력](/ko/agent-sdk/structured-outputs)을 참조하십시오.
 
-* **Extended thinking**: when you explicitly set `max_thinking_tokens` (Python) or `maxThinkingTokens` (TypeScript), `StreamEvent` messages are not emitted. You'll only receive complete messages after each turn. Note that thinking is disabled by default in the SDK, so streaming works unless you enable it.
-* **Structured output**: the JSON result appears only in the final `ResultMessage.structured_output`, not as streaming deltas. See [structured outputs](/en/agent-sdk/structured-outputs) for details.
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
-## Next steps
+이제 실시간으로 텍스트와 도구 호출을 스트리밍할 수 있으므로 다음 관련 항목을 살펴보십시오:
 
-Now that you can stream text and tool calls in real-time, explore these related topics:
-
-* [Interactive vs one-shot queries](/en/agent-sdk/streaming-vs-single-mode): choose between input modes for your use case
-* [Structured outputs](/en/agent-sdk/structured-outputs): get typed JSON responses from the agent
-* [Permissions](/en/agent-sdk/permissions): control which tools the agent can use
+* [대화형 vs 일회성 쿼리](/ko/agent-sdk/streaming-vs-single-mode): 사용 사례에 맞는 입력 모드 선택
+* [구조화된 출력](/ko/agent-sdk/structured-outputs): 에이전트에서 입력된 JSON 응답 받기
+* [권한](/ko/agent-sdk/permissions): 에이전트가 사용할 수 있는 도구 제어

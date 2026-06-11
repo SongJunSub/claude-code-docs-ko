@@ -18,7 +18,7 @@
   </Card>
 </CardGroup>
 
-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). Linux is not supported.
+For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
 
 <Note>
   Claude Code는 [Pro, Max, Team, 또는 Enterprise 구독](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)이 필요합니다.
@@ -34,7 +34,9 @@ For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/
 
 Chat과 Cowork는 [Claude Desktop 지원 문서](https://support.claude.com/en/collections/16163169-claude-desktop)에서 다룹니다. 이 페이지는 **Code** 탭에 중점을 둡니다.
 
-## 설치
+<h2 id="install">
+  설치
+</h2>
 
 <Steps>
   <Step title="설치 및 로그인">
@@ -48,7 +50,9 @@ Chat과 Cowork는 [Claude Desktop 지원 문서](https://support.claude.com/en/c
 
 데스크톱 앱에는 Claude Code가 포함되어 있습니다. Node.js나 CLI를 별도로 설치할 필요가 없습니다. 터미널에서 `claude`를 사용하려면 CLI를 별도로 설치하세요. [CLI 시작하기](/ko/quickstart)를 참조하세요.
 
-## 첫 번째 세션 시작
+<h2 id="start-your-first-session">
+  첫 번째 세션 시작
+</h2>
 
 Code 탭이 열려 있으면 프로젝트를 선택하고 Claude에게 할 일을 지시합니다.
 
@@ -63,7 +67,7 @@ Code 탭이 열려 있으면 프로젝트를 선택하고 Claude에게 할 일�
     다음을 선택할 수도 있습니다:
 
     * **Remote**: Anthropic의 클라우드 인프라에서 세션을 실행하며, 앱을 닫아도 계속됩니다. 원격 세션은 [웹의 Claude Code](/ko/claude-code-on-the-web)와 동일한 인프라를 사용합니다.
-    * **SSH**: SSH를 통해 원격 머신(자신의 서버, 클라우드 VM 또는 dev 컨테이너)에 연결합니다. Claude Code는 원격 머신에 설치되어야 합니다.
+    * **SSH**: SSH를 통해 원격 머신(자신의 서버, 클라우드 VM 또는 dev 컨테이너)에 연결합니다. Desktop은 처음 연결할 때 원격 머신에 Claude Code를 자동으로 설치합니다.
   </Step>
 
   <Step title="모델 선택">
@@ -91,11 +95,13 @@ Code 탭이 열려 있으면 프로젝트를 선택하고 Claude에게 할 일�
   </Step>
 </Steps>
 
-## 이제 뭘 할까요?
+<h2 id="now-what">
+  이제 뭘 할까요?
+</h2>
 
 첫 번째 편집을 완료했습니다. Desktop이 할 수 있는 모든 것에 대한 전체 참조는 [Claude Code Desktop 사용](/ko/desktop)을 참조하세요. 다음으로 시도할 수 있는 몇 가지 사항입니다.
 
-**중단 및 조정.** 언제든지 Claude를 중단할 수 있습니다. 잘못된 방향으로 가고 있다면 중지 버튼을 클릭하거나 수정 사항을 입력하고 **Enter**를 누릅니다. Claude는 작업을 중단하고 입력에 따라 조정합니다. 완료될 때까지 기다리거나 다시 시작할 필요가 없습니다.
+**중단 및 조정.** 언제든지 Claude를 중단할 수 있습니다. 중지 버튼을 클릭하여 즉시 중단하거나, 수정 사항을 입력하고 **Enter**를 눌러 실행 중인 작업을 중단하지 않고 전송합니다. 어느 쪽이든 완료될 때까지 기다리거나 다시 시작할 필요가 없습니다.
 
 **Claude에게 더 많은 컨텍스트 제공.** 프롬프트 상자에 `@filename`을 입력하여 특정 파일을 대화에 가져오거나, 첨부 버튼을 사용하여 이미지 및 PDF를 첨부하거나, 파일을 프롬프트에 직접 드래그 앤 드롭합니다. Claude가 더 많은 컨텍스트를 가질수록 결과가 더 좋습니다. [파일 및 컨텍스트 추가](/ko/desktop#add-files-and-context-to-prompts)를 참조하세요.
 
@@ -107,6 +113,8 @@ Code 탭이 열려 있으면 프로젝트를 선택하고 Claude에게 할 일�
 
 **더 많은 기능을 위해 플러그인 추가.** 프롬프트 상자 옆의 **+** 버튼을 클릭하고 **Plugins**를 선택하여 skills, 에이전트, MCP servers 등을 추가하는 [플러그인](/ko/desktop#install-plugins)을 찾아보고 설치합니다.
 
+**워크스페이스 정렬.** 채팅, diff, 터미널, 파일, 미리보기 창을 원하는 레이아웃으로 드래그합니다. \*\*Ctrl+\`\*\*로 터미널을 열어 세션과 함께 명령을 실행하거나, 파일 경로를 클릭하여 파일 창에서 엽니다. [워크스페이스 정렬](/ko/desktop#arrange-your-workspace)을 참조하세요.
+
 **앱 미리보기.** **Preview** 드롭다운을 클릭하여 dev 서버를 데스크톱에서 직접 실행합니다. Claude는 실행 중인 앱을 보고, 엔드포인트를 테스트하고, 로그를 검사하고, 보는 것에 대해 반복할 수 있습니다. [앱 미리보기](/ko/desktop#preview-your-app)를 참조하세요.
 
 **pull request 추적.** PR을 연 후 Claude Code는 CI 확인 결과를 모니터링하고 실패를 자동으로 수정하거나 모든 확인이 통과되면 PR을 자동으로 병합할 수 있습니다. [pull request 상태 모니터링](/ko/desktop#monitor-pull-request-status)을 참조하세요.
@@ -115,11 +123,15 @@ Code 탭이 열려 있으면 프로젝트를 선택하고 Claude에게 할 일�
 
 **준비가 되면 확장.** 사이드바에서 [병렬 세션](/ko/desktop#work-in-parallel-with-sessions)을 열어 여러 작업을 동시에 수행하며, 각각 자신의 Git worktree에서 실행하고, [작업 창](/ko/desktop#watch-background-tasks)을 열어 세션이 실행 중인 subagents 및 백그라운드 명령을 봅니다. [side chat](/ko/desktop#ask-a-side-question-without-derailing-the-session)을 열어 메인 스레드를 방해하지 않고 질문을 합니다. [장기 실행 작업을 클라우드로 보내](/ko/desktop#run-long-running-tasks-remotely) 앱을 닫아도 계속되도록 하거나, 작업이 예상보다 오래 걸리면 [웹 또는 IDE에서 세션을 계속](/ko/desktop#continue-in-another-surface)합니다. [GitHub, Slack, Linear와 같은 외부 도구를 연결](/ko/desktop#extend-claude-code)하여 워크플로우를 통합합니다.
 
-## CLI에서 오셨나요?
+<h2 id="coming-from-the-cli">
+  CLI에서 오셨나요?
+</h2>
 
 Desktop은 그래픽 인터페이스를 갖춘 CLI와 동일한 엔진을 실행합니다. 동일한 프로젝트에서 둘 다 동시에 실행할 수 있으며, 구성(CLAUDE.md 파일, MCP servers, hooks, skills, 설정)을 공유합니다. 기능, 플래그 동등물, Desktop에서 사용할 수 없는 것의 전체 비교는 [CLI 비교](/ko/desktop#coming-from-the-cli)를 참조하세요.
 
-## 다음 단계
+<h2 id="what-s-next">
+  다음 단계
+</h2>
 
 * [Claude Code Desktop 사용](/ko/desktop): 권한 모드, 병렬 세션, diff 보기, 커넥터, 엔터프라이즈 구성
 * [문제 해결](/ko/desktop#troubleshooting): 일반적인 오류 및 설정 문제에 대한 해결책

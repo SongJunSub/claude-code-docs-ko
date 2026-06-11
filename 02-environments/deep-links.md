@@ -23,7 +23,9 @@
   딥 링크는 Claude Code v2.1.91 이상이 필요합니다.
 </Note>
 
-## 작동 방식
+<h2 id="how-it-works">
+  작동 방식
+</h2>
 
 `claude-cli://` 접두사는 `mailto:` 링크가 이메일 클라이언트를 여는 방식과 유사하게 Claude Code가 운영 체제에 등록하는 사용자 정의 URL 스키마입니다. 링크는 웹 페이지, 위키, Slack 메시지 또는 링크를 렌더링하는 모든 앱에 있을 수 있습니다. 클릭하면:
 
@@ -38,13 +40,17 @@
   링크를 표시하는 플랫폼은 사용자 정의 URL 스키마를 허용해야 합니다. GitHub에서 렌더링된 Markdown은 `http` 및 `https`를 허용하지만 README, 이슈, 풀 요청 및 위키에서 `claude-cli://`와 같은 스키마를 제거합니다. 링크 텍스트만 표시되고 뒤에 링크가 없으며 URL이 숨겨집니다. 해결 방법은 [문제 해결](#the-link-renders-as-plain-text-instead-of-being-clickable)을 참조하세요.
 </Note>
 
-### 시작된 세션이 표시하는 것
+<h3 id="what-a-launched-session-shows">
+  시작된 세션이 표시하는 것
+</h3>
 
 딥 링크는 자체적으로 아무것도 실행하지 않습니다. 링크는 디렉터리를 선택하고 프롬프트 상자를 채울 뿐입니다. 신뢰하지 않는 페이지에서 링크를 클릭하면 프롬프트는 여전히 비활성 상태입니다. 채워진 내용을 읽고 Enter를 누를 때까지 모델에 아무것도 도달하지 않습니다.
 
 세션이 열리면 입력 위의 배너가 외부 링크가 이를 시작했으며 어떤 디렉터리를 선택했는지 표시합니다. 1,000자를 초과하는 프롬프트의 경우 배너는 Enter를 누르기 전에 전체 텍스트를 스크롤하고 검토하도록 지시합니다. 긴 프롬프트는 지시사항을 화면 밖으로 밀어낼 수 있기 때문입니다. 권한 규칙, `CLAUDE.md` 및 선택한 디렉터리에 대한 신뢰 프롬프트는 다른 세션과 동일한 방식으로 적용됩니다.
 
-## 링크 빌드하기
+<h2 id="build-a-link">
+  링크 빌드하기
+</h2>
 
 모든 딥 링크는 `claude-cli://open`으로 시작하며, 이는 핸들러가 허용하는 유일한 경로이고 선택적 쿼리 매개변수가 뒤따릅니다. 최소 형식은 Claude Code를 홈 디렉터리에서 빈 프롬프트로 엽니다:
 
@@ -77,7 +83,9 @@ Check recent commits to main and the last successful build.
 
 Enter를 눌러 전송하기 전에 프롬프트를 편집할 수 있습니다. 저장소의 로컬 클론이 없으면 세션이 홈 디렉터리에서 대신 열립니다. 여러 클론 또는 worktree가 있을 때 로컬 경로가 선택되는 방식은 [`cwd`와 `repo` 중 선택하기](#choose-between-cwd-and-repo)를 참조하세요.
 
-### `cwd`와 `repo` 중 선택하기
+<h3 id="choose-between-cwd-and-repo">
+  `cwd`와 `repo` 중 선택하기
+</h3>
 
 링크를 클릭하는 모든 사람이 표준화된 devcontainer 또는 VM 이미지와 같은 동일한 절대 경로에 프로젝트를 가지고 있을 때 `cwd`를 사용합니다.
 
@@ -90,11 +98,15 @@ Enter를 눌러 전송하기 전에 프롬프트를 편집할 수 있습니다. 
 
 시작된 세션은 선택한 경로와 해당 클론이 마지막으로 원격에서 가져온 시간을 표시하므로 오래된 코드를 보고 있는지 알 수 있습니다.
 
-## 예제
+<h2 id="examples">
+  예제
+</h2>
 
 아래 섹션은 딥 링크를 사용하는 두 가지 일반적인 방법을 보여줍니다. 문서의 Markdown 링크와 스크립트 또는 셸 별칭의 명령입니다.
 
-### 런북에 링크 포함하기
+<h3 id="embed-a-link-in-a-runbook">
+  런북에 링크 포함하기
+</h3>
 
 런북의 딥 링크는 분류 중인 사람에게 올바른 저장소에서 준비된 프롬프트로 조사를 시작하는 원클릭 방법을 제공합니다. 런북을 렌더링하는 플랫폼은 사용자 정의 URL 스키마를 허용해야 합니다. GitHub에서 렌더링된 Markdown은 `claude-cli://`를 허용하지 않으므로 GitHub README, 이슈 또는 위키의 딥 링크는 클릭 가능한 링크 없이 레이블만 표시합니다. 해결 방법은 [문제 해결 참고](#the-link-renders-as-plain-text-instead-of-being-clickable)를 참조하세요.
 
@@ -112,7 +124,9 @@ Enter를 눌러 전송하기 전에 프롬프트를 편집할 수 있습니다. 
 
 자신의 런북에서 이를 사용하려면 `acme/web-gateway`를 서비스의 저장소 슬러그로 바꿉니다. 이를 통해 Claude Code가 설치되어 있고 해당 저장소의 로컬 클론을 가진 엔지니어는 2단계를 클릭하고 프롬프트가 전송 준비가 된 상태로 조사를 시작할 수 있습니다.
 
-### 셸에서 링크 열기
+<h3 id="open-a-link-from-the-shell">
+  셸에서 링크 열기
+</h3>
 
 클릭하는 대신 셸 스크립트, 별칭 또는 자동화에서 딥 링크를 열 수도 있습니다. 운영 체제의 URL 열기 명령을 링크를 인수로 호출합니다.
 
@@ -148,7 +162,9 @@ Enter를 눌러 전송하기 전에 프롬프트를 편집할 수 있습니다. 
   </Tab>
 </Tabs>
 
-## 등록 및 지원되는 플랫폼
+<h2 id="registration-and-supported-platforms">
+  등록 및 지원되는 플랫폼
+</h2>
 
 Claude Code는 macOS, Linux 및 Windows에서 대화형 세션을 처음 시작할 때 운영 체제에 `claude-cli://` 핸들러를 등록합니다. 별도의 설치 명령을 실행하지 않습니다. 등록은 사용자 수준 위치에만 씁니다:
 
@@ -162,29 +178,43 @@ Claude Code는 macOS, Linux 및 Windows에서 대화형 세션을 처음 시작�
 
 등록을 완전히 방지하려면 `settings.json`에서 [`disableDeepLinkRegistration`](/ko/settings)을 `"disable"`로 설정합니다. 조직 전체에 이를 적용하여 사용자가 다시 활성화할 수 없도록 하려면 [관리되는 설정](/ko/server-managed-settings)에서 대신 설정합니다.
 
-## 터미널 대신 VS Code 탭 열기
+<h2 id="open-a-vs-code-tab-instead-of-a-terminal">
+  터미널 대신 VS Code 탭 열기
+</h2>
 
 VS Code 확장은 `vscode://anthropic.claude-code/open`에서 자체 핸들러를 등록하며, 이는 터미널 창 대신 Claude Code 편집기 탭을 엽니다. 해당 URL의 매개변수는 [다른 도구에서 VS Code 탭 시작하기](/ko/vs-code#launch-a-vs-code-tab-from-other-tools)를 참조하세요.
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
-### 링크를 클릭해도 아무것도 일어나지 않음
+<h3 id="clicking-the-link-does-nothing">
+  링크를 클릭해도 아무것도 일어나지 않음
+</h3>
 
 핸들러가 아직 등록되지 않았을 가능성이 높습니다. 해당 컴퓨터에서 대화형 `claude` 세션을 한 번 시작하고 종료한 후 링크를 다시 시도합니다. Linux에서 데스크톱 환경이 없으면 `xdg-open`이 디스패치할 것이 없을 수 있습니다.
 
-### 링크가 일반 텍스트로 렌더링되고 클릭 가능하지 않음
+<h3 id="the-link-renders-as-plain-text-instead-of-being-clickable">
+  링크가 일반 텍스트로 렌더링되고 클릭 가능하지 않음
+</h3>
 
 일부 Markdown 렌더러는 `http` 및 `https` 링크만 허용하고 다른 URL 스키마를 제거합니다. GitHub는 README, 이슈, 풀 요청 및 위키에서 이를 수행합니다: `[label](claude-cli://...)`는 링크 없이 `label`로만 렌더링되고 URL이 제거됩니다. 이러한 플랫폼에서는 딥 링크를 코드 블록에 넣어 독자가 URL을 보고 브라우저의 주소 표시줄에 붙여넣을 수 있도록 합니다.
 
-### 세션이 저장소 대신 홈 디렉터리에서 열림
+<h3 id="the-session-opens-in-my-home-directory-instead-of-the-repo">
+  세션이 저장소 대신 홈 디렉터리에서 열림
+</h3>
 
 `repo` 매개변수는 Claude Code가 이미 본 클론으로만 확인됩니다. 클론 내에서 `claude`를 한 번 실행하여 경로를 기록하거나 링크를 절대 경로와 함께 `cwd`를 사용하도록 전환합니다.
 
-### 링크가 잘못된 터미널을 열음
+<h3 id="the-link-opens-the-wrong-terminal">
+  링크가 잘못된 터미널을 열음
+</h3>
 
 macOS에서 선호하는 터미널에서 `claude`를 시작하면 다음 딥 링크가 이를 사용합니다. Linux에서는 `$TERMINAL` 환경 변수를 선호하는 에뮬레이터의 명령 이름으로 설정합니다. Windows에서는 순서가 고정되어 있습니다. PowerShell 또는 `cmd.exe` 창 대신 링크가 거기서 열리도록 하려면 Windows Terminal을 설치합니다.
 
-## 자세히 알아보기
+<h2 id="learn-more">
+  자세히 알아보기
+</h2>
 
 이 페이지들은 Claude Code 세션을 시작하거나 확장하는 관련 방법을 다룹니다:
 

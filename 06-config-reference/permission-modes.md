@@ -8,7 +8,9 @@
 
 Claude가 파일을 편집하거나 셸 명령을 실행하거나 네트워크 요청을 할 때, 작업을 승인하도록 일시 중지하고 요청합니다. 권한 모드는 해당 일시 중지가 얼마나 자주 발생하는지를 제어합니다. 선택한 모드는 세션의 흐름을 형성합니다. 기본 모드는 각 작업을 검토하도록 하는 반면, 더 느슨한 모드는 Claude가 더 길게 중단 없이 작업하고 완료되면 보고하도록 합니다. 민감한 작업에는 더 많은 감시를 선택하거나, 방향을 신뢰할 때는 더 적은 중단을 선택합니다.
 
-## 사용 가능한 모드
+<h2 id="available-modes">
+  사용 가능한 모드
+</h2>
 
 각 모드는 편의성과 감시 사이에서 다른 절충을 합니다. 아래 표는 각 모드에서 Claude가 권한 프롬프트 없이 수행할 수 있는 작업을 보여줍니다.
 
@@ -19,13 +21,15 @@ Claude가 파일을 편집하거나 셸 명령을 실행하거나 네트워크 �
 | [`plan`](#analyze-before-you-edit-with-plan-mode)                   | 읽기만                                                       | 변경하기 전에 코드베이스 탐색   |
 | [`auto`](#eliminate-prompts-with-auto-mode)                         | 백그라운드 안전 검사를 포함한 모든 작업                                    | 장시간 작업, 프롬프트 피로 감소 |
 | [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode)       | 사전 승인된 도구만                                                | 잠금된 CI 및 스크립트      |
-| [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | 보호된 경로를 제외한 모든 작업                                         | 격리된 컨테이너 및 VM만     |
+| [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | 모든 작업                                                     | 격리된 컨테이너 및 VM만     |
 
-모드와 관계없이, [보호된 경로](#protected-paths)에 대한 쓰기는 절대 자동 승인되지 않으며, 리포지토리 상태와 Claude의 자체 구성을 우발적인 손상으로부터 보호합니다.
+`bypassPermissions`를 제외한 모든 모드에서 [보호된 경로](#protected-paths)에 대한 쓰기는 절대 자동 승인되지 않으며, 리포지토리 상태와 Claude의 자체 구성을 우발적인 손상으로부터 보호합니다.
 
 모드는 기본선을 설정합니다. `bypassPermissions`를 제외한 모든 모드에서 특정 도구를 사전 승인하거나 차단하기 위해 [권한 규칙](/ko/permissions#manage-permissions)을 위에 계층화합니다. `bypassPermissions`는 권한 계층을 완전히 건너뜁니다.
 
-## 권한 모드 전환
+<h2 id="switch-permission-modes">
+  권한 모드 전환
+</h2>
 
 세션 중, 시작 시 또는 지속적인 기본값으로 모드를 전환할 수 있습니다. 모드는 채팅에서 Claude에게 요청하는 것이 아니라 이러한 제어를 통해 설정됩니다. 아래에서 인터페이스를 선택하여 변경 방법을 확인합니다.
 
@@ -73,9 +77,9 @@ Claude가 파일을 편집하거나 셸 명령을 실행하거나 네트워크 �
     | 자동 모드    | `auto`              |
     | 권한 무시    | `bypassPermissions` |
 
-    자동 모드는 확장 설정에서 **위험하게 권한 건너뛰기 허용**을 활성화한 후 모드 표시기에 나타나지만, 계정이 [자동 모드 섹션](#eliminate-prompts-with-auto-mode)에 나열된 모든 요구 사항을 충족할 때까지 사용 불가능한 상태로 유지됩니다. `claudeCode.initialPermissionMode` 설정은 `auto`를 허용하지 않습니다. 기본적으로 자동 모드로 시작하려면 대신 Claude Code [`settings.json`](/ko/settings#settings-files)에서 `defaultMode`를 설정합니다.
+    자동 모드는 계정이 [자동 모드 섹션](#eliminate-prompts-with-auto-mode)에 나열된 모든 요구 사항을 충족할 때 모드 표시기에 나타납니다. `claudeCode.initialPermissionMode` 설정은 `auto`를 허용하지 않습니다. 기본적으로 자동 모드로 시작하려면 대신 [사용자 설정](/ko/settings#settings-files)에서 `defaultMode`를 설정합니다. Claude Code는 프로젝트 및 로컬 설정에서 `defaultMode: "auto"`를 무시합니다.
 
-    권한 무시도 모드 표시기에 나타나기 전에 **위험하게 권한 건너뛰기 허용** 토글이 필요합니다.
+    권한 무시는 모드 표시기에 나타나기 전에 확장 설정에서 **위험하게 권한 건너뛰기 허용** 토글이 필요합니다.
 
     확장 관련 세부 정보는 [VS Code 가이드](/ko/vs-code)를 참조합니다.
   </Tab>
@@ -102,11 +106,15 @@ Claude가 파일을 편집하거나 셸 명령을 실행하거나 네트워크 �
   </Tab>
 </Tabs>
 
-## acceptEdits 모드로 파일 편집 자동 승인
+<h2 id="auto-approve-file-edits-with-acceptedits-mode">
+  acceptEdits 모드로 파일 편집 자동 승인
+</h2>
 
 `acceptEdits` 모드는 Claude가 프롬프트 없이 작업 디렉토리의 파일을 생성하고 편집할 수 있게 합니다. 상태 표시줄은 이 모드가 활성화되어 있는 동안 `⏵⏵ accept edits on`을 표시합니다.
 
 파일 편집 외에도, `acceptEdits` 모드는 일반적인 파일 시스템 Bash 명령을 자동 승인합니다: `mkdir`, `touch`, `rm`, `rmdir`, `mv`, `cp`, `sed`. 이러한 명령은 `LANG=C` 또는 `NO_COLOR=1`과 같은 안전한 환경 변수로 접두사가 붙거나 `timeout`, `nice`, `nohup`과 같은 프로세스 래퍼로 접두사가 붙을 때도 자동 승인됩니다. 파일 편집과 마찬가지로, 자동 승인은 작업 디렉토리 또는 `additionalDirectories` 내의 경로에만 적용됩니다. 해당 범위 외의 경로, [보호된 경로](#protected-paths)에 대한 쓰기, 기타 모든 Bash 명령은 여전히 프롬프트합니다.
+
+[PowerShell 도구](/ko/tools-reference#powershell-tool)가 활성화되면, `acceptEdits` 모드는 범위 내 경로에서 `Set-Content`, `Add-Content`, `Clear-Content`, `Remove-Item`을 자동 승인하며, 이들의 일반적인 별칭도 함께 자동 승인됩니다. 동일한 범위 및 보호된 경로 규칙이 적용됩니다.
 
 변경 사항을 인라인으로 각각 승인하는 대신 편집기에서 또는 `git diff`를 통해 사후에 검토하려는 경우 `acceptEdits`를 사용합니다. 기본 모드에서 `Shift+Tab`을 한 번 눌러 입력하거나 직접 시작합니다:
 
@@ -114,7 +122,9 @@ Claude가 파일을 편집하거나 셸 명령을 실행하거나 네트워크 �
 claude --permission-mode acceptEdits
 ```
 
-## 계획 모드로 편집 전에 분석
+<h2 id="analyze-before-you-edit-with-plan-mode">
+  계획 모드로 편집 전에 분석
+</h2>
 
 계획 모드는 Claude에게 변경 사항을 연구하고 제안하도록 지시하지만 변경하지는 않습니다. Claude는 파일을 읽고, 셸 명령을 실행하여 탐색하고, 계획을 작성하지만 소스를 편집하지는 않습니다. 권한 프롬프트는 기본 모드와 동일하게 적용됩니다.
 
@@ -126,6 +136,10 @@ claude --permission-mode plan
 
 계획을 승인하지 않고 계획 모드를 떠나려면 `Shift+Tab`을 다시 누릅니다.
 
+<h3 id="review-and-approve-a-plan">
+  계획 검토 및 승인
+</h3>
+
 계획이 준비되면, Claude는 이를 제시하고 진행 방법을 묻습니다. 해당 프롬프트에서 다음을 수행할 수 있습니다:
 
 * 승인하고 자동 모드로 시작
@@ -134,9 +148,29 @@ claude --permission-mode plan
 * 피드백으로 계획 유지
 * [Ultraplan](/ko/ultraplan)으로 브라우저 기반 검토를 위해 개선
 
-각 승인 옵션은 먼저 계획 컨텍스트를 지우도록 제안합니다.
+계획을 승인하면 계획 모드를 종료하고 세션을 각 승인 옵션이 설명하는 권한 모드로 전환하므로 Claude가 편집을 시작합니다. 다시 계획하려면 `Shift+Tab`으로 계획 모드로 돌아가거나 다음 프롬프트 앞에 `/plan`을 붙입니다.
 
-## 자동 모드로 프롬프트 제거
+`Ctrl+G`를 눌러 제안된 계획을 기본 텍스트 편집기에서 열고 Claude가 진행하기 전에 직접 편집할 수 있습니다. [`showClearContextOnPlanAccept`](/ko/settings#available-settings)가 활성화되면, 각 승인 옵션도 먼저 계획 컨텍스트를 지우도록 제안합니다.
+
+계획을 수락하면 이미 `--name` 또는 `/rename`으로 이름을 설정하지 않은 경우 계획 내용에서 자동으로 세션 이름을 지정합니다.
+
+<h3 id="set-plan-mode-as-the-default">
+  계획 모드를 기본값으로 설정
+</h3>
+
+프로젝트에 대해 계획 모드를 기본값으로 설정하려면 `.claude/settings.json`에서 `defaultMode`를 설정합니다:
+
+```json theme={null}
+{
+  "permissions": {
+    "defaultMode": "plan"
+  }
+}
+```
+
+<h2 id="eliminate-prompts-with-auto-mode">
+  자동 모드로 프롬프트 제거
+</h2>
 
 <Note>
   자동 모드는 Claude Code v2.1.83 이상이 필요합니다.
@@ -144,20 +178,50 @@ claude --permission-mode plan
 
 자동 모드는 Claude가 권한 프롬프트 없이 실행되도록 합니다. 별도의 분류기 모델이 실행 전에 작업을 검토하여, 요청을 초과하여 확대되거나, 인식되지 않은 인프라를 대상으로 하거나, Claude가 읽은 적대적 콘텐츠에 의해 주도되는 것으로 보이는 모든 것을 차단합니다.
 
+자동 모드는 또한 Claude에게 명확히 하는 질문을 위해 멈추지 않고 계속 작업하도록 권장합니다. 그러나 Claude는 프롬프트나 스킬이 명시적으로 이를 필요로 할 때는 여전히 질문합니다. 권한 프롬프트를 유지하면서 더 강력한 자율적 동작을 원하면 [사전 예방적 출력 스타일](/ko/output-styles)을 대신 설정합니다.
+
 <Warning>
   자동 모드는 연구 미리보기입니다. 프롬프트를 줄이지만 안전을 보장하지는 않습니다. 일반적인 방향을 신뢰하는 작업에 사용하고, 민감한 작업에 대한 검토 대체로 사용하지 마세요.
 </Warning>
 
 자동 모드는 계정이 다음의 모든 요구 사항을 충족할 때만 사용 가능합니다:
 
-* **플랜**: Max, Team, Enterprise, 또는 API. Pro에서는 사용할 수 없습니다.
+* **플랜**: 모든 플랜.
 * **관리자**: Team 및 Enterprise에서, 관리자는 사용자가 켜기 전에 [Claude Code 관리자 설정](https://claude.ai/admin-settings/claude-code)에서 이를 활성화해야 합니다. 관리자는 [관리 설정](/ko/permissions#managed-settings)에서 `permissions.disableAutoMode`를 `"disable"`로 설정하여 이를 잠금할 수도 있습니다.
-* **모델**: Team, Enterprise, API 플랜에서 Claude Sonnet 4.6, Opus 4.6, 또는 Opus 4.7. Max 플랜에서는 Claude Opus 4.7만. Haiku 및 claude-3 모델을 포함한 다른 모델은 지원되지 않습니다.
-* **제공자**: Anthropic API만. Bedrock, Vertex, Foundry에서는 사용할 수 없습니다.
+* **모델**: Anthropic API에서 Claude Opus 4.6 이상 또는 Sonnet 4.6. Amazon Bedrock, Google Cloud Vertex AI, Microsoft Foundry에서는 Claude Opus 4.7 및 Opus 4.8만 해당합니다. Sonnet 4.5, Opus 4.5, Haiku, claude-3 모델을 포함한 이전 모델은 어떤 제공자에서도 지원되지 않습니다.
+* **제공자**: Anthropic API에서 기본적으로 사용 가능합니다. Amazon Bedrock, Google Cloud Vertex AI, Microsoft Foundry에서는 [CLAUDE\_CODE\_ENABLE\_AUTO\_MODE를 설정](#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)할 때까지 자동 모드가 꺼져 있습니다.
 
 Claude Code가 자동 모드를 사용할 수 없다고 보고하면, 이러한 요구 사항 중 하나가 충족되지 않은 것입니다. 이는 일시적인 중단이 아닙니다. 모델을 이름으로 지정하고 자동 모드가 작업의 안전을 "결정할 수 없다"고 말하는 별도의 메시지는 일시적인 분류기 중단입니다. [오류 참조](/ko/errors#auto-mode-cannot-determine-the-safety-of-an-action)를 참조합니다.
 
-### 분류기가 기본적으로 차단하는 항목
+[설정](/ko/settings#available-settings)에서 `defaultMode: "auto"`를 설정했는데 세션이 오류 없이 `default` 모드로 시작하면, 설정이 `.claude/settings.json` 또는 `.claude/settings.local.json`에 있을 가능성이 높습니다. Claude Code는 이러한 파일의 `auto`를 무시하므로 리포지토리가 자신에게 자동 모드를 부여할 수 없습니다. 이를 `~/.claude/settings.json`으로 이동합니다.
+
+<h3 id="enable-auto-mode-on-bedrock-vertex-ai-or-foundry">
+  Bedrock, Vertex AI, Foundry에서 자동 모드 활성화
+</h3>
+
+[Amazon Bedrock](/ko/amazon-bedrock), [Google Cloud Vertex AI](/ko/google-vertex-ai), [Microsoft Foundry](/ko/microsoft-foundry)에서는 `CLAUDE_CODE_ENABLE_AUTO_MODE`가 `1`로 설정될 때까지 자동 모드가 `Shift+Tab` 사이클에 나타나지 않습니다. 이러한 제공자에서는 Claude Opus 4.7 및 Opus 4.8만 지원됩니다.
+
+한 명의 개발자에게 이를 활성화하려면, `~/.claude/settings.json`의 `env` 블록에 변수를 추가합니다:
+
+```json theme={null}
+{
+  "env": {
+    "CLAUDE_CODE_ENABLE_AUTO_MODE": "1"
+  }
+}
+```
+
+조직에 대해 이를 활성화하려면, [관리 설정](/ko/settings#settings-files)에 동일한 `env` 블록을 추가합니다.
+
+변수가 설정되면, 자동 모드는 모든 세션의 `Shift+Tab` 사이클에 나타납니다. 이를 기본 시작 모드로 만들려면, 사용자 또는 관리 설정에서 `"permissions": {"defaultMode": "auto"}`도 설정합니다. 이러한 제공자에서는 `CLAUDE_CODE_ENABLE_AUTO_MODE`도 설정되지 않으면 Claude Code가 `defaultMode: "auto"`를 무시합니다.
+
+개발자가 자동 모드를 활성화하지 못하도록 하려면, 관리 설정에서 `disableAutoMode`를 `"disable"`로 설정합니다. 이는 활성화 변수를 재정의합니다.
+
+[LLM 게이트웨이](/ko/llm-gateway)를 통해 `ANTHROPIC_BASE_URL`로 구성된 경우 연결하면, 게이트웨이가 요청을 Anthropic API를 통해 라우팅하기 때문에 자동 모드가 활성화 변수 없이 이미 도달 가능할 수 있습니다. `disableAutoMode` 설정은 해당 구성에서 동일한 방식으로 적용됩니다.
+
+<h3 id="what-the-classifier-blocks-by-default">
+  분류기가 기본적으로 차단하는 항목
+</h3>
 
 분류기는 작업 디렉토리와 리포지토리의 구성된 원격을 신뢰합니다. 다른 모든 것은 [신뢰할 수 있는 인프라를 구성](/ko/auto-mode-config)할 때까지 외부로 취급됩니다.
 
@@ -182,13 +246,17 @@ Claude Code가 자동 모드를 사용할 수 없다고 보고하면, 이러한 
 
 샌드박스 네트워크 액세스 요청은 기본적으로 허용되는 대신 분류기를 통해 라우팅됩니다. `claude auto-mode defaults`를 실행하여 전체 규칙 목록을 확인합니다. 일상적인 작업이 차단되면, 관리자는 `autoMode.environment` 설정을 통해 신뢰할 수 있는 리포지토리, 버킷, 서비스를 추가할 수 있습니다: [자동 모드 구성](/ko/auto-mode-config)을 참조합니다.
 
-### 대화에서 명시한 경계
+<h3 id="boundaries-you-state-in-conversation">
+  대화에서 명시한 경계
+</h3>
 
 분류기는 대화에서 명시한 경계를 차단 신호로 취급합니다. Claude에게 "푸시하지 마"라고 말하거나 "배포하기 전에 검토할 때까지 기다려"라고 말하면, 분류기는 기본 규칙이 허용하더라도 일치하는 작업을 차단합니다. 경계는 나중 메시지에서 해제할 때까지 유효합니다. Claude의 조건이 충족되었다는 자체 판단은 이를 해제하지 않습니다.
 
 경계는 규칙으로 저장되지 않습니다. 분류기는 각 검사에서 기록에서 이를 다시 읽으므로, [컨텍스트 압축](/ko/costs#reduce-token-usage)이 경계를 명시한 메시지를 제거하면 경계가 손실될 수 있습니다. 하드 보장을 위해 대신 [거부 규칙](/ko/permissions#permission-rule-syntax)을 추가합니다.
 
-### 자동 모드가 폴백할 때
+<h3 id="when-auto-mode-falls-back">
+  자동 모드가 폴백할 때
+</h3>
 
 각 거부된 작업은 알림을 표시하고 `/permissions` 아래의 최근 거부됨 탭에 나타나며, 여기서 `r`을 눌러 수동 승인으로 재시도할 수 있습니다.
 
@@ -202,7 +270,7 @@ Claude Code가 자동 모드를 사용할 수 없다고 보고하면, 이러한 
   <Accordion title="분류기가 작업을 평가하는 방식">
     각 작업은 고정된 결정 순서를 거칩니다. 첫 번째 일치 단계가 승리합니다:
 
-    1. [허용 또는 거부 규칙](/ko/permissions#manage-permissions)과 일치하는 작업은 즉시 해결됩니다
+    1. [허용 또는 거부 규칙](/ko/permissions#manage-permissions)과 일치하는 작업은 즉시 해결됩니다. [보호된 경로](#protected-paths)에 대한 쓰기는 제외되며, 허용 규칙이 일치하더라도 분류기로 라우팅됩니다
     2. 읽기 전용 작업 및 작업 디렉토리의 파일 편집은 자동 승인됩니다. [보호된 경로](#protected-paths)에 대한 쓰기는 제외됩니다
     3. 다른 모든 것은 분류기로 이동합니다
     4. 분류기가 차단하면, Claude는 이유를 받고 대체 방법을 시도합니다
@@ -232,7 +300,9 @@ Claude Code가 자동 모드를 사용할 수 없다고 보고하면, 이러한 
   </Accordion>
 </AccordionGroup>
 
-## dontAsk 모드로 사전 승인된 도구만 허용
+<h2 id="allow-only-pre-approved-tools-with-dontask-mode">
+  dontAsk 모드로 사전 승인된 도구만 허용
+</h2>
 
 `dontAsk` 모드는 그렇지 않으면 프롬프트할 모든 도구 호출을 자동 거부합니다. `permissions.allow` 규칙과 일치하는 작업 및 [읽기 전용 Bash 명령](/ko/permissions#read-only-commands)만 실행할 수 있습니다. 명시적 `ask` 규칙은 프롬프트하는 대신 거부됩니다. 이는 모드를 완전히 비대화형으로 만들어 CI 파이프라인 또는 Claude가 정확히 수행할 수 있는 작업을 사전 정의하는 제한된 환경에 적합합니다.
 
@@ -242,9 +312,11 @@ Claude Code가 자동 모드를 사용할 수 없다고 보고하면, 이러한 
 claude --permission-mode dontAsk
 ```
 
-## bypassPermissions 모드로 모든 검사 건너뛰기
+<h2 id="skip-all-checks-with-bypasspermissions-mode">
+  bypassPermissions 모드로 모든 검사 건너뛰기
+</h2>
 
-`bypassPermissions` 모드는 권한 프롬프트 및 안전 검사를 비활성화하여 도구 호출이 즉시 실행되도록 합니다. [보호된 경로](#protected-paths)에 대한 쓰기는 여전히 프롬프트하는 유일한 작업입니다. 이 모드는 인터넷 액세스 없이 컨테이너, VM, devcontainer와 같은 격리된 환경에서만 사용하십시오. Claude Code가 호스트 시스템에 손상을 줄 수 없습니다.
+`bypassPermissions` 모드는 권한 프롬프트 및 안전 검사를 비활성화하여 도구 호출이 즉시 실행되도록 합니다. v2.1.126부터 이는 [보호된 경로](#protected-paths)에 대한 쓰기를 포함하며, 이전 버전은 여전히 프롬프트를 표시합니다. 파일 시스템 루트 또는 홈 디렉터리를 대상으로 하는 제거(예: `rm -rf /` 및 `rm -rf ~`)는 모델 오류에 대한 차단기로서 여전히 프롬프트를 표시합니다. 인터넷 액세스가 없는 컨테이너, VM 또는 개발 컨테이너와 같은 격리된 환경에서만 이 모드를 사용하십시오. 여기서 Claude Code는 호스트 시스템에 손상을 줄 수 없습니다.
 
 활성화 플래그 중 하나로 시작한 세션에서 `bypassPermissions`에 들어갈 수 없습니다. 활성화하려면 다시 시작하십시오:
 
@@ -254,30 +326,59 @@ claude --permission-mode bypassPermissions
 
 `--dangerously-skip-permissions` 플래그는 동등합니다.
 
+Linux 및 macOS에서 Claude Code는 root로 실행되거나 `sudo` 아래에서 실행될 때 이 모드에서 시작하기를 거부합니다:
+
+```text theme={null}
+--dangerously-skip-permissions cannot be used with root/sudo privileges for security reasons
+```
+
+인식된 샌드박스 내에서는 검사가 자동으로 건너뜁니다. 컨테이너에서 자율적으로 실행하려면 [개발 컨테이너](/ko/devcontainer) 구성을 사용하십시오. 이는 Claude Code를 비root 사용자로 실행합니다.
+
 <Warning>
   `bypassPermissions`는 프롬프트 주입 또는 의도하지 않은 작업에 대한 보호를 제공하지 않습니다. 프롬프트 없이 백그라운드 안전 검사를 위해 [자동 모드](#eliminate-prompts-with-auto-mode)를 대신 사용하십시오. 관리자는 [관리 설정](/ko/permissions#managed-settings)에서 `permissions.disableBypassPermissionsMode`를 `"disable"`로 설정하여 이 모드를 차단할 수 있습니다.
 </Warning>
 
-## 보호된 경로
+<h2 id="protected-paths">
+  보호된 경로
+</h2>
 
-경로의 작은 집합에 대한 쓰기는 모든 모드에서 절대 자동 승인되지 않습니다. 이는 리포지토리 상태와 Claude의 자체 구성의 우발적인 손상을 방지합니다. `default`, `acceptEdits`, `plan`, `bypassPermissions`에서 이러한 쓰기는 프롬프트합니다. `auto`에서는 분류기로 라우팅됩니다. `dontAsk`에서는 거부됩니다.
+경로의 작은 집합에 대한 쓰기는 `bypassPermissions`을 제외한 모든 모드에서 절대 자동 승인되지 않습니다. 이는 리포지토리 상태와 Claude의 자체 구성의 우발적인 손상을 방지합니다.
+
+| 모드                               | 보호된 경로 쓰기 |
+| :------------------------------- | :-------- |
+| `default`, `acceptEdits`, `plan` | 프롬프트 표시   |
+| `auto`                           | 분류기로 라우팅  |
+| `dontAsk`                        | 거부        |
+| `bypassPermissions`              | 허용        |
 
 보호된 디렉토리:
 
 * `.git`
+* `.config/git`
 * `.vscode`
 * `.idea`
 * `.husky`
+* `.cargo`
+* `.devcontainer`
+* `.yarn`
+* `.mvn`
 * `.claude`, `.claude/commands`, `.claude/agents`, `.claude/skills`, `.claude/worktrees` 제외. Claude는 이러한 위치에서 정기적으로 콘텐츠를 생성합니다
 
 보호된 파일:
 
 * `.gitconfig`, `.gitmodules`
-* `.bashrc`, `.bash_profile`, `.zshrc`, `.zprofile`, `.profile`
-* `.ripgreprc`
+* `.bashrc`, `.bash_profile`, `.bash_login`, `.bash_aliases`, `.bash_logout`, `.zshrc`, `.zprofile`, `.zshenv`, `.zlogin`, `.zlogout`, `.profile`, `.envrc`
+* `.npmrc`, `.yarnrc`, `.yarnrc.yml`, `.pnp.cjs`, `.pnp.loader.mjs`, `.pnpmfile.cjs`, `bunfig.toml`, `.bunfig.toml`
+* `.bazelrc`, `.bazelversion`, `.bazeliskrc`
+* `.pre-commit-config.yaml`, `lefthook.yml`, `lefthook.yaml`, `.lefthook.yml`, `.lefthook.yaml`
+* `gradle-wrapper.properties`, `maven-wrapper.properties`
+* `.devcontainer.json`
+* `.ripgreprc`, `pyrightconfig.json`
 * `.mcp.json`, `.claude.json`
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [권한](/ko/permissions): 허용, 요청, 거부 규칙. 관리 정책
 * [자동 모드 구성](/ko/auto-mode-config): 분류기에 조직이 신뢰하는 인프라를 알립니다

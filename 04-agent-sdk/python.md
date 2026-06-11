@@ -6,31 +6,39 @@
 
 > Python Agent SDK의 완전한 API 참조로, 모든 함수, 타입 및 클래스를 포함합니다.
 
-## 설치
+<h2 id="installation">
+  설치
+</h2>
 
 ```bash theme={null}
 pip install claude-agent-sdk
 ```
 
-## `query()`와 `ClaudeSDKClient` 중 선택하기
+<h2 id="choosing-between-query-and-claudesdkclient">
+  `query()`와 `ClaudeSDKClient` 중 선택하기
+</h2>
 
 Python SDK는 Claude Code와 상호작용하는 두 가지 방법을 제공합니다.
 
-### 빠른 비교
+<h3 id="quick-comparison">
+  빠른 비교
+</h3>
 
-| 기능            | `query()`  | `ClaudeSDKClient` |
-| :------------ | :--------- | :---------------- |
-| **세션**        | 매번 새 세션 생성 | 동일한 세션 재사용        |
-| **대화**        | 단일 교환      | 동일한 컨텍스트에서 여러 교환  |
-| **연결**        | 자동으로 관리됨   | 수동 제어             |
-| **스트리밍 입력**   | ✅ 지원됨      | ✅ 지원됨             |
-| **중단**        | ❌ 지원 안 함   | ✅ 지원됨             |
-| **Hooks**     | ✅ 지원됨      | ✅ 지원됨             |
-| **사용자 정의 도구** | ✅ 지원됨      | ✅ 지원됨             |
-| **대화 계속하기**   | ❌ 매번 새 세션  | ✅ 대화 유지           |
-| **사용 사례**     | 일회성 작업     | 지속적인 대화           |
+| 기능            | `query()`                                  | `ClaudeSDKClient` |
+| :------------ | :----------------------------------------- | :---------------- |
+| **세션**        | 기본적으로 새 세션 생성                              | 동일한 세션 재사용        |
+| **대화**        | 단일 교환                                      | 동일한 컨텍스트에서 여러 교환  |
+| **연결**        | 자동으로 관리됨                                   | 수동 제어             |
+| **스트리밍 입력**   | ✅ 지원됨                                      | ✅ 지원됨             |
+| **중단**        | ❌ 지원 안 함                                   | ✅ 지원됨             |
+| **Hooks**     | ✅ 지원됨                                      | ✅ 지원됨             |
+| **사용자 정의 도구** | ✅ 지원됨                                      | ✅ 지원됨             |
+| **대화 계속하기**   | `continue_conversation` 또는 `resume`을 통한 수동 | ✅ 자동              |
+| **사용 사례**     | 일회성 작업                                     | 지속적인 대화           |
 
-### `query()` 사용 시기 (매번 새 세션)
+<h3 id="when-to-use-query-one-off-tasks">
+  `query()` 사용 시기 (일회성 작업)
+</h3>
 
 **최적의 경우:**
 
@@ -39,7 +47,9 @@ Python SDK는 Claude Code와 상호작용하는 두 가지 방법을 제공합�
 * 간단한 자동화 스크립트
 * 매번 새로 시작하고 싶을 때
 
-### `ClaudeSDKClient` 사용 시기 (지속적인 대화)
+<h3 id="when-to-use-claudesdkclient-continuous-conversation">
+  `ClaudeSDKClient` 사용 시기 (지속적인 대화)
+</h3>
 
 **최적의 경우:**
 
@@ -49,11 +59,15 @@ Python SDK는 Claude Code와 상호작용하는 두 가지 방법을 제공합�
 * **응답 기반 로직** - 다음 작업이 Claude의 응답에 따라 달라질 때
 * **세션 제어** - 대화 수명 주기를 명시적으로 관리
 
-## 함수
+<h2 id="functions">
+  함수
+</h2>
 
-### `query()`
+<h3 id="query">
+  `query()`
+</h3>
 
-Claude Code와의 각 상호작용을 위해 새 세션을 생성합니다. 메시지가 도착하면 생성하는 비동기 반복자를 반환합니다. `query()`에 대한 각 호출은 이전 상호작용의 메모리 없이 새로 시작합니다.
+Claude Code와의 각 상호작용을 위해 기본적으로 새 세션을 생성합니다. 메시지가 도착하면 생성하는 비동기 반복자를 반환합니다. `query()`에 대한 각 호출은 `continue_conversation=True` 또는 [`ClaudeAgentOptions`](#claudeagentoptions)에서 `resume`을 전달하지 않는 한 이전 상호작용의 메모리 없이 새로 시작합니다. [세션](/ko/agent-sdk/sessions)을 참조하세요.
 
 ```python theme={null}
 async def query(
@@ -64,7 +78,9 @@ async def query(
 ) -> AsyncIterator[Message]
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
 | 매개변수        | 타입                           | 설명                                                  |
 | :---------- | :--------------------------- | :-------------------------------------------------- |
@@ -72,11 +88,15 @@ async def query(
 | `options`   | `ClaudeAgentOptions \| None` | 선택적 구성 객체 (None인 경우 `ClaudeAgentOptions()`로 기본값 설정) |
 | `transport` | `Transport \| None`          | CLI 프로세스와 통신하기 위한 선택적 사용자 정의 전송                     |
 
-#### 반환값
+<h4 id="returns">
+  반환값
+</h4>
 
 대화에서 메시지를 생성하는 `AsyncIterator[Message]`를 반환합니다.
 
-#### 예제 - 옵션 포함
+<h4 id="example-with-options">
+  예제 - 옵션 포함
+</h4>
 
 ```python theme={null}
 import asyncio
@@ -97,7 +117,9 @@ async def main():
 asyncio.run(main())
 ```
 
-### `tool()`
+<h3 id="tool">
+  `tool()`
+</h3>
 
 타입 안전성을 갖춘 MCP 도구를 정의하기 위한 데코레이터입니다.
 
@@ -110,16 +132,20 @@ def tool(
 ) -> Callable[[Callable[[Any], Awaitable[dict[str, Any]]]], SdkMcpTool[Any]]
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
-| 매개변수           | 타입                                               | 설명                               |
-| :------------- | :----------------------------------------------- | :------------------------------- |
-| `name`         | `str`                                            | 도구의 고유 식별자                       |
-| `description`  | `str`                                            | 도구가 수행하는 작업에 대한 인간이 읽을 수 있는 설명   |
-| `input_schema` | `type \| dict[str, Any]`                         | 도구의 입력 매개변수를 정의하는 스키마 (아래 참조)    |
-| `annotations`  | [`ToolAnnotations`](#tool-annotations)` \| None` | 클라이언트에 동작 힌트를 제공하는 선택적 MCP 도구 주석 |
+| 매개변수           | 타입                                              | 설명                               |
+| :------------- | :---------------------------------------------- | :------------------------------- |
+| `name`         | `str`                                           | 도구의 고유 식별자                       |
+| `description`  | `str`                                           | 도구가 수행하는 작업에 대한 인간이 읽을 수 있는 설명   |
+| `input_schema` | `type \| dict[str, Any]`                        | 도구의 입력 매개변수를 정의하는 스키마 (아래 참조)    |
+| `annotations`  | [`ToolAnnotations`](#toolannotations)` \| None` | 클라이언트에 동작 힌트를 제공하는 선택적 MCP 도구 주석 |
 
-#### 입력 스키마 옵션
+<h4 id="input-schema-options">
+  입력 스키마 옵션
+</h4>
 
 1. **간단한 타입 매핑** (권장):
 
@@ -139,11 +165,15 @@ def tool(
    }
    ```
 
-#### 반환값
+<h4 id="returns">
+  반환값
+</h4>
 
 도구 구현을 래핑하고 `SdkMcpTool` 인스턴스를 반환하는 데코레이터 함수입니다.
 
-#### 예제
+<h4 id="example">
+  예제
+</h4>
 
 ```python theme={null}
 from claude_agent_sdk import tool
@@ -155,7 +185,9 @@ async def greet(args: dict[str, Any]) -> dict[str, Any]:
     return {"content": [{"type": "text", "text": f"Hello, {args['name']}!"}]}
 ```
 
-#### `ToolAnnotations`
+<h4 id="toolannotations">
+  `ToolAnnotations`
+</h4>
 
 `mcp.types`에서 다시 내보낸 것입니다 (`from claude_agent_sdk import ToolAnnotations`로도 사용 가능). 모든 필드는 선택적 힌트이며, 클라이언트는 보안 결정을 위해 이에 의존해서는 안 됩니다.
 
@@ -182,7 +214,9 @@ async def search(args: dict[str, Any]) -> dict[str, Any]:
     return {"content": [{"type": "text", "text": f"Results for: {args['query']}"}]}
 ```
 
-### `create_sdk_mcp_server()`
+<h3 id="create_sdk_mcp_server">
+  `create_sdk_mcp_server()`
+</h3>
 
 Python 애플리케이션 내에서 실행되는 인프로세스 MCP 서버를 생성합니다.
 
@@ -194,7 +228,9 @@ def create_sdk_mcp_server(
 ) -> McpSdkServerConfig
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
 | 매개변수      | 타입                              | 기본값       | 설명                          |
 | :-------- | :------------------------------ | :-------- | :-------------------------- |
@@ -202,11 +238,15 @@ def create_sdk_mcp_server(
 | `version` | `str`                           | `"1.0.0"` | 서버 버전 문자열                   |
 | `tools`   | `list[SdkMcpTool[Any]] \| None` | `None`    | `@tool` 데코레이터로 생성된 도구 함수 목록 |
 
-#### 반환값
+<h4 id="returns">
+  반환값
+</h4>
 
 `ClaudeAgentOptions.mcp_servers`에 전달할 수 있는 `McpSdkServerConfig` 객체를 반환합니다.
 
-#### 예제
+<h4 id="example">
+  예제
+</h4>
 
 ```python theme={null}
 from claude_agent_sdk import tool, create_sdk_mcp_server
@@ -235,7 +275,9 @@ options = ClaudeAgentOptions(
 )
 ```
 
-### `list_sessions()`
+<h3 id="list_sessions">
+  `list_sessions()`
+</h3>
 
 메타데이터가 포함된 과거 세션을 나열합니다. 프로젝트 디렉토리로 필터링하거나 모든 프로젝트의 세션을 나열합니다. 동기식이며 즉시 반환됩니다.
 
@@ -247,7 +289,9 @@ def list_sessions(
 ) -> list[SDKSessionInfo]
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
 | 매개변수                | 타입            | 기본값    | 설명                                                      |
 | :------------------ | :------------ | :----- | :------------------------------------------------------ |
@@ -255,7 +299,9 @@ def list_sessions(
 | `limit`             | `int \| None` | `None` | 반환할 최대 세션 수                                             |
 | `include_worktrees` | `bool`        | `True` | `directory`가 git 저장소 내에 있을 때, 모든 worktree 경로의 세션을 포함합니다 |
 
-#### 반환 타입: `SDKSessionInfo`
+<h4 id="return-type-sdksessioninfo">
+  반환 타입: `SDKSessionInfo`
+</h4>
 
 | 속성              | 타입            | 설명                                                  |
 | :-------------- | :------------ | :-------------------------------------------------- |
@@ -267,10 +313,12 @@ def list_sessions(
 | `first_prompt`  | `str \| None` | 세션의 첫 번째 의미 있는 사용자 프롬프트                             |
 | `git_branch`    | `str \| None` | 세션 끝의 Git 브랜치                                       |
 | `cwd`           | `str \| None` | 세션의 작업 디렉토리                                         |
-| `tag`           | `str \| None` | 사용자가 설정한 세션 태그 ([`tag_session()`](#tag-session) 참조) |
+| `tag`           | `str \| None` | 사용자가 설정한 세션 태그 ([`tag_session()`](#tag_session) 참조) |
 | `created_at`    | `int \| None` | 에포크 이후 세션 생성 시간 (밀리초)                               |
 
-#### 예제
+<h4 id="example">
+  예제
+</h4>
 
 프로젝트의 10개 최신 세션을 인쇄합니다. 결과는 `last_modified` 내림차순으로 정렬되므로 첫 번째 항목이 가장 최신입니다. `directory`를 생략하면 모든 프로젝트를 검색합니다.
 
@@ -281,7 +329,9 @@ for session in list_sessions(directory="/path/to/project", limit=10):
     print(f"{session.summary} ({session.session_id})")
 ```
 
-### `get_session_messages()`
+<h3 id="get_session_messages">
+  `get_session_messages()`
+</h3>
 
 과거 세션에서 메시지를 검색합니다. 동기식이며 즉시 반환됩니다.
 
@@ -294,7 +344,9 @@ def get_session_messages(
 ) -> list[SessionMessage]
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
 | 매개변수         | 타입            | 기본값    | 설명                                 |
 | :----------- | :------------ | :----- | :--------------------------------- |
@@ -303,7 +355,9 @@ def get_session_messages(
 | `limit`      | `int \| None` | `None` | 반환할 최대 메시지 수                       |
 | `offset`     | `int`         | `0`    | 시작 부분에서 건너뛸 메시지 수                  |
 
-#### 반환 타입: `SessionMessage`
+<h4 id="return-type-sessionmessage">
+  반환 타입: `SessionMessage`
+</h4>
 
 | 속성                   | 타입                             | 설명            |
 | :------------------- | :----------------------------- | :------------ |
@@ -313,7 +367,9 @@ def get_session_messages(
 | `message`            | `Any`                          | 원본 메시지 콘텐츠    |
 | `parent_tool_use_id` | `None`                         | 향후 사용을 위해 예약됨 |
 
-#### 예제
+<h4 id="example">
+  예제
+</h4>
 
 ```python theme={null}
 from claude_agent_sdk import list_sessions, get_session_messages
@@ -325,7 +381,9 @@ if sessions:
         print(f"[{msg.type}] {msg.uuid}")
 ```
 
-### `get_session_info()`
+<h3 id="get_session_info">
+  `get_session_info()`
+</h3>
 
 전체 프로젝트 디렉토리를 스캔하지 않고 ID로 단일 세션의 메타데이터를 읽습니다. 동기식이며 즉시 반환됩니다.
 
@@ -336,16 +394,20 @@ def get_session_info(
 ) -> SDKSessionInfo | None
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
 | 매개변수         | 타입            | 기본값    | 설명                                     |
 | :----------- | :------------ | :----- | :------------------------------------- |
 | `session_id` | `str`         | 필수     | 조회할 세션의 UUID                           |
 | `directory`  | `str \| None` | `None` | 프로젝트 디렉토리 경로. 생략하면 모든 프로젝트 디렉토리를 검색합니다 |
 
-[`SDKSessionInfo`](#return-type-sdk-session-info)를 반환하거나, 세션을 찾을 수 없으면 `None`을 반환합니다.
+[`SDKSessionInfo`](#return-type-sdksessioninfo)를 반환하거나, 세션을 찾을 수 없으면 `None`을 반환합니다.
 
-#### 예제
+<h4 id="example">
+  예제
+</h4>
 
 프로젝트 디렉토리를 스캔하지 않고 단일 세션의 메타데이터를 조회합니다. 이전 실행에서 세션 ID를 이미 가지고 있을 때 유용합니다.
 
@@ -357,7 +419,9 @@ if info:
     print(f"{info.summary} (branch: {info.git_branch}, tag: {info.tag})")
 ```
 
-### `rename_session()`
+<h3 id="rename_session">
+  `rename_session()`
+</h3>
 
 사용자 정의 제목 항목을 추가하여 세션의 이름을 바꿉니다. 반복 호출은 안전하며, 가장 최신 제목이 우선합니다. 동기식입니다.
 
@@ -369,7 +433,9 @@ def rename_session(
 ) -> None
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
 | 매개변수         | 타입            | 기본값    | 설명                                     |
 | :----------- | :------------ | :----- | :------------------------------------- |
@@ -379,9 +445,11 @@ def rename_session(
 
 `session_id`가 유효한 UUID가 아니거나 `title`이 비어 있으면 `ValueError`를 발생시킵니다. 세션을 찾을 수 없으면 `FileNotFoundError`를 발생시킵니다.
 
-#### 예제
+<h4 id="example">
+  예제
+</h4>
 
-가장 최신 세션의 이름을 바꿔서 나중에 찾기 쉽게 합니다. 새 제목은 이후 읽기에서 [`SDKSessionInfo.custom_title`](#return-type-sdk-session-info)에 나타납니다.
+가장 최신 세션의 이름을 바꿔서 나중에 찾기 쉽게 합니다. 새 제목은 이후 읽기에서 [`SDKSessionInfo.custom_title`](#return-type-sdksessioninfo)에 나타납니다.
 
 ```python theme={null}
 from claude_agent_sdk import list_sessions, rename_session
@@ -391,7 +459,9 @@ if sessions:
     rename_session(sessions[0].session_id, "Refactor auth module")
 ```
 
-### `tag_session()`
+<h3 id="tag_session">
+  `tag_session()`
+</h3>
 
 세션에 태그를 지정합니다. 태그를 지우려면 `None`을 전달합니다. 반복 호출은 안전하며, 가장 최신 태그가 우선합니다. 동기식입니다.
 
@@ -403,7 +473,9 @@ def tag_session(
 ) -> None
 ```
 
-#### 매개변수
+<h4 id="parameters">
+  매개변수
+</h4>
 
 | 매개변수         | 타입            | 기본값    | 설명                                       |
 | :----------- | :------------ | :----- | :--------------------------------------- |
@@ -413,7 +485,9 @@ def tag_session(
 
 `session_id`가 유효한 UUID가 아니거나 `tag`가 정규화 후 비어 있으면 `ValueError`를 발생시킵니다. 세션을 찾을 수 없으면 `FileNotFoundError`를 발생시킵니다.
 
-#### 예제
+<h4 id="example">
+  예제
+</h4>
 
 세션에 태그를 지정한 다음, 나중에 읽을 때 해당 태그로 필터링합니다. 기존 태그를 지우려면 `None`을 전달합니다.
 
@@ -429,13 +503,19 @@ for session in list_sessions(directory="/path/to/project"):
         print(session.summary)
 ```
 
-## 클래스
+<h2 id="classes">
+  클래스
+</h2>
 
-### `ClaudeSDKClient`
+<h3 id="claudesdkclient">
+  `ClaudeSDKClient`
+</h3>
 
 **여러 교환에 걸쳐 대화 세션을 유지합니다.** 이것은 TypeScript SDK의 `query()` 함수가 내부적으로 작동하는 방식의 Python 동등물입니다 - 대화를 계속할 수 있는 클라이언트 객체를 생성합니다.
 
-#### 주요 기능
+<h4 id="key-features">
+  주요 기능
+</h4>
 
 * **세션 연속성**: 여러 `query()` 호출에 걸쳐 대화 컨텍스트 유지
 * **동일한 대화**: 세션이 이전 메시지를 유지합니다
@@ -463,7 +543,9 @@ class ClaudeSDKClient:
     async def disconnect(self) -> None
 ```
 
-#### 메서드
+<h4 id="methods">
+  메서드
+</h4>
 
 | 메서드                                       | 설명                                                                                                           |
 | :---------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
@@ -476,14 +558,16 @@ class ClaudeSDKClient:
 | `set_permission_mode(mode)`               | 현재 세션의 권한 모드 변경                                                                                              |
 | `set_model(model)`                        | 현재 세션의 모델 변경. 기본값으로 재설정하려면 `None` 전달                                                                         |
 | `rewind_files(user_message_id)`           | 지정된 사용자 메시지의 상태로 파일 복원. `enable_file_checkpointing=True` 필요. [파일 체크포인팅](/ko/agent-sdk/file-checkpointing) 참조 |
-| `get_mcp_status()`                        | 구성된 모든 MCP 서버의 상태 가져오기. [`McpStatusResponse`](#mcp-status-response) 반환                                       |
+| `get_mcp_status()`                        | 구성된 모든 MCP 서버의 상태 가져오기. [`McpStatusResponse`](#mcpstatusresponse) 반환                                         |
 | `reconnect_mcp_server(server_name)`       | 실패했거나 연결이 끊긴 MCP 서버에 다시 연결 시도                                                                                |
 | `toggle_mcp_server(server_name, enabled)` | 세션 중간에 MCP 서버 활성화 또는 비활성화. 비활성화하면 도구 제거                                                                      |
-| `stop_task(task_id)`                      | 실행 중인 백그라운드 작업 중지. 상태 `"stopped"`인 [`TaskNotificationMessage`](#task-notification-message)가 메시지 스트림에서 따릅니다   |
+| `stop_task(task_id)`                      | 실행 중인 백그라운드 작업 중지. 상태 `"stopped"`인 [`TaskNotificationMessage`](#tasknotificationmessage)가 메시지 스트림에서 따릅니다     |
 | `get_server_info()`                       | 세션 ID 및 기능을 포함한 서버 정보 가져오기                                                                                   |
 | `disconnect()`                            | Claude에서 연결 해제                                                                                               |
 
-#### 컨텍스트 관리자 지원
+<h4 id="context-manager-support">
+  컨텍스트 관리자 지원
+</h4>
 
 클라이언트는 자동 연결 관리를 위한 비동기 컨텍스트 관리자로 사용할 수 있습니다.
 
@@ -496,7 +580,9 @@ async with ClaudeSDKClient() as client:
 
 > **중요:** 메시지를 반복할 때, asyncio 정리 문제를 일으킬 수 있으므로 `break`를 사용하여 조기에 종료하지 마십시오. 대신 반복이 자연스럽게 완료되도록 하거나 플래그를 사용하여 필요한 것을 찾았을 때를 추적하십시오.
 
-#### 예제 - 대화 계속하기
+<h4 id="example-continuing-a-conversation">
+  예제 - 대화 계속하기
+</h4>
 
 ```python theme={null}
 import asyncio
@@ -537,7 +623,9 @@ async def main():
 asyncio.run(main())
 ```
 
-#### 예제 - ClaudeSDKClient를 사용한 스트리밍 입력
+<h4 id="example-streaming-input-with-claudesdkclient">
+  예제 - ClaudeSDKClient를 사용한 스트리밍 입력
+</h4>
 
 ```python theme={null}
 import asyncio
@@ -581,7 +669,9 @@ async def main():
 asyncio.run(main())
 ```
 
-#### 예제 - 중단 사용
+<h4 id="example-using-interrupts">
+  예제 - 중단 사용
+</h4>
 
 ```python theme={null}
 import asyncio
@@ -624,7 +714,9 @@ asyncio.run(interruptible_task())
   **중단 후 버퍼 동작:** `interrupt()`는 중지 신호를 보내지만 메시지 버퍼를 지우지 않습니다. 중단된 작업에서 이미 생성된 메시지 (해당 `ResultMessage` 포함, `subtype="error_during_execution"`)는 스트림에 남아 있습니다. 새 쿼리의 응답을 읽기 전에 `receive_response()`로 이들을 드레인해야 합니다. `interrupt()` 직후에 새 쿼리를 보내고 `receive_response()`를 한 번만 호출하면, 새 쿼리의 응답이 아닌 중단된 작업의 메시지를 받게 됩니다.
 </Note>
 
-#### 예제 - 고급 권한 제어
+<h4 id="example-advanced-permission-control">
+  예제 - 고급 권한 제어
+</h4>
 
 ```python theme={null}
 from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
@@ -673,13 +765,17 @@ async def main():
 asyncio.run(main())
 ```
 
-## 타입
+<h2 id="types">
+  타입
+</h2>
 
 <Note>
   **`@dataclass` vs `TypedDict`:** 이 SDK는 두 가지 종류의 타입을 사용합니다. `@dataclass`로 장식된 클래스 (`ResultMessage`, `AgentDefinition`, `TextBlock`)는 런타임에 객체 인스턴스이며 속성 접근을 지원합니다: `msg.result`. `TypedDict`로 정의된 클래스 (`ThinkingConfigEnabled`, `McpStdioServerConfig`, `SyncHookJSONOutput`)는 **런타임에 일반 딕셔너리**이며 키 접근이 필요합니다: `config["budget_tokens"]`, `config.budget_tokens`가 아닙니다. `ClassName(field=value)` 호출 구문은 둘 다에서 작동하지만, dataclass만 속성이 있는 객체를 생성합니다.
 </Note>
 
-### `SdkMcpTool`
+<h3 id="sdkmcptool">
+  `SdkMcpTool`
+</h3>
 
 `@tool` 데코레이터로 생성된 SDK MCP 도구의 정의입니다.
 
@@ -701,7 +797,9 @@ class SdkMcpTool(Generic[T]):
 | `handler`      | `Callable[[T], Awaitable[dict[str, Any]]]` | 도구 실행을 처리하는 비동기 함수                                                                   |
 | `annotations`  | `ToolAnnotations \| None`                  | 선택적 MCP 도구 주석 (예: `readOnlyHint`, `destructiveHint`, `openWorldHint`). `mcp.types`에서 |
 
-### `Transport`
+<h3 id="transport">
+  `Transport`
+</h3>
 
 사용자 정의 전송 구현을 위한 추상 기본 클래스입니다. 이를 사용하여 사용자 정의 채널 (예: 로컬 서브프로세스 대신 원격 연결)을 통해 Claude 프로세스와 통신합니다.
 
@@ -746,7 +844,9 @@ class Transport(ABC):
 
 가져오기: `from claude_agent_sdk import Transport`
 
-### `ClaudeAgentOptions`
+<h3 id="claudeagentoptions">
+  `ClaudeAgentOptions`
+</h3>
 
 Claude Code 쿼리를 위한 구성 dataclass입니다.
 
@@ -757,6 +857,7 @@ class ClaudeAgentOptions:
     allowed_tools: list[str] = field(default_factory=list)
     system_prompt: str | SystemPromptPreset | None = None
     mcp_servers: dict[str, McpServerConfig] | str | Path = field(default_factory=dict)
+    strict_mcp_config: bool = False
     permission_mode: PermissionMode | None = None
     continue_conversation: bool = False
     resume: str | None = None
@@ -781,6 +882,7 @@ class ClaudeAgentOptions:
     hooks: dict[HookEvent, list[HookMatcher]] | None = None
     user: str | None = None
     include_partial_messages: bool = False
+    include_hook_events: bool = False
     fork_session: bool = False
     agents: dict[str, AgentDefinition] | None = None
     setting_sources: list[SettingSource] | None = None
@@ -788,55 +890,83 @@ class ClaudeAgentOptions:
     plugins: list[SdkPluginConfig] = field(default_factory=list)
     max_thinking_tokens: int | None = None  # Deprecated: use thinking instead
     thinking: ThinkingConfig | None = None
-    effort: Literal["low", "medium", "high", "max"] | None = None
+    effort: EffortLevel | None = None
     enable_file_checkpointing: bool = False
     session_store: SessionStore | None = None
+    session_store_flush: SessionStoreFlushMode = "batched"
 ```
 
-| 속성                            | 타입                                                                                     | 기본값                     | 설명                                                                                                                                                                                                             |
-| :---------------------------- | :------------------------------------------------------------------------------------- | :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tools`                       | `list[str] \| ToolsPreset \| None`                                                     | `None`                  | 도구 구성. Claude Code의 기본 도구를 위해 `{"type": "preset", "preset": "claude_code"}` 사용                                                                                                                                 |
-| `allowed_tools`               | `list[str]`                                                                            | `[]`                    | 프롬프트 없이 자동 승인할 도구. 이것은 Claude를 이 도구로만 제한하지 않습니다. 나열되지 않은 도구는 `permission_mode` 및 `can_use_tool`로 넘어갑니다. `disallowed_tools`를 사용하여 도구를 차단합니다. [권한](/ko/agent-sdk/permissions#allow-and-deny-rules) 참조            |
-| `system_prompt`               | `str \| SystemPromptPreset \| None`                                                    | `None`                  | 시스템 프롬프트 구성. 사용자 정의 프롬프트의 경우 문자열을 전달하거나, Claude Code의 시스템 프롬프트를 위해 `{"type": "preset", "preset": "claude_code"}` 사용. 프리셋을 확장하려면 `"append"` 추가                                                                  |
-| `mcp_servers`                 | `dict[str, McpServerConfig] \| str \| Path`                                            | `{}`                    | MCP 서버 구성 또는 구성 파일 경로                                                                                                                                                                                          |
-| `permission_mode`             | `PermissionMode \| None`                                                               | `None`                  | 도구 사용을 위한 권한 모드                                                                                                                                                                                                |
-| `continue_conversation`       | `bool`                                                                                 | `False`                 | 가장 최신 대화 계속하기                                                                                                                                                                                                  |
-| `resume`                      | `str \| None`                                                                          | `None`                  | 재개할 세션 ID                                                                                                                                                                                                      |
-| `max_turns`                   | `int \| None`                                                                          | `None`                  | 최대 에이전트 턴 (도구 사용 왕복)                                                                                                                                                                                           |
-| `max_budget_usd`              | `float \| None`                                                                        | `None`                  | 클라이언트 측 비용 추정이 이 USD 값에 도달하면 쿼리 중지. `total_cost_usd`와 동일한 추정과 비교됨. 정확도 주의 사항은 [비용 및 사용량 추적](/ko/agent-sdk/cost-tracking) 참조                                                                                    |
-| `disallowed_tools`            | `list[str]`                                                                            | `[]`                    | 항상 거부할 도구. 거부 규칙이 먼저 확인되고 `allowed_tools` 및 `permission_mode` (including `bypassPermissions`)를 재정의합니다                                                                                                          |
-| `enable_file_checkpointing`   | `bool`                                                                                 | `False`                 | 되감기를 위한 파일 변경 추적 활성화. [파일 체크포인팅](/ko/agent-sdk/file-checkpointing) 참조                                                                                                                                          |
-| `model`                       | `str \| None`                                                                          | `None`                  | 사용할 Claude 모델                                                                                                                                                                                                  |
-| `fallback_model`              | `str \| None`                                                                          | `None`                  | 기본 모델이 실패할 경우 사용할 폴백 모델                                                                                                                                                                                        |
-| `betas`                       | `list[SdkBeta]`                                                                        | `[]`                    | 활성화할 베타 기능. 사용 가능한 옵션은 [`SdkBeta`](#sdk-beta) 참조                                                                                                                                                               |
-| `output_format`               | `dict[str, Any] \| None`                                                               | `None`                  | 구조화된 응답을 위한 출력 형식 (예: `{"type": "json_schema", "schema": {...}}`). 자세한 내용은 [구조화된 출력](/ko/agent-sdk/structured-outputs) 참조                                                                                      |
-| `permission_prompt_tool_name` | `str \| None`                                                                          | `None`                  | 권한 프롬프트를 위한 MCP 도구 이름                                                                                                                                                                                          |
-| `cwd`                         | `str \| Path \| None`                                                                  | `None`                  | 현재 작업 디렉토리                                                                                                                                                                                                     |
-| `cli_path`                    | `str \| Path \| None`                                                                  | `None`                  | Claude Code CLI 실행 파일의 사용자 정의 경로                                                                                                                                                                               |
-| `settings`                    | `str \| None`                                                                          | `None`                  | 설정 파일 경로                                                                                                                                                                                                       |
-| `add_dirs`                    | `list[str \| Path]`                                                                    | `[]`                    | Claude가 접근할 수 있는 추가 디렉토리                                                                                                                                                                                       |
-| `env`                         | `dict[str, str]`                                                                       | `{}`                    | 상속된 프로세스 환경 위에 병합된 환경 변수. 기본 CLI가 읽는 변수는 [환경 변수](/ko/env-vars) 참조                                                                                                                                              |
-| `extra_args`                  | `dict[str, str \| None]`                                                               | `{}`                    | CLI에 직접 전달할 추가 CLI 인수                                                                                                                                                                                          |
-| `max_buffer_size`             | `int \| None`                                                                          | `None`                  | CLI stdout 버퍼링 시 최대 바이트                                                                                                                                                                                        |
-| `debug_stderr`                | `Any`                                                                                  | `sys.stderr`            | *Deprecated* - 디버그 출력을 위한 파일 유사 객체. 대신 `stderr` 콜백 사용                                                                                                                                                          |
-| `stderr`                      | `Callable[[str], None] \| None`                                                        | `None`                  | CLI의 stderr 출력을 위한 콜백 함수                                                                                                                                                                                       |
-| `can_use_tool`                | [`CanUseTool`](#can-use-tool) ` \| None`                                               | `None`                  | 도구 권한 콜백 함수. 자세한 내용은 [권한 타입](#can-use-tool) 참조                                                                                                                                                                 |
-| `hooks`                       | `dict[HookEvent, list[HookMatcher]] \| None`                                           | `None`                  | 이벤트 가로채기를 위한 hook 구성                                                                                                                                                                                           |
-| `user`                        | `str \| None`                                                                          | `None`                  | 사용자 식별자                                                                                                                                                                                                        |
-| `include_partial_messages`    | `bool`                                                                                 | `False`                 | 부분 메시지 스트리밍 이벤트 포함. 활성화되면 [`StreamEvent`](#stream-event) 메시지가 생성됩니다                                                                                                                                            |
-| `fork_session`                | `bool`                                                                                 | `False`                 | `resume`으로 재개할 때, 원본 세션을 계속하는 대신 새 세션 ID로 포크합니다                                                                                                                                                                |
-| `agents`                      | `dict[str, AgentDefinition] \| None`                                                   | `None`                  | 프로그래밍 방식으로 정의된 서브에이전트                                                                                                                                                                                          |
-| `plugins`                     | `list[SdkPluginConfig]`                                                                | `[]`                    | 로컬 경로에서 사용자 정의 플러그인 로드. 자세한 내용은 [플러그인](/ko/agent-sdk/plugins) 참조                                                                                                                                               |
-| `sandbox`                     | [`SandboxSettings`](#sandbox-settings) ` \| None`                                      | `None`                  | 프로그래밍 방식으로 샌드박스 동작 구성. 자세한 내용은 [샌드박스 설정](#sandbox-settings) 참조                                                                                                                                                 |
-| `setting_sources`             | `list[SettingSource] \| None`                                                          | `None` (CLI 기본값: 모든 소스) | 로드할 파일 시스템 설정을 제어합니다. 사용자, 프로젝트 및 로컬 설정을 비활성화하려면 `[]`를 전달합니다. 관리형 정책 설정은 어쨌든 로드됩니다. [Claude Code 기능 사용](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)에서 이것이 제어하지 않는 입력 및 비활성화 방법 참조 |
-| `max_thinking_tokens`         | `int \| None`                                                                          | `None`                  | *Deprecated* - 생각 블록의 최대 토큰. 대신 `thinking` 사용                                                                                                                                                                  |
-| `thinking`                    | [`ThinkingConfig`](#thinking-config) ` \| None`                                        | `None`                  | 확장된 생각 동작을 제어합니다. `max_thinking_tokens`보다 우선합니다                                                                                                                                                                |
-| `effort`                      | `Literal["low", "medium", "high", "max"] \| None`                                      | `None`                  | 생각 깊이를 위한 노력 수준                                                                                                                                                                                                |
-| `session_store`               | [`SessionStore`](/ko/agent-sdk/session-storage#the-session-store-interface) ` \| None` | `None`                  | 세션 기록을 외부 백엔드로 미러링하여 모든 호스트가 이를 재개할 수 있도록 합니다. [외부 저장소에 세션 유지](/ko/agent-sdk/session-storage) 참조                                                                                                               |
+| 속성                            | 타입                                                                                    | 기본값                     | 설명                                                                                                                                                                                                             |
+| :---------------------------- | :------------------------------------------------------------------------------------ | :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tools`                       | `list[str] \| ToolsPreset \| None`                                                    | `None`                  | 도구 구성. Claude Code의 기본 도구를 위해 `{"type": "preset", "preset": "claude_code"}` 사용                                                                                                                                 |
+| `allowed_tools`               | `list[str]`                                                                           | `[]`                    | 프롬프트 없이 자동 승인할 도구. 이것은 Claude를 이 도구로만 제한하지 않습니다. 나열되지 않은 도구는 `permission_mode` 및 `can_use_tool`로 넘어갑니다. `disallowed_tools`를 사용하여 도구를 차단합니다. [권한](/ko/agent-sdk/permissions#allow-and-deny-rules) 참조            |
+| `system_prompt`               | `str \| SystemPromptPreset \| None`                                                   | `None`                  | 시스템 프롬프트 구성. 사용자 정의 프롬프트의 경우 문자열을 전달하거나, Claude Code의 시스템 프롬프트를 위해 `{"type": "preset", "preset": "claude_code"}` 사용. 프리셋을 확장하려면 `"append"` 추가                                                                  |
+| `mcp_servers`                 | `dict[str, McpServerConfig] \| str \| Path`                                           | `{}`                    | MCP 서버 구성 또는 구성 파일 경로                                                                                                                                                                                          |
+| `strict_mcp_config`           | `bool`                                                                                | `False`                 | `True`일 때, `mcp_servers`에 전달된 서버만 사용하고 프로젝트 `.mcp.json`, 사용자 설정, 플러그인 제공 MCP 서버 및 [claude.ai 커넥터](/ko/mcp#use-mcp-servers-from-claude-ai)를 무시합니다. CLI `--strict-mcp-config` 플래그에 매핑됩니다                         |
+| `permission_mode`             | `PermissionMode \| None`                                                              | `None`                  | 도구 사용을 위한 권한 모드                                                                                                                                                                                                |
+| `continue_conversation`       | `bool`                                                                                | `False`                 | 가장 최신 대화 계속하기                                                                                                                                                                                                  |
+| `resume`                      | `str \| None`                                                                         | `None`                  | 재개할 세션 ID                                                                                                                                                                                                      |
+| `max_turns`                   | `int \| None`                                                                         | `None`                  | 최대 에이전트 턴 (도구 사용 왕복)                                                                                                                                                                                           |
+| `max_budget_usd`              | `float \| None`                                                                       | `None`                  | 클라이언트 측 비용 추정이 이 USD 값에 도달하면 쿼리 중지. `total_cost_usd`와 동일한 추정과 비교됨. 정확도 주의 사항은 [비용 및 사용량 추적](/ko/agent-sdk/cost-tracking) 참조                                                                                    |
+| `disallowed_tools`            | `list[str]`                                                                           | `[]`                    | 거부할 도구. `"Bash"`와 같은 단순 이름은 Claude의 컨텍스트에서 도구를 제거합니다. `"Bash(rm *)"` 같은 범위 지정 규칙은 도구를 사용 가능하게 유지하고 `bypassPermissions`를 포함한 모든 권한 모드에서 일치하는 호출을 거부합니다. [권한](/ko/agent-sdk/permissions#allow-and-deny-rules) 참조 |
+| `enable_file_checkpointing`   | `bool`                                                                                | `False`                 | 되감기를 위한 파일 변경 추적 활성화. [파일 체크포인팅](/ko/agent-sdk/file-checkpointing) 참조                                                                                                                                          |
+| `model`                       | `str \| None`                                                                         | `None`                  | 사용할 Claude 모델                                                                                                                                                                                                  |
+| `fallback_model`              | `str \| None`                                                                         | `None`                  | 기본 모델이 실패할 경우 사용할 폴백 모델                                                                                                                                                                                        |
+| `betas`                       | `list[SdkBeta]`                                                                       | `[]`                    | 활성화할 베타 기능. 사용 가능한 옵션은 [`SdkBeta`](#sdkbeta) 참조                                                                                                                                                                |
+| `output_format`               | `dict[str, Any] \| None`                                                              | `None`                  | 구조화된 응답을 위한 출력 형식 (예: `{"type": "json_schema", "schema": {...}}`). 자세한 내용은 [구조화된 출력](/ko/agent-sdk/structured-outputs) 참조                                                                                      |
+| `permission_prompt_tool_name` | `str \| None`                                                                         | `None`                  | 권한 프롬프트를 위한 MCP 도구 이름                                                                                                                                                                                          |
+| `cwd`                         | `str \| Path \| None`                                                                 | `None`                  | 현재 작업 디렉토리                                                                                                                                                                                                     |
+| `cli_path`                    | `str \| Path \| None`                                                                 | `None`                  | Claude Code CLI 실행 파일의 사용자 정의 경로                                                                                                                                                                               |
+| `settings`                    | `str \| None`                                                                         | `None`                  | 설정 파일 경로                                                                                                                                                                                                       |
+| `add_dirs`                    | `list[str \| Path]`                                                                   | `[]`                    | Claude가 접근할 수 있는 추가 디렉토리                                                                                                                                                                                       |
+| `env`                         | `dict[str, str]`                                                                      | `{}`                    | 상속된 프로세스 환경 위에 병합된 환경 변수. 기본 CLI가 읽는 변수는 [환경 변수](/ko/env-vars) 참조. 시간 초과 관련 변수는 [느리거나 정지된 API 응답 처리](#handle-slow-or-stalled-api-responses) 참조                                                                 |
+| `extra_args`                  | `dict[str, str \| None]`                                                              | `{}`                    | CLI에 직접 전달할 추가 CLI 인수                                                                                                                                                                                          |
+| `max_buffer_size`             | `int \| None`                                                                         | `None`                  | CLI stdout 버퍼링 시 최대 바이트                                                                                                                                                                                        |
+| `debug_stderr`                | `Any`                                                                                 | `sys.stderr`            | *Deprecated* - 디버그 출력을 위한 파일 유사 객체. 대신 `stderr` 콜백 사용                                                                                                                                                          |
+| `stderr`                      | `Callable[[str], None] \| None`                                                       | `None`                  | CLI의 stderr 출력을 위한 콜백 함수                                                                                                                                                                                       |
+| `can_use_tool`                | [`CanUseTool`](#canusetool) ` \| None`                                                | `None`                  | 도구 권한 콜백 함수. 자세한 내용은 [권한 타입](#canusetool) 참조                                                                                                                                                                   |
+| `hooks`                       | `dict[HookEvent, list[HookMatcher]] \| None`                                          | `None`                  | 이벤트 가로채기를 위한 hook 구성                                                                                                                                                                                           |
+| `user`                        | `str \| None`                                                                         | `None`                  | 사용자 식별자                                                                                                                                                                                                        |
+| `include_partial_messages`    | `bool`                                                                                | `False`                 | 부분 메시지 스트리밍 이벤트 포함. 활성화되면 [`StreamEvent`](#streamevent) 메시지가 생성됩니다                                                                                                                                             |
+| `include_hook_events`         | `bool`                                                                                | `False`                 | 메시지 스트림에 hook 라이프사이클 이벤트를 `HookEventMessage` 객체로 포함                                                                                                                                                            |
+| `fork_session`                | `bool`                                                                                | `False`                 | `resume`으로 재개할 때, 원본 세션을 계속하는 대신 새 세션 ID로 포크합니다                                                                                                                                                                |
+| `agents`                      | `dict[str, AgentDefinition] \| None`                                                  | `None`                  | 프로그래밍 방식으로 정의된 서브에이전트                                                                                                                                                                                          |
+| `plugins`                     | `list[SdkPluginConfig]`                                                               | `[]`                    | 로컬 경로에서 사용자 정의 플러그인 로드. 자세한 내용은 [플러그인](/ko/agent-sdk/plugins) 참조                                                                                                                                               |
+| `sandbox`                     | [`SandboxSettings`](#sandboxsettings) ` \| None`                                      | `None`                  | 프로그래밍 방식으로 샌드박스 동작 구성. 자세한 내용은 [샌드박스 설정](#sandboxsettings) 참조                                                                                                                                                  |
+| `setting_sources`             | `list[SettingSource] \| None`                                                         | `None` (CLI 기본값: 모든 소스) | 로드할 파일 시스템 설정을 제어합니다. 사용자, 프로젝트 및 로컬 설정을 비활성화하려면 `[]`를 전달합니다. 관리형 정책 설정은 어쨌든 로드됩니다. [Claude Code 기능 사용](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)에서 이것이 제어하지 않는 입력 및 비활성화 방법 참조 |
+| `skills`                      | `list[str] \| Literal["all"] \| None`                                                 | `None`                  | 세션에서 사용 가능한 스킬. 모든 발견된 스킬을 활성화하려면 `"all"`을 전달하거나, 스킬 이름 목록을 전달합니다. 설정하면 SDK는 `allowed_tools`에 나열하지 않고도 Skill 도구를 자동으로 활성화합니다. [스킬](/ko/agent-sdk/skills) 참조                                                    |
+| `max_thinking_tokens`         | `int \| None`                                                                         | `None`                  | *Deprecated* - 생각 블록의 최대 토큰. 대신 `thinking` 사용                                                                                                                                                                  |
+| `thinking`                    | [`ThinkingConfig`](#thinkingconfig) ` \| None`                                        | `None`                  | 확장된 생각 동작을 제어합니다. `max_thinking_tokens`보다 우선합니다                                                                                                                                                                |
+| `effort`                      | [`EffortLevel`](#effortlevel) ` \| None`                                              | `None`                  | 생각 깊이를 위한 노력 수준                                                                                                                                                                                                |
+| `session_store`               | [`SessionStore`](/ko/agent-sdk/session-storage#the-sessionstore-interface) ` \| None` | `None`                  | 세션 기록을 외부 백엔드로 미러링하여 모든 호스트가 이를 재개할 수 있도록 합니다. [외부 저장소에 세션 유지](/ko/agent-sdk/session-storage) 참조                                                                                                               |
+| `session_store_flush`         | `Literal["batched", "eager"]`                                                         | `"batched"`             | `session_store`에 미러링된 기록 항목을 플러시할 시기. `"batched"`는 턴당 한 번 또는 버퍼가 가득 찰 때 플러시합니다. `"eager"`는 모든 프레임 후에 백그라운드 플러시를 트리거합니다. `session_store`가 `None`일 때 무시됩니다                                                       |
 
-### `OutputFormat`
+<h4 id="handle-slow-or-stalled-api-responses">
+  느리거나 정지된 API 응답 처리
+</h4>
 
-구조화된 출력 검증을 위한 구성입니다. 이를 `ClaudeAgentOptions`의 `output_format` 필드에 `dict`로 전달합니다.
+CLI 서브프로세스는 API 시간 초과 및 정지 감지를 제어하는 여러 환경 변수를 읽습니다. `ClaudeAgentOptions.env`를 통해 전달합니다:
+
+```python theme={null}
+options = ClaudeAgentOptions(
+    env={
+        "API_TIMEOUT_MS": "120000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS": "120000",
+    },
+)
+```
+
+* `API_TIMEOUT_MS`: Anthropic 클라이언트의 요청당 시간 초과 (밀리초). 기본값 `600000`. 주 루프 및 모든 서브에이전트에 적용됩니다.
+* `CLAUDE_CODE_MAX_RETRIES`: 최대 API 재시도. 기본값 `10`. 각 재시도는 자체 `API_TIMEOUT_MS` 윈도우를 가지므로, 최악의 경우 벽시간은 대략 `API_TIMEOUT_MS × (CLAUDE_CODE_MAX_RETRIES + 1)` 더하기 백오프입니다.
+* `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`: `run_in_background`으로 시작된 서브에이전트의 정지 감시견. 기본값 `600000`. 각 스트림 이벤트에서 재설정됩니다. 정지 시 서브에이전트를 중단하고, 작업을 실패로 표시하고, 부분 결과와 함께 오류를 부모에게 표시합니다. 동기 서브에이전트에는 적용되지 않습니다.
+* `CLAUDE_ENABLE_STREAM_WATCHDOG=1` with `CLAUDE_STREAM_IDLE_TIMEOUT_MS`: 헤더가 도착했지만 응답 본문이 스트리밍을 중지할 때 요청을 중단합니다. 기본적으로 꺼져 있습니다. `CLAUDE_STREAM_IDLE_TIMEOUT_MS`는 기본값 `300000`이고 해당 최소값으로 제한됩니다. 중단된 요청은 정상 재시도 경로를 거칩니다.
+
+<h3 id="outputformat">
+  `OutputFormat`
+</h3>
+
+구조화된 출력 검증을 위한 구성입니다. 이를 `ClaudeAgentOptions`의 `output_format` 필드에 `dict`로 전달합니다:
 
 ```python theme={null}
 # output_format에 대한 예상 dict 형태
@@ -851,7 +981,9 @@ class ClaudeAgentOptions:
 | `type`   | 예  | 출력 검증을 위해 `"json_schema"`이어야 합니다 |
 | `schema` | 예  | 출력 검증을 위한 JSON Schema 정의         |
 
-### `SystemPromptPreset`
+<h3 id="systempromptpreset">
+  `SystemPromptPreset`
+</h3>
 
 선택적 추가 사항과 함께 Claude Code의 프리셋 시스템 프롬프트를 사용하기 위한 구성입니다.
 
@@ -870,7 +1002,9 @@ class SystemPromptPreset(TypedDict):
 | `append`                   | 아니오 | 프리셋 시스템 프롬프트에 추가할 추가 지침                                                                                                                                                                                      |
 | `exclude_dynamic_sections` | 아니오 | 작업 디렉토리, git 상태 및 메모리 경로와 같은 세션별 컨텍스트를 시스템 프롬프트에서 첫 사용자 메시지로 이동합니다. 사용자 및 머신 간 프롬프트 캐시 재사용을 개선합니다. [시스템 프롬프트 수정](/ko/agent-sdk/modifying-system-prompts#improve-prompt-caching-across-users-and-machines) 참조 |
 
-### `SettingSource`
+<h3 id="settingsource">
+  `SettingSource`
+</h3>
 
 SDK가 설정을 로드하는 파일 시스템 기반 구성 소스를 제어합니다.
 
@@ -884,16 +1018,20 @@ SettingSource = Literal["user", "project", "local"]
 | `"project"` | 공유 프로젝트 설정 (버전 제어됨)     | `.claude/settings.json`       |
 | `"local"`   | 로컬 프로젝트 설정 (gitignored) | `.claude/settings.local.json` |
 
-#### 기본 동작
+<h4 id="default-behavior">
+  기본 동작
+</h4>
 
 `setting_sources`가 생략되거나 `None`일 때, `query()`는 Claude Code CLI와 동일한 파일 시스템 설정을 로드합니다: 사용자, 프로젝트 및 로컬. 관리형 정책 설정은 모든 경우에 로드됩니다. 이 옵션과 관계없이 읽히는 입력 및 비활성화 방법은 [settingSources가 제어하지 않는 것](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)을 참조하십시오.
 
-#### setting\_sources를 사용하는 이유
+<h4 id="why-use-setting_sources">
+  setting\_sources를 사용하는 이유
+</h4>
 
 **파일 시스템 설정 비활성화:**
 
 ```python theme={null}
-# Do not load user, project, or local settings from disk
+# 디스크에서 사용자, 프로젝트 또는 로컬 설정을 로드하지 않습니다
 from claude_agent_sdk import query, ClaudeAgentOptions
 
 async for message in query(
@@ -926,7 +1064,7 @@ async for message in query(
 **특정 설정 소스만 로드:**
 
 ```python theme={null}
-# Load only project settings, ignore user and local
+# 프로젝트 설정만 로드, 사용자 및 로컬 무시
 async for message in query(
     prompt="Run CI checks",
     options=ClaudeAgentOptions(
@@ -939,7 +1077,7 @@ async for message in query(
 **테스트 및 CI 환경:**
 
 ```python theme={null}
-# Ensure consistent behavior in CI by excluding local settings
+# 로컬 설정을 제외하여 CI에서 일관된 동작 보장
 async for message in query(
     prompt="Run tests",
     options=ClaudeAgentOptions(
@@ -953,8 +1091,8 @@ async for message in query(
 **SDK 전용 애플리케이션:**
 
 ```python theme={null}
-# Define everything programmatically.
-# Pass [] to opt out of filesystem setting sources.
+# 모든 것을 프로그래밍 방식으로 정의합니다.
+# 파일 시스템 설정 소스를 거부하려면 []를 전달합니다.
 async for message in query(
     prompt="Review this PR",
     options=ClaudeAgentOptions(
@@ -970,7 +1108,7 @@ async for message in query(
 **CLAUDE.md 프로젝트 지침 로드:**
 
 ```python theme={null}
-# Load project settings to include CLAUDE.md files
+# 프로젝트 설정을 로드하여 CLAUDE.md 파일 포함
 async for message in query(
     prompt="Add a new feature following project conventions",
     options=ClaudeAgentOptions(
@@ -985,7 +1123,9 @@ async for message in query(
     print(message)
 ```
 
-#### 설정 우선순위
+<h4 id="settings-precedence">
+  설정 우선순위
+</h4>
 
 여러 소스가 로드될 때, 설정은 이 우선순위로 병합됩니다 (높음에서 낮음):
 
@@ -995,7 +1135,9 @@ async for message in query(
 
 `agents` 및 `allowed_tools`와 같은 프로그래밍 방식의 옵션은 사용자, 프로젝트 및 로컬 파일 시스템 설정을 재정의합니다. 관리형 정책 설정은 프로그래밍 방식의 옵션보다 우선합니다.
 
-### `AgentDefinition`
+<h3 id="agentdefinition">
+  `AgentDefinition`
+</h3>
 
 프로그래밍 방식으로 정의된 서브에이전트의 구성입니다.
 
@@ -1013,7 +1155,7 @@ class AgentDefinition:
     initialPrompt: str | None = None
     maxTurns: int | None = None
     background: bool | None = None
-    effort: Literal["low", "medium", "high", "max"] | int | None = None
+    effort: EffortLevel | int | None = None
     permissionMode: PermissionMode | None = None
 ```
 
@@ -1030,14 +1172,16 @@ class AgentDefinition:
 | `initialPrompt`   | 아니오 | 이 에이전트가 주 스레드 에이전트로 실행될 때 첫 사용자 턴으로 자동 제출됨                                                              |
 | `maxTurns`        | 아니오 | 에이전트가 중지되기 전의 최대 에이전트 턴 수                                                                               |
 | `background`      | 아니오 | 호출될 때 이 에이전트를 비차단 백그라운드 작업으로 실행합니다                                                                      |
-| `effort`          | 아니오 | 이 에이전트의 추론 노력 수준. 명명된 수준 또는 정수를 허용합니다                                                                   |
-| `permissionMode`  | 아니오 | 이 에이전트 내의 도구 실행을 위한 권한 모드. [`PermissionMode`](#permission-mode) 참조                                      |
+| `effort`          | 아니오 | 이 에이전트의 추론 노력 수준. 명명된 수준 또는 정수를 허용합니다. [`EffortLevel`](#effortlevel) 참조                                 |
+| `permissionMode`  | 아니오 | 이 에이전트 내의 도구 실행을 위한 권한 모드. [`PermissionMode`](#permissionmode) 참조                                       |
 
 <Note>
   `AgentDefinition` 필드 이름은 `disallowedTools`, `permissionMode`, `maxTurns`와 같은 camelCase를 사용합니다. 이 이름은 TypeScript SDK와 공유되는 와이어 형식에 직접 매핑됩니다. 이는 `disallowed_tools` 및 `permission_mode`와 같은 동등한 최상위 필드에 Python snake\_case를 사용하는 `ClaudeAgentOptions`와 다릅니다. `AgentDefinition`은 dataclass이므로, snake\_case 키워드를 전달하면 구성 시 `TypeError`를 발생시킵니다.
 </Note>
 
-### `PermissionMode`
+<h3 id="permissionmode">
+  `PermissionMode`
+</h3>
 
 도구 실행을 제어하기 위한 권한 모드입니다.
 
@@ -1045,13 +1189,31 @@ class AgentDefinition:
 PermissionMode = Literal[
     "default",  # Standard permission behavior
     "acceptEdits",  # Auto-accept file edits
-    "plan",  # Planning mode - no execution
+    "plan",  # Planning mode - read-only tools only
     "dontAsk",  # Deny anything not pre-approved instead of prompting
     "bypassPermissions",  # Bypass all permission checks (use with caution)
 ]
 ```
 
-### `CanUseTool`
+<h3 id="effortlevel">
+  `EffortLevel`
+</h3>
+
+생각 깊이를 안내하기 위한 노력 수준입니다.
+
+```python theme={null}
+EffortLevel = Literal[
+    "low",  # Minimal thinking, fastest responses
+    "medium",  # Moderate thinking
+    "high",  # Deep reasoning
+    "xhigh",  # Extended reasoning (Opus 4.7 only; falls back to "high" on other models)
+    "max",  # Maximum effort
+]
+```
+
+<h3 id="canusetool">
+  `CanUseTool`
+</h3>
 
 도구 권한 콜백 함수의 타입 별칭입니다.
 
@@ -1069,7 +1231,9 @@ CanUseTool = Callable[
 
 `PermissionResult` (`PermissionResultAllow` 또는 `PermissionResultDeny`)를 반환합니다.
 
-### `ToolPermissionContext`
+<h3 id="toolpermissioncontext">
+  `ToolPermissionContext`
+</h3>
 
 도구 권한 콜백에 전달되는 컨텍스트 정보입니다.
 
@@ -1078,14 +1242,26 @@ CanUseTool = Callable[
 class ToolPermissionContext:
     signal: Any | None = None  # Future: abort signal support
     suggestions: list[PermissionUpdate] = field(default_factory=list)
+    blocked_path: str | None = None
+    decision_reason: str | None = None
+    title: str | None = None
+    display_name: str | None = None
+    description: str | None = None
 ```
 
-| 필드            | 타입                       | 설명                  |
-| :------------ | :----------------------- | :------------------ |
-| `signal`      | `Any \| None`            | 향후 중단 신호 지원을 위해 예약됨 |
-| `suggestions` | `list[PermissionUpdate]` | CLI의 권한 업데이트 제안     |
+| 필드                | 타입                       | 설명                                                                                                                                            |
+| :---------------- | :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signal`          | `Any \| None`            | 향후 중단 신호 지원을 위해 예약됨                                                                                                                           |
+| `suggestions`     | `list[PermissionUpdate]` | CLI의 권한 업데이트 제안. Bash 프롬프트는 `localSettings` 대상이 있는 제안을 포함하므로, `updated_permissions`에서 반환하면 규칙을 `.claude/settings.local.json`에 쓰고 세션 간에 유지합니다. |
+| `blocked_path`    | `str \| None`            | 권한 요청을 트리거한 파일 경로 (해당하는 경우). 예를 들어, Bash 명령이 허용된 디렉토리 외부의 경로에 접근하려고 할 때                                                                       |
+| `decision_reason` | `str \| None`            | 이 권한 요청이 트리거된 이유. PreToolUse hook이 `"ask"`를 반환했을 때 hook의 `permissionDecisionReason`에서 전달됨                                                     |
+| `title`           | `str \| None`            | 전체 권한 프롬프트 문장 (예: `Claude wants to read foo.txt`). 존재할 때 기본 프롬프트 텍스트로 사용                                                                      |
+| `display_name`    | `str \| None`            | 도구 작업의 짧은 명사구 (예: `Read file`), 버튼 레이블에 적합                                                                                                    |
+| `description`     | `str \| None`            | 권한 UI를 위한 인간이 읽을 수 있는 부제목                                                                                                                     |
 
-### `PermissionResult`
+<h3 id="permissionresult">
+  `PermissionResult`
+</h3>
 
 권한 콜백 결과의 합집합 타입입니다.
 
@@ -1093,7 +1269,9 @@ class ToolPermissionContext:
 PermissionResult = PermissionResultAllow | PermissionResultDeny
 ```
 
-### `PermissionResultAllow`
+<h3 id="permissionresultallow">
+  `PermissionResultAllow`
+</h3>
 
 도구 호출이 허용되어야 함을 나타내는 결과입니다.
 
@@ -1111,7 +1289,9 @@ class PermissionResultAllow:
 | `updated_input`       | `dict[str, Any] \| None`         | `None`    | 원본 대신 사용할 수정된 입력 |
 | `updated_permissions` | `list[PermissionUpdate] \| None` | `None`    | 적용할 권한 업데이트      |
 
-### `PermissionResultDeny`
+<h3 id="permissionresultdeny">
+  `PermissionResultDeny`
+</h3>
 
 도구 호출이 거부되어야 함을 나타내는 결과입니다.
 
@@ -1129,7 +1309,9 @@ class PermissionResultDeny:
 | `message`   | `str`             | `""`     | 도구가 거부된 이유를 설명하는 메시지 |
 | `interrupt` | `bool`            | `False`  | 현재 실행을 중단할지 여부       |
 
-### `PermissionUpdate`
+<h3 id="permissionupdate">
+  `PermissionUpdate`
+</h3>
 
 프로그래밍 방식으로 권한을 업데이트하기 위한 구성입니다.
 
@@ -1162,7 +1344,9 @@ class PermissionUpdate:
 | `directories` | `list[str] \| None`                       | 디렉토리 추가/제거 작업을 위한 디렉토리 |
 | `destination` | `Literal[...] \| None`                    | 권한 업데이트를 적용할 위치        |
 
-### `PermissionRuleValue`
+<h3 id="permissionrulevalue">
+  `PermissionRuleValue`
+</h3>
 
 권한 업데이트에서 추가, 교체 또는 제거할 규칙입니다.
 
@@ -1173,7 +1357,9 @@ class PermissionRuleValue:
     rule_content: str | None = None
 ```
 
-### `ToolsPreset`
+<h3 id="toolspreset">
+  `ToolsPreset`
+</h3>
 
 Claude Code의 기본 도구 세트를 사용하기 위한 프리셋 도구 구성입니다.
 
@@ -1183,18 +1369,25 @@ class ToolsPreset(TypedDict):
     preset: Literal["claude_code"]
 ```
 
-### `ThinkingConfig`
+<h3 id="thinkingconfig">
+  `ThinkingConfig`
+</h3>
 
-확장된 생각 동작을 제어합니다. 세 가지 구성의 합집합입니다.
+확장된 생각 동작을 제어합니다. 세 가지 구성의 합집합입니다:
 
 ```python theme={null}
+ThinkingDisplay = Literal["summarized", "omitted"]
+
+
 class ThinkingConfigAdaptive(TypedDict):
     type: Literal["adaptive"]
+    display: NotRequired[ThinkingDisplay]
 
 
 class ThinkingConfigEnabled(TypedDict):
     type: Literal["enabled"]
     budget_tokens: int
+    display: NotRequired[ThinkingDisplay]
 
 
 class ThinkingConfigDisabled(TypedDict):
@@ -1204,13 +1397,15 @@ class ThinkingConfigDisabled(TypedDict):
 ThinkingConfig = ThinkingConfigAdaptive | ThinkingConfigEnabled | ThinkingConfigDisabled
 ```
 
-| 변형         | 필드                      | 설명                          |
-| :--------- | :---------------------- | :-------------------------- |
-| `adaptive` | `type`                  | Claude가 생각할 시기를 적응적으로 결정합니다 |
-| `enabled`  | `type`, `budget_tokens` | 특정 토큰 예산으로 생각 활성화           |
-| `disabled` | `type`                  | 생각 비활성화                     |
+| 변형         | 필드                                 | 설명                          |
+| :--------- | :--------------------------------- | :-------------------------- |
+| `adaptive` | `type`, `display`                  | Claude가 생각할 시기를 적응적으로 결정합니다 |
+| `enabled`  | `type`, `budget_tokens`, `display` | 특정 토큰 예산으로 생각 활성화           |
+| `disabled` | `type`                             | 생각 비활성화                     |
 
-이들은 `TypedDict` 클래스이므로 런타임에 일반 dict입니다. dict 리터럴로 구성하거나 클래스를 생성자처럼 호출합니다. 둘 다 `dict`를 생성합니다. `config.budget_tokens`가 아닌 `config["budget_tokens"]`로 필드에 접근합니다.
+선택적 `display` 필드는 생각 텍스트가 `"summarized"` 또는 `"omitted"`로 반환되는지 제어합니다. Claude Opus 4.7 이상에서 API 기본값은 `"omitted"`이므로, [`ThinkingBlock`](#thinkingblock) 출력에서 생각 콘텐츠를 받으려면 `"summarized"`를 설정합니다.
+
+이들은 `TypedDict` 클래스이므로 런타임에 일반 dict입니다. dict 리터럴로 구성하거나 클래스를 생성자처럼 호출합니다. 둘 다 `dict`를 생성합니다. `config.budget_tokens`가 아닌 `config["budget_tokens"]`로 필드에 접근합니다:
 
 ```python theme={null}
 from claude_agent_sdk import ClaudeAgentOptions, ThinkingConfigEnabled
@@ -1224,7 +1419,9 @@ print(config["budget_tokens"])  # 20000
 # config.budget_tokens would raise AttributeError
 ```
 
-### `SdkBeta`
+<h3 id="sdkbeta">
+  `SdkBeta`
+</h3>
 
 SDK 베타 기능의 리터럴 타입입니다.
 
@@ -1238,7 +1435,9 @@ SdkBeta = Literal["context-1m-2025-08-07"]
   `context-1m-2025-08-07` 베타는 2026년 4월 30일부터 폐기되었습니다. Claude Sonnet 4.5 또는 Sonnet 4와 함께 이 헤더를 전달하면 효과가 없으며, 표준 200k 토큰 컨텍스트 윈도우를 초과하는 요청은 오류를 반환합니다. 1M 토큰 컨텍스트 윈도우를 사용하려면 [Claude Sonnet 4.6, Claude Opus 4.6 또는 Claude Opus 4.7](https://platform.claude.com/docs/en/about-claude/models/overview)로 마이그레이션하십시오. 이들은 베타 헤더 없이 표준 가격으로 1M 컨텍스트를 포함합니다.
 </Warning>
 
-### `McpSdkServerConfig`
+<h3 id="mcpsdkserverconfig">
+  `McpSdkServerConfig`
+</h3>
 
 `create_sdk_mcp_server()`로 생성된 SDK MCP 서버의 구성입니다.
 
@@ -1249,7 +1448,9 @@ class McpSdkServerConfig(TypedDict):
     instance: Any  # MCP Server instance
 ```
 
-### `McpServerConfig`
+<h3 id="mcpserverconfig">
+  `McpServerConfig`
+</h3>
 
 MCP 서버 구성의 합집합 타입입니다.
 
@@ -1259,7 +1460,9 @@ McpServerConfig = (
 )
 ```
 
-#### `McpStdioServerConfig`
+<h4 id="mcpstdioserverconfig">
+  `McpStdioServerConfig`
+</h4>
 
 ```python theme={null}
 class McpStdioServerConfig(TypedDict):
@@ -1269,7 +1472,9 @@ class McpStdioServerConfig(TypedDict):
     env: NotRequired[dict[str, str]]
 ```
 
-#### `McpSSEServerConfig`
+<h4 id="mcpsseserverconfig">
+  `McpSSEServerConfig`
+</h4>
 
 ```python theme={null}
 class McpSSEServerConfig(TypedDict):
@@ -1278,7 +1483,9 @@ class McpSSEServerConfig(TypedDict):
     headers: NotRequired[dict[str, str]]
 ```
 
-#### `McpHttpServerConfig`
+<h4 id="mcphttpserverconfig">
+  `McpHttpServerConfig`
+</h4>
 
 ```python theme={null}
 class McpHttpServerConfig(TypedDict):
@@ -1287,9 +1494,11 @@ class McpHttpServerConfig(TypedDict):
     headers: NotRequired[dict[str, str]]
 ```
 
-### `McpServerStatusConfig`
+<h3 id="mcpserverstatusconfig">
+  `McpServerStatusConfig`
+</h3>
 
-[`get_mcp_status()`](#methods)에서 보고한 MCP 서버의 구성입니다. 이것은 모든 [`McpServerConfig`](#mcp-server-config) 전송 변형의 합집합에 claude.ai를 통해 프록시된 서버를 위한 출력 전용 `claudeai-proxy` 변형을 더한 것입니다.
+[`get_mcp_status()`](#methods)에서 보고한 MCP 서버의 구성입니다. 이것은 모든 [`McpServerConfig`](#mcpserverconfig) 전송 변형의 합집합에 claude.ai를 통해 프록시된 서버를 위한 출력 전용 `claudeai-proxy` 변형을 더한 것입니다.
 
 ```python theme={null}
 McpServerStatusConfig = (
@@ -1301,9 +1510,11 @@ McpServerStatusConfig = (
 )
 ```
 
-`McpSdkServerConfigStatus`는 [`McpSdkServerConfig`](#mcp-sdk-server-config)의 직렬화 가능한 형식이며 `type` (`"sdk"`) 및 `name` (`str`) 필드만 있습니다. 인프로세스 `instance`는 생략됩니다. `McpClaudeAIProxyServerConfig`는 `type` (`"claudeai-proxy"`), `url` (`str`) 및 `id` (`str`) 필드를 가집니다.
+`McpSdkServerConfigStatus`는 [`McpSdkServerConfig`](#mcpsdkserverconfig)의 직렬화 가능한 형식이며 `type` (`"sdk"`) 및 `name` (`str`) 필드만 있습니다. 인프로세스 `instance`는 생략됩니다. `McpClaudeAIProxyServerConfig`는 `type` (`"claudeai-proxy"`), `url` (`str`) 및 `id` (`str`) 필드를 가집니다.
 
-### `McpStatusResponse`
+<h3 id="mcpstatusresponse">
+  `McpStatusResponse`
+</h3>
 
 [`ClaudeSDKClient.get_mcp_status()`](#methods)의 응답입니다. 서버 상태 목록을 `mcpServers` 키 아래에 래핑합니다.
 
@@ -1312,9 +1523,11 @@ class McpStatusResponse(TypedDict):
     mcpServers: list[McpServerStatus]
 ```
 
-### `McpServerStatus`
+<h3 id="mcpserverstatus">
+  `McpServerStatus`
+</h3>
 
-[`McpStatusResponse`](#mcp-status-response)에 포함된 연결된 MCP 서버의 상태입니다.
+[`McpStatusResponse`](#mcpstatusresponse)에 포함된 연결된 MCP 서버의 상태입니다.
 
 ```python theme={null}
 class McpServerStatus(TypedDict):
@@ -1327,17 +1540,19 @@ class McpServerStatus(TypedDict):
     tools: NotRequired[list[McpToolInfo]]
 ```
 
-| 필드           | 타입                                                          | 설명                                                                                                                                 |
-| :----------- | :---------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
-| `name`       | `str`                                                       | 서버 이름                                                                                                                              |
-| `status`     | `str`                                                       | `"connected"`, `"failed"`, `"needs-auth"`, `"pending"` 또는 `"disabled"` 중 하나                                                        |
-| `serverInfo` | `dict` (선택사항)                                               | 서버 이름 및 버전 (`{"name": str, "version": str}`)                                                                                       |
-| `error`      | `str` (선택사항)                                                | 서버가 연결에 실패한 경우 오류 메시지                                                                                                              |
-| `config`     | [`McpServerStatusConfig`](#mcp-server-status-config) (선택사항) | 서버 구성. [`McpServerConfig`](#mcp-server-config)와 동일한 형태 (stdio, SSE, HTTP 또는 SDK), 더하기 claude.ai를 통해 연결된 서버를 위한 `claudeai-proxy` 변형 |
-| `scope`      | `str` (선택사항)                                                | 구성 범위                                                                                                                              |
-| `tools`      | `list` (선택사항)                                               | 이 서버가 제공하는 도구, 각각 `name`, `description` 및 `annotations` 필드 포함                                                                      |
+| 필드           | 타입                                                       | 설명                                                                                                                               |
+| :----------- | :------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------- |
+| `name`       | `str`                                                    | 서버 이름                                                                                                                            |
+| `status`     | `str`                                                    | `"connected"`, `"failed"`, `"needs-auth"`, `"pending"` 또는 `"disabled"` 중 하나                                                      |
+| `serverInfo` | `dict` (선택사항)                                            | 서버 이름 및 버전 (`{"name": str, "version": str}`)                                                                                     |
+| `error`      | `str` (선택사항)                                             | 서버가 연결에 실패한 경우 오류 메시지                                                                                                            |
+| `config`     | [`McpServerStatusConfig`](#mcpserverstatusconfig) (선택사항) | 서버 구성. [`McpServerConfig`](#mcpserverconfig)와 동일한 형태 (stdio, SSE, HTTP 또는 SDK), 더하기 claude.ai를 통해 연결된 서버를 위한 `claudeai-proxy` 변형 |
+| `scope`      | `str` (선택사항)                                             | 구성 범위                                                                                                                            |
+| `tools`      | `list` (선택사항)                                            | 이 서버가 제공하는 도구, 각각 `name`, `description` 및 `annotations` 필드 포함                                                                    |
 
-### `SdkPluginConfig`
+<h3 id="sdkpluginconfig">
+  `SdkPluginConfig`
+</h3>
 
 SDK에서 플러그인을 로드하기 위한 구성입니다.
 
@@ -1363,9 +1578,13 @@ plugins = [
 
 플러그인 생성 및 사용에 대한 완전한 정보는 [플러그인](/ko/agent-sdk/plugins)을 참조하십시오.
 
-## 메시지 타입
+<h2 id="message-types">
+  메시지 타입
+</h2>
 
-### `Message`
+<h3 id="message">
+  `Message`
+</h3>
 
 모든 가능한 메시지의 합집합 타입입니다.
 
@@ -1380,7 +1599,9 @@ Message = (
 )
 ```
 
-### `UserMessage`
+<h3 id="usermessage">
+  `UserMessage`
+</h3>
 
 사용자 입력 메시지입니다.
 
@@ -1400,7 +1621,9 @@ class UserMessage:
 | `parent_tool_use_id` | `str \| None`               | 이 메시지가 도구 결과 응답인 경우 도구 사용 ID |
 | `tool_use_result`    | `dict[str, Any] \| None`    | 해당하는 경우 도구 결과 데이터            |
 
-### `AssistantMessage`
+<h3 id="assistantmessage">
+  `AssistantMessage`
+</h3>
 
 콘텐츠 블록이 있는 어시스턴트 응답 메시지입니다.
 
@@ -1415,16 +1638,18 @@ class AssistantMessage:
     message_id: str | None = None
 ```
 
-| 필드                   | 타입                                                             | 설명                                                            |
-| :------------------- | :------------------------------------------------------------- | :------------------------------------------------------------ |
-| `content`            | `list[ContentBlock]`                                           | 응답의 콘텐츠 블록 목록                                                 |
-| `model`              | `str`                                                          | 응답을 생성한 모델                                                    |
-| `parent_tool_use_id` | `str \| None`                                                  | 이것이 중첩된 응답인 경우 도구 사용 ID                                       |
-| `error`              | [`AssistantMessageError`](#assistant-message-error) ` \| None` | 응답이 오류를 만난 경우 오류 타입                                           |
-| `usage`              | `dict[str, Any] \| None`                                       | 메시지별 토큰 사용량 ([`ResultMessage.usage`](#result-message)와 동일한 키) |
-| `message_id`         | `str \| None`                                                  | API 메시지 ID. 한 턴의 여러 메시지는 동일한 ID를 공유합니다                        |
+| 필드                   | 타입                                                           | 설명                                                           |
+| :------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| `content`            | `list[ContentBlock]`                                         | 응답의 콘텐츠 블록 목록                                                |
+| `model`              | `str`                                                        | 응답을 생성한 모델                                                   |
+| `parent_tool_use_id` | `str \| None`                                                | 이것이 중첩된 응답인 경우 도구 사용 ID                                      |
+| `error`              | [`AssistantMessageError`](#assistantmessageerror) ` \| None` | 응답이 오류를 만난 경우 오류 타입                                          |
+| `usage`              | `dict[str, Any] \| None`                                     | 메시지별 토큰 사용량 ([`ResultMessage.usage`](#resultmessage)와 동일한 키) |
+| `message_id`         | `str \| None`                                                | API 메시지 ID. 한 턴의 여러 메시지는 동일한 ID를 공유합니다                       |
 
-### `AssistantMessageError`
+<h3 id="assistantmessageerror">
+  `AssistantMessageError`
+</h3>
 
 어시스턴트 메시지의 가능한 오류 타입입니다.
 
@@ -1440,7 +1665,9 @@ AssistantMessageError = Literal[
 ]
 ```
 
-### `SystemMessage`
+<h3 id="systemmessage">
+  `SystemMessage`
+</h3>
 
 메타데이터가 있는 시스템 메시지입니다.
 
@@ -1451,7 +1678,9 @@ class SystemMessage:
     data: dict[str, Any]
 ```
 
-### `ResultMessage`
+<h3 id="resultmessage">
+  `ResultMessage`
+</h3>
 
 비용 및 사용량 정보가 있는 최종 결과 메시지입니다.
 
@@ -1464,37 +1693,44 @@ class ResultMessage:
     is_error: bool
     num_turns: int
     session_id: str
+    stop_reason: str | None = None
     total_cost_usd: float | None = None
     usage: dict[str, Any] | None = None
     result: str | None = None
-    stop_reason: str | None = None
     structured_output: Any = None
     model_usage: dict[str, Any] | None = None
+    permission_denials: list[Any] | None = None
+    deferred_tool_use: DeferredToolUse | None = None
+    errors: list[str] | None = None
+    api_error_status: int | None = None
+    uuid: str | None = None
 ```
 
-`usage` dict는 존재할 때 다음 키를 포함합니다.
+`usage` dict는 존재할 때 다음 키를 포함합니다:
 
-| 키                             | 타입    | 설명                      |
-| ----------------------------- | ----- | ----------------------- |
-| `input_tokens`                | `int` | 소비된 총 입력 토큰.            |
-| `output_tokens`               | `int` | 생성된 총 출력 토큰.            |
-| `cache_creation_input_tokens` | `int` | 새 캐시 항목을 생성하는 데 사용된 토큰. |
-| `cache_read_input_tokens`     | `int` | 기존 캐시 항목에서 읽은 토큰.       |
+| 키                             | 타입    | 설명                         |
+| ----------------------------- | ----- | -------------------------- |
+| `input_tokens`                | `int` | 소비된 총 입력 토큰입니다.            |
+| `output_tokens`               | `int` | 생성된 총 출력 토큰입니다.            |
+| `cache_creation_input_tokens` | `int` | 새 캐시 항목을 생성하는 데 사용된 토큰입니다. |
+| `cache_read_input_tokens`     | `int` | 기존 캐시 항목에서 읽은 토큰입니다.       |
 
-`model_usage` dict는 모델 이름을 모델별 사용량에 매핑합니다. 내부 dict 키는 camelCase를 사용합니다. 기본 CLI 프로세스에서 수정되지 않은 상태로 전달되므로 TypeScript [`ModelUsage`](/ko/agent-sdk/typescript#model-usage) 타입과 일치합니다.
+`model_usage` dict는 모델 이름을 모델별 사용량에 매핑합니다. 내부 dict 키는 camelCase를 사용합니다. 기본 CLI 프로세스에서 수정되지 않은 상태로 전달되므로 TypeScript [`ModelUsage`](/ko/agent-sdk/typescript#modelusage) 타입과 일치합니다:
 
-| 키                          | 타입      | 설명                                                                                      |
-| -------------------------- | ------- | --------------------------------------------------------------------------------------- |
-| `inputTokens`              | `int`   | 이 모델의 입력 토큰.                                                                            |
-| `outputTokens`             | `int`   | 이 모델의 출력 토큰.                                                                            |
-| `cacheReadInputTokens`     | `int`   | 이 모델의 캐시 읽기 토큰.                                                                         |
-| `cacheCreationInputTokens` | `int`   | 이 모델의 캐시 생성 토큰.                                                                         |
-| `webSearchRequests`        | `int`   | 이 모델이 수행한 웹 검색 요청.                                                                      |
-| `costUSD`                  | `float` | 이 모델의 추정 비용 (USD), 클라이언트 측 계산. 청구 주의 사항은 [비용 및 사용량 추적](/ko/agent-sdk/cost-tracking) 참조. |
-| `contextWindow`            | `int`   | 이 모델의 컨텍스트 윈도우 크기.                                                                      |
-| `maxOutputTokens`          | `int`   | 이 모델의 최대 출력 토큰 제한.                                                                      |
+| 키                          | 타입      | 설명                                                                                             |
+| -------------------------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `inputTokens`              | `int`   | 이 모델의 입력 토큰입니다.                                                                                |
+| `outputTokens`             | `int`   | 이 모델의 출력 토큰입니다.                                                                                |
+| `cacheReadInputTokens`     | `int`   | 이 모델의 캐시 읽기 토큰입니다.                                                                             |
+| `cacheCreationInputTokens` | `int`   | 이 모델의 캐시 생성 토큰입니다.                                                                             |
+| `webSearchRequests`        | `int`   | 이 모델이 수행한 웹 검색 요청입니다.                                                                          |
+| `costUSD`                  | `float` | 이 모델의 추정 비용 (USD), 클라이언트 측 계산입니다. 청구 주의 사항은 [비용 및 사용량 추적](/ko/agent-sdk/cost-tracking) 참조하십시오. |
+| `contextWindow`            | `int`   | 이 모델의 컨텍스트 윈도우 크기입니다.                                                                          |
+| `maxOutputTokens`          | `int`   | 이 모델의 최대 출력 토큰 제한입니다.                                                                          |
 
-### `StreamEvent`
+<h3 id="streamevent">
+  `StreamEvent`
+</h3>
 
 스트리밍 중 부분 메시지 업데이트를 위한 스트림 이벤트입니다. `ClaudeAgentOptions`에서 `include_partial_messages=True`일 때만 수신됩니다. `from claude_agent_sdk.types import StreamEvent`를 통해 가져옵니다.
 
@@ -1507,14 +1743,16 @@ class StreamEvent:
     parent_tool_use_id: str | None = None
 ```
 
-| 필드                   | 타입               | 설명                               |
-| :------------------- | :--------------- | :------------------------------- |
-| `uuid`               | `str`            | 이 이벤트의 고유 식별자                    |
-| `session_id`         | `str`            | 세션 식별자                           |
-| `event`              | `dict[str, Any]` | 원본 Claude API 스트림 이벤트 데이터        |
-| `parent_tool_use_id` | `str \| None`    | 이 이벤트가 서브에이전트에서 온 경우 부모 도구 사용 ID |
+| 필드                   | 타입               | 설명                                  |
+| :------------------- | :--------------- | :---------------------------------- |
+| `uuid`               | `str`            | 이 이벤트의 고유 식별자입니다                    |
+| `session_id`         | `str`            | 세션 식별자입니다                           |
+| `event`              | `dict[str, Any]` | 원본 Claude API 스트림 이벤트 데이터입니다        |
+| `parent_tool_use_id` | `str \| None`    | 이 이벤트가 서브에이전트에서 온 경우 부모 도구 사용 ID입니다 |
 
-### `RateLimitEvent`
+<h3 id="ratelimitevent">
+  `RateLimitEvent`
+</h3>
 
 속도 제한 상태가 변경될 때 발생합니다 (예: `"allowed"`에서 `"allowed_warning"`으로). 이를 사용하여 사용자에게 하드 제한에 도달하기 전에 경고하거나, 상태가 `"rejected"`일 때 백오프합니다.
 
@@ -1526,15 +1764,17 @@ class RateLimitEvent:
     session_id: str
 ```
 
-| 필드                | 타입                                  | 설명          |
-| :---------------- | :---------------------------------- | :---------- |
-| `rate_limit_info` | [`RateLimitInfo`](#rate-limit-info) | 현재 속도 제한 상태 |
-| `uuid`            | `str`                               | 고유 이벤트 식별자  |
-| `session_id`      | `str`                               | 세션 식별자      |
+| 필드                | 타입                                | 설명             |
+| :---------------- | :-------------------------------- | :------------- |
+| `rate_limit_info` | [`RateLimitInfo`](#ratelimitinfo) | 현재 속도 제한 상태입니다 |
+| `uuid`            | `str`                             | 고유 이벤트 식별자입니다  |
+| `session_id`      | `str`                             | 세션 식별자입니다      |
 
-### `RateLimitInfo`
+<h3 id="ratelimitinfo">
+  `RateLimitInfo`
+</h3>
 
-[`RateLimitEvent`](#rate-limit-event)에 의해 전달되는 속도 제한 상태입니다.
+[`RateLimitEvent`](#ratelimitevent)에 의해 전달되는 속도 제한 상태입니다.
 
 ```python theme={null}
 RateLimitStatus = Literal["allowed", "allowed_warning", "rejected"]
@@ -1555,20 +1795,22 @@ class RateLimitInfo:
     raw: dict[str, Any] = field(default_factory=dict)
 ```
 
-| 필드                        | 타입                        | 설명                                                                         |
-| :------------------------ | :------------------------ | :------------------------------------------------------------------------- |
-| `status`                  | `RateLimitStatus`         | 현재 상태. `"allowed_warning"`은 제한에 접근 중을 의미합니다. `"rejected"`는 제한에 도달했음을 의미합니다 |
-| `resets_at`               | `int \| None`             | 속도 제한 윈도우가 재설정되는 Unix 타임스탬프                                                |
-| `rate_limit_type`         | `RateLimitType \| None`   | 어느 속도 제한 윈도우가 적용되는지                                                        |
-| `utilization`             | `float \| None`           | 소비된 속도 제한의 분수 (0.0 \~ 1.0)                                                 |
-| `overage_status`          | `RateLimitStatus \| None` | 해당하는 경우 종량제 초과 사용 상태                                                       |
-| `overage_resets_at`       | `int \| None`             | 초과 사용 윈도우가 재설정되는 Unix 타임스탬프                                                |
-| `overage_disabled_reason` | `str \| None`             | 상태가 `"rejected"`인 경우 초과 사용을 사용할 수 없는 이유                                    |
-| `raw`                     | `dict[str, Any]`          | 위에서 모델링되지 않은 필드를 포함한 CLI의 전체 원본 dict                                       |
+| 필드                        | 타입                        | 설명                                                                            |
+| :------------------------ | :------------------------ | :---------------------------------------------------------------------------- |
+| `status`                  | `RateLimitStatus`         | 현재 상태입니다. `"allowed_warning"`은 제한에 접근 중을 의미합니다. `"rejected"`는 제한에 도달했음을 의미합니다 |
+| `resets_at`               | `int \| None`             | 속도 제한 윈도우가 재설정되는 Unix 타임스탬프입니다                                                |
+| `rate_limit_type`         | `RateLimitType \| None`   | 어느 속도 제한 윈도우가 적용되는지입니다                                                        |
+| `utilization`             | `float \| None`           | 소비된 속도 제한의 분수입니다 (0.0 \~ 1.0)                                                 |
+| `overage_status`          | `RateLimitStatus \| None` | 해당하는 경우 종량제 초과 사용 상태입니다                                                       |
+| `overage_resets_at`       | `int \| None`             | 초과 사용 윈도우가 재설정되는 Unix 타임스탬프입니다                                                |
+| `overage_disabled_reason` | `str \| None`             | 상태가 `"rejected"`인 경우 초과 사용을 사용할 수 없는 이유입니다                                    |
+| `raw`                     | `dict[str, Any]`          | 위에서 모델링되지 않은 필드를 포함한 CLI의 전체 원본 dict입니다                                       |
 
-### `TaskStartedMessage`
+<h3 id="taskstartedmessage">
+  `TaskStartedMessage`
+</h3>
 
-백그라운드 작업이 시작될 때 발생합니다. 백그라운드 작업은 주 턴 외부에서 추적되는 모든 것입니다: 백그라운드 Bash 명령, [Monitor](#monitor) 감시, Agent 도구를 통해 생성된 서브에이전트 또는 원격 에이전트. `task_type` 필드가 어느 것인지 알려줍니다. 이 명명은 `Task`-to-`Agent` 도구 이름 변경과 무관합니다.
+백그라운드 작업이 시작될 때 발생합니다. 백그라운드 작업은 주 턴 외부에서 추적되는 모든 것입니다: 백그라운드 Bash 명령, [Monitor](#monitor) 감시, Agent 도구를 통해 생성된 서브에이전트 또는 원격 에이전트입니다. `task_type` 필드가 어느 것인지 알려줍니다. 이 명명은 `Task`-to-`Agent` 도구 이름 변경과 무관합니다.
 
 ```python theme={null}
 @dataclass
@@ -1581,16 +1823,18 @@ class TaskStartedMessage(SystemMessage):
     task_type: str | None = None
 ```
 
-| 필드            | 타입            | 설명                                                                                            |
-| :------------ | :------------ | :-------------------------------------------------------------------------------------------- |
-| `task_id`     | `str`         | 작업의 고유 식별자                                                                                    |
-| `description` | `str`         | 작업의 설명                                                                                        |
-| `uuid`        | `str`         | 고유 메시지 식별자                                                                                    |
-| `session_id`  | `str`         | 세션 식별자                                                                                        |
-| `tool_use_id` | `str \| None` | 관련 도구 사용 ID                                                                                   |
-| `task_type`   | `str \| None` | 백그라운드 작업의 종류: 백그라운드 Bash 및 Monitor 감시의 경우 `"local_bash"`, `"local_agent"` 또는 `"remote_agent"` |
+| 필드            | 타입            | 설명                                                                                               |
+| :------------ | :------------ | :----------------------------------------------------------------------------------------------- |
+| `task_id`     | `str`         | 작업의 고유 식별자입니다                                                                                    |
+| `description` | `str`         | 작업의 설명입니다                                                                                        |
+| `uuid`        | `str`         | 고유 메시지 식별자입니다                                                                                    |
+| `session_id`  | `str`         | 세션 식별자입니다                                                                                        |
+| `tool_use_id` | `str \| None` | 관련 도구 사용 ID입니다                                                                                   |
+| `task_type`   | `str \| None` | 백그라운드 작업의 종류입니다: 백그라운드 Bash 및 Monitor 감시의 경우 `"local_bash"`, `"local_agent"` 또는 `"remote_agent"` |
 
-### `TaskUsage`
+<h3 id="taskusage">
+  `TaskUsage`
+</h3>
 
 백그라운드 작업의 토큰 및 타이밍 데이터입니다.
 
@@ -1601,7 +1845,9 @@ class TaskUsage(TypedDict):
     duration_ms: int
 ```
 
-### `TaskProgressMessage`
+<h3 id="taskprogressmessage">
+  `TaskProgressMessage`
+</h3>
 
 실행 중인 백그라운드 작업에 대한 진행 상황 업데이트로 주기적으로 발생합니다.
 
@@ -1617,17 +1863,19 @@ class TaskProgressMessage(SystemMessage):
     last_tool_name: str | None = None
 ```
 
-| 필드               | 타입            | 설명                   |
-| :--------------- | :------------ | :------------------- |
-| `task_id`        | `str`         | 작업의 고유 식별자           |
-| `description`    | `str`         | 현재 상태 설명             |
-| `usage`          | `TaskUsage`   | 지금까지 이 작업의 토큰 사용량    |
-| `uuid`           | `str`         | 고유 메시지 식별자           |
-| `session_id`     | `str`         | 세션 식별자               |
-| `tool_use_id`    | `str \| None` | 관련 도구 사용 ID          |
-| `last_tool_name` | `str \| None` | 작업이 마지막으로 사용한 도구의 이름 |
+| 필드               | 타입            | 설명                      |
+| :--------------- | :------------ | :---------------------- |
+| `task_id`        | `str`         | 작업의 고유 식별자입니다           |
+| `description`    | `str`         | 현재 상태 설명입니다             |
+| `usage`          | `TaskUsage`   | 지금까지 이 작업의 토큰 사용량입니다    |
+| `uuid`           | `str`         | 고유 메시지 식별자입니다           |
+| `session_id`     | `str`         | 세션 식별자입니다               |
+| `tool_use_id`    | `str \| None` | 관련 도구 사용 ID입니다          |
+| `last_tool_name` | `str \| None` | 작업이 마지막으로 사용한 도구의 이름입니다 |
 
-### `TaskNotificationMessage`
+<h3 id="tasknotificationmessage">
+  `TaskNotificationMessage`
+</h3>
 
 백그라운드 작업이 완료, 실패 또는 중지될 때 발생합니다. 백그라운드 작업에는 `run_in_background` Bash 명령, Monitor 감시 및 백그라운드 서브에이전트가 포함됩니다.
 
@@ -1644,20 +1892,24 @@ class TaskNotificationMessage(SystemMessage):
     usage: TaskUsage | None = None
 ```
 
-| 필드            | 타입                       | 설명                                            |
-| :------------ | :----------------------- | :-------------------------------------------- |
-| `task_id`     | `str`                    | 작업의 고유 식별자                                    |
-| `status`      | `TaskNotificationStatus` | `"completed"`, `"failed"` 또는 `"stopped"` 중 하나 |
-| `output_file` | `str`                    | 작업 출력 파일의 경로                                  |
-| `summary`     | `str`                    | 작업 결과의 요약                                     |
-| `uuid`        | `str`                    | 고유 메시지 식별자                                    |
-| `session_id`  | `str`                    | 세션 식별자                                        |
-| `tool_use_id` | `str \| None`            | 관련 도구 사용 ID                                   |
-| `usage`       | `TaskUsage \| None`      | 작업의 최종 토큰 사용량                                 |
+| 필드            | 타입                       | 설명                                               |
+| :------------ | :----------------------- | :----------------------------------------------- |
+| `task_id`     | `str`                    | 작업의 고유 식별자입니다                                    |
+| `status`      | `TaskNotificationStatus` | `"completed"`, `"failed"` 또는 `"stopped"` 중 하나입니다 |
+| `output_file` | `str`                    | 작업 출력 파일의 경로입니다                                  |
+| `summary`     | `str`                    | 작업 결과의 요약입니다                                     |
+| `uuid`        | `str`                    | 고유 메시지 식별자입니다                                    |
+| `session_id`  | `str`                    | 세션 식별자입니다                                        |
+| `tool_use_id` | `str \| None`            | 관련 도구 사용 ID입니다                                   |
+| `usage`       | `TaskUsage \| None`      | 작업의 최종 토큰 사용량입니다                                 |
 
-## 콘텐츠 블록 타입
+<h2 id="content-block-types">
+  콘텐츠 블록 타입
+</h2>
 
-### `ContentBlock`
+<h3 id="contentblock">
+  `ContentBlock`
+</h3>
 
 모든 콘텐츠 블록의 합집합 타입입니다.
 
@@ -1665,7 +1917,9 @@ class TaskNotificationMessage(SystemMessage):
 ContentBlock = TextBlock | ThinkingBlock | ToolUseBlock | ToolResultBlock
 ```
 
-### `TextBlock`
+<h3 id="textblock">
+  `TextBlock`
+</h3>
 
 텍스트 콘텐츠 블록입니다.
 
@@ -1675,7 +1929,9 @@ class TextBlock:
     text: str
 ```
 
-### `ThinkingBlock`
+<h3 id="thinkingblock">
+  `ThinkingBlock`
+</h3>
 
 생각 콘텐츠 블록입니다 (생각 기능이 있는 모델용).
 
@@ -1686,7 +1942,9 @@ class ThinkingBlock:
     signature: str
 ```
 
-### `ToolUseBlock`
+<h3 id="tooluseblock">
+  `ToolUseBlock`
+</h3>
 
 도구 사용 요청 블록입니다.
 
@@ -1698,7 +1956,9 @@ class ToolUseBlock:
     input: dict[str, Any]
 ```
 
-### `ToolResultBlock`
+<h3 id="toolresultblock">
+  `ToolResultBlock`
+</h3>
 
 도구 실행 결과 블록입니다.
 
@@ -1710,9 +1970,13 @@ class ToolResultBlock:
     is_error: bool | None = None
 ```
 
-## 오류 타입
+<h2 id="error-types">
+  오류 타입
+</h2>
 
-### `ClaudeSDKError`
+<h3 id="claudesdkerror">
+  `ClaudeSDKError`
+</h3>
 
 모든 SDK 오류의 기본 예외 클래스입니다.
 
@@ -1721,7 +1985,9 @@ class ClaudeSDKError(Exception):
     """Base error for Claude SDK."""
 ```
 
-### `CLINotFoundError`
+<h3 id="clinotfounderror">
+  `CLINotFoundError`
+</h3>
 
 Claude Code CLI가 설치되지 않았거나 찾을 수 없을 때 발생합니다.
 
@@ -1737,7 +2003,9 @@ class CLINotFoundError(CLIConnectionError):
         """
 ```
 
-### `CLIConnectionError`
+<h3 id="cliconnectionerror">
+  `CLIConnectionError`
+</h3>
 
 Claude Code 연결이 실패할 때 발생합니다.
 
@@ -1746,7 +2014,9 @@ class CLIConnectionError(ClaudeSDKError):
     """Failed to connect to Claude Code."""
 ```
 
-### `ProcessError`
+<h3 id="processerror">
+  `ProcessError`
+</h3>
 
 Claude Code 프로세스가 실패할 때 발생합니다.
 
@@ -1759,7 +2029,9 @@ class ProcessError(ClaudeSDKError):
         self.stderr = stderr
 ```
 
-### `CLIJSONDecodeError`
+<h3 id="clijsondecodeerror">
+  `CLIJSONDecodeError`
+</h3>
 
 JSON 구문 분석이 실패할 때 발생합니다.
 
@@ -1775,11 +2047,15 @@ class CLIJSONDecodeError(ClaudeSDKError):
         self.original_error = original_error
 ```
 
-## Hook 타입
+<h2 id="hook-types">
+  Hook 타입
+</h2>
 
 hooks 사용에 대한 포괄적인 가이드, 예제 및 일반적인 패턴은 [Hooks 가이드](/ko/agent-sdk/hooks)를 참조하십시오.
 
-### `HookEvent`
+<h3 id="hookevent">
+  `HookEvent`
+</h3>
 
 지원되는 hook 이벤트 타입입니다.
 
@@ -1799,10 +2075,12 @@ HookEvent = Literal[
 ```
 
 <Note>
-  TypeScript SDK는 Python에서 아직 사용할 수 없는 추가 hook 이벤트를 지원합니다: `SessionStart`, `SessionEnd`, `Setup`, `TeammateIdle`, `TaskCompleted`, `ConfigChange`, `WorktreeCreate`, `WorktreeRemove` 및 `PostToolBatch`.
+  TypeScript SDK는 Python에서 아직 사용할 수 없는 추가 hook 이벤트를 지원합니다: `SessionStart`, `SessionEnd`, `Setup`, `TeammateIdle`, `TaskCompleted`, `ConfigChange`, `WorktreeCreate`, `WorktreeRemove`, `PostToolBatch` 및 `MessageDisplay`.
 </Note>
 
-### `HookCallback`
+<h3 id="hookcallback">
+  `HookCallback`
+</h3>
 
 hook 콜백 함수의 타입 정의입니다.
 
@@ -1812,17 +2090,19 @@ HookCallback = Callable[[HookInput, str | None, HookContext], Awaitable[HookJSON
 
 매개변수:
 
-* `input`: `hook_event_name`을 기반으로 한 판별된 합집합이 있는 강타입 hook 입력 ([`HookInput`](#hook-input) 참조)
+* `input`: `hook_event_name`을 기반으로 한 판별된 합집합이 있는 강타입 hook 입력 ([`HookInput`](#hookinput) 참조)
 * `tool_use_id`: 선택적 도구 사용 식별자 (도구 관련 hooks의 경우)
 * `context`: 추가 정보가 있는 hook 컨텍스트
 
-다음을 포함할 수 있는 [`HookJSONOutput`](#hook-json-output)을 반환합니다.
+다음을 포함할 수 있는 [`HookJSONOutput`](#hookjsonoutput)을 반환합니다.
 
 * `decision`: 작업을 차단하려면 `"block"`
-* `systemMessage`: 기록에 추가할 시스템 메시지
+* `systemMessage`: 사용자에게 표시되는 경고 메시지
 * `hookSpecificOutput`: hook 특정 출력 데이터
 
-### `HookContext`
+<h3 id="hookcontext">
+  `HookContext`
+</h3>
 
 hook 콜백에 전달되는 컨텍스트 정보입니다.
 
@@ -1831,7 +2111,9 @@ class HookContext(TypedDict):
     signal: Any | None  # Future: abort signal support
 ```
 
-### `HookMatcher`
+<h3 id="hookmatcher">
+  `HookMatcher`
+</h3>
 
 특정 이벤트 또는 도구에 hooks를 일치시키기 위한 구성입니다.
 
@@ -1849,7 +2131,9 @@ class HookMatcher:
     )
 ```
 
-### `HookInput`
+<h3 id="hookinput">
+  `HookInput`
+</h3>
 
 모든 hook 입력 타입의 합집합 타입입니다. 실제 타입은 `hook_event_name` 필드에 따라 달라집니다.
 
@@ -1868,7 +2152,9 @@ HookInput = (
 )
 ```
 
-### `BaseHookInput`
+<h3 id="basehookinput">
+  `BaseHookInput`
+</h3>
 
 모든 hook 입력 타입에 존재하는 기본 필드입니다.
 
@@ -1887,7 +2173,9 @@ class BaseHookInput(TypedDict):
 | `cwd`             | `str`        | 현재 작업 디렉토리   |
 | `permission_mode` | `str` (선택사항) | 현재 권한 모드     |
 
-### `PreToolUseHookInput`
+<h3 id="pretoolusehookinput">
+  `PreToolUseHookInput`
+</h3>
 
 `PreToolUse` hook 이벤트의 입력 데이터입니다.
 
@@ -1910,7 +2198,9 @@ class PreToolUseHookInput(BaseHookInput):
 | `agent_id`        | `str` (선택사항)            | 서브에이전트 식별자, hook이 서브에이전트 내에서 발생할 때 존재 |
 | `agent_type`      | `str` (선택사항)            | 서브에이전트 타입, hook이 서브에이전트 내에서 발생할 때 존재  |
 
-### `PostToolUseHookInput`
+<h3 id="posttoolusehookinput">
+  `PostToolUseHookInput`
+</h3>
 
 `PostToolUse` hook 이벤트의 입력 데이터입니다.
 
@@ -1935,7 +2225,9 @@ class PostToolUseHookInput(BaseHookInput):
 | `agent_id`        | `str` (선택사항)             | 서브에이전트 식별자, hook이 서브에이전트 내에서 발생할 때 존재 |
 | `agent_type`      | `str` (선택사항)             | 서브에이전트 타입, hook이 서브에이전트 내에서 발생할 때 존재  |
 
-### `PostToolUseFailureHookInput`
+<h3 id="posttoolusefailurehookinput">
+  `PostToolUseFailureHookInput`
+</h3>
 
 `PostToolUseFailure` hook 이벤트의 입력 데이터입니다. 도구 실행이 실패할 때 호출됩니다.
 
@@ -1962,7 +2254,9 @@ class PostToolUseFailureHookInput(BaseHookInput):
 | `agent_id`        | `str` (선택사항)                    | 서브에이전트 식별자, hook이 서브에이전트 내에서 발생할 때 존재 |
 | `agent_type`      | `str` (선택사항)                    | 서브에이전트 타입, hook이 서브에이전트 내에서 발생할 때 존재  |
 
-### `UserPromptSubmitHookInput`
+<h3 id="userpromptsubmithookinput">
+  `UserPromptSubmitHookInput`
+</h3>
 
 `UserPromptSubmit` hook 이벤트의 입력 데이터입니다.
 
@@ -1977,7 +2271,9 @@ class UserPromptSubmitHookInput(BaseHookInput):
 | `hook_event_name` | `Literal["UserPromptSubmit"]` | 항상 "UserPromptSubmit" |
 | `prompt`          | `str`                         | 사용자가 제출한 프롬프트         |
 
-### `StopHookInput`
+<h3 id="stophookinput">
+  `StopHookInput`
+</h3>
 
 `Stop` hook 이벤트의 입력 데이터입니다.
 
@@ -1992,7 +2288,9 @@ class StopHookInput(BaseHookInput):
 | `hook_event_name`  | `Literal["Stop"]` | 항상 "Stop"               |
 | `stop_hook_active` | `bool`            | stop hook이 활성화되어 있는지 여부 |
 
-### `SubagentStopHookInput`
+<h3 id="subagentstophookinput">
+  `SubagentStopHookInput`
+</h3>
 
 `SubagentStop` hook 이벤트의 입력 데이터입니다.
 
@@ -2013,7 +2311,9 @@ class SubagentStopHookInput(BaseHookInput):
 | `agent_transcript_path` | `str`                     | 서브에이전트의 기록 파일 경로        |
 | `agent_type`            | `str`                     | 서브에이전트의 타입              |
 
-### `PreCompactHookInput`
+<h3 id="precompacthookinput">
+  `PreCompactHookInput`
+</h3>
 
 `PreCompact` hook 이벤트의 입력 데이터입니다.
 
@@ -2030,7 +2330,9 @@ class PreCompactHookInput(BaseHookInput):
 | `trigger`             | `Literal["manual", "auto"]` | 압축을 트리거한 것       |
 | `custom_instructions` | `str \| None`               | 압축을 위한 사용자 정의 지침 |
 
-### `NotificationHookInput`
+<h3 id="notificationhookinput">
+  `NotificationHookInput`
+</h3>
 
 `Notification` hook 이벤트의 입력 데이터입니다.
 
@@ -2049,7 +2351,9 @@ class NotificationHookInput(BaseHookInput):
 | `title`             | `str` (선택사항)              | 알림 제목             |
 | `notification_type` | `str`                     | 알림의 타입            |
 
-### `SubagentStartHookInput`
+<h3 id="subagentstarthookinput">
+  `SubagentStartHookInput`
+</h3>
 
 `SubagentStart` hook 이벤트의 입력 데이터입니다.
 
@@ -2066,7 +2370,9 @@ class SubagentStartHookInput(BaseHookInput):
 | `agent_id`        | `str`                      | 서브에이전트의 고유 식별자     |
 | `agent_type`      | `str`                      | 서브에이전트의 타입         |
 
-### `PermissionRequestHookInput`
+<h3 id="permissionrequesthookinput">
+  `PermissionRequestHookInput`
+</h3>
 
 `PermissionRequest` hook 이벤트의 입력 데이터입니다. hooks가 프로그래밍 방식으로 권한 결정을 처리할 수 있습니다.
 
@@ -2085,7 +2391,9 @@ class PermissionRequestHookInput(BaseHookInput):
 | `tool_input`             | `dict[str, Any]`               | 도구의 입력 매개변수            |
 | `permission_suggestions` | `list[Any]` (선택사항)             | CLI의 제안된 권한 업데이트       |
 
-### `HookJSONOutput`
+<h3 id="hookjsonoutput">
+  `HookJSONOutput`
+</h3>
 
 hook 콜백 반환 값의 합집합 타입입니다.
 
@@ -2093,7 +2401,9 @@ hook 콜백 반환 값의 합집합 타입입니다.
 HookJSONOutput = AsyncHookJSONOutput | SyncHookJSONOutput
 ```
 
-#### `SyncHookJSONOutput`
+<h4 id="synchookjsonoutput">
+  `SyncHookJSONOutput`
+</h4>
 
 제어 및 결정 필드가 있는 동기식 hook 출력입니다.
 
@@ -2117,7 +2427,9 @@ class SyncHookJSONOutput(TypedDict):
   Python 코드에서 `continue_` (언더스코어 포함)를 사용합니다. CLI로 전송할 때 자동으로 `continue`로 변환됩니다.
 </Note>
 
-#### `HookSpecificOutput`
+<h4 id="hookspecificoutput">
+  `HookSpecificOutput`
+</h4>
 
 hook 이벤트 이름과 이벤트 특정 필드를 포함하는 `TypedDict`입니다. 형태는 `hookEventName` 값에 따라 달라집니다. hook 이벤트별 사용 가능한 필드에 대한 전체 세부 정보는 [hooks로 실행 제어](/ko/agent-sdk/hooks#outputs)를 참조하십시오.
 
@@ -2126,7 +2438,7 @@ hook 이벤트 이름과 이벤트 특정 필드를 포함하는 `TypedDict`입�
 ```python theme={null}
 class PreToolUseHookSpecificOutput(TypedDict):
     hookEventName: Literal["PreToolUse"]
-    permissionDecision: NotRequired[Literal["allow", "deny", "ask"]]
+    permissionDecision: NotRequired[Literal["allow", "deny", "ask", "defer"]]
     permissionDecisionReason: NotRequired[str]
     updatedInput: NotRequired[dict[str, Any]]
     additionalContext: NotRequired[str]
@@ -2135,7 +2447,8 @@ class PreToolUseHookSpecificOutput(TypedDict):
 class PostToolUseHookSpecificOutput(TypedDict):
     hookEventName: Literal["PostToolUse"]
     additionalContext: NotRequired[str]
-    updatedMCPToolOutput: NotRequired[Any]
+    updatedToolOutput: NotRequired[Any]
+    updatedMCPToolOutput: NotRequired[Any]  # Deprecated: use updatedToolOutput, which works for all tools
 
 
 class PostToolUseFailureHookSpecificOutput(TypedDict):
@@ -2174,7 +2487,9 @@ HookSpecificOutput = (
 )
 ```
 
-#### `AsyncHookJSONOutput`
+<h4 id="asynchookjsonoutput">
+  `AsyncHookJSONOutput`
+</h4>
 
 hook 실행을 연기하는 비동기 hook 출력입니다.
 
@@ -2188,7 +2503,9 @@ class AsyncHookJSONOutput(TypedDict):
   Python 코드에서 `async_` (언더스코어 포함)를 사용합니다. CLI로 전송할 때 자동으로 `async`로 변환됩니다.
 </Note>
 
-### Hook 사용 예제
+<h3 id="hook-usage-example">
+  Hook 사용 예제
+</h3>
 
 이 예제는 두 개의 hooks를 등록합니다: `rm -rf /`와 같은 위험한 bash 명령을 차단하는 하나, 감사를 위해 모든 도구 사용을 기록하는 다른 하나. 보안 hook은 `matcher`를 통해 Bash 명령에서만 실행되고, 로깅 hook은 모든 도구에서 실행됩니다.
 
@@ -2240,11 +2557,15 @@ async for message in query(prompt="Analyze this codebase", options=options):
     print(message)
 ```
 
-## 도구 입력/출력 타입
+<h2 id="tool-input/output-types">
+  도구 입력/출력 타입
+</h2>
 
 모든 기본 Claude Code 도구의 입력/출력 스키마 문서입니다. Python SDK는 이들을 타입으로 내보내지 않지만, 메시지의 도구 입력 및 출력 구조를 나타냅니다.
 
-### Agent
+<h3 id="agent">
+  Agent
+</h3>
 
 **도구 이름:** `Agent` (이전 `Task`, 여전히 별칭으로 허용됨)
 
@@ -2252,9 +2573,9 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "description": str,  # A short (3-5 word) description of the task
-    "prompt": str,  # The task for the agent to perform
-    "subagent_type": str,  # The type of specialized agent to use
+    "description": str,  # 작업의 짧은 설명 (3-5단어)
+    "prompt": str,  # 에이전트가 수행할 작업
+    "subagent_type": str,  # 사용할 특화된 에이전트의 유형
 }
 ```
 
@@ -2262,14 +2583,16 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "result": str,  # Final result from the subagent
-    "usage": dict | None,  # Token usage statistics
-    "total_cost_usd": float | None,  # Estimated total cost in USD
-    "duration_ms": int | None,  # Execution duration in milliseconds
+    "result": str,  # 서브에이전트의 최종 결과
+    "usage": dict | None,  # 토큰 사용 통계
+    "total_cost_usd": float | None,  # USD로 예상되는 총 비용
+    "duration_ms": int | None,  # 실행 시간(밀리초)
 }
 ```
 
-### AskUserQuestion
+<h3 id="askuserquestion">
+  AskUserQuestion
+</h3>
 
 **도구 이름:** `AskUserQuestion`
 
@@ -2279,20 +2602,22 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "questions": [  # Questions to ask the user (1-4 questions)
+    "questions": [  # 사용자에게 물어볼 질문 (1-4개 질문)
         {
-            "question": str,  # The complete question to ask the user
-            "header": str,  # Very short label displayed as a chip/tag (max 12 chars)
-            "options": [  # The available choices (2-4 options)
+            "question": str,  # 사용자에게 물어볼 완전한 질문
+            "header": str,  # 칩/태그로 표시되는 매우 짧은 레이블 (최대 12자)
+            "options": [  # 사용 가능한 선택 (2-4개 옵션)
                 {
-                    "label": str,  # Display text for this option (1-5 words)
-                    "description": str,  # Explanation of what this option means
+                    "label": str,  # 이 옵션의 표시 텍스트 (1-5단어)
+                    "description": str,  # 이 옵션이 의미하는 바에 대한 설명
                 }
             ],
-            "multiSelect": bool,  # Set to true to allow multiple selections
+            "multiSelect": bool,  # 여러 선택을 허용하려면 true로 설정
         }
     ],
-    "answers": dict | None,  # User answers populated by the permission system
+    "answers": dict[str, str | list[str]] | None,
+    # 권한 시스템에 의해 채워진 사용자 답변. 다중 선택
+    # 답변은 레이블 목록 또는 쉼표로 연결된 문자열일 수 있습니다
 }
 ```
 
@@ -2300,7 +2625,7 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "questions": [  # The questions that were asked
+    "questions": [  # 물어본 질문
         {
             "question": str,
             "header": str,
@@ -2308,12 +2633,14 @@ async for message in query(prompt="Analyze this codebase", options=options):
             "multiSelect": bool,
         }
     ],
-    "answers": dict[str, str],  # Maps question text to answer string
-    # Multi-select answers are comma-separated
+    "answers": dict[str, str],  # 질문 텍스트를 답변 문자열에 매핑
+    # 다중 선택 답변은 쉼표로 구분됨
 }
 ```
 
-### Bash
+<h3 id="bash">
+  Bash
+</h3>
 
 **도구 이름:** `Bash`
 
@@ -2321,10 +2648,10 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "command": str,  # The command to execute
-    "timeout": int | None,  # Optional timeout in milliseconds (max 600000)
-    "description": str | None,  # Clear, concise description (5-10 words)
-    "run_in_background": bool | None,  # Set to true to run in background
+    "command": str,  # 실행할 명령
+    "timeout": int | None,  # 선택적 시간 초과(밀리초 단위, 최대 600000)
+    "description": str | None,  # 명확하고 간결한 설명 (5-10단어)
+    "run_in_background": bool | None,  # 백그라운드에서 실행하려면 true로 설정
 }
 ```
 
@@ -2332,14 +2659,16 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "output": str,  # Combined stdout and stderr output
-    "exitCode": int,  # Exit code of the command
-    "killed": bool | None,  # Whether command was killed due to timeout
-    "shellId": str | None,  # Shell ID for background processes
+    "output": str,  # 결합된 stdout 및 stderr 출력
+    "exitCode": int,  # 명령의 종료 코드
+    "killed": bool | None,  # 시간 초과로 인해 명령이 종료되었는지 여부
+    "shellId": str | None,  # 백그라운드 프로세스의 셸 ID
 }
 ```
 
-### Monitor
+<h3 id="monitor">
+  Monitor
+</h3>
 
 **도구 이름:** `Monitor`
 
@@ -2349,10 +2678,10 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "command": str,  # Shell script; each stdout line is an event, exit ends the watch
-    "description": str,  # Short description shown in notifications
-    "timeout_ms": int | None,  # Kill after this deadline (default 300000, max 3600000)
-    "persistent": bool | None,  # Run for the lifetime of the session; stop with TaskStop
+    "command": str,  # 셸 스크립트; 각 stdout 줄은 이벤트이고, 종료는 감시를 끝냅니다
+    "description": str,  # 알림에 표시되는 짧은 설명
+    "timeout_ms": int | None,  # 이 기한 후 종료 (기본값 300000, 최대 3600000)
+    "persistent": bool | None,  # 세션의 수명 동안 실행; TaskStop으로 중지
 }
 ```
 
@@ -2360,13 +2689,15 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "taskId": str,  # ID of the background monitor task
-    "timeoutMs": int,  # Timeout deadline in milliseconds (0 when persistent)
-    "persistent": bool | None,  # True when running until TaskStop or session end
+    "taskId": str,  # 백그라운드 모니터 작업의 ID
+    "timeoutMs": int,  # 밀리초 단위의 시간 초과 기한 (지속적일 때 0)
+    "persistent": bool | None,  # TaskStop 또는 세션 종료까지 실행 중일 때 True
 }
 ```
 
-### Edit
+<h3 id="edit">
+  Edit
+</h3>
 
 **도구 이름:** `Edit`
 
@@ -2374,10 +2705,10 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "file_path": str,  # The absolute path to the file to modify
-    "old_string": str,  # The text to replace
-    "new_string": str,  # The text to replace it with
-    "replace_all": bool | None,  # Replace all occurrences (default False)
+    "file_path": str,  # 수정할 파일의 절대 경로
+    "old_string": str,  # 바꿀 텍스트
+    "new_string": str,  # 바꿀 텍스트
+    "replace_all": bool | None,  # 모든 항목 바꾸기 (기본값 False)
 }
 ```
 
@@ -2385,13 +2716,15 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "message": str,  # Confirmation message
-    "replacements": int,  # Number of replacements made
-    "file_path": str,  # File path that was edited
+    "message": str,  # 확인 메시지
+    "replacements": int,  # 수행된 바꾸기 수
+    "file_path": str,  # 편집된 파일 경로
 }
 ```
 
-### Read
+<h3 id="read">
+  Read
+</h3>
 
 **도구 이름:** `Read`
 
@@ -2399,9 +2732,9 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "file_path": str,  # The absolute path to the file to read
-    "offset": int | None,  # The line number to start reading from
-    "limit": int | None,  # The number of lines to read
+    "file_path": str,  # 읽을 파일의 절대 경로
+    "offset": int | None,  # 읽기를 시작할 줄 번호
+    "limit": int | None,  # 읽을 줄 수
 }
 ```
 
@@ -2409,9 +2742,9 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "content": str,  # File contents with line numbers
-    "total_lines": int,  # Total number of lines in file
-    "lines_returned": int,  # Lines actually returned
+    "content": str,  # 줄 번호가 있는 파일 내용
+    "total_lines": int,  # 파일의 총 줄 수
+    "lines_returned": int,  # 실제로 반환된 줄
 }
 ```
 
@@ -2419,13 +2752,15 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "image": str,  # Base64 encoded image data
-    "mime_type": str,  # Image MIME type
-    "file_size": int,  # File size in bytes
+    "image": str,  # Base64로 인코딩된 이미지 데이터
+    "mime_type": str,  # 이미지 MIME 타입
+    "file_size": int,  # 파일 크기(바이트)
 }
 ```
 
-### Write
+<h3 id="write">
+  Write
+</h3>
 
 **도구 이름:** `Write`
 
@@ -2433,8 +2768,8 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "file_path": str,  # The absolute path to the file to write
-    "content": str,  # The content to write to the file
+    "file_path": str,  # 쓸 파일의 절대 경로
+    "content": str,  # 파일에 쓸 내용
 }
 ```
 
@@ -2442,13 +2777,15 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "message": str,  # Success message
-    "bytes_written": int,  # Number of bytes written
-    "file_path": str,  # File path that was written
+    "message": str,  # 성공 메시지
+    "bytes_written": int,  # 쓴 바이트 수
+    "file_path": str,  # 쓴 파일 경로
 }
 ```
 
-### Glob
+<h3 id="glob">
+  Glob
+</h3>
 
 **도구 이름:** `Glob`
 
@@ -2456,8 +2793,8 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "pattern": str,  # The glob pattern to match files against
-    "path": str | None,  # The directory to search in (defaults to cwd)
+    "pattern": str,  # 파일과 일치시킬 glob 패턴
+    "path": str | None,  # 검색할 디렉토리 (기본값은 cwd)
 }
 ```
 
@@ -2465,13 +2802,15 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "matches": list[str],  # Array of matching file paths
-    "count": int,  # Number of matches found
-    "search_path": str,  # Search directory used
+    "matches": list[str],  # 일치하는 파일 경로 배열
+    "count": int,  # 찾은 일치 수
+    "search_path": str,  # 사용된 검색 디렉토리
 }
 ```
 
-### Grep
+<h3 id="grep">
+  Grep
+</h3>
 
 **도구 이름:** `Grep`
 
@@ -2479,18 +2818,18 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "pattern": str,  # The regular expression pattern
-    "path": str | None,  # File or directory to search in
-    "glob": str | None,  # Glob pattern to filter files
-    "type": str | None,  # File type to search
-    "output_mode": str | None,  # "content", "files_with_matches", or "count"
-    "-i": bool | None,  # Case insensitive search
-    "-n": bool | None,  # Show line numbers
-    "-B": int | None,  # Lines to show before each match
-    "-A": int | None,  # Lines to show after each match
-    "-C": int | None,  # Lines to show before and after
-    "head_limit": int | None,  # Limit output to first N lines/entries
-    "multiline": bool | None,  # Enable multiline mode
+    "pattern": str,  # 정규 표현식 패턴
+    "path": str | None,  # 검색할 파일 또는 디렉토리
+    "glob": str | None,  # 파일을 필터링할 glob 패턴
+    "type": str | None,  # 검색할 파일 타입
+    "output_mode": str | None,  # "content", "files_with_matches" 또는 "count"
+    "-i": bool | None,  # 대소문자 구분 없는 검색
+    "-n": bool | None,  # 줄 번호 표시
+    "-B": int | None,  # 각 일치 전에 표시할 줄
+    "-A": int | None,  # 각 일치 후에 표시할 줄
+    "-C": int | None,  # 전후에 표시할 줄
+    "head_limit": int | None,  # 출력을 처음 N개 줄/항목으로 제한
+    "multiline": bool | None,  # 다중 줄 모드 활성화
 }
 ```
 
@@ -2515,12 +2854,14 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "files": list[str],  # Files containing matches
-    "count": int,  # Number of files with matches
+    "files": list[str],  # 일치를 포함하는 파일
+    "count": int,  # 일치를 포함하는 파일 수
 }
 ```
 
-### NotebookEdit
+<h3 id="notebookedit">
+  NotebookEdit
+</h3>
 
 **도구 이름:** `NotebookEdit`
 
@@ -2528,11 +2869,11 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "notebook_path": str,  # Absolute path to the Jupyter notebook
-    "cell_id": str | None,  # The ID of the cell to edit
-    "new_source": str,  # The new source for the cell
-    "cell_type": "code" | "markdown" | None,  # The type of the cell
-    "edit_mode": "replace" | "insert" | "delete" | None,  # Edit operation type
+    "notebook_path": str,  # Jupyter 노트북의 절대 경로
+    "cell_id": str | None,  # 편집할 셀의 ID
+    "new_source": str,  # 셀의 새로운 소스
+    "cell_type": "code" | "markdown" | None,  # 셀의 타입
+    "edit_mode": "replace" | "insert" | "delete" | None,  # 편집 작업 타입
 }
 ```
 
@@ -2540,14 +2881,16 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "message": str,  # Success message
-    "edit_type": "replaced" | "inserted" | "deleted",  # Type of edit performed
-    "cell_id": str | None,  # Cell ID that was affected
-    "total_cells": int,  # Total cells in notebook after edit
+    "message": str,  # 성공 메시지
+    "edit_type": "replaced" | "inserted" | "deleted",  # 수행된 편집 타입
+    "cell_id": str | None,  # 영향을 받은 셀 ID
+    "total_cells": int,  # 편집 후 노트북의 총 셀 수
 }
 ```
 
-### WebFetch
+<h3 id="webfetch">
+  WebFetch
+</h3>
 
 **도구 이름:** `WebFetch`
 
@@ -2555,8 +2898,8 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "url": str,  # The URL to fetch content from
-    "prompt": str,  # The prompt to run on the fetched content
+    "url": str,  # 콘텐츠를 가져올 URL
+    "prompt": str,  # 가져온 콘텐츠에서 실행할 프롬프트
 }
 ```
 
@@ -2564,14 +2907,18 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "response": str,  # AI model's response to the prompt
-    "url": str,  # URL that was fetched
-    "final_url": str | None,  # Final URL after redirects
-    "status_code": int | None,  # HTTP status code
+    "bytes": int,  # 가져온 콘텐츠의 크기(바이트)
+    "code": int,  # HTTP 응답 코드
+    "codeText": str,  # HTTP 응답 코드 텍스트
+    "result": str,  # 콘텐츠에 프롬프트를 적용한 처리된 결과
+    "durationMs": int,  # 콘텐츠를 가져오고 처리하는 데 걸린 시간(밀리초)
+    "url": str,  # 가져온 URL
 }
 ```
 
-### WebSearch
+<h3 id="websearch">
+  WebSearch
+</h3>
 
 **도구 이름:** `WebSearch`
 
@@ -2579,9 +2926,9 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "query": str,  # The search query to use
-    "allowed_domains": list[str] | None,  # Only include results from these domains
-    "blocked_domains": list[str] | None,  # Never include results from these domains
+    "query": str,  # 사용할 검색 쿼리
+    "allowed_domains": list[str] | None,  # 이 도메인의 결과만 포함
+    "blocked_domains": list[str] | None,  # 이 도메인의 결과는 절대 포함하지 않음
 }
 ```
 
@@ -2589,15 +2936,21 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "results": [{"title": str, "url": str, "snippet": str, "metadata": dict | None}],
-    "total_results": int,
-    "query": str,
+    "query": str,  # 검색 쿼리
+    "results": list[str | {"tool_use_id": str, "content": list[{"title": str, "url": str}]}],
+    "durationSeconds": float,  # 검색 시간(초)
 }
 ```
 
-### TodoWrite
+<h3 id="todowrite">
+  TodoWrite
+</h3>
 
 **도구 이름:** `TodoWrite`
+
+<Note>
+  Claude Code v2.1.142부터 `TodoWrite`는 기본적으로 비활성화되어 있습니다. 대신 `TaskCreate`, `TaskGet`, `TaskUpdate`, `TaskList`를 사용하십시오. 모니터링 코드를 업데이트하는 방법은 [작업 도구로 마이그레이션](/ko/agent-sdk/todo-tracking#migrate-to-task-tools)을 참조하거나, `CLAUDE_CODE_ENABLE_TASKS=0`을 설정하여 `TodoWrite`로 되돌리십시오.
+</Note>
 
 **입력:**
 
@@ -2605,9 +2958,9 @@ async for message in query(prompt="Analyze this codebase", options=options):
 {
     "todos": [
         {
-            "content": str,  # The task description
-            "status": "pending" | "in_progress" | "completed",  # Task status
-            "activeForm": str,  # Active form of the description
+            "content": str,  # 작업 설명
+            "status": "pending" | "in_progress" | "completed",  # 작업 상태
+            "activeForm": str,  # 설명의 활성 형식
         }
     ]
 }
@@ -2617,12 +2970,130 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "message": str,  # Success message
+    "message": str,  # 성공 메시지
     "stats": {"total": int, "pending": int, "in_progress": int, "completed": int},
 }
 ```
 
-### BashOutput
+<h3 id="taskcreate">
+  TaskCreate
+</h3>
+
+**도구 이름:** `TaskCreate`
+
+**입력:**
+
+```python theme={null}
+{
+    "subject": str,  # 짧은 작업 제목
+    "description": str,  # 상세한 작업 본문
+    "activeForm": str | None,  # 진행 중일 때 표시되는 현재형 레이블
+    "metadata": dict | None,  # 임의의 호출자 메타데이터
+}
+```
+
+**출력:**
+
+```python theme={null}
+{
+    "task": {"id": str, "subject": str},  # 할당된 ID가 있는 생성된 작업
+}
+```
+
+<h3 id="taskupdate">
+  TaskUpdate
+</h3>
+
+**도구 이름:** `TaskUpdate`
+
+**입력:**
+
+```python theme={null}
+{
+    "taskId": str,  # 패치할 작업의 ID
+    "status": Literal["pending", "in_progress", "completed", "deleted"] | None,
+    "subject": str | None,
+    "description": str | None,
+    "activeForm": str | None,
+    "addBlocks": list[str] | None,  # 이 작업이 이제 차단하는 작업 ID
+    "addBlockedBy": list[str] | None,  # 이제 이 작업을 차단하는 작업 ID
+    "owner": str | None,
+    "metadata": dict | None,
+}
+```
+
+**출력:**
+
+```python theme={null}
+{
+    "success": bool,
+    "taskId": str,
+    "updatedFields": list[str],  # 변경된 필드의 이름
+    "error": str | None,
+    "statusChange": {"from": str, "to": str} | None,
+}
+```
+
+<h3 id="taskget">
+  TaskGet
+</h3>
+
+**도구 이름:** `TaskGet`
+
+**입력:**
+
+```python theme={null}
+{
+    "taskId": str,  # 읽을 작업의 ID
+}
+```
+
+**출력:**
+
+```python theme={null}
+{
+    "task": {
+        "id": str,
+        "subject": str,
+        "description": str,
+        "status": Literal["pending", "in_progress", "completed"],
+        "blocks": list[str],
+        "blockedBy": list[str],
+    } | None,  # ID를 찾을 수 없을 때 None
+}
+```
+
+<h3 id="tasklist">
+  TaskList
+</h3>
+
+**도구 이름:** `TaskList`
+
+**입력:**
+
+```python theme={null}
+{}
+```
+
+**출력:**
+
+```python theme={null}
+{
+    "tasks": [
+        {
+            "id": str,
+            "subject": str,
+            "status": Literal["pending", "in_progress", "completed"],
+            "owner": str | None,
+            "blockedBy": list[str],
+        }
+    ],
+}
+```
+
+<h3 id="bashoutput">
+  BashOutput
+</h3>
 
 **도구 이름:** `BashOutput`
 
@@ -2630,8 +3101,8 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "bash_id": str,  # The ID of the background shell
-    "filter": str | None,  # Optional regex to filter output lines
+    "bash_id": str,  # 백그라운드 셸의 ID
+    "filter": str | None,  # 출력 줄을 필터링할 선택적 정규식
 }
 ```
 
@@ -2639,13 +3110,15 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "output": str,  # New output since last check
-    "status": "running" | "completed" | "failed",  # Current shell status
-    "exitCode": int | None,  # Exit code when completed
+    "output": str,  # 마지막 확인 이후의 새로운 출력
+    "status": "running" | "completed" | "failed",  # 현재 셸 상태
+    "exitCode": int | None,  # 완료 시 종료 코드
 }
 ```
 
-### KillBash
+<h3 id="killbash">
+  KillBash
+</h3>
 
 **도구 이름:** `KillBash`
 
@@ -2653,7 +3126,7 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "shell_id": str  # The ID of the background shell to kill
+    "shell_id": str  # 종료할 백그라운드 셸의 ID
 }
 ```
 
@@ -2661,12 +3134,14 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "message": str,  # Success message
-    "shell_id": str,  # ID of the killed shell
+    "message": str,  # 성공 메시지
+    "shell_id": str,  # 종료된 셸의 ID
 }
 ```
 
-### ExitPlanMode
+<h3 id="exitplanmode">
+  ExitPlanMode
+</h3>
 
 **도구 이름:** `ExitPlanMode`
 
@@ -2674,7 +3149,7 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "plan": str  # The plan to run by the user for approval
+    "plan": str  # 사용자 승인을 위해 실행할 계획
 }
 ```
 
@@ -2682,20 +3157,22 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 ```python theme={null}
 {
-    "message": str,  # Confirmation message
-    "approved": bool | None,  # Whether user approved the plan
+    "message": str,  # 확인 메시지
+    "approved": bool | None,  # 사용자가 계획을 승인했는지 여부
 }
 ```
 
-### ListMcpResources
+<h3 id="listmcpresources">
+  ListMcpResources
+</h3>
 
-**도구 이름:** `ListMcpResources`
+**도구 이름:** `ListMcpResourcesTool`
 
 **입력:**
 
 ```python theme={null}
 {
-    "server": str | None  # Optional server name to filter resources by
+    "server": str | None  # 리소스를 필터링할 선택적 서버 이름
 }
 ```
 
@@ -2716,16 +3193,18 @@ async for message in query(prompt="Analyze this codebase", options=options):
 }
 ```
 
-### ReadMcpResource
+<h3 id="readmcpresource">
+  ReadMcpResource
+</h3>
 
-**도구 이름:** `ReadMcpResource`
+**도구 이름:** `ReadMcpResourceTool`
 
 **입력:**
 
 ```python theme={null}
 {
-    "server": str,  # The MCP server name
-    "uri": str,  # The resource URI to read
+    "server": str,  # MCP 서버 이름
+    "uri": str,  # 읽을 리소스 URI
 }
 ```
 
@@ -2740,9 +3219,13 @@ async for message in query(prompt="Analyze this codebase", options=options):
 }
 ```
 
-## ClaudeSDKClient를 사용한 고급 기능
+<h2 id="advanced-features-with-claudesdkclient">
+  ClaudeSDKClient를 사용한 고급 기능
+</h2>
 
-### 지속적인 대화 인터페이스 구축
+<h3 id="building-a-continuous-conversation-interface">
+  지속적인 대화 인터페이스 구축
+</h3>
 
 ```python theme={null}
 from claude_agent_sdk import (
@@ -2821,7 +3304,9 @@ async def main():
 asyncio.run(main())
 ```
 
-### 동작 수정을 위해 Hooks 사용
+<h3 id="using-hooks-for-behavior-modification">
+  동작 수정을 위해 Hooks 사용
+</h3>
 
 ```python theme={null}
 from claude_agent_sdk import (
@@ -2905,7 +3390,9 @@ async def main():
 asyncio.run(main())
 ```
 
-### 실시간 진행 상황 모니터링
+<h3 id="real-time-progress-monitoring">
+  실시간 진행 상황 모니터링
+</h3>
 
 ```python theme={null}
 from claude_agent_sdk import (
@@ -2946,9 +3433,13 @@ async def monitor_progress():
 asyncio.run(monitor_progress())
 ```
 
-## 예제 사용
+<h2 id="example-usage">
+  예제 사용
+</h2>
 
-### 기본 파일 작업 (query 사용)
+<h3 id="basic-file-operations-using-query">
+  기본 파일 작업 (query 사용)
+</h3>
 
 ```python theme={null}
 from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage, ToolUseBlock
@@ -2974,7 +3465,9 @@ async def create_project():
 asyncio.run(create_project())
 ```
 
-### 오류 처리
+<h3 id="error-handling">
+  오류 처리
+</h3>
 
 ```python theme={null}
 from claude_agent_sdk import query, CLINotFoundError, ProcessError, CLIJSONDecodeError
@@ -2992,7 +3485,9 @@ except CLIJSONDecodeError as e:
     print(f"Failed to parse response: {e}")
 ```
 
-### 클라이언트를 사용한 스트리밍 모드
+<h3 id="streaming-mode-with-client">
+  클라이언트를 사용한 스트리밍 모드
+</h3>
 
 ```python theme={null}
 from claude_agent_sdk import ClaudeSDKClient
@@ -3019,7 +3514,9 @@ async def interactive_session():
 asyncio.run(interactive_session())
 ```
 
-### ClaudeSDKClient를 사용한 사용자 정의 도구
+<h3 id="using-custom-tools-with-claudesdkclient">
+  ClaudeSDKClient를 사용한 사용자 정의 도구
+</h3>
 
 ```python theme={null}
 from claude_agent_sdk import (
@@ -3091,9 +3588,13 @@ async def main():
 asyncio.run(main())
 ```
 
-## 샌드박스 구성
+<h2 id="sandbox-configuration">
+  샌드박스 구성
+</h2>
 
-### `SandboxSettings`
+<h3 id="sandboxsettings">
+  `SandboxSettings`
+</h3>
 
 샌드박스 동작을 위한 구성입니다. 이를 사용하여 명령 샌드박싱을 활성화하고 프로그래밍 방식으로 네트워크 제한을 구성합니다.
 
@@ -3108,17 +3609,25 @@ class SandboxSettings(TypedDict, total=False):
     enableWeakerNestedSandbox: bool
 ```
 
-| 속성                          | 타입                                                      | 기본값     | 설명                                                                                                                                                                   |
-| :-------------------------- | :------------------------------------------------------ | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`                   | `bool`                                                  | `False` | 명령 실행을 위한 샌드박스 모드 활성화                                                                                                                                                |
-| `autoAllowBashIfSandboxed`  | `bool`                                                  | `True`  | 샌드박스가 활성화되면 bash 명령 자동 승인                                                                                                                                            |
-| `excludedCommands`          | `list[str]`                                             | `[]`    | 항상 샌드박스 제한을 우회하는 명령 (예: `["docker"]`). 이들은 모델 개입 없이 자동으로 샌드박스되지 않은 상태로 실행됩니다                                                                                         |
-| `allowUnsandboxedCommands`  | `bool`                                                  | `True`  | 모델이 샌드박스 외부에서 명령 실행을 요청하도록 허용합니다. `True`일 때, 모델은 도구 입력에서 `dangerouslyDisableSandbox`를 설정할 수 있으며, 이는 [권한 시스템](#permissions-fallback-for-unsandboxed-commands)으로 폴백됩니다 |
-| `network`                   | [`SandboxNetworkConfig`](#sandbox-network-config)       | `None`  | 네트워크 특정 샌드박스 구성                                                                                                                                                      |
-| `ignoreViolations`          | [`SandboxIgnoreViolations`](#sandbox-ignore-violations) | `None`  | 무시할 샌드박스 위반을 구성합니다                                                                                                                                                   |
-| `enableWeakerNestedSandbox` | `bool`                                                  | `False` | 호환성을 위해 더 약한 중첩 샌드박스 활성화                                                                                                                                             |
+| 속성                          | 타입                                                    | 기본값     | 설명                                                                                                                                                                   |
+| :-------------------------- | :---------------------------------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                   | `bool`                                                | `False` | 명령 실행을 위한 샌드박스 모드 활성화                                                                                                                                                |
+| `autoAllowBashIfSandboxed`  | `bool`                                                | `True`  | 샌드박스가 활성화되면 bash 명령 자동 승인                                                                                                                                            |
+| `excludedCommands`          | `list[str]`                                           | `[]`    | 항상 샌드박스 제한을 우회하는 명령 (예: `["docker"]`). 이들은 모델 개입 없이 자동으로 샌드박스되지 않은 상태로 실행됩니다                                                                                         |
+| `allowUnsandboxedCommands`  | `bool`                                                | `True`  | 모델이 샌드박스 외부에서 명령 실행을 요청하도록 허용합니다. `True`일 때, 모델은 도구 입력에서 `dangerouslyDisableSandbox`를 설정할 수 있으며, 이는 [권한 시스템](#permissions-fallback-for-unsandboxed-commands)으로 폴백됩니다 |
+| `network`                   | [`SandboxNetworkConfig`](#sandboxnetworkconfig)       | `None`  | 네트워크 특정 샌드박스 구성                                                                                                                                                      |
+| `ignoreViolations`          | [`SandboxIgnoreViolations`](#sandboxignoreviolations) | `None`  | 무시할 샌드박스 위반을 구성합니다                                                                                                                                                   |
+| `enableWeakerNestedSandbox` | `bool`                                                | `False` | 호환성을 위해 더 약한 중첩 샌드박스 활성화                                                                                                                                             |
 
-#### 사용 예제
+<Note>
+  샌드박스는 플랫폼 지원에 따라 달라지며, Linux에서는 `bubblewrap` 및 `socat`과 같은 도구가 필요합니다. 기본적으로 `enabled`가 `True`이지만 샌드박스를 시작할 수 없을 때, 명령은 stderr에 경고와 함께 샌드박스되지 않은 상태로 실행됩니다. 이 기본값은 `failIfUnavailable`이 `true`로 기본 설정되는 TypeScript SDK와 다릅니다.
+
+  대신 중지하려면 샌드박스 설정에서 `"failIfUnavailable": True`를 설정하십시오. 이 키는 아직 `SandboxSettings`에 선언되지 않았지만, SDK는 이를 Claude Code로 전달하며, Claude Code는 이를 준수합니다. 그러면 `query()`는 메시지를 생성하기 전에 예외를 발생시키지 않고 `subtype="error_during_execution"`과 `errors`의 이유를 포함한 `ResultMessage`를 보고합니다. `query()`가 메시지를 생성하기 전에 예외를 발생시킬 것으로 예상하지 말고 해당 서브타입을 감시하십시오.
+</Note>
+
+<h4 id="example-usage">
+  사용 예제
+</h4>
 
 ```python theme={null}
 from claude_agent_sdk import query, ClaudeAgentOptions, SandboxSettings
@@ -3140,9 +3649,11 @@ async for message in query(
   **Unix 소켓 보안**: `allowUnixSockets` 옵션은 강력한 시스템 서비스에 대한 접근을 부여할 수 있습니다. 예를 들어, `/var/run/docker.sock`을 허용하면 Docker API를 통해 샌드박스 격리를 우회하여 전체 호스트 시스템 접근을 효과적으로 부여합니다. 엄격히 필요한 Unix 소켓만 허용하고 각각의 보안 영향을 이해하십시오.
 </Warning>
 
-### `SandboxNetworkConfig`
+<h3 id="sandboxnetworkconfig">
+  `SandboxNetworkConfig`
+</h3>
 
-샌드박스 모드를 위한 네트워크 특정 구성입니다.
+샌드박스 모드를 위한 네트워크 특정 구성입니다. 이러한 설정은 부모 [`SandboxSettings`](#sandboxsettings)에서 `enabled`가 `True`일 때 샌드박스된 Bash 명령에 적용됩니다. 이들은 [권한 규칙](/ko/permissions#webfetch)을 대신 사용하는 WebFetch 도구를 제한하지 않습니다.
 
 ```python theme={null}
 class SandboxNetworkConfig(TypedDict, total=False):
@@ -3173,7 +3684,9 @@ class SandboxNetworkConfig(TypedDict, total=False):
   기본 제공 샌드박스 프록시는 요청된 호스트명을 기반으로 네트워크 허용 목록을 적용하며 TLS 트래픽을 종료하거나 검사하지 않으므로, [도메인 프론팅](https://en.wikipedia.org/wiki/Domain_fronting)과 같은 기술이 이를 우회할 수 있습니다. 자세한 내용은 [샌드박싱 보안 제한 사항](/ko/sandboxing#security-limitations)을 참조하고, TLS 종료 프록시 구성은 [안전한 배포](/ko/agent-sdk/secure-deployment#traffic-forwarding)를 참조하십시오.
 </Note>
 
-### `SandboxIgnoreViolations`
+<h3 id="sandboxignoreviolations">
+  `SandboxIgnoreViolations`
+</h3>
 
 특정 샌드박스 위반을 무시하기 위한 구성입니다.
 
@@ -3188,7 +3701,9 @@ class SandboxIgnoreViolations(TypedDict, total=False):
 | `file`    | `list[str]` | `[]` | 위반을 무시할 파일 경로 패턴 |
 | `network` | `list[str]` | `[]` | 위반을 무시할 네트워크 패턴  |
 
-### 샌드박스되지 않은 명령을 위한 권한 폴백
+<h3 id="permissions-fallback-for-unsandboxed-commands">
+  샌드박스되지 않은 명령을 위한 권한 폴백
+</h3>
 
 `allowUnsandboxedCommands`가 활성화되면, 모델은 도구 입력에서 `dangerouslyDisableSandbox: True`를 설정하여 샌드박스 외부에서 명령 실행을 요청할 수 있습니다. 이러한 요청은 기존 권한 시스템으로 폴백되므로, `can_use_tool` 핸들러가 호출되어 사용자 정의 인증 로직을 구현할 수 있습니다.
 
@@ -3266,7 +3781,9 @@ async def main():
   `permission_mode`가 `bypassPermissions`로 설정되고 `allow_unsandboxed_commands`가 활성화되면, 모델은 승인 프롬프트 없이 샌드박스 외부에서 명령을 자동으로 실행할 수 있습니다. 이 조합은 모델이 샌드박스 격리를 조용히 탈출할 수 있도록 효과적으로 허용합니다.
 </Warning>
 
-## 참고 항목
+<h2 id="see-also">
+  참고 항목
+</h2>
 
 * [SDK 개요](/ko/agent-sdk/overview) - 일반 SDK 개념
 * [TypeScript SDK 참조](/ko/agent-sdk/typescript) - TypeScript SDK 문서

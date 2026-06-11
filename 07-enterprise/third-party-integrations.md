@@ -8,7 +8,9 @@
 
 조직은 Anthropic을 통해 직접 또는 클라우드 제공자를 통해 Claude Code를 배포할 수 있습니다. 이 페이지는 올바른 구성을 선택하는 데 도움을 줍니다.
 
-## 배포 옵션 비교
+<h2 id="compare-deployment-options">
+  배포 옵션 비교
+</h2>
 
 대부분의 조직에서는 Claude for Teams 또는 Claude for Enterprise가 최고의 경험을 제공합니다. 팀 멤버는 단일 구독으로 Claude Code와 웹의 Claude에 모두 액세스할 수 있으며, 중앙 집중식 청구 및 인프라 설정이 필요하지 않습니다.
 
@@ -27,6 +29,7 @@
       <th>Claude for Teams/Enterprise</th>
       <th>Anthropic Console</th>
       <th>Amazon Bedrock</th>
+      <th>Claude Platform on AWS</th>
       <th>Google Vertex AI</th>
       <th>Microsoft Foundry</th>
     </tr>
@@ -38,6 +41,7 @@
       <td>대부분의 조직 (권장)</td>
       <td>개별 개발자</td>
       <td>AWS 네이티브 배포</td>
+      <td>Claude API 기능이 있는 AWS Marketplace 청구</td>
       <td>GCP 네이티브 배포</td>
       <td>Azure 네이티브 배포</td>
     </tr>
@@ -47,6 +51,7 @@
       <td><strong>Teams:</strong> \$150/seat (Premium) PAYG 사용 가능<br /><strong>Enterprise:</strong> <a href="https://claude.com/contact-sales?utm_source=claude_code&utm_medium=docs&utm_content=third_party_enterprise">영업팀에 문의</a></td>
       <td>PAYG</td>
       <td>AWS를 통한 PAYG</td>
+      <td>AWS Marketplace를 통한 PAYG</td>
       <td>GCP를 통한 PAYG</td>
       <td>Azure를 통한 PAYG</td>
     </tr>
@@ -56,12 +61,14 @@
       <td>지원되는 [국가](https://www.anthropic.com/supported-countries)</td>
       <td>지원되는 [국가](https://www.anthropic.com/supported-countries)</td>
       <td>여러 AWS [지역](https://docs.aws.amazon.com/bedrock/latest/userguide/models-regions.html)</td>
+      <td>여러 AWS 지역</td>
       <td>여러 GCP [지역](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations)</td>
       <td>여러 Azure [지역](https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/)</td>
     </tr>
 
     <tr>
       <td>Prompt caching</td>
+      <td>기본적으로 활성화됨</td>
       <td>기본적으로 활성화됨</td>
       <td>기본적으로 활성화됨</td>
       <td>기본적으로 활성화됨</td>
@@ -74,6 +81,7 @@
       <td>Claude.ai SSO 또는 이메일</td>
       <td>API 키</td>
       <td>API 키 또는 AWS 자격증명</td>
+      <td>API 키 또는 AWS 자격증명</td>
       <td>GCP 자격증명</td>
       <td>API 키 또는 Microsoft Entra ID</td>
     </tr>
@@ -82,6 +90,7 @@
       <td>비용 추적</td>
       <td>사용량 대시보드</td>
       <td>사용량 대시보드</td>
+      <td>AWS Cost Explorer</td>
       <td>AWS Cost Explorer</td>
       <td>GCP 청구</td>
       <td>Azure Cost Management</td>
@@ -94,12 +103,14 @@
       <td>아니오</td>
       <td>아니오</td>
       <td>아니오</td>
+      <td>아니오</td>
     </tr>
 
     <tr>
       <td>엔터프라이즈 기능</td>
       <td>팀 관리, SSO, 사용량 모니터링</td>
       <td>없음</td>
+      <td>IAM 정책, CloudTrail</td>
       <td>IAM 정책, CloudTrail</td>
       <td>IAM 역할, Cloud Audit Logs</td>
       <td>RBAC 정책, Azure Monitor</td>
@@ -112,19 +123,24 @@
 * [Claude for Teams 또는 Enterprise](/ko/authentication#claude-for-teams-or-enterprise)
 * [Anthropic Console](/ko/authentication#claude-console-authentication)
 * [Amazon Bedrock](/ko/amazon-bedrock)
+* [Claude Platform on AWS](/ko/claude-platform-on-aws)
 * [Google Vertex AI](/ko/google-vertex-ai)
 * [Microsoft Foundry](/ko/microsoft-foundry)
 
-## 프록시 및 게이트웨이 구성
+<h2 id="configure-proxies-and-gateways">
+  프록시 및 게이트웨이 구성
+</h2>
 
 대부분의 조직은 추가 구성 없이 클라우드 제공자를 직접 사용할 수 있습니다. 그러나 조직에 특정 네트워크 또는 관리 요구사항이 있는 경우 회사 프록시 또는 LLM 게이트웨이를 구성해야 할 수 있습니다. 이는 함께 사용할 수 있는 다양한 구성입니다:
 
 * **회사 프록시**: HTTP/HTTPS 프록시를 통해 트래픽을 라우팅합니다. 조직에서 보안 모니터링, 규정 준수 또는 네트워크 정책 적용을 위해 모든 아웃바운드 트래픽이 프록시 서버를 통과해야 하는 경우 이를 사용하십시오. `HTTPS_PROXY` 또는 `HTTP_PROXY` 환경 변수로 구성합니다. [엔터프라이즈 네트워크 구성](/ko/network-config)에서 자세히 알아봅니다.
-* **LLM 게이트웨이**: Claude Code와 클라우드 제공자 사이에 위치하여 인증 및 라우팅을 처리하는 서비스입니다. 팀 전체에서 중앙 집중식 사용량 추적, 사용자 정의 속도 제한 또는 예산, 또는 중앙 집중식 인증 관리가 필요한 경우 이를 사용하십시오. `ANTHROPIC_BASE_URL`, `ANTHROPIC_BEDROCK_BASE_URL` 또는 `ANTHROPIC_VERTEX_BASE_URL` 환경 변수로 구성합니다. [LLM 게이트웨이 구성](/ko/llm-gateway)에서 자세히 알아봅니다.
+* **LLM 게이트웨이**: Claude Code와 클라우드 제공자 사이에 위치하여 인증 및 라우팅을 처리하는 서비스입니다. 팀 전체에서 중앙 집중식 사용량 추적, 사용자 정의 속도 제한 또는 예산, 또는 중앙 집중식 인증 관리가 필요한 경우 이를 사용하십시오. `ANTHROPIC_BASE_URL`, `ANTHROPIC_BEDROCK_BASE_URL`, `ANTHROPIC_AWS_BASE_URL`, 또는 `ANTHROPIC_VERTEX_BASE_URL` 환경 변수로 구성합니다. [LLM 게이트웨이 구성](/ko/llm-gateway)에서 자세히 알아봅니다.
 
 다음 예제는 셸 또는 셸 프로필(`.bashrc`, `.zshrc`)에서 설정할 환경 변수를 보여줍니다. 다른 구성 방법은 [설정](/ko/settings)을 참조하십시오.
 
-### Amazon Bedrock
+<h3 id="amazon-bedrock">
+  Amazon Bedrock
+</h3>
 
 <Tabs>
   <Tab title="회사 프록시">
@@ -154,7 +170,9 @@
   </Tab>
 </Tabs>
 
-### Microsoft Foundry
+<h3 id="microsoft-foundry">
+  Microsoft Foundry
+</h3>
 
 <Tabs>
   <Tab title="회사 프록시">
@@ -185,7 +203,9 @@
   </Tab>
 </Tabs>
 
-### Google Vertex AI
+<h3 id="google-vertex-ai">
+  Google Vertex AI
+</h3>
 
 <Tabs>
   <Tab title="회사 프록시">
@@ -220,9 +240,13 @@
   Claude Code에서 `/status`를 사용하여 프록시 및 게이트웨이 구성이 올바르게 적용되었는지 확인합니다.
 </Tip>
 
-## 조직을 위한 모범 사례
+<h2 id="best-practices-for-organizations">
+  조직을 위한 모범 사례
+</h2>
 
-### 문서 및 메모리에 투자
+<h3 id="invest-in-documentation-and-memory">
+  문서 및 메모리에 투자
+</h3>
 
 Claude Code가 코드베이스를 이해할 수 있도록 문서에 투자할 것을 강력히 권장합니다. 조직은 여러 수준에서 CLAUDE.md 파일을 배포할 수 있습니다:
 
@@ -231,29 +255,41 @@ Claude Code가 코드베이스를 이해할 수 있도록 문서에 투자할 �
 
 [메모리 및 CLAUDE.md 파일](/ko/memory)에서 자세히 알아봅니다.
 
-### 배포 단순화
+<h3 id="simplify-deployment">
+  배포 단순화
+</h3>
 
 사용자 정의 개발 환경이 있는 경우 Claude Code를 설치하는 "원클릭" 방법을 만드는 것이 조직 전체에서 채택을 늘리는 핵심이라는 것을 알았습니다.
 
-### 안내된 사용으로 시작
+<h3 id="start-with-guided-usage">
+  안내된 사용으로 시작
+</h3>
 
 새 사용자가 코드베이스 Q\&A 또는 더 작은 버그 수정 또는 기능 요청에 Claude Code를 시도하도록 권장합니다. Claude Code에 계획을 세우도록 요청합니다. Claude의 제안을 확인하고 잘못된 경우 피드백을 제공합니다. 시간이 지남에 따라 사용자가 이 새로운 패러다임을 더 잘 이해하게 되면 Claude Code를 더 에이전트적으로 실행하는 데 더 효과적이 될 것입니다.
 
-### 클라우드 제공자를 위한 모델 버전 고정
+<h3 id="pin-model-versions-for-cloud-providers">
+  클라우드 제공자를 위한 모델 버전 고정
+</h3>
 
-[Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai) 또는 [Foundry](/ko/microsoft-foundry)를 통해 배포하는 경우 `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL` 및 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 사용하여 특정 모델 버전을 고정합니다. 고정하지 않으면 Claude Code 별칭이 최신 버전으로 확인되어 Anthropic이 아직 계정에서 활성화되지 않은 새 모델을 출시할 때 사용자가 손상될 수 있습니다. 자세한 내용은 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
+[Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai), [Foundry](/ko/microsoft-foundry) 또는 [Claude Platform on AWS](/ko/claude-platform-on-aws)를 통해 배포하는 경우 `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL` 및 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 사용하여 특정 모델 버전을 고정합니다. 고정하지 않으면 모델 별칭이 최신 버전으로 확인되어 Anthropic이 아직 계정에서 활성화되지 않은 새 모델을 출시할 때 사용자가 손상될 수 있습니다. 각 제공자가 최신 버전을 사용할 수 없을 때 수행하는 작업에 대해서는 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
 
-### 보안 정책 구성
+<h3 id="configure-security-policies">
+  보안 정책 구성
+</h3>
 
 보안 팀은 Claude Code가 수행할 수 있고 수행할 수 없는 작업에 대한 관리형 권한을 구성할 수 있으며, 이는 로컬 구성으로 덮어쓸 수 없습니다. [자세히 알아봅니다](/ko/security).
 
-### MCP를 통합에 활용
+<h3 id="leverage-mcp-for-integrations">
+  MCP를 통합에 활용
+</h3>
 
 MCP는 Claude Code에 더 많은 정보를 제공하는 좋은 방법입니다. 예를 들어 티켓 관리 시스템 또는 오류 로그에 연결할 수 있습니다. 한 중앙 팀이 MCP 서버를 구성하고 `.mcp.json` 구성을 코드베이스에 체크인하여 모든 사용자가 이점을 얻을 수 있도록 할 것을 권장합니다. [자세히 알아봅니다](/ko/mcp).
 
 Anthropic에서는 Claude Code를 신뢰하여 모든 Anthropic 코드베이스에서 개발을 강화합니다. Claude Code를 우리만큼 즐기시기를 바랍니다.
 
-## 다음 단계
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
 배포 옵션을 선택하고 팀에 대한 액세스를 구성한 후:
 

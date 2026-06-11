@@ -24,15 +24,17 @@ LLM 성능이 context가 채워질수록 저하되기 때문에 이는 중요합
 
 ***
 
-## Claude에게 작업을 검증할 방법 제공하기
+<h2 id="give-claude-a-way-to-verify-its-work">
+  Claude에게 작업을 검증할 방법 제공하기
+</h2>
 
 <Tip>
-  Claude가 자신의 작업을 확인할 수 있도록 테스트, 스크린샷 또는 예상 출력을 포함하십시오. 이것이 할 수 있는 가장 높은 영향력의 단일 작업입니다.
+  Claude가 실행할 수 있는 확인 방법을 제공하세요: 테스트, 빌드, 비교할 스크린샷. 이것이 당신이 지켜보는 세션과 떠나있는 세션의 차이입니다.
 </Tip>
 
-Claude는 테스트를 실행하고, 스크린샷을 비교하고, 출력을 검증하는 등 자신의 작업을 검증할 수 있을 때 훨씬 더 잘 수행합니다.
+Claude는 작업이 완료된 것처럼 보일 때 멈춥니다. 실행할 수 있는 확인 방법이 없으면 "완료된 것처럼 보인다"는 것이 유일한 신호이며, 당신이 검증 루프가 됩니다: 모든 실수가 당신이 알아차릴 때까지 기다립니다. Claude에게 통과 또는 실패를 나타내는 것을 제공하면 루프가 자동으로 닫힙니다. Claude는 작업을 수행하고, 확인을 실행하고, 결과를 읽고, 확인이 통과할 때까지 반복합니다.
 
-명확한 성공 기준이 없으면 올바르게 보이지만 실제로는 작동하지 않는 것을 생성할 수 있습니다. 당신이 유일한 피드백 루프가 되고, 모든 실수가 당신의 주의를 필요로 합니다.
+확인은 대화에서 Claude가 읽을 수 있는 신호를 반환하는 모든 것입니다: 테스트 스위트, 빌드 종료 코드, linter, 출력을 고정값과 비교하는 스크립트, 또는 디자인과 비교한 [브라우저 스크린샷](/ko/chrome).
 
 | 전략                     | 이전                         | 이후                                                                                                                                                                   |
 | ---------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -40,19 +42,28 @@ Claude는 테스트를 실행하고, 스크린샷을 비교하고, 출력을 검
 | **UI 변경 사항을 시각적으로 검증** | *"대시보드를 더 좋게 보이게 하세요"*     | *"\[스크린샷 붙여넣기] 이 디자인을 구현하세요. 결과의 스크린샷을 찍고 원본과 비교하세요. 차이점을 나열하고 수정하세요"*                                                                                               |
 | **증상이 아닌 근본 원인 해결**    | *"빌드가 실패하고 있습니다"*          | *"빌드가 이 오류로 실패합니다: \[오류 붙여넣기]. 수정하고 빌드가 성공하는지 확인하세요. 근본 원인을 해결하고 오류를 억제하지 마세요"*                                                                                      |
 
-UI 변경 사항은 [Chrome 확장 프로그램의 Claude](/ko/chrome)를 사용하여 검증할 수 있습니다. 브라우저에서 새 탭을 열고, UI를 테스트하고, 코드가 작동할 때까지 반복합니다.
+확인이 존재하면, 그것이 중지를 얼마나 엄격하게 제어할지 결정하세요:
 
-검증은 테스트 스위트, linter 또는 출력을 확인하는 Bash 명령일 수도 있습니다. 검증을 견고하게 만드는 데 투자하십시오.
+* **한 번의 프롬프트에서**: Claude에게 확인을 실행하고 같은 메시지에서 반복하도록 요청하세요. 위의 표와 같습니다.
+* **세션 전체에서**: 확인을 [`/goal` 조건](/ko/goal)으로 설정하세요. 별도의 평가자가 매 턴 후에 다시 확인하고 Claude는 조건이 충족될 때까지 계속 작업합니다.
+* **결정론적 게이트로**: [Stop hook](/ko/hooks#stop)이 확인을 스크립트로 실행하고 통과할 때까지 턴이 끝나지 않도록 차단합니다. Claude Code는 hook을 무시하고 8번 연속 차단 후 턴을 종료합니다.
+* **두 번째 의견으로**: [검증 서브에이전트](/ko/sub-agents) 또는 자신의 발견을 확인하는 [동적 워크플로우](/ko/workflows)가 새로운 모델로 결과를 반박하려고 시도하므로, 작업을 수행하는 에이전트가 채점하는 것이 아닙니다.
+
+각 단계는 설정을 주의력으로 교환합니다. 프롬프트 버전은 오늘 모든 작업에서 작동합니다. `/goal` 및 Stop hook 버전은 당신이 없어도 무인 실행이 올바르게 완료되도록 하는 것입니다.
+
+Claude가 성공을 주장하기보다는 증거를 보여주도록 하세요: 테스트 출력, 실행한 명령과 반환된 내용, 또는 결과의 스크린샷. 증거를 검토하는 것이 검증을 직접 다시 실행하는 것보다 빠르며, 당신이 지켜보지 않은 세션에서도 작동합니다.
 
 ***
 
-## 먼저 탐색하고, 그 다음 계획하고, 그 다음 코드 작성하기
+<h2 id="explore-first-then-plan-then-code">
+  먼저 탐색하고, 그 다음 계획하고, 그 다음 코드 작성하기
+</h2>
 
 <Tip>
   연구 및 계획을 구현과 분리하여 잘못된 문제를 해결하는 것을 피하십시오.
 </Tip>
 
-Claude가 바로 코딩으로 뛰어들도록 하면 잘못된 문제를 해결하는 코드가 생성될 수 있습니다. [Plan Mode](/ko/common-workflows#use-plan-mode-for-safe-code-analysis)를 사용하여 탐색을 실행과 분리하십시오.
+Claude가 바로 코딩으로 뛰어들도록 하면 잘못된 문제를 해결하는 코드가 생성될 수 있습니다. [Plan Mode](/ko/permission-modes#analyze-before-you-edit-with-plan-mode)를 사용하여 탐색을 실행과 분리하십시오.
 
 권장 워크플로우에는 4가지 단계가 있습니다:
 
@@ -60,37 +71,37 @@ Claude가 바로 코딩으로 뛰어들도록 하면 잘못된 문제를 해결�
   <Step title="탐색">
     Plan Mode를 입력하십시오. Claude는 파일을 읽고 변경을 수행하지 않고 질문에 답합니다.
 
-    ```txt claude (Plan Mode) theme={null}
-    /src/auth를 읽고 세션 및 로그인을 어떻게 처리하는지 이해하세요.
-    또한 비밀에 대한 환경 변수를 어떻게 관리하는지 살펴보세요.
+    ```txt claude (plan mode) theme={null}
+    read /src/auth and understand how we handle sessions and login.
+    also look at how we manage environment variables for secrets.
     ```
   </Step>
 
   <Step title="계획">
     Claude에게 상세한 구현 계획을 작성하도록 요청하십시오.
 
-    ```txt claude (Plan Mode) theme={null}
-    Google OAuth를 추가하고 싶습니다. 어떤 파일을 변경해야 합니까?
-    세션 흐름은 무엇입니까? 계획을 작성하세요.
+    ```txt claude (plan mode) theme={null}
+    I want to add Google OAuth. What files need to change?
+    What's the session flow? Create a plan.
     ```
 
     `Ctrl+G`를 눌러 Claude가 진행하기 전에 텍스트 편집기에서 계획을 열어 직접 편집하십시오.
   </Step>
 
   <Step title="구현">
-    Normal Mode로 전환하고 Claude가 코드를 작성하도록 하여 계획에 대해 검증하십시오.
+    Plan Mode를 종료하고 Claude가 코드를 작성하도록 하여 계획에 대해 검증하십시오.
 
-    ```txt claude (Normal Mode) theme={null}
-    계획에서 OAuth 흐름을 구현하세요. 콜백 핸들러에 대한 테스트를 작성하고,
-    테스트 스위트를 실행하고 실패를 수정하세요.
+    ```txt claude (default mode) theme={null}
+    implement the OAuth flow from your plan. write tests for the
+    callback handler, run the test suite and fix any failures.
     ```
   </Step>
 
   <Step title="커밋">
     Claude에게 설명적인 메시지로 커밋하고 PR을 생성하도록 요청하십시오.
 
-    ```txt claude (Normal Mode) theme={null}
-    설명적인 메시지로 커밋하고 PR을 열기
+    ```txt claude (default mode) theme={null}
+    commit with a descriptive message and open a PR
     ```
   </Step>
 </Steps>
@@ -105,7 +116,9 @@ Claude가 바로 코딩으로 뛰어들도록 하면 잘못된 문제를 해결�
 
 ***
 
-## 프롬프트에서 구체적인 컨텍스트 제공하기
+<h2 id="provide-specific-context-in-your-prompts">
+  프롬프트에서 구체적인 컨텍스트 제공하기
+</h2>
 
 <Tip>
   지시사항이 정확할수록 필요한 수정이 적습니다.
@@ -122,7 +135,9 @@ Claude는 의도를 추론할 수 있지만 마음을 읽을 수는 없습니다
 
 모호한 프롬프트는 탐색 중이고 과정을 수정할 여유가 있을 때 유용할 수 있습니다. `"이 파일에서 무엇을 개선하시겠습니까?"`와 같은 프롬프트는 당신이 생각하지 못했을 것들을 드러낼 수 있습니다.
 
-### 풍부한 콘텐츠 제공하기
+<h3 id="provide-rich-content">
+  풍부한 콘텐츠 제공하기
+</h3>
 
 <Tip>
   `@`를 사용하여 파일을 참조하거나, 스크린샷/이미지를 붙여넣거나, 데이터를 직접 파이프하십시오.
@@ -138,11 +153,15 @@ Claude는 의도를 추론할 수 있지만 마음을 읽을 수는 없습니다
 
 ***
 
-## 환경 구성하기
+<h2 id="configure-your-environment">
+  환경 구성하기
+</h2>
 
 몇 가지 설정 단계를 통해 Claude Code를 모든 세션에서 훨씬 더 효과적으로 만들 수 있습니다. 확장 기능의 전체 개요 및 각 기능을 사용할 시기에 대해서는 [Claude Code 확장](/ko/features-overview)을 참조하십시오.
 
-### 효과적인 CLAUDE.md 작성하기
+<h3 id="write-an-effective-claude-md">
+  효과적인 CLAUDE.md 작성하기
+</h3>
 
 <Tip>
   `/init`을 실행하여 현재 프로젝트 구조를 기반으로 시작 CLAUDE.md 파일을 생성한 다음 시간이 지남에 따라 개선하십시오.
@@ -200,7 +219,9 @@ CLAUDE.md 파일을 여러 위치에 배치할 수 있습니다:
 * **상위 디렉토리**: 모노레포에 유용하며, `root/CLAUDE.md`와 `root/foo/CLAUDE.md` 모두 자동으로 가져와집니다
 * **하위 디렉토리**: Claude는 해당 디렉토리의 파일로 작업할 때 필요에 따라 하위 CLAUDE.md 파일을 가져옵니다
 
-### 권한 구성하기
+<h3 id="configure-permissions">
+  권한 구성하기
+</h3>
 
 <Tip>
   [auto mode](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 사용하여 분류기가 승인을 처리하도록 하거나, `/permissions`를 사용하여 특정 명령을 허용 목록에 추가하거나, `/sandbox`를 사용하여 OS 수준 격리를 수행하십시오. 각각은 제어를 유지하면서 중단을 줄입니다.
@@ -214,7 +235,9 @@ CLAUDE.md 파일을 여러 위치에 배치할 수 있습니다:
 
 [권한 모드](/ko/permission-modes), [권한 규칙](/ko/permissions), [샌드박싱](/ko/sandboxing)에 대해 자세히 읽어보십시오.
 
-### CLI 도구 사용하기
+<h3 id="use-cli-tools">
+  CLI 도구 사용하기
+</h3>
 
 <Tip>
   Claude Code에 `gh`, `aws`, `gcloud`, `sentry-cli`와 같은 CLI 도구를 사용하여 외부 서비스와 상호 작용하도록 하십시오.
@@ -224,7 +247,9 @@ CLI 도구는 외부 서비스와 상호 작용하는 가장 context 효율적�
 
 Claude는 또한 아직 알지 못하는 CLI 도구를 배우는 데 효과적입니다. `Use 'foo-cli-tool --help' to learn about foo tool, then use it to solve A, B, C.`와 같은 프롬프트를 시도해보십시오.
 
-### MCP 서버 연결하기
+<h3 id="connect-mcp-servers">
+  MCP 서버 연결하기
+</h3>
 
 <Tip>
   `claude mcp add`를 실행하여 Notion, Figma 또는 데이터베이스와 같은 외부 도구를 연결하십시오.
@@ -232,7 +257,9 @@ Claude는 또한 아직 알지 못하는 CLI 도구를 배우는 데 효과적�
 
 [MCP 서버](/ko/mcp)를 사용하면 이슈 추적기에서 기능을 구현하고, 데이터베이스를 쿼리하고, 모니터링 데이터를 분석하고, Figma에서 디자인을 통합하고, 워크플로우를 자동화하도록 Claude에게 요청할 수 있습니다.
 
-### hooks 설정하기
+<h3 id="set-up-hooks">
+  hooks 설정하기
+</h3>
 
 <Tip>
   예외 없이 매번 발생해야 하는 작업에 hooks를 사용하십시오.
@@ -242,7 +269,9 @@ Claude는 또한 아직 알지 못하는 CLI 도구를 배우는 데 효과적�
 
 Claude가 hooks를 작성할 수 있습니다. *"모든 파일 편집 후 eslint를 실행하는 hook 작성"* 또는 \*"마이그레이션 폴더에 대한 쓰기를 차단하는 hook 작성"\*과 같은 프롬프트를 시도해보십시오. `.claude/settings.json`을 직접 편집하여 hooks를 구성하고, `/hooks`를 실행하여 구성된 것을 탐색하십시오.
 
-### skills 생성하기
+<h3 id="create-skills">
+  skills 생성하기
+</h3>
 
 <Tip>
   `.claude/skills/`에 `SKILL.md` 파일을 생성하여 Claude에게 도메인 지식과 재사용 가능한 워크플로우를 제공하십시오.
@@ -286,7 +315,9 @@ GitHub 이슈를 분석하고 수정하세요: $ARGUMENTS.
 
 `/fix-issue 1234`를 실행하여 호출하십시오. 부작용이 있는 워크플로우의 경우 `disable-model-invocation: true`를 사용하여 수동으로 트리거하려고 합니다.
 
-### 사용자 정의 subagents 생성하기
+<h3 id="create-custom-subagents">
+  사용자 정의 subagents 생성하기
+</h3>
 
 <Tip>
   `.claude/agents/`에서 전문화된 어시스턴트를 정의하여 Claude가 격리된 작업에 위임할 수 있도록 하십시오.
@@ -312,7 +343,9 @@ model: opus
 
 Claude에게 명시적으로 subagents를 사용하도록 하십시오: *"subagent를 사용하여 이 코드를 보안 문제에 대해 검토하세요."*
 
-### plugins 설치하기
+<h3 id="install-plugins">
+  plugins 설치하기
+</h3>
 
 <Tip>
   `/plugin`을 실행하여 마켓플레이스를 탐색하십시오. Plugins는 구성 없이 skills, tools, integrations를 추가합니다.
@@ -324,11 +357,15 @@ skills, subagents, hooks, MCP 중에서 선택하는 방법에 대한 지침은 
 
 ***
 
-## 효과적으로 소통하기
+<h2 id="communicate-effectively">
+  효과적으로 소통하기
+</h2>
 
 Claude Code와의 소통 방식은 결과의 품질에 크게 영향을 미칩니다.
 
-### 코드베이스 질문 하기
+<h3 id="ask-codebase-questions">
+  코드베이스 질문 하기
+</h3>
 
 <Tip>
   선임 엔지니어에게 물어볼 질문을 Claude에게 하십시오.
@@ -344,7 +381,9 @@ Claude Code와의 소통 방식은 결과의 품질에 크게 영향을 미칩�
 
 이런 방식으로 Claude Code를 사용하는 것은 효과적인 온보딩 워크플로우이며, 램프업 시간을 개선하고 다른 엔지니어의 부담을 줄입니다. 특별한 프롬프팅이 필요하지 않습니다: 직접 질문하십시오.
 
-### Claude가 당신을 인터뷰하도록 하기
+<h3 id="let-claude-interview-you">
+  Claude가 당신을 인터뷰하도록 하기
+</h3>
 
 <Tip>
   더 큰 기능의 경우 Claude가 먼저 당신을 인터뷰하도록 하십시오. 최소한의 프롬프트로 시작하고 Claude에게 `AskUserQuestion` 도구를 사용하여 당신을 인터뷰하도록 요청하십시오.
@@ -362,13 +401,19 @@ Claude는 기술 구현, UI/UX, 엣지 케이스, 트레이드오프를 포함�
 
 사양이 완료되면 새 세션을 시작하여 실행하십시오. 새 세션은 구현에만 집중하는 깨끗한 context를 가지고 있으며, 참조할 수 있는 작성된 사양이 있습니다.
 
+가장 유용한 사양은 자체 포함적입니다: 관련된 파일과 인터페이스의 이름을 지정하고, 범위를 벗어난 것을 명시하며, 기능이 작동함을 증명하는 엔드투엔드 검증 단계로 끝납니다. 사양을 정확하게 만드는 데 소비한 시간은 구현을 지켜보는 데 소비한 시간보다 더 많은 보상을 제공합니다.
+
 ***
 
-## 세션 관리하기
+<h2 id="manage-your-session">
+  세션 관리하기
+</h2>
 
 대화는 지속적이고 되돌릴 수 있습니다. 이를 활용하십시오!
 
-### 조기에 자주 방향 수정하기
+<h3 id="course-correct-early-and-often">
+  조기에 자주 방향 수정하기
+</h3>
 
 <Tip>
   Claude가 궤도를 벗어나는 것을 알아차리면 즉시 수정하십시오.
@@ -383,7 +428,9 @@ Claude는 기술 구현, UI/UX, 엣지 케이스, 트레이드오프를 포함�
 
 한 세션에서 같은 문제에 대해 Claude를 두 번 이상 수정했다면 context는 실패한 접근 방식으로 복잡해져 있습니다. `/clear`를 실행하고 배운 내용을 통합하는 더 구체적인 프롬프트로 새로 시작하십시오. 누적된 수정이 있는 긴 세션보다 더 나은 프롬프트가 있는 깨끗한 세션이 거의 항상 더 나은 성능을 발휘합니다.
 
-### context 적극적으로 관리하기
+<h3 id="manage-context-aggressively">
+  context 적극적으로 관리하기
+</h3>
 
 <Tip>
   관련 없는 작업 간에 `/clear`를 자주 실행하여 context window를 재설정하십시오.
@@ -396,11 +443,13 @@ Claude Code는 context 제한에 접근할 때 대화 기록을 자동으로 압
 * 작업 간에 자주 `/clear`를 사용하여 context window를 완전히 재설정하십시오
 * 자동 압축이 트리거되면 Claude는 코드 패턴, 파일 상태, 주요 결정을 포함하여 가장 중요한 것을 요약합니다
 * 더 많은 제어를 위해 `/compact <instructions>`를 실행하십시오(예: `/compact Focus on the API changes`)
-* 대화의 일부만 압축하려면 `Esc + Esc` 또는 `/rewind`를 사용하고, 메시지 체크포인트를 선택하고, **Summarize from here**를 선택하십시오. 이는 해당 지점부터의 메시지를 압축하면서 이전 context를 유지합니다.
+* 대화의 일부만 압축하려면 `Esc + Esc` 또는 `/rewind`를 사용하고, 메시지 체크포인트를 선택하고, **Summarize from here** 또는 **Summarize up to here**를 선택하십시오. 첫 번째는 해당 지점부터의 메시지를 압축하면서 이전 context를 유지하고, 두 번째는 이전 메시지를 압축하면서 최근 메시지를 완전히 유지합니다. [Restore vs. summarize](/ko/checkpointing#restore-vs-summarize)를 참조하십시오.
 * CLAUDE.md에서 `"When compacting, always preserve the full list of modified files and any test commands"`와 같은 지시사항으로 압축 동작을 사용자 정의하여 중요한 context가 요약을 통해 유지되도록 하십시오
-* 빠른 질문의 경우 context에 들어가지 않아야 하므로 [`/btw`](/ko/interactive-mode#side-questions-with-btw)를 사용하십시오. 답변은 해제 가능한 오버레이에 나타나고 대화 기록에 들어가지 않으므로 context를 증가시키지 않고 세부 정보를 확인할 수 있습니다.
+* 빠른 질문의 경우 context에 들어가지 않아야 하므로 [`/btw`](/ko/interactive-mode#side-questions-with-%2Fbtw)를 사용하십시오. 답변은 해제 가능한 오버레이에 나타나고 대화 기록에 들어가지 않으므로 context를 증가시키지 않고 세부 정보를 확인할 수 있습니다.
 
-### subagents를 사용하여 조사하기
+<h3 id="use-subagents-for-investigation">
+  subagents를 사용하여 조사하기
+</h3>
 
 <Tip>
   `"use subagents to investigate X"`로 연구를 위임하십시오. 그들은 별도의 context에서 탐색하여 구현을 위해 주요 대화를 깨끗하게 유지합니다.
@@ -409,8 +458,8 @@ Claude Code는 context 제한에 접근할 때 대화 기록을 자동으로 압
 context가 기본 제약 조건이므로 subagents는 사용 가능한 가장 강력한 도구 중 하나입니다. Claude가 코드베이스를 연구할 때 많은 파일을 읽으며, 모두 context를 소비합니다. Subagents는 별도의 context window에서 실행되고 요약을 보고합니다:
 
 ```text theme={null}
-subagents를 사용하여 인증 시스템이 토큰 새로 고침을 어떻게 처리하는지,
-그리고 재사용해야 할 기존 OAuth 유틸리티가 있는지 조사하세요.
+Use subagents to investigate how our authentication system handles token
+refresh, and whether we have any existing OAuth utilities I should reuse.
 ```
 
 subagent는 코드베이스를 탐색하고, 관련 파일을 읽고, 주요 대화를 복잡하게 하지 않고 발견 사항을 보고합니다.
@@ -418,16 +467,18 @@ subagent는 코드베이스를 탐색하고, 관련 파일을 읽고, 주요 대
 Claude가 구현한 후 검증을 위해 subagents를 사용할 수도 있습니다:
 
 ```text theme={null}
-subagent를 사용하여 이 코드를 엣지 케이스에 대해 검토하세요
+use a subagent to review this code for edge cases
 ```
 
-### 체크포인트로 rewind하기
+<h3 id="rewind-with-checkpoints">
+  체크포인트로 rewind하기
+</h3>
 
 <Tip>
-  Claude가 수행하는 모든 작업은 체크포인트를 생성합니다. 이전 체크포인트로 대화, 코드 또는 둘 다를 복원할 수 있습니다.
+  Claude가 수행하는 모든 프롬프트는 체크포인트를 생성합니다. 이전 체크포인트로 대화, 코드 또는 둘 다를 복원할 수 있습니다.
 </Tip>
 
-Claude는 변경 전에 자동으로 체크포인트합니다. `Escape`를 두 번 누르거나 `/rewind`를 실행하여 rewind 메뉴를 열기. 대화만 복원하거나, 코드만 복원하거나, 둘 다 복원하거나, 선택한 메시지에서 요약할 수 있습니다. 자세한 내용은 [Checkpointing](/ko/checkpointing)을 참조하십시오.
+Claude는 각 변경 전에 자동으로 파일을 스냅샷하므로 체크포인트가 파일을 복원할 수 있습니다. `Escape`를 두 번 누르거나 `/rewind`를 실행하여 rewind 메뉴를 열기. 대화만 복원하거나, 코드만 복원하거나, 둘 다 복원하거나, 선택한 메시지에서 요약할 수 있습니다. 자세한 내용은 [Checkpointing](/ko/checkpointing)을 참조하십시오.
 
 모든 움직임을 신중하게 계획하는 대신 Claude에게 위험한 것을 시도하도록 할 수 있습니다. 작동하지 않으면 rewind하고 다른 접근 방식을 시도하십시오. 체크포인트는 세션 간에 유지되므로 터미널을 닫아도 나중에 rewind할 수 있습니다.
 
@@ -435,36 +486,35 @@ Claude는 변경 전에 자동으로 체크포인트합니다. `Escape`를 두 �
   체크포인트는 Claude가 수행한 변경만 추적하며, 외부 프로세스는 추적하지 않습니다. 이는 git의 대체품이 아닙니다.
 </Warning>
 
-### 대화 재개하기
+<h3 id="resume-conversations">
+  대화 재개하기
+</h3>
 
 <Tip>
-  `claude --continue`를 실행하여 중단한 곳에서 계속하거나, `--resume`을 사용하여 최근 세션에서 선택하십시오.
+  `/rename`으로 세션에 이름을 지정하고 분기처럼 취급하십시오: 각 작업 스트림은 자체 지속적인 context를 가집니다.
 </Tip>
 
-Claude Code는 대화를 로컬로 저장합니다. 작업이 여러 세션에 걸쳐 있을 때 context를 다시 설명할 필요가 없습니다:
-
-```bash theme={null}
-claude --continue    # 가장 최근 대화 재개
-claude --resume      # 최근 대화에서 선택
-```
-
-`/rename`을 사용하여 세션에 `"oauth-migration"` 또는 `"debugging-memory-leak"`과 같은 설명적인 이름을 지정하여 나중에 찾을 수 있도록 하십시오. 세션을 분기처럼 취급하십시오: 다양한 작업 스트림은 별도의 지속적인 context를 가질 수 있습니다.
+Claude Code는 대화를 로컬로 저장하므로 작업이 여러 세션에 걸쳐 있을 때 context를 다시 설명할 필요가 없습니다. `claude --continue`를 실행하여 가장 최근 세션을 선택하거나, `claude --resume`을 실행하여 목록에서 선택하십시오. `oauth-migration`과 같은 설명적인 이름으로 세션에 이름을 지정하여 나중에 찾을 수 있도록 하십시오. [Manage sessions](/ko/sessions)에서 전체 resume, branch, naming 제어 집합을 참조하십시오.
 
 ***
 
-## 자동화 및 확장하기
+<h2 id="automate-and-scale">
+  자동화 및 확장하기
+</h2>
 
 한 Claude로 효과적이 되면 병렬 세션, 비대화형 모드, fan-out 패턴으로 출력을 곱하십시오.
 
 지금까지 모든 것은 한 명의 인간, 한 명의 Claude, 한 개의 대화를 가정합니다. 하지만 Claude Code는 수평으로 확장됩니다. 이 섹션의 기술은 더 많은 작업을 수행하는 방법을 보여줍니다.
 
-### 비대화형 모드 실행하기
+<h3 id="run-non-interactive-mode">
+  비대화형 모드 실행하기
+</h3>
 
 <Tip>
-  CI, pre-commit hooks 또는 스크립트에서 `claude -p "prompt"`를 사용하십시오. 스트리밍 JSON 출력의 경우 `--output-format stream-json`을 추가하십시오.
+  CI, pre-commit hooks 또는 스크립트에서 `claude -p "prompt"`를 사용하십시오. 스트리밍 JSON 출력의 경우 `--output-format stream-json --verbose`를 추가하십시오.
 </Tip>
 
-`claude -p "your prompt"`를 사용하면 세션 없이 비대화형으로 Claude를 실행할 수 있습니다. 비대화형 모드는 Claude를 CI 파이프라인, pre-commit hooks 또는 자동화된 워크플로우에 통합하는 방법입니다. 출력 형식을 사용하면 결과를 프로그래밍 방식으로 구문 분석할 수 있습니다: 일반 텍스트, JSON 또는 스트리밍 JSON.
+`claude -p "your prompt"`를 사용하면 세션 없이 비대화형으로 Claude를 실행할 수 있습니다. [비대화형 모드](/ko/headless)는 Claude를 CI 파이프라인, pre-commit hooks 또는 자동화된 워크플로우에 통합하는 방법입니다. 출력 형식을 사용하면 결과를 프로그래밍 방식으로 구문 분석할 수 있습니다: 일반 텍스트, JSON 또는 스트리밍 JSON.
 
 ```bash theme={null}
 # 일회성 쿼리
@@ -474,20 +524,23 @@ claude -p "이 프로젝트가 무엇을 하는지 설명하세요"
 claude -p "모든 API 엔드포인트 나열" --output-format json
 
 # 실시간 처리를 위한 스트리밍
-claude -p "이 로그 파일 분석" --output-format stream-json
+claude -p "이 로그 파일 분석" --output-format stream-json --verbose
 ```
 
-### 여러 Claude 세션 실행하기
+<h3 id="run-multiple-claude-sessions">
+  여러 Claude 세션 실행하기
+</h3>
 
 <Tip>
   개발 속도를 높이거나, 격리된 실험을 실행하거나, 복잡한 워크플로우를 시작하기 위해 여러 Claude 세션을 병렬로 실행하십시오.
 </Tip>
 
-병렬 세션을 실행하는 세 가지 주요 방법이 있습니다:
+조정하고 싶은 정도에 맞는 병렬 접근 방식을 선택하십시오:
 
-* [Claude Code 데스크톱 앱](/ko/desktop#work-in-parallel-with-sessions): 여러 로컬 세션을 시각적으로 관리하십시오. 각 세션은 자신의 격리된 worktree를 가집니다.
-* [웹의 Claude Code](/ko/claude-code-on-the-web): Anthropic의 안전한 클라우드 인프라에서 격리된 VM에서 실행하십시오.
-* [Agent teams](/ko/agent-teams): 공유 작업, 메시징, 팀 리더를 사용한 여러 세션의 자동 조정.
+* [Worktrees](/ko/worktrees): 격리된 git 체크아웃에서 별도의 CLI 세션을 실행하여 편집이 충돌하지 않도록 합니다
+* [데스크톱 앱](/ko/desktop#work-in-parallel-with-sessions): 여러 로컬 세션을 시각적으로 관리하십시오. 각 세션은 자신의 worktree에 있습니다
+* [웹의 Claude Code](/ko/claude-code-on-the-web): Anthropic이 관리하는 클라우드 인프라의 격리된 VM에서 세션을 실행하십시오
+* [Agent teams](/ko/agent-teams): 공유 작업, 메시징, 팀 리더를 사용한 여러 세션의 자동 조정
 
 작업을 병렬화하는 것 외에도 여러 세션은 품질 중심 워크플로우를 활성화합니다. 새로운 context는 Claude가 방금 작성한 코드에 편향되지 않으므로 코드 검토를 개선합니다.
 
@@ -501,7 +554,9 @@ claude -p "이 로그 파일 분석" --output-format stream-json
 
 테스트로 비슷한 작업을 수행할 수 있습니다: 한 Claude가 테스트를 작성하고 다른 Claude가 테스트를 통과하는 코드를 작성합니다.
 
-### 파일 전체에 fan out하기
+<h3 id="fan-out-across-files">
+  파일 전체에 fan out하기
+</h3>
 
 <Tip>
   각각에 대해 `claude -p`를 호출하는 루프를 통해 작업을 분배하십시오. 배치 작업의 경우 `--allowedTools`를 사용하여 권한을 범위 지정하십시오.
@@ -536,7 +591,9 @@ claude -p "<your prompt>" --output-format json | your_command
 
 개발 중에 디버깅을 위해 `--verbose`를 사용하고 프로덕션에서는 끄십시오.
 
-### auto mode로 자율적으로 실행하기
+<h3 id="run-autonomously-with-auto-mode">
+  auto mode로 자율적으로 실행하기
+</h3>
 
 중단 없는 실행과 백그라운드 안전 검사를 위해 [auto mode](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 사용하십시오. 분류기 모델이 명령을 실행하기 전에 검토하여 범위 확대, 알 수 없는 인프라, 적대적 콘텐츠 기반 작업을 차단하면서 일상적인 작업이 프롬프트 없이 진행되도록 합니다.
 
@@ -546,9 +603,33 @@ claude --permission-mode auto -p "fix all lint errors"
 
 `-p` 플래그가 있는 비대화형 실행의 경우, 분류기가 반복적으로 작업을 차단하면 auto mode가 중단됩니다. 폴백할 사용자가 없기 때문입니다. [auto mode가 폴백할 때](/ko/permission-modes#when-auto-mode-falls-back)의 임계값을 참조하십시오.
 
+<h3 id="add-an-adversarial-review-step">
+  적대적 검토 단계 추가하기
+</h3>
+
+<Tip>
+  작업을 완료된 것으로 취급하기 전에 subagent가 새로운 context에서 diff를 검토하고 누락된 부분을 보고하도록 하십시오.
+</Tip>
+
+Claude가 무인 상태에서 작업할수록 작업을 완료된 것으로 간주하기 전에 독립적인 검사가 더 중요합니다. 새로운 [subagent](/ko/sub-agents) context에서 실행되는 검토자는 변경을 생성한 추론이 아닌 diff와 제공한 기준만 보므로 자체 조건에 따라 결과를 평가합니다.
+
+정확성 검사의 경우 번들된 [`/code-review` skill](/ko/commands)을 실행하십시오. 이는 새로운 subagent에서 현재 diff를 버그에 대해 검토하고 발견 사항을 세션에 반환합니다. 대신 diff를 계획과 비교하여 검사하려면 검토 프롬프트를 직접 작성하십시오. 검사할 작업, 검사할 계획, 발견으로 간주되는 것을 이름 지으십시오:
+
+```text theme={null}
+subagent를 사용하여 PLAN.md에 대해 속도 제한기 diff를 검토하십시오. 모든 요구 사항이 구현되었는지, 나열된 엣지 케이스에 테스트가 있는지, 작업 범위 외의 것이 변경되지 않았는지 확인하십시오. 스타일 선호도가 아닌 누락된 부분을 보고하십시오.
+```
+
+검토자가 subagent로 실행되므로 구현 세션은 누락된 부분을 직접 받고 창 간에 발견 사항을 복사하지 않고도 수정하고 다시 검토할 수 있습니다. 더 긴 자율 실행의 경우 [agent team](/ko/agent-teams)이 많은 작업 전체에서 이 루프를 계속 진행할 수 있으며 기록된 발견 사항을 spot-check합니다.
+
+<Callout>
+  누락된 부분을 찾도록 프롬프트된 검토자는 작업이 건전할 때도 일반적으로 일부를 보고합니다. 왜냐하면 그것이 요청받은 것이기 때문입니다. 모든 발견을 추적하면 과도한 엔지니어링으로 이어집니다: 추가 추상화 계층, 방어적 코드, 발생할 수 없는 경우에 대한 테스트. 검토자에게 정확성 또는 명시된 요구 사항에 영향을 미치는 누락된 부분만 플래그하도록 지시하고 나머지는 선택 사항으로 취급하십시오.
+</Callout>
+
 ***
 
-## 일반적인 실패 패턴 피하기
+<h2 id="avoid-common-failure-patterns">
+  일반적인 실패 패턴 피하기
+</h2>
 
 이는 일반적인 실수입니다. 조기에 인식하면 시간을 절약합니다:
 
@@ -565,7 +646,9 @@ claude --permission-mode auto -p "fix all lint errors"
 
 ***
 
-## 직관 개발하기
+<h2 id="develop-your-intuition">
+  직관 개발하기
+</h2>
 
 이 가이드의 패턴은 정해진 것이 아닙니다. 일반적으로 잘 작동하지만 모든 상황에 최적일 수는 없는 시작점입니다.
 
@@ -575,7 +658,9 @@ claude --permission-mode auto -p "fix all lint errors"
 
 시간이 지남에 따라 어떤 가이드도 포착할 수 없는 직관을 개발할 것입니다. 구체적일 때와 개방적일 때, 계획할 때와 탐색할 때, context를 지울 때와 누적하도록 할 때를 알게 될 것입니다.
 
-## 관련 리소스
+<h2 id="related-resources">
+  관련 리소스
+</h2>
 
 * [Claude Code 작동 방식](/ko/how-claude-code-works): 에이전트 루프, 도구, context 관리
 * [Claude Code 확장](/ko/features-overview): skills, hooks, MCP, subagents, plugins

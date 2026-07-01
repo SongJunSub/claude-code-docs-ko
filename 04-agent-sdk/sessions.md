@@ -230,6 +230,10 @@ Resume과 fork에는 세션 ID가 필요합니다. 결과 메시지의 `session_
   ```
 
   ```typescript TypeScript theme={null}
+  import { query } from "@anthropic-ai/claude-agent-sdk";
+
+  const sessionId = "..."; // The ID you captured in the previous example
+
   // Earlier session analyzed the code; now build on that analysis
   for await (const message of query({
     prompt: "Now implement the refactoring you suggested",
@@ -245,8 +249,10 @@ Resume과 fork에는 세션 ID가 필요합니다. 결과 메시지의 `session_
   ```
 </CodeGroup>
 
+이전 분석을 기반으로 하는 응답이 표시되어야 하며, 이는 에이전트가 이전 컨텍스트를 유지한 상태로 세션을 재개했음을 확인합니다.
+
 <Tip>
-  `resume` 호출이 예상된 기록 대신 새 세션을 반환하면 가장 일반적인 원인은 일치하지 않는 `cwd`입니다. 세션은 `~/.claude/projects/<encoded-cwd>/*.jsonl` 아래에 저장되며, 여기서 `<encoded-cwd>`는 모든 영숫자가 아닌 문자가 `-`로 바뀐 절대 작업 디렉토리입니다 (따라서 `/Users/me/proj`는 `-Users-me-proj`가 됩니다). resume 호출이 다른 디렉토리에서 실행되면 SDK가 잘못된 위치를 찾습니다. 세션 파일도 현재 머신에 존재해야 합니다.
+  `resume` 호출이 예상된 기록 대신 새 세션을 반환하면 가장 일반적인 원인은 일치하지 않는 `cwd`입니다. 세션은 `~/.claude/projects/<encoded-cwd>/*.jsonl` 아래에 저장되거나, `CLAUDE_CONFIG_DIR` 환경 변수를 설정한 경우 `$CLAUDE_CONFIG_DIR/projects/<encoded-cwd>/*.jsonl` 아래에 저장됩니다. 여기서 `<encoded-cwd>`는 모든 영숫자가 아닌 문자가 `-`로 바뀐 절대 작업 디렉토리입니다 (따라서 `/Users/me/proj`는 `-Users-me-proj`가 됩니다). resume 호출이 다른 디렉토리에서 실행되면 SDK가 잘못된 위치를 찾습니다. 세션 파일도 현재 머신에 존재해야 합니다.
 </Tip>
 
 머신 간 또는 서버리스 환경에서 세션을 재개하려면 [`SessionStore` 어댑터](/ko/agent-sdk/session-storage)를 사용하여 트랜스크립트를 공유 스토리지로 미러링합니다.
@@ -268,10 +274,11 @@ Resume과 fork에는 세션 ID가 필요합니다. 결과 메시지의 `session_
   # Fork: branch from session_id into a new session
   forked_id = None
   async for message in query(
-      prompt="Instead of JWT, implement OAuth2 for the auth module",
+      prompt="Instead of JWT, outline how OAuth2 would work for the auth module",
       options=ClaudeAgentOptions(
           resume=session_id,
           fork_session=True,
+          max_turns=5,
       ),
   ):
       if isinstance(message, ResultMessage):
@@ -291,14 +298,19 @@ Resume과 fork에는 세션 ID가 필요합니다. 결과 메시지의 `session_
   ```
 
   ```typescript TypeScript theme={null}
+  import { query } from "@anthropic-ai/claude-agent-sdk";
+
+  const sessionId = "..."; // The ID you captured in the previous example
+
   // Fork: branch from sessionId into a new session
   let forkedId: string | undefined;
 
   for await (const message of query({
-    prompt: "Instead of JWT, implement OAuth2 for the auth module",
+    prompt: "Instead of JWT, outline how OAuth2 would work for the auth module",
     options: {
       resume: sessionId,
-      forkSession: true
+      forkSession: true,
+      maxTurns: 5
     }
   })) {
     if (message.type === "system" && message.subtype === "init") {
@@ -322,6 +334,8 @@ Resume과 fork에는 세션 ID가 필요합니다. 결과 메시지의 `session_
   }
   ```
 </CodeGroup>
+
+`forkedId`가 원본 세션 ID와 다른지 확인해야 합니다. 원본 세션을 재개하면 여전히 JWT 스레드를 계속하며, 이는 포크가 원본 기록을 수정하지 않았음을 확인합니다.
 
 <h2 id="resume-across-hosts">
   호스트 간에 재개하기

@@ -18,9 +18,14 @@ Claude Code CLI에서 입력하는 대신 프롬프트를 말씀하세요. 음�
   요구 사항
 </h2>
 
-음성 받아쓰기는 기록된 오디오를 Anthropic의 서버로 스트리밍하여 전사합니다. 오디오는 로컬에서 처리되지 않습니다. 음성 텍스트 변환 서비스는 Claude.ai 계정으로 인증할 때만 사용 가능하며, Claude Code가 Anthropic API 키, Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry를 직접 사용하도록 구성된 경우에는 사용할 수 없습니다. 조직에서 HIPAA 규정 준수를 활성화한 경우에도 음성 받아쓰기를 사용할 수 없습니다. 전사는 Claude 메시지나 토큰을 소비하지 않으며 `/usage`에 표시된 한도에 포함되지 않습니다. Anthropic이 데이터를 처리하는 방법은 [데이터 사용](/ko/data-usage)을 참조하세요.
+음성 받아쓰기는 기록된 오디오를 Anthropic의 서버로 스트리밍하여 전사합니다. 오디오는 로컬에서 처리되지 않습니다. 다음 모든 항목이 필요합니다:
 
-음성 받아쓰기는 또한 로컬 마이크 접근이 필요하므로 [웹의 Claude Code](/ko/claude-code-on-the-web) 또는 SSH 세션과 같은 원격 환경에서는 작동하지 않습니다. WSL에서 음성 받아쓰기는 오디오 접근을 위해 WSLg가 필요하며, 이는 Windows 10 또는 11의 Microsoft Store에서 설치된 WSL2에 포함되어 있습니다. WSLg를 사용할 수 없는 경우(예: WSL1), 대신 기본 Windows에서 Claude Code를 실행하세요.
+* **Claude.ai 계정**: 음성 텍스트 변환 서비스는 Claude.ai 계정으로 인증할 때만 사용 가능하며, Claude Code가 Anthropic API 키, Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry를 직접 사용하도록 구성된 경우에는 사용할 수 없습니다.
+* **HIPAA 규정 준수가 활성화되지 않은 조직**: 이 제한이 적용되면 `/voice`에 `Voice mode is disabled by your organization's policy`가 표시됩니다.
+* **로컬 마이크**: 음성 받아쓰기는 [웹의 Claude Code](/ko/claude-code-on-the-web) 또는 SSH 세션과 같은 원격 환경에서는 작동하지 않습니다.
+* **WSL에서 Claude Code를 실행하는 경우 WSLg**: WSLg는 Windows 10 또는 11의 Microsoft Store에서 설치된 WSL2에 포함되어 있습니다. WSLg를 사용할 수 없는 경우(예: WSL1), 대신 기본 Windows에서 Claude Code를 실행하세요.
+
+전사는 Claude 메시지나 토큰을 소비하지 않으며 `/usage`에 표시된 한도에 포함되지 않습니다. Anthropic이 데이터를 처리하는 방법은 [데이터 사용](/ko/data-usage)을 참조하세요.
 
 오디오 녹음은 macOS, Linux 및 Windows의 기본 제공 네이티브 모듈을 사용합니다. Linux에서 네이티브 모듈을 로드할 수 없으면 Claude Code는 ALSA utils의 `arecord` 또는 SoX의 `rec`으로 폴백합니다. 둘 다 사용할 수 없으면 `/voice`는 패키지 관리자에 대한 설치 명령을 출력합니다.
 
@@ -34,7 +39,7 @@ Claude Code [VS Code 확장](/ko/vs-code)도 동일한 Claude.ai 계정 요구 �
 
 ```
 /voice
-Voice mode enabled (hold). Hold Space to record. Dictation language: en (/config to change).
+Voice mode enabled (hold). Hold space to record. Dictation language: en (/config to change).
 ```
 
 `/voice`는 선택적 모드 인수를 허용합니다:
@@ -57,7 +62,7 @@ Voice mode enabled (hold). Hold Space to record. Dictation language: en (/config
 }
 ```
 
-음성 받아쓰기가 활성화되어 있는 동안 입력 바닥글은 프롬프트가 비어 있을 때 `hold Space to speak` 힌트를 표시합니다. 힌트는 현재 `voice:pushToTalk` 바인딩을 반영하며, [받아쓰기 키를 다시 바인딩](#rebind-the-dictation-key)하면 업데이트됩니다. 힌트 텍스트는 두 모드 모두에서 동일하며, [사용자 정의 상태 줄](/ko/statusline)이 구성된 경우 나타나지 않습니다.
+음성 받아쓰기가 활성화되어 있는 동안 입력 바닥글은 프롬프트가 비어 있을 때 `hold space to speak` 힌트를 표시합니다. 힌트는 현재 `voice:pushToTalk` 바인딩을 반영하며, [받아쓰기 키를 다시 바인딩](#rebind-the-dictation-key)하면 업데이트됩니다. 힌트 텍스트는 두 모드 모두에서 동일하며, [사용자 정의 상태 줄](/ko/statusline)이 구성된 경우 나타나지 않습니다.
 
 전사는 두 모드 모두에서 코딩 어휘에 맞게 조정됩니다. `regex`, `OAuth`, `JSON` 및 `localhost`와 같은 일반적인 개발 용어가 올바르게 인식되며, 현재 프로젝트 이름과 git 분기 이름이 자동으로 인식 힌트로 추가됩니다.
 
@@ -91,7 +96,11 @@ Voice mode enabled (hold). Hold Space to record. Dictation language: en (/config
 
 탭 모드는 단일 키 누름으로 녹음을 전환합니다: 한 번 탭하여 시작하고, 말한 다음, 다시 탭하여 프롬프트를 전송합니다. 워밍업이 없으며 키를 누르고 있을 필요가 없습니다.
 
-`/voice tap`으로 탭 모드를 활성화합니다. 프롬프트 입력이 비어 있으면 `Space`를 탭하여 녹음을 시작합니다. 바닥글은 녹음 중에 실시간 파형을 표시합니다. `Space`를 다시 탭하여 중지합니다. Claude Code는 전사를 삽입하고 전사가 최소 3단어 이상이면 프롬프트를 자동으로 제출합니다. 더 짧은 전사는 삽입되지만 제출되지 않으므로 실수로 탭해도 단어가 전송되지 않습니다.
+`/voice tap`으로 탭 모드를 활성화합니다. 프롬프트 입력이 비어 있으면 `Space`를 탭하여 녹음을 시작합니다. 바닥글은 녹음 중에 실시간 파형을 표시합니다. `Space`를 다시 탭하여 중지합니다.
+
+Claude Code는 전사를 삽입하고 전사가 최소 3단어 이상이면 프롬프트를 자동으로 제출합니다. 더 짧은 전사는 삽입되지만 제출되지 않으므로 실수로 탭해도 단어가 전송되지 않습니다.
+
+3단어 임계값은 공백 없이 작성된 언어의 단어를 계산합니다. v2.1.195 기준으로 일본어, 중국어, 태국어 전사는 개별 단어를 계산하므로 탭 모드와 `autoSubmit`이 있는 홀드 모드에서 자동으로 제출됩니다. 이전 버전은 공백이 없는 전사를 한 단어로 계산했으며 자동으로 제출하지 않았습니다.
 
 첫 번째 탭은 프롬프트 입력이 비어 있을 때만 녹음을 시작하므로 메시지를 작성하는 동안 여전히 공백을 정상적으로 입력할 수 있습니다. 두 번째 탭은 입력 내용에 관계없이 녹음을 중지합니다. 녹음은 또한 15초의 침묵 또는 2분 총 시간 후 자동으로 중지됩니다.
 
@@ -169,8 +178,10 @@ Voice mode enabled (hold). Hold Space to record. Dictation language: en (/config
 음성 받아쓰기가 활성화되지 않거나 녹음되지 않을 때의 일반적인 문제:
 
 * **`Voice mode requires a Claude.ai account`**: API 키 또는 타사 공급자로 인증되었습니다. `/login`을 실행하여 Claude.ai 계정으로 로그인하세요.
+* **`Voice mode is disabled by your organization's policy`**: 조직의 규정 준수 구성이 음성 받아쓰기를 비활성화합니다. [요구 사항](#requirements)에 설명되어 있습니다. 조직 관리자에게 연락하여 조직에서 음성 받아쓰기를 사용할 수 있는지 확인하세요.
 * **`Microphone access is denied`**: 시스템 설정에서 터미널에 마이크 권한을 부여하세요. macOS에서는 시스템 설정 → 개인정보 보호 및 보안 → 마이크로 이동하여 터미널 앱을 활성화한 다음 `/voice`를 다시 실행하세요. Windows에서는 설정 → 개인정보 보호 및 보안 → 마이크로 이동하여 데스크톱 앱에 대한 마이크 접근을 켜세요. 그런 다음 `/voice`를 다시 실행하세요. 터미널이 macOS 설정에 나열되지 않으면 [macOS 마이크 설정에 나열되지 않은 터미널](#terminal-not-listed-in-macos-microphone-settings)을 참조하세요.
 * **Linux에서 `No audio recording tool found`**: 네이티브 오디오 모듈을 로드할 수 없고 폴백이 설치되지 않았습니다. 오류 메시지에 표시된 명령으로 SoX를 설치하세요. 예: `sudo apt-get install sox`.
+* **`Voice mode requires a microphone, but SoX could not open an audio capture device`**: SoX가 설치되어 있지만 호스트에 오디오 캡처 장치가 없습니다. 예를 들어 헤드리스 서버 또는 컨테이너입니다. 마이크가 있는 머신에서 Claude Code를 실행하세요. {/* min-version: 2.1.195 */}v2.1.195부터 Linux의 Claude Code는 이 상황에서 이 메시지를 보고합니다. 이전 버전은 SoX가 이미 설치되어 있어도 설치하도록 요청했습니다.
 * **`Voice mode could not find a working audio recorder in WSL`**: WSLg는 ALSA 장치가 아닌 PulseAudio를 통해 오디오를 라우팅하므로 SoX는 PulseAudio 백엔드가 명시적으로 설치되어야 합니다. `sudo apt install sox libsox-fmt-pulse`를 실행하세요. `sox`만 설치하면 ALSA 백엔드가 함께 설치되는데, WSL에서는 `/dev/snd` 장치가 없기 때문에 녹음할 수 없습니다.
 * **`Voice input is failing repeatedly and has been paused`**: 음성 받아쓰기가 여러 번 시작 실패를 겪었고 하나가 성공할 때까지 새 세션 시도를 중단했습니다. 이는 일반적으로 이 호스트의 마이크 또는 오디오 스택이 오디오를 캡처할 수 없음을 의미합니다. 예를 들어 헤드리스 서버, 오디오 패스스루가 없는 원격 셸 또는 거부된 마이크 권한이 있습니다. 작동하는 입력 장치를 확인하고 위의 항목에서 근본 원인을 해결한 다음 음성을 다시 트리거하세요.
 * **누르고 있기 모드에서 `Space`를 누르고 있어도 아무것도 일어나지 않음**: 누르고 있는 동안 프롬프트 입력을 봅니다. 공백이 계속 누적되면 음성 받아쓰기가 꺼져 있을 가능성이 높습니다. `/voice hold`를 실행하여 활성화하세요. 1\~2개의 공백만 나타나고 그 다음 아무것도 없으면 음성 받아쓰기는 켜져 있지만 누르고 있기 감지가 트리거되지 않습니다. 누르고 있기 감지는 터미널이 키 반복 이벤트를 보내야 하므로 OS 수준에서 키 반복이 비활성화되면 누르고 있는 키를 감지할 수 없습니다. 키 반복 요구 사항을 피하려면 `/voice tap`으로 탭 모드로 전환하세요.

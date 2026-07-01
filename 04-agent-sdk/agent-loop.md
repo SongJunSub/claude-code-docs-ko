@@ -16,7 +16,7 @@ Agent SDK를 사용하면 Claude Code의 자율 에이전트 루프를 자신의
 
 모든 에이전트 세션은 동일한 주기를 따릅니다:
 
-<img src="https://mintcdn.com/claude-code/gvy2DIUELtNA8qD3/images/agent-loop-diagram.svg?fit=max&auto=format&n=gvy2DIUELtNA8qD3&q=85&s=192e1bd6c8a2950a16e5ee0b94e27e26" alt="에이전트 루프: 프롬프트 입력, Claude 평가, 도구 호출 또는 최종 답변으로 분기" width="680" height="150" data-path="images/agent-loop-diagram.svg" />
+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/agent-loop-diagram.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=1c6e8f28d80dba14a7287419656f1237" alt="에이전트 루프 다이어그램: 프롬프트가 에이전트 루프에 진입하고, Claude가 평가하여 도구 호출을 요청하거나(결과가 다시 평가로 피드백됨) 최종 답변을 반환합니다" width="720" height="212" data-path="images/agent-loop-diagram.svg" />
 
 1. **프롬프트 수신.** Claude가 프롬프트, 시스템 프롬프트, 도구 정의, 대화 기록과 함께 프롬프트를 받습니다. SDK는 세션 메타데이터를 포함하는 서브타입 `"init"`이 있는 [`SystemMessage`](#message-types)를 생성합니다.
 2. **평가 및 응답.** Claude가 현재 상태를 평가하고 진행 방법을 결정합니다. 텍스트로 응답하거나, 하나 이상의 도구 호출을 요청하거나, 둘 다 할 수 있습니다. SDK는 텍스트와 도구 호출 요청을 포함하는 [`AssistantMessage`](#message-types)를 생성합니다.
@@ -32,20 +32,20 @@ Agent SDK를 사용하면 Claude Code의 자율 에이전트 루프를 자신의
 
 턴은 루프 내의 한 왕복입니다: Claude가 도구 호출을 포함하는 출력을 생성하고, SDK가 해당 도구를 실행하고, 결과가 자동으로 Claude에게 다시 피드백됩니다. 이는 코드에 제어를 반환하지 않고 발생합니다. Claude가 도구 호출이 없는 출력을 생성할 때까지 턴이 계속되며, 이 시점에서 루프가 끝나고 최종 결과가 전달됩니다.
 
-프롬프트 "auth.ts의 실패한 테스트 수정"에 대한 전체 세션이 어떻게 보일 수 있는지 생각해 봅시다.
+프롬프트 "Fix the failing tests in auth.ts"에 대한 전체 세션이 어떻게 보일 수 있는지 생각해 봅시다.
 
 먼저 SDK가 프롬프트를 Claude에게 보내고 세션 메타데이터가 있는 [`SystemMessage`](#message-types)를 생성합니다. 그러면 루프가 시작됩니다:
 
 1. **턴 1:** Claude가 `Bash`를 호출하여 `npm test`를 실행합니다. SDK는 도구 호출이 있는 [`AssistantMessage`](#message-types)를 생성하고, 명령을 실행한 후, 출력(3개 실패)이 있는 [`UserMessage`](#message-types)를 생성합니다.
 2. **턴 2:** Claude가 `auth.ts`와 `auth.test.ts`에서 `Read`를 호출합니다. SDK가 파일 내용을 반환하고 `AssistantMessage`를 생성합니다.
 3. **턴 3:** Claude가 `Edit`를 호출하여 `auth.ts`를 수정한 후, `Bash`를 호출하여 `npm test`를 다시 실행합니다. 3개 테스트 모두 통과합니다. SDK는 `AssistantMessage`를 생성합니다.
-4. **최종 턴:** Claude가 도구 호출이 없는 텍스트 전용 응답을 생성합니다: "auth 버그를 수정했고, 3개 테스트 모두 통과합니다." SDK는 이 텍스트가 있는 최종 `AssistantMessage`를 생성한 후, 비용 및 사용량이 있는 [`ResultMessage`](#message-types)를 생성합니다.
+4. **최종 턴:** Claude가 도구 호출이 없는 텍스트 전용 응답을 생성합니다: "Fixed the auth bug, all three tests pass now." SDK는 이 텍스트가 있는 최종 `AssistantMessage`를 생성한 후, 비용 및 사용량이 있는 [`ResultMessage`](#message-types)를 생성합니다.
 
 이는 4턴이었습니다: 도구 호출이 있는 3턴, 최종 텍스트 전용 응답 1턴.
 
 `max_turns` / `maxTurns`로 루프를 제한할 수 있으며, 이는 도구 사용 턴만 계산합니다. 예를 들어, 위의 루프에서 `max_turns=2`는 편집 단계 전에 중지했을 것입니다. `max_budget_usd` / `maxBudgetUsd`를 사용하여 지출 임계값에 따라 턴을 제한할 수도 있습니다.
 
-제한이 없으면 Claude가 자체적으로 완료될 때까지 루프가 실행되며, 이는 잘 정의된 작업에는 괜찮지만 개방형 프롬프트("이 코드베이스를 개선하세요")에서는 오래 실행될 수 있습니다. 예산을 설정하는 것은 프로덕션 에이전트에 좋은 기본값입니다. 옵션 참조는 아래의 [턴과 예산](#turns-and-budget)을 참조하세요.
+제한이 없으면 Claude가 자체적으로 완료될 때까지 루프가 실행되며, 이는 잘 정의된 작업에는 괜찮지만 개방형 프롬프트("improve this codebase")에서는 오래 실행될 수 있습니다. 예산을 설정하는 것은 프로덕션 에이전트에 좋은 기본값입니다. 옵션 참조는 아래의 [턴과 예산](#turns-and-budget)을 참조하세요.
 
 <h2 id="message-types">
   메시지 타입
@@ -53,7 +53,14 @@ Agent SDK를 사용하면 Claude Code의 자율 에이전트 루프를 자신의
 
 루프가 실행되면 SDK는 메시지 스트림을 생성합니다. 각 메시지는 루프의 어느 단계에서 왔는지 알려주는 타입을 전달합니다. 5가지 핵심 타입은:
 
-* **`SystemMessage`:** 세션 생명주기 이벤트. `subtype` 필드가 이를 구분합니다: `"init"`은 첫 번째 메시지(세션 메타데이터)이고, `"compact_boundary"`는 [압축](#automatic-compaction) 후에 발생합니다. TypeScript에서 압축 경계는 `SDKSystemMessage`의 서브타입이 아니라 자체 [`SDKCompactBoundaryMessage`](/ko/agent-sdk/typescript#sdkcompactboundarymessage) 타입입니다.
+* **`SystemMessage`:** 세션 생명주기 이벤트. `subtype` 필드가 이를 구분합니다:
+
+  * `"init"`: 세션 메타데이터가 포함된 첫 번째 메시지
+  * `"compact_boundary"`: [압축](#automatic-compaction) 후에 발생합니다
+  * `"informational"`: 루프의 일반 텍스트 상태 배너
+  * `"worker_shutting_down"`: 호스트가 종료되거나 Remote Control이 연결 해제되어 현재 턴 후에 루프가 종료됩니다
+
+  TypeScript에서 `"init"` 이외의 각 서브타입은 `SDKSystemMessage`의 서브타입이 아니라 [`SDKMessage` 유니온](/ko/agent-sdk/typescript#sdkmessage)의 자체 타입입니다.
 * **`AssistantMessage`:** 최종 텍스트 전용 응답을 포함하여 각 Claude 응답 후에 생성됩니다. 해당 턴의 텍스트 콘텐츠 블록과 도구 호출 블록을 포함합니다.
 * **`UserMessage`:** 각 도구 실행 후 Claude에게 다시 전송되는 도구 결과 콘텐츠와 함께 생성됩니다. 루프 중간에 스트리밍하는 모든 사용자 입력에 대해서도 생성됩니다.
 * **`StreamEvent`:** 부분 메시지가 활성화된 경우에만 생성됩니다. 원본 API 스트리밍 이벤트(텍스트 델타, 도구 입력 청크)를 포함합니다. [스트림 응답](/ko/agent-sdk/streaming-output)을 참조하세요.
@@ -69,7 +76,7 @@ Agent SDK를 사용하면 Claude Code의 자율 에이전트 루프를 자신의
 
 * **최종 결과만:** `ResultMessage`를 처리하여 출력, 비용, 작업이 성공했는지 또는 제한에 도달했는지 확인합니다.
 * **진행 상황 업데이트:** `AssistantMessage`를 처리하여 Claude가 각 턴에서 무엇을 하고 있는지, 어떤 도구를 호출했는지 확인합니다.
-* **라이브 스트리밍:** 부분 메시지를 활성화하여(`include_partial_messages` Python, `includePartialMessages` TypeScript) 실시간으로 `StreamEvent` 메시지를 받습니다. [실시간 스트림 응답](/ko/agent-sdk/streaming-output)을 참조하세요.
+* **라이브 스트리밍:** 부분 메시지를 활성화하여(Python의 `include_partial_messages`, TypeScript의 `includePartialMessages`) 실시간으로 `StreamEvent` 메시지를 받습니다. [실시간 스트림 응답](/ko/agent-sdk/streaming-output)을 참조하세요.
 
 메시지 타입을 확인하는 방법은 SDK에 따라 다릅니다:
 
@@ -182,15 +189,15 @@ Claude가 단일 턴에서 여러 도구 호출을 요청하면 두 SDK 모두 �
 
 `effort` 옵션은 Claude가 적용하는 추론의 양을 제어합니다. 낮은 노력 수준은 턴당 더 적은 토큰을 사용하고 비용을 줄입니다. 모든 모델이 노력 매개변수를 지원하는 것은 아닙니다. 어떤 모델이 지원하는지는 [노력](https://platform.claude.com/docs/en/build-with-claude/effort)을 참조하세요.
 
-| 수준         | 동작           | 적합한 경우                      |
-| :--------- | :----------- | :-------------------------- |
-| `"low"`    | 최소 추론, 빠른 응답 | 파일 조회, 디렉토리 나열              |
-| `"medium"` | 균형 잡힌 추론     | 일상적인 편집, 표준 작업              |
-| `"high"`   | 철저한 분석       | 리팩토링, 디버깅                   |
-| `"xhigh"`  | 확장된 추론 깊이    | 코딩 및 에이전트 작업; Opus 4.7에서 권장 |
-| `"max"`    | 최대 추론 깊이     | 깊은 분석이 필요한 다단계 문제           |
+| 수준         | 동작           | 적합한 경우                                 |
+| :--------- | :----------- | :------------------------------------- |
+| `"low"`    | 최소 추론, 빠른 응답 | 파일 조회, 디렉토리 나열                         |
+| `"medium"` | 균형 잡힌 추론     | 일상적인 편집, 표준 작업                         |
+| `"high"`   | 철저한 분석       | 리팩토링, 디버깅                              |
+| `"xhigh"`  | 확장된 추론 깊이    | 코딩 및 에이전트 작업; Fable 5 및 Opus 4.7+에서 권장 |
+| `"max"`    | 최대 추론 깊이     | 깊은 분석이 필요한 다단계 문제                      |
 
-`effort`를 설정하지 않으면 Python SDK는 매개변수를 설정하지 않은 상태로 두고 모델의 기본 동작으로 미룹니다. TypeScript SDK는 기본값으로 `"high"`를 사용합니다.
+`effort`를 설정하지 않으면 두 SDK 모두 매개변수를 설정하지 않은 상태로 두고 모델의 기본 동작으로 미룹니다.
 
 <Note>
   `effort`는 각 응답 내에서 추론 깊이에 대한 지연 시간과 토큰 비용을 교환합니다. [확장 사고](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)는 출력에서 보이는 사고의 연쇄 블록을 생성하는 별도의 기능입니다. 이들은 독립적입니다: `effort: "low"`를 확장 사고 활성화로 설정하거나, `effort: "max"`를 비활성화로 설정할 수 있습니다.
@@ -204,14 +211,14 @@ Claude가 단일 턴에서 여러 도구 호출을 요청하면 두 SDK 모두 �
 
 권한 모드 옵션(Python의 `permission_mode`, TypeScript의 `permissionMode`)은 에이전트가 도구를 사용하기 전에 승인을 요청하는지 여부를 제어합니다:
 
-| 모드                    | 동작                                                                                                                 |
-| :-------------------- | :----------------------------------------------------------------------------------------------------------------- |
-| `"default"`           | 허용 규칙으로 다루지 않는 도구는 승인 콜백을 트리거합니다; 콜백이 없으면 거부                                                                       |
-| `"acceptEdits"`       | 파일 편집 및 일반적인 파일시스템 명령(`mkdir`, `touch`, `mv`, `cp` 등)을 자동 승인합니다; 다른 Bash 명령은 기본 규칙을 따릅니다                           |
-| `"plan"`              | 읽기 전용 도구 실행; Claude는 소스 파일을 편집하지 않고 탐색하고 계획을 생성합니다                                                                 |
-| `"dontAsk"`           | 절대 프롬프트하지 않습니다. [권한 규칙](/ko/settings#permission-settings)으로 사전 승인된 도구가 실행되고, 나머지는 거부됩니다                            |
-| `"auto"`(TypeScript만) | 모델 분류기를 사용하여 각 도구 호출을 승인하거나 거부합니다. 가용성 및 동작은 [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 참조하세요 |
-| `"bypassPermissions"` | 요청하지 않고 모든 허용된 도구를 실행합니다. Unix에서 루트로 실행할 때는 사용할 수 없습니다. 에이전트의 조치가 관심 있는 시스템에 영향을 미칠 수 없는 격리된 환경에서만 사용합니다           |
+| 모드                    | 동작                                                                                                                                                                                                                                                                                              |
+| :-------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"default"`           | 허용 규칙으로 다루지 않는 도구는 승인 콜백을 트리거합니다; 콜백이 없으면 거부                                                                                                                                                                                                                                                    |
+| `"acceptEdits"`       | 파일 편집 및 일반적인 파일시스템 명령(`mkdir`, `touch`, `mv`, `cp` 등)을 자동 승인합니다; 다른 Bash 명령은 기본 규칙을 따릅니다                                                                                                                                                                                                        |
+| `"plan"`              | Claude는 소스 파일을 편집하지 않고 탐색하고 계획을 생성합니다; 파일 편집은 절대 자동 승인되지 않으며 `canUseTool` 콜백을 통해 프롬프트됩니다                                                                                                                                                                                                        |
+| `"dontAsk"`           | 절대 프롬프트하지 않습니다. [권한 규칙](/ko/settings#permission-settings)으로 사전 승인된 도구가 실행되고, 나머지는 거부됩니다                                                                                                                                                                                                         |
+| `"auto"`(TypeScript만) | 모델 분류기를 사용하여 각 도구 호출을 승인하거나 거부합니다. 가용성 및 동작은 [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 참조하세요                                                                                                                                                                              |
+| `"bypassPermissions"` | 명시적 [`ask` 규칙](/ko/settings#permission-settings)이 일치하지 않는 한 요청하지 않고 모든 허용된 도구를 실행합니다; 권한이 평가되는 방식은 [권한이 평가되는 방식](/ko/agent-sdk/permissions#how-permissions-are-evaluated)을 참조하여 ask 규칙이 우선순위 순서에서 어디에 있는지 확인하세요. Unix에서 루트로 실행할 때는 사용할 수 없습니다. 에이전트의 조치가 관심 있는 시스템에 영향을 미칠 수 없는 격리된 환경에서만 사용합니다 |
 
 대화형 애플리케이션의 경우 `"default"`를 도구 승인 콜백과 함께 사용하여 승인 프롬프트를 표시합니다. 개발 머신의 자율 에이전트의 경우 `"acceptEdits"`는 파일 편집 및 일반적인 파일시스템 명령(`mkdir`, `touch`, `mv`, `cp` 등)을 자동 승인하면서 다른 `Bash` 명령을 허용 규칙 뒤에 유지합니다. CI, 컨테이너 또는 기타 격리된 환경에 대해 `"bypassPermissions"`를 예약합니다. 전체 세부 정보는 [권한](/ko/agent-sdk/permissions)을 참조하세요.
 
@@ -219,7 +226,7 @@ Claude가 단일 턴에서 여러 도구 호출을 요청하면 두 SDK 모두 �
   모델
 </h3>
 
-`model`을 설정하지 않으면 SDK는 Claude Code의 기본값을 사용하며, 이는 인증 방법 및 구독에 따라 다릅니다. 특정 모델을 고정하거나 더 빠르고 저렴한 에이전트를 위해 더 작은 모델을 사용하려면 명시적으로 설정합니다(예: `model="claude-sonnet-4-6"`). 사용 가능한 ID는 [모델](https://platform.claude.com/docs/en/about-claude/models)을 참조하세요.
+`model`을 설정하지 않으면 SDK는 Claude Code의 기본값을 사용하며, 이는 인증 방법 및 구독에 따라 다릅니다. 특정 모델을 고정하거나 더 빠르고 저렴한 에이전트를 위해 더 작은 모델을 사용하려면 명시적으로 설정합니다(예: `model="claude-sonnet-5"`). 사용 가능한 ID는 [모델](https://platform.claude.com/docs/en/about-claude/models)을 참조하세요.
 
 <h2 id="the-context-window">
   컨텍스트 윈도우
@@ -304,13 +311,13 @@ SDK와의 각 상호작용은 세션을 생성하거나 계속합니다. `Result
 
 루프가 끝나면 `ResultMessage`는 무엇이 일어났는지 알려주고 출력을 제공합니다. `subtype` 필드(두 SDK 모두에서 사용 가능)는 종료 상태를 확인하는 주요 방법입니다.
 
-| 결과 서브타입                               | 무엇이 일어났는가                           | `result` 필드 사용 가능? |
-| :------------------------------------ | :---------------------------------- | :----------------: |
-| `success`                             | Claude가 정상적으로 작업을 완료했습니다            |          예         |
-| `error_max_turns`                     | 완료 전에 `maxTurns` 제한에 도달했습니다         |         아니오        |
-| `error_max_budget_usd`                | 완료 전에 `maxBudgetUsd` 제한에 도달했습니다     |         아니오        |
-| `error_during_execution`              | 오류가 루프를 중단했습니다(예: API 실패 또는 취소된 요청) |         아니오        |
-| `error_max_structured_output_retries` | 구조화된 출력 검증이 구성된 재시도 제한 후 실패했습니다     |         아니오        |
+| 결과 서브타입                               | 무엇이 일어났는가                                                                                   | `result` 필드 사용 가능? |
+| :------------------------------------ | :------------------------------------------------------------------------------------------ | :----------------: |
+| `success`                             | Claude가 정상적으로 작업을 완료했습니다                                                                    |          예         |
+| `error_max_turns`                     | 완료 전에 `maxTurns` 제한에 도달했습니다                                                                 |         아니오        |
+| `error_max_budget_usd`                | 완료 전에 `maxBudgetUsd` 제한에 도달했습니다                                                             |         아니오        |
+| `error_during_execution`              | 오류가 루프를 중단했습니다(예: API 실패 또는 취소된 요청)                                                         |         아니오        |
+| `error_max_structured_output_retries` | 구성된 재시도 제한 내에서 유효한 구조화된 출력이 생성되지 않았습니다: 모든 시도가 검증에 실패했거나, 모델 폴백이 성공적인 재시도 없이 완료된 출력을 취소했습니다 |         아니오        |
 
 `result` 필드(최종 텍스트 출력)는 `success` 변형에만 존재하므로 항상 읽기 전에 서브타입을 확인합니다. 모든 결과 서브타입은 `total_cost_usd`, `usage`, `num_turns`, `session_id`를 전달하므로 비용을 추적하고 오류 후에도 재개할 수 있습니다. Python에서 `total_cost_usd`와 `usage`는 선택적으로 입력되며 일부 오류 경로에서 `None`일 수 있으므로 형식을 지정하기 전에 보호합니다. `usage` 필드 해석에 대한 세부 정보는 [비용 및 사용량 추적](/ko/agent-sdk/cost-tracking)을 참조하세요.
 
@@ -431,7 +438,7 @@ Hooks는 에이전트의 컨텍스트 윈도우 내가 아니라 애플리케이
 이제 루프를 이해했으므로 구축하는 것에 따라 다음 위치로 이동합니다:
 
 * **아직 에이전트를 실행하지 않았나요?** [빠른 시작](/ko/agent-sdk/quickstart)으로 시작하여 SDK를 설치하고 끝에서 끝까지 실행되는 전체 예제를 확인합니다.
-* **프로젝트에 연결할 준비가 되었나요?** [CLAUDE.md, 스킬, 파일시스템 hooks 로드](/ko/agent-sdk/claude-code-features)하여 에이전트가 프로젝트 규칙을 자동으로 따르도록 합니다.
+* **프로젝트에 연결할 준비가 되었나요?** [CLAUDE.md, skills, 파일시스템 hooks 로드](/ko/agent-sdk/claude-code-features)하여 에이전트가 프로젝트 규칙을 자동으로 따르도록 합니다.
 * **대화형 UI를 구축하고 있나요?** [스트리밍](/ko/agent-sdk/streaming-output)을 활성화하여 루프가 실행되면서 라이브 텍스트 및 도구 호출을 표시합니다.
 * **에이전트가 할 수 있는 것에 대해 더 엄격한 제어가 필요하신가요?** [권한](/ko/agent-sdk/permissions)으로 도구 접근을 잠그고, [hooks](/ko/agent-sdk/hooks)를 사용하여 실행 전에 도구 호출을 감사, 차단 또는 변환합니다.
 * **장기 또는 비용이 많이 드는 작업을 실행하고 있나요?** 격리된 작업을 [서브에이전트](/ko/agent-sdk/subagents)로 오프로드하여 주 컨텍스트를 깔끔하게 유지합니다.

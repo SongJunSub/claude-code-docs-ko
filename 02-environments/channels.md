@@ -18,15 +18,7 @@
 
 Claude가 채널을 통해 회신할 때 터미널에서 인바운드 메시지를 볼 수 있지만 회신 텍스트는 볼 수 없습니다. 터미널에는 도구 호출과 확인(예: "전송됨")이 표시되고 실제 회신은 다른 플랫폼에 나타납니다.
 
-이 페이지에서 다루는 내용:
-
-* [지원되는 채널](#supported-channels): Telegram, Discord 및 iMessage 설정
-* [채널 설치 및 실행](#quickstart): localhost 데모인 fakechat 사용
-* [메시지를 푸시할 수 있는 사람](#security): 발신자 허용 목록 및 페어링 방법
-* [조직에 대해 채널 활성화](#enterprise-controls): Team, Enterprise 또는 Console 조직을 관리하는 경우
-* [채널이 어떻게 비교되는지](#how-channels-compare): 웹 세션, Slack, MCP 및 Remote Control과 비교
-
-자신의 채널을 구축하려면 [채널 참조](/ko/channels-reference)를 참조하세요.
+Team, Enterprise 또는 Console 조직을 관리하는 경우 [조직에 대해 채널 활성화](#enterprise-controls)를 참조하세요. 자신의 채널을 구축하려면 [채널 참조](/ko/channels-reference)를 참조하세요.
 
 <h2 id="supported-channels">
   지원되는 채널
@@ -269,7 +261,7 @@ fakechat 데모를 시도하려면 다음이 필요합니다:
   </Step>
 </Steps>
 
-Claude가 터미널에서 멀리 있을 때 권한 프롬프트에 도달하면 세션이 응답할 때까지 일시 중지됩니다. [권한 릴레이 기능](/ko/channels-reference#relay-permission-prompts)을 선언하는 채널 서버는 이러한 프롬프트를 사용자에게 전달하여 원격으로 승인하거나 거부할 수 있습니다. 무인 사용의 경우 [`--dangerously-skip-permissions`](/ko/permission-modes#skip-all-checks-with-bypasspermissions-mode)는 프롬프트를 완전히 우회하지만 신뢰하는 환경에서만 사용하세요.
+Claude가 터미널에서 멀리 있을 때 권한 프롬프트에 도달하면 세션이 응답할 때까지 일시 중지됩니다. [권한 릴레이 기능](/ko/channels-reference#relay-permission-prompts)을 선언하는 채널 서버는 이러한 프롬프트를 사용자에게 전달하여 원격으로 승인하거나 거부할 수 있습니다. 무인 사용의 경우 [`--dangerously-skip-permissions`](/ko/permission-modes#skip-all-checks-with-bypasspermissions-mode)는 명시적 요청 규칙 이외의 프롬프트를 우회하지만 신뢰하는 환경에서만 사용하세요.
 
 비대화형 모드에서 `-p`로 채널을 실행할 때 여러 선택지 질문 및 계획 모드 승인과 같이 터미널 입력이 필요한 도구는 비활성화되므로 세션이 입력을 기다리며 멈추지 않습니다.
 
@@ -300,7 +292,7 @@ iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동�
 
 관리자는 사용자가 재정의할 수 없는 두 가지 [관리 설정](/ko/settings)을 통해 가용성을 제어합니다. 기본값은 인증 방식에 따라 다릅니다:
 
-* **claude.ai Team 및 Enterprise**: 관리자가 활성화할 때까지 채널이 차단됩니다.
+* **claude.ai Team 및 Enterprise**: 소유자가 활성화할 때까지 채널이 차단됩니다.
 * **Anthropic Console with API key authentication**: 채널이 기본적으로 허용됩니다. 조직이 관리 설정을 배포하는 경우에만 이 설정이 필요합니다.
 
 모든 경우에 사용자가 `--channels`로 세션에 옵트인할 때까지 채널이 실행되지 않습니다.
@@ -316,7 +308,7 @@ iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동�
   조직에 대해 채널 활성화
 </h3>
 
-관리자는 [**claude.ai → Admin settings → Claude Code → Channels**](https://claude.ai/admin-settings/claude-code)에서 채널을 활성화하거나 관리 설정에서 `channelsEnabled`를 `true`로 설정할 수 있습니다.
+조직에 대해 채널을 활성화하려면 소유자 역할이 필요한 [**claude.ai → Admin settings → Claude Code → Channels**](https://claude.ai/admin-settings/claude-code)에서 활성화하거나 관리 설정에서 `channelsEnabled`를 `true`로 설정합니다.
 
 활성화되면 조직의 사용자는 `--channels`를 사용하여 개별 세션에 채널 서버를 옵트인할 수 있습니다. 설정이 비활성화되었거나 설정되지 않은 경우 MCP 서버는 여전히 연결되고 해당 도구가 작동하지만 채널 메시지는 도착하지 않습니다. 시작 경고는 사용자에게 관리자가 설정을 활성화하도록 합니다.
 
@@ -377,6 +369,6 @@ iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동�
 
 채널이 실행 중이면 다음 관련 기능을 살펴보세요:
 
-* [자신의 채널 구축](/ko/channels-reference): 아직 플러그인이 없는 시스템의 경우
-* [Remote Control](/ko/remote-control): 이벤트를 전달하는 대신 휴대폰에서 로컬 세션을 운전하기
-* [예약된 작업](/ko/scheduled-tasks): 푸시된 이벤트에 반응하는 대신 타이머에서 폴링하기
+* [자신의 채널 구축](/ko/channels-reference) - 아직 플러그인이 없는 시스템의 경우
+* [Remote Control](/ko/remote-control) - 이벤트를 전달하는 대신 휴대폰에서 로컬 세션을 운전하기
+* [예약된 작업](/ko/scheduled-tasks) - 푸시된 이벤트에 반응하는 대신 타이머에서 폴링하기

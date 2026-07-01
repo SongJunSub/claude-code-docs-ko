@@ -57,6 +57,8 @@ Claude Code의 **Default** 출력 스타일은 기존 시스템 프롬프트이�
     * 사용자: `~/.claude/output-styles`
     * 프로젝트: `.claude/output-styles`
     * 관리형 정책: [관리형 설정 디렉토리](/ko/settings#settings-files) 내의 `.claude/output-styles`
+
+    프로젝트 출력 스타일은 작업 디렉토리와 저장소 루트 사이의 모든 `.claude/output-styles/`에서 로드됩니다. {/* min-version: 2.1.178 */}v2.1.178부터 이러한 중첩된 디렉토리 중 하나 이상이 동일한 이름의 스타일을 정의하면 Claude Code는 작업 디렉토리에 가장 가까운 것을 사용합니다.
   </Step>
 
   <Step title="Frontmatter 및 지침 추가">

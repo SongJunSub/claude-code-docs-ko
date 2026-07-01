@@ -140,7 +140,7 @@ CLI는 기존 루틴 관리도 지원합니다. `/schedule list`를 실행하여
   일정 트리거 추가
 </h3>
 
-일정 트리거는 반복 주기에 따라 루틴을 실행하거나 특정 미래 시간에 한 번 실행합니다. **트리거 선택** 섹션에서 사전 설정된 빈도를 선택하세요. 시간별, 일일, 평일 또는 주간. 시간은 로컬 시간대에 입력되고 자동으로 변환되므로 클라우드 인프라가 어디에 있든 루틴이 해당 벽시계 시간에 실행됩니다.
+일정 트리거는 반복 주기에 따라 루틴을 실행하거나 특정 미래 시간에 한 번 실행합니다. **트리거 선택** 섹션에서 사전 설정된 빈도를 선택하세요: 시간별, 일일, 평일 또는 주간. 시간은 로컬 시간대에 입력되고 자동으로 변환되므로 클라우드 인프라가 어디에 있든 루틴이 해당 벽시계 시간에 실행됩니다.
 
 실행은 엇갈림으로 인해 예약된 시간 몇 분 후에 시작될 수 있습니다. 오프셋은 각 루틴에 대해 일관됩니다.
 
@@ -297,7 +297,7 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
 | 초안 여부  | PR이 초안 상태인지 여부      |
 | 병합 여부  | PR이 병합되었는지 여부       |
 
-각 필터는 필드를 연산자와 쌍으로 지정합니다. 같음, 포함, 시작, 하나, 하나 아님 또는 정규식 일치.
+각 필터는 필드를 연산자와 쌍으로 지정합니다: 같음, 포함, 시작, 하나, 하나 아님 또는 정규식 일치.
 
 `matches regex` 연산자는 전체 필드 값을 테스트하며, 그 내의 부분 문자열이 아닙니다. `hotfix`를 포함하는 제목과 일치하려면 `.*hotfix.*`를 작성하세요. 주변 `.*` 없이는 필터가 정확히 `hotfix`인 제목과만 일치하며 앞이나 뒤에 아무것도 없습니다. 정규식 구문 없이 리터럴 부분 문자열 일치의 경우 대신 `contains` 연산자를 사용하세요.
 
@@ -410,11 +410,11 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
   문제 해결
 </h2>
 
-<h3 id="/schedule-returns-unknown-command">
-  `/schedule` "알 수 없는 명령" 반환
+<h3 id="/schedule-shows-no-commands-match-or-unknown-command">
+  `/schedule` "알 수 없는 명령" 또는 "명령이 일치하지 않음" 표시
 </h3>
 
-CLI는 요구 사항 중 하나가 충족되지 않으면 `/schedule`을 숨깁니다. 원인은 일반적으로 다음 중 하나입니다.
+CLI는 요구 사항 중 하나가 충족되지 않으면 `/schedule`을 숨깁니다. 따라서 명령 메뉴는 입력 중에 `명령이 일치하지 않음 "/schedule"`을 표시하고, 제출하면 `알 수 없는 명령: /schedule`을 반환합니다. 원인은 일반적으로 다음 중 하나입니다.
 
 * Console API 키 또는 Bedrock, Vertex, Foundry와 같은 클라우드 공급자로 인증되어 있습니다. `/schedule`은 claude.ai 구독 로그인이 필요합니다. 셸에서 `ANTHROPIC_API_KEY` 또는 `ANTHROPIC_AUTH_TOKEN`이 설정되어 있거나 `settings.json`에서 `apiKeyHelper`가 설정되어 있으면 먼저 제거하세요. 이들이 claude.ai 로그인보다 우선하기 때문입니다.
 * `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 또는 `DISABLE_GROWTHBOOK`이 셸 환경 또는 [`settings.json` 파일](/ko/settings#available-settings)의 `env` 블록에 설정되어 있습니다. 이들은 `/schedule`이 의존하는 기능 플래그 가져오기를 비활성화합니다.
@@ -423,11 +423,11 @@ CLI는 요구 사항 중 하나가 충족되지 않으면 `/schedule`을 숨깁�
 
 CLI가 어떻게 구성되어 있든 관계없이 [claude.ai/code/routines](https://claude.ai/code/routines)에서 언제든지 루틴을 생성하고 관리할 수 있습니다.
 
-<h3 id="routines-are-disabled-by-your-organization-s-policy">
+<h3 id="routines-are-disabled-by-your-organization’s-policy">
   "루틴이 조직의 정책에 의해 비활성화되었습니다"
 </h3>
 
-Team 또는 Enterprise 관리자가 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)의 **루틴** 토글을 꺼놨을 가능성이 높습니다. 이는 서버 측 조직 설정이므로 로컬 구성에서 재정의할 수 없습니다. 조직에 대해 루틴을 활성화하도록 요청하려면 관리자에게 문의하세요.
+Team 또는 Enterprise 조직의 Owner가 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)의 **루틴** 토글을 꺼놨을 가능성이 높습니다. 이는 서버 측 조직 설정이므로 로컬 구성에서 재정의할 수 없습니다. 조직에 대해 루틴을 활성화하도록 Owner에게 요청하세요.
 
 <h2 id="related-resources">
   관련 리소스

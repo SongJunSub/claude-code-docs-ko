@@ -35,6 +35,8 @@ Total code changes:    0 lines added, 0 lines removed
 
 Pro, Max, Team 또는 Enterprise 요금제에서 `/usage`는 요금제 한도에 포함되는 항목의 분석도 표시합니다. 최근 사용량을 skills, subagents, plugins 및 개별 MCP 서버에 귀속시키며, 각각은 전체의 백분율로 표시됩니다. `d` 또는 `w`를 눌러 지난 24시간과 지난 7일 사이를 전환할 수 있습니다. 수치는 근사치이며 이 기기의 로컬 세션 기록에서 계산되므로 다른 기기 또는 claude.ai의 사용량은 포함되지 않습니다.
 
+[VS Code 확장](/ko/vs-code#check-account-and-usage)에서 동일한 분석이 Day 및 Week 토글이 있는 Account & usage 대화 상자에 나타납니다. Claude Code v2.1.174 이상이 필요합니다.
+
 <h2 id="managing-costs-for-teams">
   팀 비용 관리
 </h2>
@@ -49,7 +51,7 @@ Pro 및 Max 플랜에서는 `/usage-credits` 명령어를 사용하여 사용 �
   사용자 정의 속도 제한이 있는 조직의 경우, 이 워크스페이스의 Claude Code 트래픽은 조직의 전체 API 속도 제한에 포함됩니다. Claude Console의 이 워크스페이스의 한도 페이지에서 [워크스페이스 속도 제한](https://platform.claude.com/docs/ko/api/rate-limits#setting-lower-limits-for-workspaces)을 설정하여 Claude Code의 할당량을 제한하고 다른 프로덕션 워크로드를 보호할 수 있습니다.
 </Note>
 
-Bedrock, Vertex 및 Foundry에서 Claude Code는 클라우드에서 메트릭을 전송하지 않습니다. 비용 메트릭을 얻으려면 여러 대규모 엔터프라이즈에서 [LiteLLM](/ko/llm-gateway#litellm-configuration)을 사용한다고 보고했으며, 이는 회사가 [키별 지출을 추적](https://docs.litellm.ai/docs/proxy/virtual_keys#tracking-spend)하는 데 도움이 되는 오픈소스 도구입니다. 이 프로젝트는 Anthropic과 무관하며 보안 감사를 받지 않았습니다.
+Bedrock, Vertex 및 Foundry에서 Claude Code는 클라우드에서 메트릭을 전송하지 않습니다. 자체 호스팅된 [Claude apps gateway](/ko/claude-apps-gateway)는 사용자별 사용량 귀속, 토큰 수를 포함한 OTLP 메트릭, 그리고 이러한 제공자에 대한 [사용자별 지출 한도](/ko/claude-apps-gateway-spend-limits)를 제공합니다. 다른 [LLM gateway](/ko/llm-gateway)를 통해 Claude Code를 라우팅하는 조직은 게이트웨이가 모든 요청을 보기 때문에 그곳에서 지출을 추적할 수 있습니다.
 
 <h3 id="rate-limit-recommendations">
   속도 제한 권장사항
@@ -196,7 +198,7 @@ MCP 도구 정의는 [기본적으로 연기됩니다](/ko/mcp#scale-with-mcp-to
   확장 사고 조정
 </h3>
 
-확장 사고는 기본적으로 활성화되어 있습니다. 복잡한 계획 및 추론 작업의 성능을 크게 향상시키기 때문입니다. 사고 토큰은 출력 토큰으로 청구되며, 기본 예산은 모델에 따라 수만 개의 토큰이 될 수 있습니다. 깊은 추론이 필요하지 않은 더 간단한 작업의 경우, `/effort`를 사용하거나 `/model`에서 [노력 수준](/ko/model-config#adjust-effort-level)을 낮추거나, `/config`에서 사고를 비활성화하거나, `MAX_THINKING_TOKENS=8000`으로 예산을 낮춤으로써 비용을 줄일 수 있습니다.
+확장 사고는 기본적으로 활성화되어 있습니다. 복잡한 계획 및 추론 작업의 성능을 크게 향상시키기 때문입니다. 사고 토큰은 출력 토큰으로 청구되며, 기본 예산은 모델에 따라 수만 개의 토큰이 될 수 있습니다. 깊은 추론이 필요하지 않은 더 간단한 작업의 경우, `/effort`를 사용하거나 `/model`에서 [노력 수준](/ko/model-config#adjust-effort-level)을 낮추거나, `/config`에서 사고를 비활성화하거나, [고정 사고 예산](/ko/model-config#adaptive-reasoning-and-fixed-thinking-budgets)이 있는 모델에서 `MAX_THINKING_TOKENS=8000`으로 예산을 낮춤으로써 비용을 줄일 수 있습니다. 적응형 추론 모델은 0이 아닌 예산을 무시하므로 대신 노력 수준을 사용하십시오. Fable 5에서는 사고 비활성화를 사용할 수 없으며, 항상 확장 사고를 사용합니다.
 
 <h3 id="delegate-verbose-operations-to-subagents">
   자세한 작업을 subagents에 위임

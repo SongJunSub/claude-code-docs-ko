@@ -6,6 +6,78 @@
 
 > Google Vertex AI를 통해 Claude Code를 구성하는 방법을 알아봅니다. 설정, IAM 구성 및 문제 해결을 포함합니다.
 
+export const ContactSalesCard = ({surface}) => {
+  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
+  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>;
+  const STYLES = `
+.cc-cs {
+  --cs-slate: #141413;
+  --cs-clay: #d97757;
+  --cs-clay-deep: #c6613f;
+  --cs-gray-000: #ffffff;
+  --cs-gray-700: #3d3d3a;
+  --cs-border-default: rgba(31, 30, 29, 0.15);
+  font-family: inherit;
+}
+.dark .cc-cs {
+  --cs-slate: #f0eee6;
+  --cs-gray-000: #262624;
+  --cs-gray-700: #bfbdb4;
+  --cs-border-default: rgba(240, 238, 230, 0.14);
+}
+.cc-cs-card {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 14px 16px; margin: 0;
+  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; flex-wrap: wrap;
+}
+.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
+.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
+.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.cc-cs-btn-clay {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cs-clay-deep); color: #fff; border: none;
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+  transition: background-color 0.15s; white-space: nowrap;
+}
+.cc-cs-btn-clay:hover { background: var(--cs-clay); }
+.cc-cs-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; color: var(--cs-gray-700);
+  border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+}
+.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
+.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
+@media (max-width: 720px) {
+  .cc-cs-actions { width: 100%; }
+}
+`;
+  return <div className="cc-cs not-prose">
+      <style>{STYLES}</style>
+      <div className="cc-cs-card">
+        <div className="cc-cs-text">
+          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
+        </div>
+        <div className="cc-cs-actions">
+          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
+            View plans
+          </a>
+          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
+            Contact sales {iconArrowRight()}
+          </a>
+        </div>
+      </div>
+    </div>;
+};
+
+<ContactSalesCard surface="vertex" />
+
 <h2 id="prerequisites">
   필수 요구사항
 </h2>
@@ -155,7 +227,7 @@ Claude Code는 [MCP tool search](/ko/mcp#scale-with-mcp-tool-search)를 Vertex A
 </h3>
 
 <Warning>
-  여러 사용자에게 배포할 때 특정 모델 버전을 고정합니다. 고정하지 않으면 `sonnet` 및 `opus`와 같은 모델 별칭이 최신 버전으로 확인되며, Anthropic이 업데이트를 출시할 때 Vertex AI 프로젝트에서 아직 활성화되지 않았을 수 있습니다. Claude Code는 최신 버전을 사용할 수 없을 때 시작 시 [이전 버전으로 폴백](#startup-model-checks)하지만, 고정하면 사용자가 새 모델로 이동하는 시기를 제어할 수 있습니다.
+  여러 사용자에게 배포할 때 특정 모델 버전을 고정합니다. 고정하지 않으면 `sonnet` 및 `opus`와 같은 모델 별칭이 Claude Code의 Vertex AI용 기본 제공 기본값으로 확인되며, 이는 최신 릴리스보다 뒤떨어질 수 있고 프로젝트에서 아직 활성화되지 않았을 수 있습니다. Claude Code는 기본값을 사용할 수 없을 때 시작 시 [이전 버전으로 폴백](#startup-model-checks)하지만, 고정하면 사용자가 새 모델로 이동하는 시기를 제어할 수 있습니다.
 </Warning>
 
 이러한 환경 변수를 특정 Vertex AI 모델 ID로 설정합니다.
@@ -164,7 +236,7 @@ Claude Code는 [MCP tool search](/ko/mcp#scale-with-mcp-tool-search)를 Vertex A
 
 ```bash theme={null}
 export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'
-export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-4-6'
+export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-5'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5@20251001'
 ```
 
@@ -218,7 +290,7 @@ Claude Code가 Vertex AI로 구성되어 시작할 때 사용하려는 모델이
   1M 토큰 context window
 </h2>
 
-Claude Opus 4.6 이상 및 Sonnet 4.6은 Vertex AI에서 [1M 토큰 context window](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 지원합니다. Claude Code는 1M 모델 변형을 선택할 때 확장된 context window를 자동으로 활성화합니다.
+Claude Sonnet 5, Opus 4.6 이상 및 Sonnet 4.6은 Vertex AI에서 [1M 토큰 context window](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 지원합니다. Sonnet 5는 항상 1M 윈도우로 실행되며, 선택할 `[1m]` 변형이 없습니다. 다른 모델의 경우, Claude Code는 1M 모델 변형을 선택할 때 확장된 context window를 자동으로 활성화합니다.
 
 [설정 마법사](#sign-in-with-vertex-ai)는 모델을 고정할 때 1M context 옵션을 제공합니다. 수동으로 고정된 모델에 대해 대신 활성화하려면 모델 ID에 `[1m]`을 추가합니다. 자세한 내용은 [타사 배포를 위한 모델 고정](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
 

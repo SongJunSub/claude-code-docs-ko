@@ -198,7 +198,7 @@ Claude가 작업을 완료하고 입력이 필요할 때마다 데스크톱 알�
 
 Claude가 편집하는 모든 파일에서 [Prettier](https://prettier.io/)를 자동으로 실행하여 수동 개입 없이 형식이 일관되게 유지되도록 합니다.
 
-이 hook은 `PostToolUse` 이벤트를 `Edit|Write` matcher와 함께 사용하므로 파일 편집 도구 후에만 실행됩니다. 명령은 [`jq`](https://jqlang.github.io/jq/)를 사용하여 편집된 파일 경로를 추출하고 Prettier에 전달합니다. 프로젝트 루트의 `.claude/settings.json`에 추가합니다:
+이 hook은 `PostToolUse` 이벤트를 `Edit|Write` matcher와 함께 사용하므로 파일 편집 도구 후에만 실행됩니다. {/* min-version: 2.1.191 */}Claude Code v2.1.191 이상에서는 matcher를 `Edit,Write`로도 작성할 수 있습니다. 이러한 버전에서는 `|`와 `,`이 도구 이름 matcher의 상호 교환 가능한 목록 구분자이기 때문입니다. 명령은 [`jq`](https://jqlang.github.io/jq/)를 사용하여 편집된 파일 경로를 추출하고 Prettier에 전달합니다. 프로젝트 루트의 `.claude/settings.json`에 추가합니다:
 
 ```json theme={null}
 {
@@ -506,7 +506,7 @@ Hook 이벤트는 Claude Code의 라이프사이클의 특정 지점에서 발�
 
 여러 hooks가 동일한 이벤트와 일치하면 모든 hook의 명령이 완료될 때까지 실행된 후 Claude Code가 결과를 병합합니다. 하나의 hook이 `deny`를 반환하는 것이 형제 hooks의 실행을 중지하지 않습니다. 한 hook의 `deny`가 다른 hook의 부작용을 억제하는 것에 의존하지 마세요.
 
-모든 일치하는 hooks가 완료된 후 Claude Code는 출력을 결합합니다. `PreToolUse` 권한 결정의 경우 가장 제한적인 답변이 우선합니다: `deny`는 `ask`를 재정의하고 `ask`는 `allow`를 재정의합니다. `additionalContext`의 텍스트는 모든 hook에서 유지되고 Claude와 함께 전달됩니다.
+모든 일치하는 hooks가 완료된 후 Claude Code는 출력을 결합합니다. `PreToolUse` 권한 결정의 경우 가장 제한적인 답변이 우선합니다: `deny`, `defer`, `ask`, `allow` 순서입니다. `additionalContext`의 텍스트는 모든 hook에서 유지되고 Claude와 함께 전달됩니다.
 
 아래 예제는 `Bash`에 두 개의 `PreToolUse` hooks를 등록합니다. 첫 번째는 모든 명령을 로그 파일에 추가하고 0으로 종료합니다. 두 번째는 명령에 `rm -rf`가 포함되어 있을 때 거부하기 위해 2로 종료하는 스크립트를 실행합니다:
 
@@ -751,7 +751,7 @@ Matcher가 없으면 hook은 이벤트의 모든 발생에서 발생합니다. M
   `if` 필드는 Claude Code v2.1.85 이상이 필요합니다. 이전 버전은 이를 무시하고 일치하는 모든 호출에서 hook을 실행합니다.
 </Note>
 
-`if` 필드는 [권한 규칙 구문](/ko/permissions)을 사용하여 도구 이름과 인수를 함께 사용하여 hooks를 필터링하므로 hook 프로세스는 도구 호출이 일치할 때만 생성되거나 Bash 명령이 구문 분석하기에 너무 복잡할 때 생성됩니다. 이는 도구 이름만으로 그룹 수준에서 필터링하는 `matcher`를 초과합니다.
+`if` 필드는 [권한 규칙 구문](/ko/permissions)을 사용하여 도구 이름과 인수를 함께 사용하여 hooks를 필터링하므로 hook 프로세스는 도구 호출이 일치할 때만 생성됩니다. 이는 도구 이름만으로 그룹 수준에서 필터링하는 `matcher`를 초과합니다.
 
 예를 들어 모든 Bash 명령이 아닌 `git` 명령을 사용할 때만 hook을 실행하려면:
 
@@ -774,7 +774,19 @@ Matcher가 없으면 hook은 이벤트의 모든 발생에서 발생합니다. M
 }
 ```
 
-Hook 프로세스는 Bash 명령의 서브명령이 `git *`과 일치할 때만 생성되거나 명령이 서브명령으로 구문 분석하기에 너무 복잡할 때 생성됩니다. `npm test && git push`와 같은 복합 명령의 경우 Claude Code는 각 서브명령을 평가하고 `git push`가 일치하기 때문에 hook을 발생시킵니다. `if` 필드는 권한 규칙과 동일한 패턴을 허용합니다: `"Bash(git *)"`, `"Edit(*.ts)"` 등. 여러 도구 이름을 일치시키려면 각각 자신의 `if` 값을 가진 별도의 핸들러를 사용하거나 파이프 교대가 지원되는 `matcher` 수준에서 일치합니다.
+Hook 명령이 실행되는지 여부는 `if` 패턴의 형태와 Claude가 호출하는 Bash 명령에 따라 달라집니다:
+
+| `if` 패턴            | Bash 명령                | Hook이 실행되나요? | 이유                                                          |
+| :----------------- | :--------------------- | :----------- | :---------------------------------------------------------- |
+| `Bash(git *)`      | `git push`             | 예            | 명령 이름이 일치합니다                                                |
+| `Bash(git *)`      | `npm test && git push` | 예            | 각 서브명령이 확인됩니다; `git push`가 일치합니다                            |
+| `Bash(git *)`      | `echo $(git log)`      | 예            | `$()` 및 백틱 내의 명령이 확인됩니다; `git log`가 일치합니다                   |
+| `Bash(git *)`      | `echo $(date)`         | 아니오          | 서브명령이 `git *`과 일치하지 않습니다                                    |
+| `Bash(git push *)` | `echo $(date)`         | 예            | 명령 이름보다 더 많이 지정하는 패턴은 `$()`, 백틱 또는 `$VAR`에서 어쨌든 hook을 실행합니다 |
+
+필터는 또한 실패 시 열려 있으므로 Bash 명령을 구문 분석할 수 없을 때 패턴에 관계없이 hook을 실행합니다. 필터는 최선의 노력이므로 하드 허용 또는 거부를 적용하려면 hook 대신 [권한 시스템](/ko/permissions)을 사용합니다.
+
+`if` 필드는 권한 규칙과 동일한 패턴을 허용합니다: `"Bash(git *)"`, `"Edit(*.ts)"` 등. 여러 도구 이름을 일치시키려면 각각 자신의 `if` 값을 가진 별도의 핸들러를 사용하거나 파이프 교대가 지원되는 `matcher` 수준에서 일치합니다.
 
 `if`는 도구 이벤트에서만 작동합니다: `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest` 및 `PermissionDenied`. 다른 이벤트에 추가하면 hook이 실행되지 않습니다.
 
@@ -793,7 +805,7 @@ Hook을 추가하는 위치는 범위를 결정합니다:
 | [Plugin](/ko/plugins) `hooks/hooks.json`                   | 플러그인이 활성화되었을 때             | 예, 플러그인과 함께 번들됨 |
 | [Skill](/ko/skills) 또는 [agent](/ko/sub-agents) frontmatter | Skill 또는 에이전트가 활성화되어 있는 동안 | 예, 컴포넌트 파일에 정의됨 |
 
-Claude Code에서 [`/hooks`](/ko/hooks#the-hooks-menu)를 실행하여 이벤트별로 그룹화된 모든 구성된 hooks를 찾아봅니다. 모든 hooks를 한 번에 비활성화하려면 설정 파일에서 `"disableAllHooks": true`를 설정합니다. 관리형 설정에서 구성된 Hooks는 `disableAllHooks`도 설정되지 않는 한 실행됩니다.
+Claude Code에서 [`/hooks`](/ko/hooks#the-%2Fhooks-menu)를 실행하여 이벤트별로 그룹화된 모든 구성된 hooks를 찾아봅니다. 모든 hooks를 한 번에 비활성화하려면 설정 파일에서 `"disableAllHooks": true`를 설정합니다. 관리형 설정에서 구성된 Hooks는 `disableAllHooks`도 설정되지 않는 한 실행됩니다.
 
 Claude Code가 실행 중인 동안 설정 파일을 직접 편집하면 파일 감시자가 일반적으로 hook 변경을 자동으로 선택합니다.
 
@@ -806,7 +818,10 @@ Claude Code가 실행 중인 동안 설정 파일을 직접 편집하면 파일 
 모델의 유일한 작업은 yes/no 결정을 JSON으로 반환하는 것입니다:
 
 * `"ok": true`: 작업이 진행됩니다
-* `"ok": false`: 작업이 차단됩니다. `Stop` 및 `SubagentStop` hooks의 경우 `reason`이 Claude에게 피드백으로 전달되어 계속 작업합니다. 다른 이벤트의 경우 턴이 종료되고 `reason`이 경고 줄로 채팅에 나타납니다. Claude는 이를 보지 못합니다.
+* `"ok": false`: 작업이 차단됩니다. 이벤트에 따라 다음과 같이 작동합니다:
+  * `Stop` 및 `SubagentStop`: `reason`이 Claude에게 피드백으로 전달되어 계속 작업합니다
+  * `PreToolUse`: 도구 호출이 거부되고 `reason`이 도구 오류로 Claude에게 반환되어 조정하고 계속할 수 있습니다
+  * `PostToolUse`, `PostToolBatch`, `UserPromptSubmit`, 및 `UserPromptExpansion`: 턴이 종료되고 `reason`이 경고 줄로 채팅에 나타납니다
 
 이 예제는 `Stop` hook을 사용하여 모든 요청된 작업이 완료되었는지 모델에 묻습니다. 모델이 `"ok": false`를 반환하면 Claude는 계속 작업하고 `reason`을 다음 지침으로 사용합니다:
 

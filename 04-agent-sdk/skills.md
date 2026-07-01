@@ -119,9 +119,8 @@ Skills는 YAML frontmatter 및 Markdown 콘텐츠가 포함된 `SKILL.md` 파일
 
 SKILL.md 구조, 다중 파일 Skills 및 예제를 포함한 Skills 생성에 대한 완전한 지침은 다음을 참조하십시오:
 
-* [Claude Code의 Agent Skills](/ko/skills): 생성, 예제 및 문제 해결을 포함한 완전한 가이드
+* [Claude Code의 Agent Skills](/ko/skills): 예제가 포함된 완전한 가이드
 * [Agent Skills 모범 사례](https://platform.claude.com/docs/ko/agents-and-tools/agent-skills/best-practices): 작성 지침 및 명명 규칙
-* [Agent Skills 쿡북](https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction): 예제 Skills 및 템플릿
 
 <h2 id="tool-restrictions">
   도구 제한

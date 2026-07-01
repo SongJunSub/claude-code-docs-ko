@@ -2,55 +2,63 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Escalate hard decisions with the advisor tool
+# 어려운 결정을 조언자 도구로 에스컬레이션하기
 
-> Pair your main model with a stronger advisor model that Claude consults at key moments during a task.
+> 주 모델을 더 강력한 조언자 모델과 쌍으로 만들어 Claude가 작업 중 핵심 순간에 조언자를 참고하도록 합니다.
 
 {/* plan-availability: feature=advisor providers=anthropic */}
 
 <Note>
-  The advisor tool is experimental and requires Claude Code v2.1.98 or later with the Anthropic API. It is not available on Amazon Bedrock, Google Vertex AI, or Microsoft Foundry. Behavior, pricing, and availability may change.
+  조언자 도구는 실험적이며 Anthropic API를 사용하는 Claude Code v2.1.98 이상이 필요합니다. Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry에서는 사용할 수 없습니다. 동작, 가격 책정 및 가용성은 변경될 수 있습니다.
 </Note>
 
-The advisor tool lets Claude consult a second, typically stronger model at key moments during a task, such as before committing to an approach, when stuck on a recurring error, or before declaring a task complete. The advisor receives the full conversation, including every tool call and result, and returns guidance that Claude applies before continuing.
+조언자 도구를 사용하면 Claude가 작업 중 핵심 순간(예: 접근 방식을 확정하기 전, 반복되는 오류에 막혔을 때, 작업 완료를 선언하기 전)에 일반적으로 더 강력한 두 번째 모델을 참고할 수 있습니다. 조언자는 모든 도구 호출 및 결과를 포함한 전체 대화를 받고 Claude가 계속하기 전에 적용할 지침을 반환합니다.
 
-The advisor runs server-side on Anthropic's infrastructure as a [server tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool), available to both subscription and API-billed accounts. You choose which model acts as the advisor, and Claude decides when to call it.
+조언자는 Anthropic의 인프라에서 서버 측으로 실행되며 [서버 도구](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool)로 구독 및 API 청구 계정 모두에서 사용할 수 있습니다. 조언자로 작동할 모델을 선택하고 Claude가 호출 시기를 결정합니다.
 
-This page covers how to enable the advisor, which model pairings are accepted, what Claude shows during a consultation, and how advisor usage is billed.
+이 페이지에서는 조언자를 활성화하는 방법, 허용되는 모델 쌍, Claude가 상담 중에 표시하는 내용, 조언자 사용이 청구되는 방식을 다룹니다.
 
-## When to use the advisor
+<h2 id="when-to-use-the-advisor">
+  조언자를 사용할 때
+</h2>
 
-The advisor fits long, multi-step tasks where most turns are routine but plan quality determines the outcome. Examples include large refactors, debugging sessions where an error keeps recurring, and tasks you want independently checked before Claude declares them done.
+조언자는 대부분의 턴이 일상적이지만 계획 품질이 결과를 결정하는 길고 다단계 작업에 적합합니다. 예시로는 대규모 리팩토링, 오류가 계속 반복되는 디버깅 세션, Claude가 완료를 선언하기 전에 독립적으로 확인하고 싶은 작업이 있습니다.
 
-It adds less value on short tasks where there is little to plan, or on work where every turn needs the strongest model. For those, [switch the main model](/en/model-config#setting-your-model) instead, or see [how the advisor compares with opusplan and subagents](#compare-with-related-features) for other ways to get a second opinion.
+계획할 것이 거의 없는 짧은 작업이나 모든 턴에 가장 강력한 모델이 필요한 작업에서는 가치가 적습니다. 이러한 경우 [주 모델을 전환](/ko/model-config#setting-your-model)하거나 [조언자와 opusplan 및 서브에이전트 비교](#compare-with-related-features)를 참고하여 두 번째 의견을 얻는 다른 방법을 확인하세요.
 
-## Enable the advisor
+<h2 id="enable-the-advisor">
+  조언자 활성화
+</h2>
 
-You can set the advisor model in three ways:
+조언자 모델을 세 가지 방법으로 설정할 수 있습니다:
 
-* **`/advisor` command**: set or change the advisor mid-session and save it as your default
-* **`advisorModel` setting**: configure a persistent default in your [settings file](/en/settings)
-* **`--advisor` flag**: set the advisor for a single session at launch
+* **`/advisor` 명령**: 세션 중간에 조언자를 설정 또는 변경하고 기본값으로 저장
+* **`advisorModel` 설정**: [설정 파일](/ko/settings)에서 지속적인 기본값 구성
+* **`--advisor` 플래그**: 시작 시 단일 세션에 대해 조언자 설정
 
-If any of these sets an advisor model, the advisor is enabled for sessions whose main model [supports it](#choose-an-advisor-model). To stop using it, see [Turn the advisor off](#turn-the-advisor-off).
+이 중 하나가 조언자 모델을 설정하면 주 모델이 [이를 지원](#choose-an-advisor-model)하는 세션에 대해 조언자가 활성화됩니다. 사용을 중지하려면 [조언자 끄기](#turn-the-advisor-off)를 참고하세요.
 
 <Note>
-  To use Fable 5 as the advisor, you need Claude Code v2.1.170 or later and [Fable 5 access](/en/model-config#work-with-fable-5) for your organization. Fable does not appear in the picker that `/advisor` opens, so pass it directly as `/advisor fable`, `--advisor fable`, or `"advisorModel": "fable"`.
+  Fable 5를 조언자로 사용하려면 Claude Code v2.1.170 이상과 조직의 [Fable 5 액세스](/ko/model-config#work-with-fable-5)가 필요합니다.
 </Note>
 
-### Use the `/advisor` command
+<h3 id="use-the-/advisor-command">
+  `/advisor` 명령 사용
+</h3>
 
-Run `/advisor` without arguments to open a picker listing the available advisor models, or pass the model directly:
+인수 없이 `/advisor`를 실행하여 사용 가능한 조언자 모델을 나열하는 선택기를 열거나 모델을 직접 전달하세요:
 
 ```
 /advisor opus
 ```
 
-Your selection is saved to `advisorModel` in your user settings and persists across sessions. If your current main model does not support the advisor, the selection is still saved and activates when you switch to a [compatible main model](#choose-an-advisor-model) with [`/model`](/en/model-config#setting-your-model).
+선택 항목은 사용자 설정의 `advisorModel`에 저장되고 세션 전체에서 유지됩니다. 조직의 [`availableModels`](/ko/model-config#restrict-model-selection) 허용 목록이 저장된 조언자 모델을 제외하면 `/advisor`로 허용된 모델을 선택할 때까지 조언자가 호출되지 않습니다. 현재 주 모델이 조언자를 지원하지 않으면 선택 항목이 여전히 저장되고 [`/model`](/ko/model-config#setting-your-model)을 사용하여 [호환되는 주 모델](#choose-an-advisor-model)로 전환할 때 활성화됩니다.
 
-### Set `advisorModel` in settings
+<h3 id="set-advisormodel-in-settings">
+  설정에서 `advisorModel` 설정
+</h3>
 
-To configure the advisor as a default without opening a session, set it in your settings file:
+세션을 열지 않고 조언자를 기본값으로 구성하려면 설정 파일에서 설정하세요:
 
 ```json theme={null}
 {
@@ -58,106 +66,134 @@ To configure the advisor as a default without opening a session, set it in your 
 }
 ```
 
-### Use the `--advisor` flag
+<h3 id="use-the-advisor-flag">
+  `--advisor` 플래그 사용
+</h3>
 
-To set the advisor for a single session without changing your saved setting, launch with the flag:
+저장된 설정을 변경하지 않고 단일 세션에 대해 조언자를 설정하려면 플래그를 사용하여 시작하세요:
 
 ```bash theme={null}
 claude --advisor opus
 ```
 
-The flag takes precedence over the `advisorModel` setting for that session. Unlike `/advisor`, which saves an inactive selection, the flag exits with an error if the session's main model does not support the advisor.
+플래그는 해당 세션에 대해 `advisorModel` 설정보다 우선합니다. 세션의 주 모델이 조언자를 지원하지 않으면 오류로 종료되거나, 요청된 조언자 모델이 조직의 [`availableModels`](/ko/model-config#restrict-model-selection) 허용 목록에서 제외되면 오류로 종료됩니다.
 
-## Choose an advisor model
+<h2 id="choose-an-advisor-model">
+  조언자 모델 선택
+</h2>
 
-The advisor must be at least as capable as the main model. The accepted advisors for each main model are:
+조언자는 주 모델 이상의 기능을 가져야 합니다. 각 주 모델에 대해 허용되는 조언자는 다음과 같습니다:
 
-| Main model                                      | Accepted advisors                                | Notes                                                 |
-| ----------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------- |
-| Haiku 4.5                                       | Fable, Opus, Sonnet                              | Haiku can call the advisor but cannot act as one      |
-| Sonnet 4.6                                      | Fable, Opus, Sonnet                              |                                                       |
-| Opus 4.6 or later                               | Fable, Opus at or above the main model's version | An Opus 4.7 main with an Opus 4.6 advisor is rejected |
-| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                                            | An Opus or Sonnet advisor is rejected                 |
+| 주 모델                                            | 허용되는 조언자                 | 참고                                    |
+| ----------------------------------------------- | ------------------------ | ------------------------------------- |
+| Haiku 4.5                                       | Fable, Opus, Sonnet      | Haiku는 조언자를 호출할 수 있지만 조언자로 작동할 수 없습니다 |
+| Sonnet 4.6                                      | Fable, Opus, Sonnet      |                                       |
+| Sonnet 5                                        | Fable, Opus, Sonnet 5    | Sonnet 4.6 조언자는 거부됩니다                 |
+| Opus 4.6 이상                                     | 주 모델의 버전 이상인 Fable, Opus | Opus 4.7 주 모델과 Opus 4.6 조언자는 거부됩니다    |
+| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                    | Opus 또는 Sonnet 조언자는 거부됩니다             |
 
-Fable 5 requires Claude Code v2.1.170 or later and Fable 5 access, whether it acts as the main model or the advisor. The `fable` option does not appear in the `/advisor` picker.
+Fable 5는 주 모델로 작동하든 조언자로 작동하든 Claude Code v2.1.170 이상과 Fable 5 액세스가 필요합니다.
 
-Set the advisor as `opus`, `sonnet`, or `fable`. These aliases resolve to the latest version of each model. You can also pass a full model ID such as `claude-opus-4-8`.
+조언자를 `opus`, `sonnet` 또는 `fable`로 설정하세요. 이러한 별칭은 각 모델의 최신 버전으로 확인됩니다. `claude-opus-4-8`과 같은 전체 모델 ID를 전달할 수도 있습니다.
 
-The API enforces the pairing, not Claude Code. Setting a rejected pairing succeeds, then surfaces as a `cannot be used as an advisor when the request model is` error on the next request.
+하위 에이전트는 구성된 조언자를 상속하고 자신의 모델에 대해 동일한 쌍 확인을 적용합니다.
 
-### Common model pairings
+Claude Code는 요청을 보내기 전에 쌍을 검증합니다:
 
-Any accepted pairing works. These combinations balance cost against capability in different ways:
+* 조언자가 주 모델보다 기능이 낮으면 조언자가 주 모델의 요청에 첨부되지 않습니다. `/advisor` 명령 출력과 알림에 이것이 표시됩니다. 자신의 모델이 쌍 확인을 만족하는 하위 에이전트는 여전히 조언자를 사용할 수 있습니다.
+* 주 모델 또는 조언자가 Claude Code가 인식하지 못하는 모델이면 조언자가 첨부되지 않습니다.
 
-| Pairing                      | When to use                                                                                                                                                              |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Sonnet main + Opus advisor   | Sonnet handles routine work and escalates planning, ambiguous failures, and completion checks to Opus                                                                    |
-| Sonnet main + Fable advisor  | Fable 5 guidance at decision points without running Fable 5 throughout. Requires v2.1.170 or later and Fable 5 access                                                    |
-| Haiku main + Opus advisor    | Lowest-cost main model with strong planning. Expect higher cost than Haiku alone but lower than switching the main model to Sonnet or Opus                               |
-| Opus main + Opus advisor     | A second Opus reviews the first. Useful for high-stakes tasks where an independent check matters more than cost                                                          |
-| Fable main + Fable advisor   | Highest-capability pairing when Fable 5 is available (v2.1.170+). Fable is a higher tier than Opus and Sonnet, so it is the only accepted advisor for a Fable main model |
-| Sonnet main + Sonnet advisor | A lower-cost second opinion for catching routine oversights                                                                                                              |
+<h3 id="common-model-pairings">
+  일반적인 모델 쌍
+</h3>
 
-## When Claude consults the advisor
+허용되는 모든 쌍이 작동합니다. 이러한 조합은 비용과 기능을 다양한 방식으로 균형을 맞춥니다:
 
-Claude decides when to call the advisor. It tends to consult before committing to an approach, when an error keeps recurring, and before declaring a task done, but the timing is model-driven rather than rule-based.
+| 쌍                     | 사용 시기                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Sonnet 주 + Opus 조언자   | Sonnet은 일상적인 작업을 처리하고 계획, 모호한 실패, 완료 확인을 Opus로 에스컬레이션합니다                                                   |
+| Sonnet 주 + Fable 조언자  | 전체 Fable 5를 실행하지 않고 결정 지점에서 Fable 5 지침을 받습니다. v2.1.170 이상과 Fable 5 액세스가 필요합니다                              |
+| Haiku 주 + Opus 조언자    | 강력한 계획을 갖춘 가장 저렴한 주 모델입니다. Haiku 단독보다 비용이 높지만 주 모델을 Sonnet 또는 Opus로 전환하는 것보다 낮을 것으로 예상됩니다                  |
+| Opus 주 + Opus 조언자     | 두 번째 Opus가 첫 번째를 검토합니다. 비용보다 독립적인 확인이 더 중요한 높은 위험도 작업에 유용합니다                                               |
+| Fable 주 + Fable 조언자   | Fable 5를 사용할 수 있을 때 가장 높은 기능 쌍(v2.1.170+). Fable은 Opus 및 Sonnet보다 높은 계층이므로 Fable 주 모델에 대해 유일하게 허용되는 조언자입니다 |
+| Sonnet 주 + Sonnet 조언자 | 일상적인 간과를 포착하기 위한 저비용 두 번째 의견                                                                               |
 
-You can ask for a consultation in your prompt the same way you would request any tool, for example `consult the advisor before you continue`. There is no setting to cap or force advisor calls; if you want Claude to consult more or less often during a task, say so in your instructions.
+<h2 id="when-claude-consults-the-advisor">
+  Claude가 조언자를 참고할 때
+</h2>
 
-## What you see during a session
+Claude는 조언자를 호출할 시기를 결정합니다. 접근 방식을 확정하기 전, 오류가 계속 반복될 때, 작업 완료를 선언하기 전에 참고하는 경향이 있지만 타이밍은 규칙 기반이 아닌 모델 기반입니다.
 
-When Claude calls the advisor, the transcript shows an `Advising` line with the advisor model name while the call is in progress. When the result returns, the line confirms that the advisor has reviewed the conversation. Press `Ctrl+O` to expand it and read the advisor's full guidance.
+프롬프트에서 `consult the advisor before you continue`와 같이 다른 도구를 요청하는 것과 같은 방식으로 상담을 요청할 수 있습니다. 조언자 호출을 제한하거나 강제하는 설정은 없습니다. 작업 중에 Claude가 더 자주 또는 덜 자주 참고하기를 원하면 지침에서 말하세요.
 
-Claude generally follows the advisor's guidance, but adapts when its own evidence contradicts a specific claim: if a recommended step fails when tried, or the file contents contradict the advice, Claude surfaces the conflict rather than following the guidance unconditionally.
+<h2 id="what-you-see-during-a-session">
+  세션 중에 표시되는 내용
+</h2>
 
-The advisor always receives the full conversation, and Claude controls the timing. For more control or a different configuration, see [how the advisor compares with subagents and opusplan](#compare-with-related-features).
+Claude가 조언자를 호출하면 대화 기록에 호출이 진행 중인 동안 조언자 모델 이름이 있는 `Advising` 줄이 표시됩니다. 결과가 반환되면 줄은 조언자가 대화를 검토했음을 확인합니다. `Ctrl+O`를 눌러 확장하고 조언자의 전체 지침을 읽으세요.
 
-## Cost
+Claude는 일반적으로 조언자의 지침을 따르지만 자신의 증거가 특정 주장과 모순될 때 적응합니다. 권장 단계가 시도했을 때 실패하거나 파일 내용이 조언과 모순되면 Claude는 지침을 무조건 따르기보다는 충돌을 표시합니다.
 
-Each advisor call sends the conversation to the advisor model, so it consumes tokens at the advisor model's rates in addition to your main model's usage. With API billing, advisor tokens are charged at the advisor model's input and output rates. On subscription plans, advisor usage counts toward your plan's usage limits.
+조언자는 항상 전체 대화를 받고 Claude가 타이밍을 제어합니다. 더 많은 제어 또는 다른 구성을 원하면 [조언자와 서브에이전트 및 opusplan 비교](#compare-with-related-features)를 참고하세요.
 
-Claude calls the advisor at decision points rather than on every turn, so pairing a faster main model with a stronger advisor typically costs less than running the stronger model throughout. Advisor usage counts toward the session totals shown by [`/usage`](/en/costs#track-your-costs).
+<h2 id="cost">
+  비용
+</h2>
 
-For how advisor tokens are reported in API responses, see [Usage and billing](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool#usage-and-billing) in the Claude API documentation.
+각 조언자 호출은 대화를 조언자 모델로 보내므로 주 모델 사용 외에도 조언자 모델의 요금으로 토큰을 소비합니다. API 청구를 사용하면 조언자 토큰은 조언자 모델의 입력 및 출력 요금으로 청구됩니다. 구독 계획에서 조언자 사용은 계획의 사용 한도에 포함됩니다.
 
-## Impact on prompt caching
+Claude는 모든 턴이 아닌 결정 지점에서 조언자를 호출하므로 더 빠른 주 모델을 더 강력한 조언자와 쌍으로 만드는 것이 일반적으로 전체 강력한 모델을 실행하는 것보다 비용이 적습니다. 조언자 사용은 [`/usage`](/ko/costs#track-your-costs)에 표시된 세션 합계에 포함됩니다.
 
-Enabling or disabling the advisor mid-session does not invalidate your main model's [prompt cache](/en/prompt-caching). Unlike [changing model or effort level](/en/prompt-caching#actions-that-invalidate-the-cache), toggling `/advisor` keeps the cached prefix intact, and the advisor's returned guidance is cached as part of the transcript on later turns.
+조언자 토큰이 API 응답에서 보고되는 방식에 대해서는 Claude API 설명서의 [사용량 및 청구](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool#usage-and-billing)를 참고하세요.
 
-The advisor model's own read of the conversation is not cached. Each advisor call processes the full transcript anew, with no reuse between calls.
+<h2 id="impact-on-prompt-caching">
+  프롬프트 캐싱에 미치는 영향
+</h2>
 
-## Requirements
+세션 중간에 조언자를 활성화하거나 비활성화해도 주 모델의 [프롬프트 캐시](/ko/prompt-caching)가 무효화되지 않습니다. [모델 또는 노력 수준 변경](/ko/prompt-caching#actions-that-invalidate-the-cache)과 달리 `/advisor` 토글은 캐시된 접두사를 유지하고 조언자가 반환한 지침은 나중의 턴에서 대화 기록의 일부로 캐시됩니다.
 
-The advisor tool requires all of the following:
+조언자 모델 자체의 대화 읽기는 캐시되지 않습니다. 각 조언자 호출은 전체 대화를 새로 처리하며 호출 간에 재사용이 없습니다.
 
-* **Claude Code v2.1.98 or later**: run `claude update` to upgrade.
-* **Anthropic API only**: the advisor is a server-executed tool. It is not available on Amazon Bedrock, Google Vertex AI, or Microsoft Foundry. Through an [LLM gateway](/en/llm-gateway) configured with `ANTHROPIC_BASE_URL`, availability depends on whether the gateway forwards the request intact to the Anthropic API.
-* **Supported main model**: Opus 4.6 or later, Sonnet 4.6, or Haiku 4.5. {/* min-version: 2.1.170 */}Fable 5 also qualifies on Claude Code v2.1.170 or later.
+<h2 id="requirements">
+  요구 사항
+</h2>
 
-## Turn the advisor off
+조언자 도구는 다음 모두를 요구합니다:
 
-To stop using the advisor and clear your saved `advisorModel`, run `/advisor off` or choose **No advisor** in the `/advisor` picker:
+* **Claude Code v2.1.98 이상**: `claude update`를 실행하여 업그레이드하세요.
+* **Anthropic API만**: 조언자는 서버 실행 도구입니다. Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry에서는 사용할 수 없습니다. [LLM 게이트웨이](/ko/llm-gateway)를 통해 `ANTHROPIC_BASE_URL`로 구성된 경우 가용성은 게이트웨이가 요청을 Anthropic API로 그대로 전달하는지 여부에 따라 달라집니다.
+* **지원되는 주 모델**: Opus 4.6 이상, Sonnet 4.6 이상 또는 Haiku 4.5. {/* min-version: 2.1.170 */}Fable 5도 Claude Code v2.1.170 이상에서 적합합니다.
+
+<h2 id="turn-the-advisor-off">
+  조언자 끄기
+</h2>
+
+조언자 사용을 중지하고 저장된 `advisorModel`을 지우려면 `/advisor off`를 실행하거나 `/advisor` 선택기에서 **No advisor**를 선택하세요:
 
 ```
 /advisor off
 ```
 
-To disable the advisor tool entirely, including the `/advisor` command and the `--advisor` flag, set `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`. See [Environment variables](/en/env-vars).
+`/advisor` 명령 및 `--advisor` 플래그를 포함하여 조언자 도구를 완전히 비활성화하려면 `CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1`을 설정하세요. [환경 변수](/ko/env-vars)를 참고하세요.
 
-## Compare with related features
+<h2 id="compare-with-related-features">
+  관련 기능과 비교
+</h2>
 
-The advisor is one of several ways to combine model strengths. Pick based on when you want a second model involved.
+조언자는 모델 강점을 결합하는 여러 방법 중 하나입니다. 더 강력한 모델을 언제 포함할지에 따라 선택하세요.
 
-| Approach                                                    | When the stronger model runs                            | How it starts                                |
-| ----------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------- |
-| Advisor tool                                                | At decision points mid-task                             | Claude calls it when it needs guidance       |
-| [`opusplan`](/en/model-config#opusplan-model-setting)       | During plan mode, then switches to Sonnet for execution | You enter plan mode                          |
-| [Subagents](/en/sub-agents#choose-a-model) with `model` set | For the entire delegated subtask                        | Claude delegates, or you invoke the subagent |
-| [`/model`](/en/model-config#setting-your-model)             | For all subsequent turns                                | You switch models                            |
+| 접근 방식                                                 | 더 강력한 모델이 실행되는 시기                                                                                       | 시작 방식                       |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------- |
+| 조언자 도구                                                | 작업 중간의 결정 지점에서                                                                                          | Claude가 지침이 필요할 때 호출합니다     |
+| [`opusplan`](/ko/model-config#opusplan-model-setting) | [계획 모드 중 `availableModels`에서 허용될 때](/ko/model-config#restrict-model-selection), 그 다음 실행을 위해 Sonnet으로 전환 | 계획 모드를 입력합니다                |
+| [서브에이전트](/ko/sub-agents#choose-a-model) (`model` 설정)  | 전체 위임된 부작업에 대해                                                                                          | Claude가 위임하거나 서브에이전트를 호출합니다 |
+| [`/model`](/ko/model-config#setting-your-model)       | 이후의 모든 턴에 대해                                                                                            | 모델을 전환합니다                   |
 
-## See also
+<h2 id="see-also">
+  참고 항목
+</h2>
 
-* [Model configuration](/en/model-config): switch models, set effort levels, and use `opusplan`
-* [Manage costs effectively](/en/costs): track token usage across models
-* [Advisor tool in the Claude API](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool): understand the underlying server tool, or use it directly from the Messages API
-* [The advisor strategy](https://claude.com/blog/the-advisor-strategy): why pairing a fast main model with a stronger advisor works
+* [모델 구성](/ko/model-config): 모델 전환, 노력 수준 설정, `opusplan` 사용
+* [비용 효과적으로 관리](/ko/costs): 모델 전체의 토큰 사용량 추적
+* [Claude API의 조언자 도구](https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool): 기본 서버 도구 이해 또는 Messages API에서 직접 사용
+* [조언자 전략](https://claude.com/blog/the-advisor-strategy): 빠른 주 모델을 더 강력한 조언자와 쌍으로 만드는 이유

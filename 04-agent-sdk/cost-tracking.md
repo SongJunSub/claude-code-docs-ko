@@ -39,7 +39,7 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
 
 다음 다이어그램은 단일 `query()` 호출의 메시지 스트림을 보여주며, 각 단계에서 토큰 사용량이 보고되고 끝에 누적 추정값이 표시됩니다:
 
-<img src="https://mintcdn.com/claude-code/Dujg43sxTkuhSELI/images/agent-sdk/message-usage-flow.svg?fit=max&auto=format&n=Dujg43sxTkuhSELI&q=85&s=c542f51ff58547ef9c0e57b16d03f33c" alt="쿼리가 두 단계의 메시지를 생성하는 다이어그램입니다. 단계 1은 동일한 ID와 사용량을 공유하는 4개의 어시스턴트 메시지(한 번만 계산)를 가지고 있고, 단계 2는 새로운 ID를 가진 1개의 어시스턴트 메시지를 가지고 있으며, 최종 결과 메시지는 추정된 total_cost_usd를 표시합니다." width="760" height="520" data-path="images/agent-sdk/message-usage-flow.svg" />
+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/agent-sdk/message-usage-flow.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=68497aee338e01cc745323af7aea378e" alt="쿼리가 두 단계의 메시지를 생성하는 다이어그램입니다. 단계 1은 동일한 ID와 사용량을 공유하는 4개의 어시스턴트 메시지(한 번만 계산)를 가지고 있고, 단계 2는 새로운 ID를 가진 1개의 어시스턴트 메시지를 가지고 있으며, 최종 결과 메시지는 추정된 total_cost_usd를 표시합니다." width="760" height="520" data-path="images/agent-sdk/message-usage-flow.svg" />
 
 <Steps>
   <Step title="각 단계는 어시스턴트 메시지를 생성합니다">
@@ -257,15 +257,28 @@ SDK에서 작성한 캐시 항목은 API 키로 인증하거나 Amazon Bedrock, 
 
 <CodeGroup>
   ```python Python theme={null}
-  options = ClaudeAgentOptions(
-      env={
-          "CLAUDE_CODE_USE_BEDROCK": "1",
-          "ENABLE_PROMPT_CACHING_1H": "1",
-      },
-  )
+  from claude_agent_sdk import ClaudeAgentOptions, query
+  import asyncio
+
+
+  async def main():
+      options = ClaudeAgentOptions(
+          env={
+              "CLAUDE_CODE_USE_BEDROCK": "1",
+              "ENABLE_PROMPT_CACHING_1H": "1",
+          },
+      )
+
+      async for message in query(prompt="Summarize this project", options=options):
+          print(message)
+
+
+  asyncio.run(main())
   ```
 
   ```typescript TypeScript theme={null}
+  import { query } from "@anthropic-ai/claude-agent-sdk";
+
   const options = {
     env: {
       ...process.env,
@@ -273,6 +286,10 @@ SDK에서 작성한 캐시 항목은 API 키로 인증하거나 Amazon Bedrock, 
       ENABLE_PROMPT_CACHING_1H: "1",
     },
   };
+
+  for await (const message of query({ prompt: "Summarize this project", options })) {
+    console.log(message);
+  }
   ```
 </CodeGroup>
 

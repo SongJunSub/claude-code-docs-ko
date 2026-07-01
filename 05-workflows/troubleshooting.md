@@ -8,16 +8,16 @@
 
 이 페이지는 Claude Code가 실행 중일 때의 성능, 안정성 및 검색 문제를 다룹니다. 다른 문제의 경우 문제가 있는 위치와 일치하는 페이지부터 시작하세요:
 
-| 증상                                                                                       | 이동                                                                  |
-| :--------------------------------------------------------------------------------------- | :------------------------------------------------------------------ |
-| `command not found`, 설치 실패, PATH 문제, `EACCES`, TLS 오류                                    | [설치 및 로그인 문제 해결](/ko/troubleshoot-install)                          |
-| 로그인 루프, OAuth 오류, `403 Forbidden`, "organization disabled", Bedrock/Vertex/Foundry 자격 증명 | [설치 및 로그인 문제 해결](/ko/troubleshoot-install#login-and-authentication) |
-| 설정이 적용되지 않음, hooks가 실행되지 않음, MCP 서버가 로드되지 않음                                             | [구성 디버깅](/ko/debug-your-config)                                     |
-| `API Error: 5xx`, `529 Overloaded`, `429`, 요청 검증 오류                                      | [오류 참조](/ko/errors)                                                 |
-| `model not found` 또는 `you may not have access to it`                                     | [오류 참조](/ko/errors#theres-an-issue-with-the-selected-model)         |
-| VS Code 확장이 Claude에 연결되지 않거나 감지하지 못함                                                     | [VS Code 통합](/ko/vs-code#fix-common-issues)                         |
-| JetBrains 플러그인 또는 IDE가 감지되지 않음                                                           | [JetBrains 통합](/ko/jetbrains#troubleshooting)                       |
-| 높은 CPU 또는 메모리, 느린 응답, 중단, 검색이 파일을 찾지 못함                                                  | [성능 및 안정성](#performance-and-stability) 아래                           |
+| 증상                                                                                       | 이동                                                                   |
+| :--------------------------------------------------------------------------------------- | :------------------------------------------------------------------- |
+| `command not found`, 설치 실패, PATH 문제, `EACCES`, TLS 오류                                    | [설치 및 로그인 문제 해결](/ko/troubleshoot-install)                           |
+| 로그인 루프, OAuth 오류, `403 Forbidden`, "organization disabled", Bedrock/Vertex/Foundry 자격 증명 | [설치 및 로그인 문제 해결](/ko/troubleshoot-install#login-and-authentication)  |
+| 설정이 적용되지 않음, hooks가 실행되지 않음, MCP 서버가 로드되지 않음                                             | [구성 디버깅](/ko/debug-your-config)                                      |
+| `API Error: 5xx`, `529 Overloaded`, `429`, 요청 검증 오류                                      | [오류 참조](/ko/errors)                                                  |
+| `model not found` 또는 `you may not have access to it`                                     | [오류 참조](/ko/errors#there%E2%80%99s-an-issue-with-the-selected-model) |
+| VS Code 확장이 Claude에 연결되지 않거나 감지하지 못함                                                     | [VS Code 통합](/ko/vs-code#fix-common-issues)                          |
+| JetBrains 플러그인 또는 IDE가 감지되지 않음                                                           | [JetBrains 통합](/ko/jetbrains#troubleshooting)                        |
+| 높은 CPU 또는 메모리, 느린 응답, 중단, 검색이 파일을 찾지 못함                                                  | [성능 및 안정성](#performance-and-stability) 아래                            |
 
 어떤 것이 적용되는지 확실하지 않으면 Claude Code 내에서 `/doctor`를 실행하여 설치, 설정, MCP 서버 및 컨텍스트 사용을 자동으로 확인하세요. `claude`가 전혀 시작되지 않으면 셸에서 `claude doctor`를 대신 실행하세요.
 
@@ -36,6 +36,7 @@ Claude Code는 대부분의 개발 환경에서 작동하도록 설계되었지�
 1. `/compact`를 정기적으로 사용하여 컨텍스트 크기 감소
 2. 주요 작업 사이에 Claude Code 닫기 및 다시 시작
 3. 큰 빌드 디렉토리를 `.gitignore` 파일에 추가하는 것을 고려하세요
+4. [`claude --safe-mode`](/ko/cli-reference#cli-flags)로 다시 시작하여 플러그인, MCP 서버 또는 hook이 원인인지 확인하세요. 이는 세션의 모든 사용자 정의를 비활성화합니다. 사용량이 감소하면 [구성 디버깅](/ko/debug-your-config#test-against-a-clean-configuration)을 참조하여 어느 것이 원인인지 찾으세요
 
 메모리 사용량이 이 단계 후에도 높게 유지되면 `/heapdump`를 실행하여 JavaScript 힙 스냅샷과 메모리 분석을 `~/Desktop`에 작성하세요. Linux에 Desktop 폴더가 없으면 파일이 홈 디렉토리에 작성됩니다.
 
@@ -65,7 +66,7 @@ Claude Code가 응답하지 않는 것처럼 보이면:
 
 다시 시작해도 대화가 손실되지 않습니다. 같은 디렉토리에서 `claude --resume`을 실행하여 세션을 다시 시작하세요.
 
-<h3 id="garbled-or-corrupted-text-in-an-editor-s-integrated-terminal">
+<h3 id="garbled-or-corrupted-text-in-an-editor’s-integrated-terminal">
   편집기의 통합 터미널에서 손상되거나 깨진 텍스트
 </h3>
 

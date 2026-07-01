@@ -46,6 +46,8 @@ skills/
 * Claude는 작업 컨텍스트에 따라 자동으로 이들을 호출할 수 있습니다.
 * Skills는 SKILL.md와 함께 지원 파일을 포함할 수 있습니다.
 
+플러그인에 `skills/` 디렉토리가 없고 `skills` manifest 필드가 없으면, 플러그인 루트의 `SKILL.md`가 단일 skill로 로드됩니다. frontmatter `name` 필드를 설정하여 skill의 호출 이름을 제어하세요. 이 필드가 없으면 Claude Code는 설치 디렉토리 이름으로 폴백되며, 마켓플레이스에서 설치된 플러그인의 경우 매 업데이트마다 변경되는 버전 문자열입니다. 둘 이상의 skill을 제공하는 플러그인의 경우 위에 표시된 `skills/` 디렉토리 레이아웃을 사용하세요.
+
 완전한 세부 정보는 [Skills](/ko/skills)를 참조하세요.
 
 <h3 id="agents">
@@ -255,16 +257,17 @@ LSP 통합은 다음을 제공합니다:
 
 **선택사항 필드:**
 
-| 필드                      | 설명                                             |
-| :---------------------- | :--------------------------------------------- |
-| `args`                  | LSP 서버의 명령줄 인수                                 |
-| `transport`             | 통신 전송: `stdio` (기본값) 또는 `socket`               |
-| `env`                   | 서버 시작 시 설정할 환경 변수                              |
-| `initializationOptions` | 초기화 중에 서버에 전달되는 옵션                             |
-| `settings`              | `workspace/didChangeConfiguration`을 통해 전달되는 설정 |
-| `workspaceFolder`       | 서버의 작업 공간 폴더 경로                                |
-| `startupTimeout`        | 서버 시작을 기다릴 최대 시간 (밀리초)                         |
-| `maxRestarts`           | 포기하기 전 최대 재시작 시도 횟수                            |
+| 필드                      | 설명                                                                                     |
+| :---------------------- | :------------------------------------------------------------------------------------- |
+| `args`                  | LSP 서버의 명령줄 인수                                                                         |
+| `transport`             | 통신 전송: `stdio` (기본값) 또는 `socket`                                                       |
+| `env`                   | 서버 시작 시 설정할 환경 변수                                                                      |
+| `initializationOptions` | 초기화 중에 서버에 전달되는 옵션                                                                     |
+| `settings`              | `workspace/didChangeConfiguration`을 통해 전달되는 설정                                         |
+| `workspaceFolder`       | 서버의 작업 공간 폴더 경로                                                                        |
+| `startupTimeout`        | 서버 시작을 기다릴 최대 시간 (밀리초)                                                                 |
+| `maxRestarts`           | 포기하기 전 최대 재시작 시도 횟수                                                                    |
+| `diagnostics`           | Claude의 컨텍스트에 진단을 푸시할지 여부 (기본값 `true`). 코드 네비게이션은 유지하되 자동 진단 주입을 억제하려면 `false`로 설정하세요. |
 
 <Warning>
   **언어 서버 바이너리를 별도로 설치해야 합니다.** LSP 플러그인은 Claude Code가 언어 서버에 연결하는 방법을 구성하지만, 서버 자체는 포함하지 않습니다. `/plugin` Errors 탭에서 `Executable not found in $PATH`를 보면 언어에 필요한 바이너리를 설치하세요.
@@ -473,9 +476,9 @@ claude plugin disable my-tool@skills-dir
 
 매니페스트를 포함하는 경우 `name`이 유일한 필수 필드입니다.
 
-| 필드     | 타입     | 설명                         | 예시                   |
-| :----- | :----- | :------------------------- | :------------------- |
-| `name` | string | 고유 식별자 (kebab-case, 공백 없음) | `"deployment-tools"` |
+| 필드     | 타입     | 설명                                                                                                                                                            | 예시                   |
+| :----- | :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------- |
+| `name` | string | 고유 식별자 (kebab-case, 공백 없음). [마켓플레이스 항목](/ko/plugin-marketplaces#plugin-entries)이 플러그인을 다른 이름으로 나열할 때 마켓플레이스 항목 이름이 `enabledPlugins` 키 및 `/plugin`이 사용하는 것입니다. | `"deployment-tools"` |
 
 이 이름은 컴포넌트 네임스페이싱에 사용됩니다. 예를 들어 UI에서 이름이 `plugin-dev`인 플러그인의 agent `agent-creator`는 `plugin-dev:agent-creator`로 나타납니다.
 
@@ -529,20 +532,20 @@ claude plugin validate ./my-plugin --strict
   컴포넌트 경로 필드
 </h3>
 
-| 필드                      | 타입                    | 설명                                                                                                              | 예시                                                   |
-| :---------------------- | :-------------------- | :-------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
-| `skills`                | string\|array         | `<name>/SKILL.md`를 포함하는 사용자 정의 skill 디렉토리 (기본 `skills/` 외에 추가)                                                  | `"./custom/skills/"`                                 |
-| `commands`              | string\|array         | 사용자 정의 평면 `.md` skill 파일 또는 디렉토리 (기본 `commands/` 대체)                                                            | `"./custom/cmd.md"` 또는 `["./cmd1.md"]`               |
-| `agents`                | string\|array         | 사용자 정의 agent 파일 (기본 `agents/` 대체)                                                                               | `"./custom/agents/reviewer.md"`                      |
-| `hooks`                 | string\|array\|object | Hook 구성 경로 또는 인라인 구성                                                                                            | `"./my-extra-hooks.json"`                            |
-| `mcpServers`            | string\|array\|object | MCP 구성 경로 또는 인라인 구성                                                                                             | `"./my-extra-mcp-config.json"`                       |
-| `outputStyles`          | string\|array         | 사용자 정의 출력 스타일 파일/디렉토리 (기본 `output-styles/` 대체)                                                                  | `"./styles/"`                                        |
-| `lspServers`            | string\|array\|object | [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) 코드 인텔리전스 구성 (정의로 이동, 참조 찾기 등) | `"./.lsp.json"`                                      |
-| `experimental.themes`   | string\|array         | 색상 테마 파일/디렉토리 (기본 `themes/` 대체). [테마](#themes) 참조                                                               | `"./themes/"`                                        |
-| `experimental.monitors` | string\|array         | 플러그인이 활성화될 때 자동으로 시작되는 백그라운드 [Monitor](/ko/tools-reference#monitor-tool) 구성. [Monitors](#monitors) 참조           | `"./monitors.json"`                                  |
-| `userConfig`            | object                | 플러그인이 활성화될 때 사용자에게 프롬프트하는 사용자 구성 가능 값. [사용자 구성](#user-configuration) 참조                                         | 아래 참조                                                |
-| `channels`              | array                 | 메시지 주입을 위한 채널 선언 (Telegram, Slack, Discord 스타일). [채널](#channels) 참조                                             | 아래 참조                                                |
-| `dependencies`          | array                 | 이 플러그인이 필요로 하는 다른 플러그인, 선택적으로 semver 버전 제약 포함. [플러그인 종속성 버전 제약](/ko/plugin-dependencies) 참조                     | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
+| 필드                      | 타입                    | 설명                                                                                                                      | 예시                                                   |
+| :---------------------- | :-------------------- | :---------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
+| `skills`                | string\|array         | `<name>/SKILL.md`를 포함하는 사용자 정의 skill 디렉토리 (기본 `skills/` 외에 추가). [경로 동작 규칙](#path-behavior-rules)에서 마켓플레이스 루트 예외를 참조하세요. | `"./custom/skills/"`                                 |
+| `commands`              | string\|array         | 사용자 정의 평면 `.md` skill 파일 또는 디렉토리 (기본 `commands/` 대체)                                                                    | `"./custom/cmd.md"` 또는 `["./cmd1.md"]`               |
+| `agents`                | string\|array         | 사용자 정의 agent 파일 (기본 `agents/` 대체)                                                                                       | `"./custom/agents/reviewer.md"`                      |
+| `hooks`                 | string\|array\|object | Hook 구성 경로 또는 인라인 구성                                                                                                    | `"./my-extra-hooks.json"`                            |
+| `mcpServers`            | string\|array\|object | MCP 구성 경로 또는 인라인 구성                                                                                                     | `"./my-extra-mcp-config.json"`                       |
+| `outputStyles`          | string\|array         | 사용자 정의 출력 스타일 파일/디렉토리 (기본 `output-styles/` 대체)                                                                          | `"./styles/"`                                        |
+| `lspServers`            | string\|array\|object | [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) 코드 인텔리전스 구성 (정의로 이동, 참조 찾기 등)         | `"./.lsp.json"`                                      |
+| `experimental.themes`   | string\|array         | 색상 테마 파일/디렉토리 (기본 `themes/` 대체). [테마](#themes) 참조                                                                       | `"./themes/"`                                        |
+| `experimental.monitors` | string\|array         | 플러그인이 활성화될 때 자동으로 시작되는 백그라운드 [Monitor](/ko/tools-reference#monitor-tool) 구성. [Monitors](#monitors) 참조                   | `"./monitors.json"`                                  |
+| `userConfig`            | object                | 플러그인이 활성화될 때 사용자에게 프롬프트하는 사용자 구성 가능 값. [사용자 구성](#user-configuration) 참조                                                 | 아래 참조                                                |
+| `channels`              | array                 | 메시지 주입을 위한 채널 선언 (Telegram, Slack, Discord 스타일). [채널](#channels) 참조                                                     | 아래 참조                                                |
+| `dependencies`          | array                 | 이 플러그인이 필요로 하는 다른 플러그인, 선택적으로 semver 버전 제약 포함. [플러그인 종속성 버전 제약](/ko/plugin-dependencies) 참조                             | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
 
 <h3 id="experimental-components">
   실험적 컴포넌트
@@ -629,7 +632,7 @@ claude plugin validate ./my-plugin --strict
 사용자 정의 경로가 플러그인의 기본 디렉토리를 대체하는지 확장하는지는 필드에 따라 다릅니다:
 
 * **기본값 대체**: `commands`, `agents`, `outputStyles`, `experimental.themes`, `experimental.monitors`. 예를 들어 매니페스트가 `commands`를 지정하면 기본 `commands/` 디렉토리는 스캔되지 않습니다. 기본값을 유지하고 더 많은 것을 추가하려면 명시적으로 나열하세요: `"commands": ["./commands/", "./extras/"]`
-* **기본값에 추가**: `skills`. 기본 `skills/` 디렉토리는 항상 스캔되며, `skills`에 나열된 디렉토리는 함께 로드됩니다.
+* **기본값에 추가**: `skills`. 기본 `skills/` 디렉토리는 항상 스캔되며, `skills`에 나열된 디렉토리는 함께 로드됩니다. 예외: [소스가 마켓플레이스 루트로 확인되는 마켓플레이스 항목](/ko/plugin-marketplaces#advanced-plugin-entries)의 경우 특정 서브디렉토리를 선언하면 기본 `skills/` 스캔을 대체합니다.
 * **자체 병합 규칙**: [hooks](#hooks), [MCP servers](#mcp-servers) 및 [LSP servers](#lsp-servers). 각 섹션에서 여러 소스가 어떻게 결합되는지 참조하세요.
 
 플러그인에 기본 폴더와 일치하는 매니페스트 키가 모두 있으면 Claude Code v2.1.140 이상은 `/doctor`, `claude plugin list` 및 `/plugin` 상세 보기에서 무시된 폴더에 플래그를 지정합니다. 플러그인은 여전히 매니페스트 경로를 사용하여 로드됩니다. 매니페스트 키가 기본 폴더를 가리킬 때는 경고가 표시되지 않습니다 (예: `"commands": ["./commands/deploy.md"]`). 이 경우 폴더가 명시적으로 처리되기 때문입니다.
@@ -1092,6 +1095,8 @@ claude plugin list [options]
 | `--json`      | JSON으로 출력                            |     |
 | `--available` | 마켓플레이스에서 사용 가능한 플러그인 포함. `--json` 필요 |     |
 | `-h, --help`  | 명령어 도움말 표시                           |     |
+
+대화형 세션 내에서 `/plugin list`는 동일한 목록을 인라인으로 출력합니다. 대화형 형식은 `--enabled` 또는 `--disabled`를 허용하여 해당 상태의 플러그인만 표시하며, `ls`를 `list`의 약자로 사용합니다.
 
 <h3 id="plugin-details">
   plugin details

@@ -30,7 +30,9 @@ Code Review는 GitHub 풀 요청을 분석하고 문제를 발견한 코드 라�
   GitHub 앱을 설치하지 않고 터미널에서 로컬로 diff를 검토하려면 Claude Code 세션에서 `/code-review` 명령을 실행하십시오. [로컬에서 diff 검토](#review-a-diff-locally)를 참조하십시오.
 </Note>
 
-## 검토 작동 방식
+<h2 id="how-reviews-work">
+  검토 작동 방식
+</h2>
 
 관리자가 조직에 대해 Code Review를 [활성화](#set-up-code-review)하면 리포지토리의 구성된 동작에 따라 PR이 열릴 때, 모든 푸시 시 또는 수동으로 요청할 때 검토가 트리거됩니다. PR에서 `@claude review`를 [댓글로 작성](#manually-trigger-reviews)하면 모든 모드에서 검토가 시작됩니다.
 
@@ -38,7 +40,9 @@ Code Review는 GitHub 풀 요청을 분석하고 문제를 발견한 코드 라�
 
 검토는 PR 크기 및 복잡도에 따라 비용이 증가하며 평균 20분 내에 완료됩니다. 관리자는 [분석 대시보드](#view-usage)를 통해 검토 활동 및 지출을 모니터링할 수 있습니다.
 
-### 심각도 수준
+<h3 id="severity-levels">
+  심각도 수준
+</h3>
 
 각 결과는 심각도 수준으로 태그가 지정됩니다:
 
@@ -50,13 +54,17 @@ Code Review는 GitHub 풀 요청을 분석하고 문제를 발견한 코드 라�
 
 결과에는 확장 가능한 확장 추론 섹션이 포함되어 있으므로 Claude가 문제를 플래그한 이유와 문제를 검증한 방법을 이해할 수 있습니다.
 
-### 결과에 대한 평가 및 응답
+<h3 id="rate-and-reply-to-findings">
+  결과에 대한 평가 및 응답
+</h3>
 
 Claude의 각 검토 댓글은 이미 👍 및 👎가 첨부되어 있으므로 두 버튼 모두 GitHub UI에 나타나 한 번의 클릭으로 평가할 수 있습니다. 결과가 유용했으면 👍을 클릭하고 잘못되었거나 노이즈가 많으면 👎를 클릭합니다. Anthropic은 PR이 병합된 후 반응 개수를 수집하고 이를 사용하여 검토자를 조정합니다. 반응은 재검토를 트리거하거나 PR의 어떤 것도 변경하지 않습니다.
 
 인라인 댓글에 응답해도 Claude가 응답하거나 PR을 업데이트하도록 프롬프트하지 않습니다. 결과에 대해 조치하려면 코드를 수정하고 푸시합니다. PR이 푸시 트리거 검토에 구독되어 있으면 다음 실행이 문제가 수정되었을 때 스레드를 해결합니다. 푸시하지 않고 새로운 검토를 요청하려면 [최상위 PR 댓글](#manually-trigger-reviews)로 `@claude review once`를 댓글로 작성합니다.
 
-### 확인 실행 출력
+<h3 id="check-run-output">
+  확인 실행 출력
+</h3>
 
 인라인 검토 댓글 외에도 각 검토는 CI 확인과 함께 나타나는 **Claude Code Review** 확인 실행을 채웁니다. **Details** 링크를 확장하여 심각도별로 정렬된 모든 결과의 요약을 한 곳에서 확인합니다:
 
@@ -76,17 +84,21 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID \
 
 이는 심각도별 개수가 포함된 JSON 객체를 반환합니다(예: `{"normal": 2, "nit": 1, "pre_existing": 0}`). `normal` 키는 Important 결과의 개수를 보유합니다. 0이 아닌 값은 Claude가 병합 전에 수정할 가치가 있는 버그를 발견했음을 의미합니다.
 
-### Code Review가 확인하는 항목
+<h3 id="what-code-review-checks">
+  Code Review가 확인하는 항목
+</h3>
 
 기본적으로 Code Review는 정확성에 중점을 두고 있습니다: 형식 기본 설정이나 누락된 테스트 범위가 아닌 프로덕션을 중단할 버그입니다. 리포지토리에 [지침 파일을 추가](#customize-reviews)하여 확인하는 항목을 확장할 수 있습니다.
 
-## Code Review 설정
+<h2 id="set-up-code-review">
+  Code Review 설정
+</h2>
 
 관리자는 조직에 대해 한 번 Code Review를 활성화하고 포함할 리포지토리를 선택합니다.
 
 <Steps>
   <Step title="Claude Code 관리자 설정 열기">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)로 이동하여 Code Review 섹션을 찾습니다. Claude 조직에 대한 관리자 액세스 권한과 GitHub 조직에 GitHub 앱을 설치할 수 있는 권한이 필요합니다.
+    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)로 이동하여 Code Review 섹션을 찾습니다. Claude 조직에서 Owner 또는 Primary Owner 역할이 필요하며 GitHub 조직에 GitHub 앱을 설치할 수 있는 권한이 필요합니다.
   </Step>
 
   <Step title="설정 시작">
@@ -122,7 +134,9 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID \
 
 설정을 확인하려면 테스트 PR을 열어보십시오. 자동 트리거를 선택한 경우 **Claude Code Review**라는 확인 실행이 몇 분 내에 나타납니다. 수동을 선택한 경우 PR에서 `@claude review`를 댓글로 작성하여 첫 번째 검토를 시작합니다. 확인 실행이 나타나지 않으면 리포지토리가 관리자 설정에 나열되어 있고 Claude GitHub 앱이 액세스할 수 있는지 확인하십시오.
 
-## 수동으로 검토 트리거
+<h2 id="manually-trigger-reviews">
+  수동으로 검토 트리거
+</h2>
 
 두 개의 댓글 명령이 요청 시 검토를 시작합니다. 둘 다 리포지토리의 구성된 트리거와 관계없이 작동하므로 수동 모드에서 특정 PR을 검토에 옵트인하거나 다른 모드에서 즉시 재검토를 받을 수 있습니다.
 
@@ -144,14 +158,18 @@ PR의 현재 상태에 대한 피드백을 원하지만 이후의 모든 푸시�
 
 해당 PR에서 검토가 이미 실행 중인 경우 요청은 진행 중인 검토가 완료될 때까지 대기열에 추가됩니다. PR의 확인 실행을 통해 진행 상황을 모니터링할 수 있습니다.
 
-## 검토 사용자 정의
+<h2 id="customize-reviews">
+  검토 사용자 정의
+</h2>
 
 Code Review는 리포지토리에서 두 개의 파일을 읽어 플래그할 항목을 안내합니다. 이들은 검토에 영향을 미치는 강도가 다릅니다:
 
 * **`CLAUDE.md`**: Claude Code가 검토뿐만 아니라 모든 작업에 사용하는 공유 프로젝트 지침입니다. Code Review는 이를 프로젝트 컨텍스트로 읽고 새로 도입된 위반을 nit으로 플래그합니다.
 * **`REVIEW.md`**: 검토 전용 지침으로 검토 파이프라인의 모든 에이전트에 최우선 순위로 직접 주입됩니다. 이를 사용하여 플래그되는 항목, 심각도 및 결과 보고 방식을 변경합니다.
 
-### CLAUDE.md
+<h3 id="claude-md">
+  CLAUDE.md
+</h3>
 
 Code Review는 리포지토리의 `CLAUDE.md` 파일을 읽고 새로 도입된 위반을 [nit 수준](#severity-levels) 결과로 처리합니다. 이는 양방향으로 작동합니다: PR이 `CLAUDE.md` 문을 오래된 것으로 만드는 방식으로 코드를 변경하면 Claude는 문서도 업데이트해야 한다고 플래그합니다.
 
@@ -159,13 +177,17 @@ Claude는 디렉토리 계층 구조의 모든 수준에서 `CLAUDE.md` 파일�
 
 일반 Claude Code 세션에 적용하지 않으려는 검토 전용 지침의 경우 대신 [`REVIEW.md`](#review-md)를 사용하십시오.
 
-### REVIEW\.md
+<h3 id="review-md">
+  REVIEW\.md
+</h3>
 
 `REVIEW.md`는 리포지토리 루트의 파일로 Code Review가 리포지토리에서 어떻게 작동하는지를 재정의합니다. 그 내용은 검토 파이프라인의 모든 에이전트의 시스템 프롬프트에 최우선 순위 지침 블록으로 주입되어 기본 검토 지침보다 우선합니다.
 
 그것이 그대로 붙여넣어지기 때문에 `REVIEW.md`는 일반 지침입니다: [`@` import 구문](/ko/memory#import-additional-files)은 확장되지 않으며 참조된 파일은 프롬프트로 읽혀지지 않습니다. 적용하려는 규칙을 파일에 직접 입력합니다.
 
-#### 조정할 수 있는 항목
+<h4 id="what-you-can-tune">
+  조정할 수 있는 항목
+</h4>
 
 `REVIEW.md`는 자유 형식 마크다운이므로 검토 지침으로 표현할 수 있는 모든 것이 범위 내입니다. 아래 패턴은 실제로 가장 큰 영향을 미칩니다.
 
@@ -183,7 +205,9 @@ Claude는 디렉토리 계층 구조의 모든 수준에서 `CLAUDE.md` 파일�
 
 **요약 형태**: 검토 본문이 `2 factual, 4 style`과 같은 한 줄 집계로 시작하도록 요청하고 그것이 경우일 때 "factual 문제 없음"으로 시작하도록 요청합니다. 작성자는 세부 사항 전에 작업의 형태를 알고 싶어합니다.
 
-#### 예시
+<h4 id="example">
+  예시
+</h4>
 
 이 `REVIEW.md`는 백엔드 서비스의 심각도를 재보정하고, nit을 제한하고, 생성된 파일을 건너뛰고, 리포지토리별 확인을 추가합니다.
 
@@ -211,11 +235,15 @@ Claude는 디렉토리 계층 구조의 모든 수준에서 `CLAUDE.md` 파일�
 - 데이터베이스 쿼리는 호출자의 테넌트로 범위가 지정됩니다
 ```
 
-#### 초점 유지
+<h4 id="keep-it-focused">
+  초점 유지
+</h4>
 
 길이는 비용이 있습니다: 긴 `REVIEW.md`는 가장 중요한 규칙을 희석합니다. 검토 동작을 변경하는 지침으로 유지하고 일반 프로젝트 컨텍스트는 `CLAUDE.md`에 남겨둡니다.
 
-## 사용량 보기
+<h2 id="view-usage">
+  사용량 보기
+</h2>
 
 [claude.ai/analytics/code-review](https://claude.ai/analytics/code-review)로 이동하여 조직 전체의 Code Review 활동을 확인합니다. 대시보드는 다음을 표시합니다:
 
@@ -228,7 +256,9 @@ Claude는 디렉토리 계층 구조의 모든 수준에서 `CLAUDE.md` 파일�
 
 관리자 설정의 리포지토리 테이블은 각 리포지토리의 검토당 평균 비용도 표시합니다. 대시보드 비용 수치는 활동 모니터링을 위한 추정치입니다. 청구서 정확한 지출의 경우 Anthropic 청구서를 참조하십시오.
 
-## 가격
+<h2 id="pricing">
+  가격
+</h2>
 
 Code Review는 토큰 사용량을 기반으로 청구됩니다. 각 검토는 평균 \$15-25의 비용이 소요되며, PR 크기, 코드베이스 복잡도 및 검증이 필요한 문제의 수에 따라 확장됩니다. Code Review 사용량은 [사용량 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)을 통해 별도로 청구되며 계획에 포함된 사용량에 포함되지 않습니다.
 
@@ -244,11 +274,15 @@ Code Review는 토큰 사용량을 기반으로 청구됩니다. 각 검토는 �
 
 [분석](#view-usage)의 주간 비용 차트 또는 관리자 설정의 리포지토리별 평균 비용 열을 통해 지출을 모니터링합니다.
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
 검토 실행은 최선의 노력입니다. 실패한 실행은 PR을 차단하지 않지만 자동으로 재시도하지도 않습니다. 이 섹션에서는 실패한 실행에서 복구하는 방법과 확인 실행이 찾을 수 없는 문제를 보고할 때 어디를 봐야 하는지 다룹니다.
 
-### 실패하거나 시간 초과된 검토 재트리거
+<h3 id="retrigger-a-failed-or-timed-out-review">
+  실패하거나 시간 초과된 검토 재트리거
+</h3>
 
 검토 인프라가 내부 오류에 도달하거나 시간 제한을 초과하면 확인 실행이 **Code review encountered an error** 또는 **Code review timed out** 제목으로 완료됩니다. 결론은 여전히 중립적이므로 병합을 차단하는 것은 없지만 결과가 게시되지 않습니다.
 
@@ -256,11 +290,15 @@ Code Review는 토큰 사용량을 기반으로 청구됩니다. 각 검토는 �
 
 GitHub의 Checks 탭의 **Re-run** 버튼은 Code Review를 재트리거하지 않습니다. 댓글 명령이나 새 푸시를 대신 사용하십시오.
 
-### 검토가 실행되지 않았고 PR이 지출 한도 메시지를 표시합니다
+<h3 id="review-didn’t-run-and-the-pr-shows-a-spend-cap-message">
+  검토가 실행되지 않았고 PR이 지출 한도 메시지를 표시합니다
+</h3>
 
 조직의 월간 지출 한도에 도달하면 Code Review는 검토가 건너뛰어졌음을 설명하는 단일 댓글을 PR에 게시합니다. 검토는 다음 청구 기간의 시작 시 자동으로 재개되거나 관리자가 [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage)에서 한도를 높일 때 즉시 재개됩니다.
 
-### 인라인 댓글로 표시되지 않는 문제 찾기
+<h3 id="find-issues-that-aren’t-showing-as-inline-comments">
+  인라인 댓글로 표시되지 않는 문제 찾기
+</h3>
 
 확인 실행 제목이 문제가 발견되었다고 말하지만 diff에서 인라인 검토 댓글을 보지 못하면 결과가 표시되는 다른 위치를 확인하십시오:
 
@@ -268,17 +306,21 @@ GitHub의 Checks 탭의 **Re-run** 버튼은 Code Review를 재트리거하지 �
 * **Files changed annotations**: PR의 **Files changed** 탭을 엽니다. 결과는 검토 댓글과 별도로 diff 라인에 직접 첨부된 주석으로 렌더링됩니다.
 * **Review body**: 검토가 실행 중인 동안 PR을 푸시한 경우 일부 결과는 현재 diff에 더 이상 존재하지 않는 라인을 참조할 수 있습니다. 이들은 인라인 댓글이 아닌 검토 본문 텍스트의 **Additional findings** 제목 아래에 나타납니다.
 
-## 로컬에서 diff 검토
+<h2 id="review-a-diff-locally">
+  로컬에서 diff 검토
+</h2>
 
-[`/code-review` 명령](/ko/commands)은 GitHub 앱을 설치하지 않고 터미널에서 diff를 검토합니다. Claude Code 세션에서 실행하십시오: 현재 diff의 정확성 버그 및 {/* min-version: 2.1.151 */}재사용, 단순화 및 효율성 정리를 보고합니다. `--comment`를 전달하여 결과를 인라인 PR 댓글로 게시하거나 `--fix`를 전달하여 검토 후 결과를 작업 트리에 적용합니다.
+[`/code-review` 명령](/ko/commands)은 GitHub 앱을 설치하지 않고 터미널에서 diff를 검토합니다. Claude Code 세션에서 실행하십시오: 정확성 버그 및 {/* min-version: 2.1.151 */}재사용, 단순화 및 효율성 정리를 보고합니다. 기본적으로 로컬 검토는 업스트림보다 앞선 브랜치의 커밋과 작업 트리의 커밋되지 않은 변경 사항을 포함합니다. `--comment`를 전달하여 결과를 인라인 PR 댓글로 게시하거나 `--fix`를 전달하여 검토 후 결과를 작업 트리에 적용합니다.
 
-낮은 [노력 수준](/ko/model-config#adjust-effort-level)은 더 적은 수의 높은 신뢰도 결과를 반환하는 반면, `high`부터 `max`까지는 더 광범위한 범위를 제공하며 불확실한 결과를 포함할 수 있습니다. 노력 인수 없이 검토는 세션의 현재 노력을 사용합니다. 현재 diff 대신 특정 대상을 검토하려면 경로 또는 PR 참조를 전달합니다.
+낮은 [노력 수준](/ko/model-config#adjust-effort-level)은 더 적은 수의 높은 신뢰도 결과를 반환하는 반면, `high`부터 `max`까지는 더 광범위한 범위를 제공하며 불확실한 결과를 포함할 수 있습니다. 노력 인수 없이 검토는 세션의 현재 노력을 사용합니다. 기본 diff 대신 다른 항목을 검토하려면 대상을 전달합니다: 파일 경로, PR 번호, 브랜치 이름 또는 `main...my-feature`와 같은 ref 범위입니다. ref 범위 형식은 브랜치의 업스트림이 어떻게 구성되어 있는지와 관계없이 `my-feature`에서 `main`으로의 풀 요청이 포함할 커밋된 diff를 검토합니다.
 
-`/code-review ultra --fix`는 클라우드에서 더 깊은 [ultrareview](/ko/ultrareview)를 실행한 다음 세션으로 돌아올 때 결과를 작업 트리에 적용합니다.
+`/code-review ultra --fix`는 클라우드에서 더 깊은 [ultrareview](/ko/ultrareview)를 실행한 다음 세션으로 돌아올 때 결과를 작업 트리에 적용합니다. Ultrareview는 자체 범위를 사용합니다: 현재 브랜치와 저장소의 기본 브랜치, 그리고 작업 트리의 커밋되지 않은 및 스테이징된 변경 사항입니다.
 
 이 명령은 v2.1.147 이전에 `/simplify`로 명명되었으며 기본적으로 수정 사항을 적용했습니다. {/* min-version: 2.1.154 */}v2.1.154부터 `/simplify`는 버그를 찾지 않고 수정 사항을 적용하는 별도의 정리 전용 검토를 실행합니다. 버그 찾기를 위해 `/simplify`를 스크립트했다면 변경되지 않은 `/code-review --fix`로 전환하십시오.
 
-## 관련 리소스
+<h2 id="related-resources">
+  관련 리소스
+</h2>
 
 Code Review는 Claude Code의 나머지 부분과 함께 작동하도록 설계되었습니다. PR을 열기 전에 로컬에서 검토를 실행하거나, 자체 호스팅 설정이 필요하거나, `CLAUDE.md`가 도구 전체에서 Claude의 동작을 형성하는 방식에 대해 더 깊이 알고 싶다면 다음 페이지가 좋은 다음 단계입니다:
 

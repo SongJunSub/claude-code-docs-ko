@@ -198,7 +198,7 @@ Claude는 상호작용 시퀀스를 기록하고 GIF 파일로 저장합니다.
   확장 프로그램이 감지되지 않음
 </h3>
 
-Claude Code의 setup-issues 라인에 `chrome`이 나열되는 경우:
+Claude Code에서 Chrome 확장 프로그램을 감지할 수 없는 경우:
 
 1. Chrome 확장 프로그램이 설치되어 있고 `chrome://extensions`에서 활성화되어 있는지 확인합니다.
 2. `claude --version`을 실행하여 Claude Code가 최신 버전인지 확인합니다.
@@ -264,7 +264,7 @@ Windows에서 다음을 만날 수 있습니다.
   참고 항목
 </h2>
 
-* [컴퓨터 사용](/ko/computer-use): 브라우저에서 작업을 수행할 수 없을 때 네이티브 macOS 앱을 제어합니다.
+* [컴퓨터 사용](/ko/computer-use): 브라우저에서 작업을 수행할 수 없을 때 네이티브 macOS 앱을 제어합니다
 * [VS Code에서 Claude Code 사용](/ko/vs-code#automate-browser-tasks-with-chrome): VS Code 확장 프로그램의 브라우저 자동화
 * [CLI 참조](/ko/cli-reference): `--chrome`을 포함한 명령줄 플래그
 * [일반적인 워크플로우](/ko/common-workflows): Claude Code를 사용하는 더 많은 방법

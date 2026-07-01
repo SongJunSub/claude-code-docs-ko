@@ -4,17 +4,11 @@
 
 # 세션 관리
 
-> Claude Code 대화의 이름을 지정하고, 재개하고, 분기하고, 전환합니다. `--continue`, `--resume`, `--from-pr`, `/resume` 선택기, 세션 이름 지정 및 대화 기록 저장 위치를 다룹니다.
+> Claude Code 대화의 이름을 지정하고, 재개하고, 분기하고, 전환합니다. `--continue`, `--resume`, `--from-pr`, `/resume` 선택기, 세션 이름 지정, 대화 기록 내보내기 및 대화 기록 저장 위치를 다룹니다.
 
 세션은 프로젝트 디렉토리에 연결된 저장된 대화입니다. Claude Code는 작업할 때 로컬에 저장하므로 중단한 지점부터 재개하거나, 다른 접근 방식을 시도하기 위해 분기하거나, 작업 간에 전환할 수 있습니다.
 
-[데스크톱 앱](/ko/desktop#work-in-parallel-with-sessions), [웹의 Claude Code](/ko/claude-code-on-the-web), [VS Code 확장](/ko/vs-code#resume-past-conversations)은 각각 자신의 세션 기록을 유지합니다. 이 페이지는 CLI를 다룹니다:
-
-* [재개](#resume-a-session) 플래그, 이름 또는 PR로 이전 대화 재개
-* [이름](#name-your-sessions) 세션에 이름을 지정하여 나중에 찾을 수 있도록 함
-* [찾아보기](#use-the-session-picker) `/resume` 선택기로 세션 찾아보기
-* [분기](#branch-a-session) 대화를 분기하여 다른 접근 방식 시도
-* [내보내기](#export-and-locate-session-data) 대화 기록을 내보내고 디스크에서 찾기
+[데스크톱 앱](/ko/desktop#work-in-parallel-with-sessions), [웹의 Claude Code](/ko/claude-code-on-the-web), [VS Code 확장](/ko/vs-code#resume-past-conversations)은 각각 자신의 세션 기록을 유지합니다. 이 페이지는 CLI를 다룹니다.
 
 <h2 id="resume-a-session">
   세션 재개
@@ -30,13 +24,15 @@
 | `claude --from-pr <number>` | 해당 풀 요청에 연결된 세션을 재개합니다                 |
 | `/resume`                   | 활성 세션 내에서 다른 대화로 전환합니다                 |
 
-[`claude -p`](/ko/headless) 또는 [Agent SDK](/ko/agent-sdk/overview)로 생성된 세션은 세션 선택기에 나타나지 않지만, 세션 ID를 `claude --resume <session-id>`에 전달하여 여전히 재개할 수 있습니다.
+[`claude -p`](/ko/headless) 또는 [Agent SDK](/ko/agent-sdk/overview)로 생성된 세션은 세션 선택기에 나타나지 않지만, 세션 ID를 `claude --resume <session-id>`에 전달하여 여전히 재개할 수 있습니다. 세션이 시작된 디렉토리에서 이를 실행합니다. 세션 ID 조회는 현재 프로젝트 디렉토리 및 해당 git worktree로 범위가 지정되므로, 다른 곳에서 생성된 세션은 `No conversation found with session ID: <session-id>`를 보고합니다.
 
 <h3 id="where-the-session-picker-looks">
   세션 선택기가 찾는 위치
 </h3>
 
 세션은 프로젝트 디렉토리별로 저장됩니다. 기본적으로 세션 선택기는 현재 worktree의 대화형 세션과 `/add-dir`로 현재 디렉토리를 추가한 다른 곳에서 시작된 세션을 표시합니다. `Ctrl+W`를 사용하여 저장소의 모든 worktree로 확장하거나 `Ctrl+A`를 사용하여 이 머신의 모든 프로젝트로 확장합니다.
+
+{/* min-version: 2.1.169 */}v2.1.169부터 [`/cd`](/ko/commands)로 세션을 이동하면 새 디렉토리의 프로젝트 저장소로 재배치되므로 이후 해당 디렉토리의 선택기에 나타납니다. {/* min-version: 2.1.196 */}v2.1.196부터 이동된 세션은 충돌이나 강제 종료 후에도 이전 디렉토리의 선택기에서 제외된 상태로 유지됩니다. 이전 버전에서는 언더스코어와 같은 특수 문자가 포함된 이전 경로가 있을 때 깔끔하지 않은 종료 후 이전 디렉토리의 목록에 다시 나타날 수 있습니다.
 
 같은 저장소의 다른 worktree에서 세션을 선택하면 그 위치에서 재개됩니다. 관련 없는 프로젝트에서 세션을 선택하면 `cd` 및 재개 명령을 클립보드에 복사합니다.
 
@@ -61,6 +57,10 @@
 | 계획 수락 시  | [계획 모드](/ko/permission-modes#analyze-before-you-edit-with-plan-mode)에서 계획을 수락하면 이미 설정하지 않은 경우 계획 내용에서 세션 이름을 지정합니다 |
 
 세션의 이름이 지정되면 `claude --resume <name>` 또는 `/resume <name>`으로 돌아갑니다. worktree 전체에서 이름 확인이 어떻게 작동하는지는 [세션 재개](#resume-a-session)를 참조합니다.
+
+{/* min-version: 2.1.196 */}이름을 지정하지 않은 대화형 세션도 시작할 때 기본 표시 이름을 받습니다. Claude Code v2.1.196 이상이 필요합니다. 기본값은 작업 디렉토리의 이름과 두 문자 접미사를 결합합니다(예: `my-app-3f`). 이는 [에이전트 보기](/ko/agent-view) 및 `claude agents --json` 출력과 같은 실행 중인 세션의 목록에서 세션을 식별합니다.
+
+기본값은 재개 핸들이 아닙니다: `claude --resume <name>`, `/resume <name>` 및 세션 선택기는 설정한 이름만 일치합니다. 세션의 이름을 지정하면 기본값이 바뀝니다.
 
 <h2 id="use-the-session-picker">
   세션 선택기 사용
@@ -125,9 +125,37 @@ claude --continue --fork-session
 
 `/export`를 실행하여 현재 대화를 클립보드에 복사하거나 일반 텍스트 파일로 저장합니다. 메시지와 도구 출력은 읽을 수 있는 텍스트로 렌더링됩니다. 파일 이름을 전달하여 해당 파일에 직접 작성합니다.
 
-대화 기록은 `~/.claude/projects/<project>/<session-id>.jsonl`에 JSONL로 저장되며, 여기서 `<project>`는 작업 디렉토리 경로에서 파생됩니다. 각 줄은 메시지, 도구 사용 또는 메타데이터 항목에 대한 JSON 객체입니다. `~/.claude` 이외의 위치에 세션을 저장하려면 [`CLAUDE_CONFIG_DIR`](/ko/env-vars)을 설정합니다. 이 로컬 파일은 기본적으로 30일 후 제거됩니다. [`cleanupPeriodDays`](/ko/settings#available-settings)로 변경합니다.
+<h3 id="access-conversations-from-scripts">
+  스크립트에서 대화 기록 접근
+</h3>
 
-대화 기록 쓰기를 완전히 억제하려면 [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ko/env-vars)를 설정하거나, 비대화형 모드에서 `--no-session-persistence`를 사용합니다.
+`/export`는 사람이 읽을 수 있도록 렌더링된 기록을 생성합니다. 아래 인터페이스는 스크립트가 파싱할 수 있는 구조화된 데이터를 생성합니다. 실행 결과의 JSON, 세션의 기록 파일 경로, 또는 이벤트의 라이브 스트림입니다. 스크립트를 트리거하는 것에 따라 선택합니다:
+
+* **Claude를 한 번 실행하고 결과 캡처**: [`--output-format json` 또는 `stream-json`](/ko/headless#get-structured-output)과 함께 `claude -p`를 호출하여 비대화형 실행의 결과, 세션 ID, 사용량 및 비용을 구조화된 JSON으로 캡처합니다.
+* **기존 세션에 질문하기**: 세션 ID를 [`claude -p --resume`](/ko/headless#continue-conversations)에 전달하여 요약 요청과 같은 후속 프롬프트를 보내고 구조화된 응답을 캡처합니다.
+* **세션 이벤트에 반응**: [hooks](/ko/hooks#common-input-fields) 및 [상태 줄 명령](/ko/statusline#available-data)이 입력으로 받는 `transcript_path` 필드를 읽습니다. `SessionEnd` hook은 세션이 끝날 때 기록을 보관할 수 있습니다.
+* **TypeScript 또는 Python 앱에 Claude 포함**: [Agent SDK](/ko/agent-sdk/overview)를 사용하여 각 메시지를 프로그래밍 방식으로 수신합니다.
+
+아래 예제는 두 번째 인터페이스를 사용합니다. 기존 세션에 후속 프롬프트를 보내고 `jq`로 답변을 읽습니다:
+
+```bash theme={null}
+claude -p --resume <session-id> --output-format json "summarize what we changed" | jq -r '.result'
+```
+
+<h3 id="where-transcripts-are-stored">
+  기록이 저장되는 위치
+</h3>
+
+기본적으로 기록은 `~/.claude/projects/<project>/<session-id>.jsonl`에 JSONL로 저장되며, 여기서 `<project>`는 작업 디렉토리 경로에서 파생되고 영숫자가 아닌 문자는 `-`로 대체됩니다. 각 줄은 메시지, 도구 사용 또는 메타데이터 항목에 대한 JSON 객체입니다. 항목 형식은 Claude Code 내부 형식이며 버전 간에 변경되므로 이러한 파일을 직접 파싱하는 스크립트는 모든 릴리스에서 손상될 수 있습니다. 세션 데이터를 기반으로 구축하려면 `/export` 또는 [스크립트 인터페이스](#access-conversations-from-scripts) 대신 사용합니다.
+
+위치, 보존 및 쓰기 동작은 구성 가능합니다:
+
+| 대상                     | 설정                                                     | 위치                      |
+| ---------------------- | ------------------------------------------------------ | ----------------------- |
+| `~/.claude` 외부로 저장소 이동 | [`CLAUDE_CONFIG_DIR`](/ko/env-vars)                    | 환경 변수                   |
+| 30일 보존 기간 변경           | [`cleanupPeriodDays`](/ko/settings#available-settings) | `settings.json`         |
+| 모든 모드에서 기록 쓰기 억제       | [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ko/env-vars)      | 환경 변수                   |
+| 한 번의 비대화형 실행에 대해 쓰기 억제 | [`--no-session-persistence`](/ko/cli-reference)        | `claude -p`와 함께 CLI 플래그 |
 
 <h2 id="see-also">
   참고 항목
@@ -136,6 +164,6 @@ claude --continue --fork-session
 이 페이지들은 관련 세션 및 병렬 처리 메커니즘을 다룹니다:
 
 * [Worktrees](/ko/worktrees): 별도 분기에서 격리된 병렬 세션 실행
-* [체크포인팅](/ko/checkpointing): 코드 및 대화를 이전 지점으로 되감기
-* [컨텍스트 윈도우](/ko/context-window): 컨텍스트를 채우는 것과 압축 후 유지되는 것
-* [비대화형 모드](/ko/headless): `claude -p` 아래의 세션 동작
+* [Checkpointing](/ko/checkpointing): 코드 및 대화를 이전 지점으로 되감기
+* [Context window](/ko/context-window): 컨텍스트를 채우는 것과 압축 후 유지되는 것
+* [Non-interactive mode](/ko/headless): `claude -p` 아래의 세션 동작

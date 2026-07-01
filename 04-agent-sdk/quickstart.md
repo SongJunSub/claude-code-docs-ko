@@ -41,10 +41,24 @@ Agent SDK를 사용하여 코드를 읽고, 버그를 찾고, 수동 개입 없�
     언어에 맞는 Agent SDK 패키지를 설치합니다:
 
     <Tabs>
-      <Tab title="TypeScript">
+      <Tab title="TypeScript (새 프로젝트)">
+        ```bash theme={null}
+        npm init -y
+        npm pkg set type=module
+        npm install @anthropic-ai/claude-agent-sdk
+        npm install --save-dev tsx
+        ```
+
+        `package.json`에서 `"type": "module"`을 설정하면 에이전트 스크립트가 최상위 `await`를 사용할 수 있으며, [tsx](https://tsx.is)는 TypeScript 파일을 직접 실행합니다.
+      </Tab>
+
+      <Tab title="TypeScript (기존 프로젝트)">
         ```bash theme={null}
         npm install @anthropic-ai/claude-agent-sdk
+        npm install --save-dev tsx
         ```
+
+        [tsx](https://tsx.is)는 TypeScript 파일을 직접 실행합니다. 프로젝트가 CommonJS를 사용하는 경우 에이전트 스크립트의 이름을 `agent.ts` 대신 `agent.mts`로 지정합니다. `.mts` 확장자는 tsx가 파일을 ES 모듈로 처리하도록 하므로 전체 프로젝트를 ES 모듈로 변환하지 않고도 최상위 `await`가 작동합니다. 이 빠른 시작의 나중에 생성 및 실행 단계에서 `agent.ts` 대신 `agent.mts`를 사용합니다.
       </Tab>
 
       <Tab title="Python (uv)">
@@ -85,11 +99,23 @@ Agent SDK를 사용하여 코드를 읽고, 버그를 찾고, 수동 개입 없�
   </Step>
 
   <Step title="API 키 설정">
-    [Claude 콘솔](https://platform.claude.com/)에서 API 키를 가져온 다음 프로젝트 디렉토리에 `.env` 파일을 생성합니다:
+    [Claude 콘솔](https://platform.claude.com/)에서 API 키를 가져온 다음 에이전트를 실행할 셸에서 환경 변수로 설정합니다:
 
-    ```bash theme={null}
-    ANTHROPIC_API_KEY=your-api-key
-    ```
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```bash theme={null}
+        export ANTHROPIC_API_KEY=your-api-key
+        ```
+      </Tab>
+
+      <Tab title="Windows (PowerShell)">
+        ```powershell theme={null}
+        $env:ANTHROPIC_API_KEY = "your-api-key"
+        ```
+      </Tab>
+    </Tabs>
+
+    SDK는 에이전트를 실행하는 프로세스의 환경에서 키를 읽습니다. `.env` 파일을 자동으로 로드하지 않습니다. 키를 `.env` 파일에 보관하는 경우 SDK를 호출하기 전에 `dotenv` 패키지 등으로 직접 로드합니다.
 
     SDK는 또한 타사 API 공급자를 통한 인증을 지원합니다:
 
@@ -133,7 +159,7 @@ def get_user_name(user):
   버그를 찾고 수정하는 에이전트 구축
 </h2>
 
-Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 경우 `agent.ts`를 생성합니다:
+Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 경우 `agent.ts`를 생성합니다. 기존 프로젝트가 CommonJS를 사용하는 경우 `agent.ts` 대신 `agent.mts`를 사용합니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -218,6 +244,8 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
     ```bash theme={null}
     npx tsx agent.ts
     ```
+
+    스크립트의 이름을 `agent.mts`로 지정한 경우 `npx tsx agent.mts`를 실행합니다.
   </Tab>
 
   <Tab title="Python (uv)">
@@ -244,7 +272,7 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
 이것이 Agent SDK를 다르게 만드는 것입니다: Claude는 구현을 요청하는 대신 도구를 직접 실행합니다.
 
 <Note>
-  "API key not found"가 표시되면 `.env` 파일 또는 셸 환경에서 `ANTHROPIC_API_KEY` 환경 변수를 설정했는지 확인합니다. 자세한 내용은 [전체 문제 해결 가이드](/ko/troubleshooting)를 참조합니다.
+  "API key not found"가 표시되면 에이전트를 실행할 셸에서 `ANTHROPIC_API_KEY` 환경 변수를 설정했는지 확인합니다. SDK는 `.env` 파일을 자동으로 로드하지 않습니다. 자세한 내용은 [전체 문제 해결 가이드](/ko/troubleshooting)를 참조합니다.
 </Note>
 
 <h3 id="try-other-prompts">
@@ -339,37 +367,22 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
 
 **권한 모드**는 원하는 인간 감독의 양을 제어합니다:
 
-| 모드                      | 동작                                           | 사용 사례                    |
-| ----------------------- | -------------------------------------------- | ------------------------ |
-| `acceptEdits`           | 파일 편집 및 일반적인 파일 시스템 명령을 자동 승인하고 다른 작업을 요청합니다 | 신뢰할 수 있는 개발 워크플로우        |
-| `dontAsk`               | `allowedTools`에 없는 모든 것을 거부합니다               | 잠금된 헤드리스 에이전트            |
-| `auto` (TypeScript만 해당) | 모델 분류기가 각 도구 호출을 승인하거나 거부합니다                 | 안전 가드레일이 있는 자율 에이전트      |
-| `bypassPermissions`     | 프롬프트 없이 모든 도구를 실행합니다                         | 샌드박스 CI, 완전히 신뢰할 수 있는 환경 |
-| `default`               | 승인을 처리하기 위해 `canUseTool` 콜백이 필요합니다           | 사용자 정의 승인 흐름             |
+| 모드                      | 동작                                                                                                      | 사용 사례                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `acceptEdits`           | 파일 편집 및 일반적인 파일 시스템 명령을 자동 승인하고 다른 작업을 요청합니다                                                            | 신뢰할 수 있는 개발 워크플로우        |
+| `plan`                  | 읽기 전용 도구를 실행합니다. 파일 편집은 자동 승인되지 않으며 `canUseTool` 콜백에 도달합니다                                              | 실행 승인 전 작업 범위 지정         |
+| `dontAsk`               | `allowedTools`에 없는 모든 것을 거부합니다                                                                          | 잠금된 헤드리스 에이전트            |
+| `auto` (TypeScript만 해당) | 모델 분류기가 각 도구 호출을 승인하거나 거부합니다                                                                            | 안전 가드레일이 있는 자율 에이전트      |
+| `bypassPermissions`     | 명시적 [`ask` 규칙](/ko/agent-sdk/permissions#how-permissions-are-evaluated)이 일치하지 않는 한 프롬프트 없이 모든 도구를 실행합니다 | 샌드박스 CI, 완전히 신뢰할 수 있는 환경 |
+| `default`               | 승인을 처리하기 위해 `canUseTool` 콜백이 필요합니다                                                                      | 사용자 정의 승인 흐름             |
 
 위의 예제는 `acceptEdits` 모드를 사용하며, 이는 파일 작업을 자동 승인하므로 에이전트가 대화형 프롬프트 없이 실행될 수 있습니다. 사용자에게 승인을 요청하려면 `default` 모드를 사용하고 사용자 입력을 수집하는 [`canUseTool` 콜백](/ko/agent-sdk/user-input)을 제공합니다. 더 많은 제어를 위해 [권한](/ko/agent-sdk/permissions)을 참조합니다.
-
-<h2 id="troubleshooting">
-  문제 해결
-</h2>
-
-<h3 id="api-error-thinking-type-enabled-is-not-supported-for-this-model">
-  API 오류 `thinking.type.enabled`는 이 모델에서 지원되지 않습니다
-</h3>
-
-Claude Opus 4.7은 `thinking.type.enabled`를 `thinking.type.adaptive`로 대체합니다. 이전 Agent SDK 버전은 `claude-opus-4-7`을 선택할 때 다음 API 오류로 실패합니다:
-
-```text theme={null}
-API Error: 400 {"type":"invalid_request_error","message":"\"thinking.type.enabled\" is not supported for this model. Use \"thinking.type.adaptive\" and \"output_config.effort\" to control thinking behavior."}
-```
-
-Opus 4.7을 사용하려면 Agent SDK v0.2.111 이상으로 업그레이드합니다.
 
 <h2 id="next-steps">
   다음 단계
 </h2>
 
-첫 번째 에이전트를 생성했으므로 기능을 확장하고 사용 사례에 맞게 조정하는 방법을 알아봅니다:
+이제 첫 번째 에이전트를 생성했으므로 기능을 확장하고 사용 사례에 맞게 조정하는 방법을 알아봅니다:
 
 * **[권한](/ko/agent-sdk/permissions)**: 에이전트가 수행할 수 있는 작업과 승인이 필요한 시기를 제어합니다
 * **[Hooks](/ko/agent-sdk/hooks)**: 도구 호출 전후에 사용자 정의 코드를 실행합니다

@@ -19,10 +19,10 @@ VS Code 확장 프로그램은 Claude Code를 위한 기본 그래픽 인터페�
 설치하기 전에 다음을 확인하십시오:
 
 * VS Code 1.98.0 이상
-* Anthropic 계정(확장 프로그램을 처음 열 때 로그인합니다). Amazon Bedrock이나 Google Vertex AI와 같은 타사 공급자를 사용하는 경우 대신 [타사 공급자 사용](#use-third-party-providers)을 참조하십시오.
+* Anthropic 계정: 모든 유료 Claude 구독(Pro, Max, Team 또는 Enterprise) 또는 Claude Console 계정이 작동하며, API 키가 필요하지 않습니다. 확장 프로그램을 처음 열 때 이 계정으로 [로그인](/ko/authentication#log-in-to-claude-code)합니다. Amazon Bedrock이나 Google Vertex AI와 같은 타사 공급자를 통해 Claude에 액세스하는 경우 설정 지침은 [타사 공급자 사용](#use-third-party-providers)을 참조하십시오.
 
 <Tip>
-  확장 프로그램에는 CLI(명령줄 인터페이스)가 포함되어 있으며, VS Code의 통합 터미널에서 고급 기능에 액세스할 수 있습니다. 자세한 내용은 [VS Code 확장 프로그램 vs. Claude Code CLI](#vs-code-extension-vs-claude-code-cli)를 참조하십시오.
+  확장 프로그램에는 채팅 패널용 CLI(명령줄 인터페이스)의 자체 복사본이 포함되어 있습니다. VS Code의 통합 터미널에서 `claude`를 실행하려면 [독립 실행형 CLI 설치](/ko/setup)도 필요합니다. 자세한 내용은 [VS Code 확장 프로그램 vs. Claude Code CLI](#vs-code-extension-vs-claude-code-cli)를 참조하십시오.
 </Tip>
 
 <h2 id="install-the-extension">
@@ -36,7 +36,7 @@ IDE에 대한 링크를 클릭하여 직접 설치합니다:
 
 또는 VS Code에서 `Cmd+Shift+X`(Mac) 또는 `Ctrl+Shift+X`(Windows/Linux)를 눌러 확장 프로그램 보기를 열고, "Claude Code"를 검색한 후 **설치**를 클릭합니다.
 
-확장 프로그램은 Devin Desktop 또는 Kiro와 같은 다른 VS Code 포크에도 설치됩니다. 편집기의 확장 프로그램 보기에서 "Claude Code"를 검색하거나 [Open VSX 레지스트리](https://open-vsx.org/extension/Anthropic/claude-code)에서 설치합니다. 편집기에서 확장 프로그램을 설치할 수 없는 경우 통합 터미널에서 `claude`를 실행합니다. [CLI](/ko/quickstart)는 모든 터미널에서 작동합니다.
+확장 프로그램은 Devin Desktop 또는 Kiro와 같은 다른 VS Code 포크에도 설치됩니다. 편집기의 확장 프로그램 보기에서 "Claude Code"를 검색하거나 [Open VSX 레지스트리](https://open-vsx.org/extension/Anthropic/claude-code)에서 설치합니다. 편집기에서 확장 프로그램을 설치할 수 없는 경우 [CLI](/ko/quickstart)를 설치하고 통합 터미널에서 `claude`를 실행합니다. CLI는 모든 터미널에서 작동합니다.
 
 <Note>설치 후 확장 프로그램이 나타나지 않으면 VS Code를 다시 시작하거나 명령 팔레트에서 "Developer: Reload Window"를 실행합니다.</Note>
 
@@ -131,7 +131,7 @@ Claude Code로 수행할 수 있는 작업에 대한 더 많은 아이디어는 
 
 Claude Code 패널 상단의 **세션 기록** 버튼을 클릭하여 대화 기록에 액세스합니다. 키워드로 검색하거나 시간별로 찾아볼 수 있습니다(오늘, 어제, 지난 7일 등). 대화를 클릭하여 전체 메시지 기록으로 재개합니다. 새 세션은 첫 번째 메시지를 기반으로 AI가 생성한 제목을 받습니다. 세션 위에 마우스를 올려 이름 바꾸기 및 제거 작업을 표시합니다: 설명적인 제목으로 이름을 바꾸거나 목록에서 삭제하려면 제거합니다. 세션 재개에 대한 자세한 내용은 [세션 관리](/ko/sessions)를 참조하십시오.
 
-<h3 id="resume-remote-sessions-from-claude-ai">
+<h3 id="resume-cloud-sessions-from-claude-ai">
   Claude.ai에서 원격 세션 재개
 </h3>
 
@@ -154,6 +154,16 @@ Claude Code 패널 상단의 **세션 기록** 버튼을 클릭하여 대화 기
 <Note>
   원격 탭에는 GitHub 저장소로 시작된 웹 세션만 나타납니다. 재개하면 대화 기록이 로컬로 로드되며, 변경 사항은 claude.ai로 다시 동기화되지 않습니다.
 </Note>
+
+<h3 id="check-account-and-usage">
+  계정 및 사용량 확인
+</h3>
+
+명령 메뉴에서 `/usage`를 실행하여 계정 및 사용량 대화 상자를 엽니다. 로그인한 계정, 요금제 및 현재 세션과 주간 사용량 막대를 표시하며 각 제한이 재설정될 때까지의 시간을 보여줍니다.
+
+대화 상자는 또한 요금제 제한에 기여하는 것을 분석합니다. 캐시 미스, 긴 컨텍스트, 서브에이전트 집약적 또는 고도로 병렬 세션 등 최근 사용량의 10% 이상을 차지하는 동작에 플래그를 지정하며, 각각에 대해 이를 줄이기 위한 팁을 제공합니다. 속성 테이블은 각 스킬, 서브에이전트, 플러그인 및 MCP 서버에서 얼마나 많은 사용량이 발생했는지 보여줍니다. Claude Code v2.1.174 이상이 필요합니다.
+
+일일 및 주간 토글을 사용하여 지난 24시간과 지난 7일 사이를 전환합니다. 수치는 대략적이며 이 컴퓨터의 로컬 세션에서 계산되므로 다른 기기 또는 claude.ai의 사용량은 포함되지 않습니다. 사용량 추적 및 감소에 대한 자세한 내용은 [비용 추적](/ko/costs#track-your-costs)을 참조하십시오.
 
 <h2 id="customize-your-workflow">
   워크플로우 사용자 정의
@@ -366,7 +376,7 @@ vscode://anthropic.claude-code/open?prompt=review%20my%20changes
   VS Code 확장 프로그램 vs. Claude Code CLI
 </h2>
 
-Claude Code는 VS Code 확장 프로그램(그래픽 패널)과 CLI(터미널의 명령줄 인터페이스) 모두로 사용 가능합니다. 일부 기능은 CLI에서만 사용 가능합니다. CLI 전용 기능이 필요한 경우 VS Code의 통합 터미널에서 `claude`를 실행합니다.
+Claude Code는 VS Code 확장 프로그램(그래픽 패널)과 CLI(터미널의 명령줄 인터페이스) 모두로 사용 가능합니다. 일부 기능은 CLI에서만 사용 가능합니다. CLI 전용 기능이 필요한 경우 VS Code의 통합 터미널에서 `claude`를 실행합니다. 이를 위해서는 [독립 실행형 CLI 설치](/ko/setup)가 필요합니다. 확장 프로그램은 `claude`를 PATH에 추가하지 않습니다. [VS Code에서 CLI 실행](#run-cli-in-vs-code)을 참조하십시오.
 
 | 기능           | CLI                | VS Code 확장 프로그램                             |
 | ------------ | ------------------ | ------------------------------------------- |
@@ -393,6 +403,8 @@ checkpoints 작동 방식 및 제한 사항에 대한 전체 세부 정보는 [C
 </h3>
 
 VS Code에 머물면서 CLI를 사용하려면 통합 터미널(Windows/Linux에서 `` Ctrl+` `` 또는 Mac에서 `` Cmd+` ``)을 열고 `claude`를 실행합니다. CLI는 diff 보기 및 진단 공유와 같은 기능을 위해 IDE와 자동으로 통합됩니다.
+
+확장 프로그램을 설치해도 `claude`가 셸 PATH에 추가되지 않습니다. 확장 프로그램은 채팅 패널을 위해 CLI의 비공개 복사본을 번들로 제공하지만, 터미널에서 `claude`를 입력하려면 [독립 실행형 CLI 설치](/ko/setup)가 필요합니다. 설치를 한 번 실행하면 이 페이지의 명령(예: `claude mcp add` 및 `claude --resume`)이 모든 터미널에서 작동합니다. 설치 후에도 `claude`를 찾을 수 없으면 [PATH 확인](/ko/troubleshoot-install#verify-your-path)을 참조하십시오.
 
 외부 터미널을 사용하는 경우 Claude Code 내에서 `/ide`를 실행하여 VS Code에 연결합니다.
 
@@ -530,7 +542,7 @@ claude --worktree feature-auth
   일반적인 문제 해결
 </h2>
 
-<h3 id="extension-won-t-install">
+<h3 id="extension-won’t-install">
   확장 프로그램이 설치되지 않음
 </h3>
 
@@ -586,10 +598,24 @@ Claude Code 확장 프로그램을 제거하려면:
 2. "Claude Code" 검색
 3. **제거** 클릭
 
-확장 프로그램 데이터를 제거하고 모든 설정을 재설정하려면:
+확장 프로그램 데이터를 제거하고 모든 설정을 재설정하려면 플랫폼에 해당하는 확장 프로그램의 저장소 디렉터리를 삭제하십시오.
+
+macOS에서:
 
 ```bash theme={null}
-rm -rf ~/.vscode/globalStorage/anthropic.claude-code
+rm -rf ~/Library/"Application Support"/Code/User/globalStorage/anthropic.claude-code
+```
+
+Linux에서:
+
+```bash theme={null}
+rm -rf ~/.config/Code/User/globalStorage/anthropic.claude-code
+```
+
+Windows에서 PowerShell에서:
+
+```powershell theme={null}
+Remove-Item -Recurse -Force "$env:APPDATA\Code\User\globalStorage\anthropic.claude-code"
 ```
 
 추가 도움말은 [문제 해결 가이드](/ko/troubleshooting)를 참조하십시오.

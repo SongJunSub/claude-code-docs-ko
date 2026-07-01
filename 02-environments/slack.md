@@ -6,9 +6,13 @@
 
 > Slack 워크스페이스에서 직접 코딩 작업 위임
 
+<Note>
+  Slack의 Claude Code는 Team 및 Enterprise 워크스페이스를 위해 [Claude Tag](https://claude.com/docs/claude-tag/overview)로 대체되고 있습니다. Claude Tag는 @Claude를 조직의 공유 ID로 실행하며 관리자가 구성한 액세스 권한을 가지고 동일한 Slack 앱에서 실행되므로 다시 설치할 필요가 없으며 기존 설정은 전환 중에 계속 작동합니다. 워크스페이스를 전환하려면 [이전 Slack의 Claude에서 마이그레이션](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)을 참조하십시오.
+</Note>
+
 Slack의 Claude Code는 Claude Code의 강력한 기능을 Slack 워크스페이스에 직접 가져옵니다. `@Claude`를 언급하여 코딩 작업을 요청하면, Claude는 자동으로 의도를 감지하고 웹에서 Claude Code 세션을 생성하여 팀 대화를 떠나지 않고도 개발 작업을 위임할 수 있습니다.
 
-이 통합은 기존 Slack용 Claude 앱을 기반으로 하지만 코딩 관련 요청에 대해 웹의 Claude Code로 지능형 라우팅을 추가합니다.
+이 통합은 기존 Slack용 Claude 앱을 기반으로 하지만 코딩 관련 요청에 대해 웹의 Claude Code로 지능형 라우팅을 추가합니다. 각 세션은 사용자의 Claude 계정에서 실행되며, 연결된 저장소와 사용자의 플랜 한도를 사용합니다.
 
 <h2 id="use-cases">
   사용 사례
@@ -182,7 +186,7 @@ Claude는 설치 후 자동으로 채널에 추가되지 않습니다. 사용자
 
 이 채널 기반 모델을 통해 팀은 Claude Code 사용을 특정 채널로 제한하여 워크스페이스 수준 권한 이상의 추가 액세스 제어 계층을 제공할 수 있습니다.
 
-<h2 id="what-s-accessible-where">
+<h2 id="what’s-accessible-where">
   어디서 액세스할 수 있는지
 </h2>
 
@@ -216,6 +220,12 @@ Enterprise 및 Team 계정의 경우 Slack의 Claude에서 생성된 세션은 �
 <h2 id="troubleshooting">
   문제 해결
 </h2>
+
+<h3 id="claude-code-is-not-enabled-for-your-account">
+  "Claude Code가 계정에서 활성화되지 않았습니다"
+</h3>
+
+이 오류는 Claude 계정에 아직 클라우드 환경이 없다는 의미이며, 관리자가 무언가를 활성화해야 한다는 뜻이 아닙니다. Slack에 연결한 동일한 계정으로 [claude.ai/code](https://claude.ai/code)에 한 번 로그인합니다. 첫 방문 시 기본 클라우드 환경이 생성되며, 다음 언급 시 오류가 해결됩니다. 각 사용자는 개별적으로 이 작업을 수행해야 합니다.
 
 <h3 id="sessions-not-starting">
   세션이 시작되지 않음
@@ -275,6 +285,10 @@ Enterprise 및 Team 계정의 경우 Slack의 Claude에서 생성된 세션은 �
 
   <Card title="Slack용 Claude" icon="slack" href="https://claude.com/claude-and-slack">
     일반 Slack용 Claude 문서
+  </Card>
+
+  <Card title="Claude Tag" icon="users" href="https://claude.com/docs/claude-tag/overview">
+    관리자가 구성한 액세스 권한이 있는 Slack의 조직 관리 @Claude
   </Card>
 
   <Card title="Slack 앱 마켓플레이스" icon="store" href="https://slack.com/marketplace/A08SF47R6P4">

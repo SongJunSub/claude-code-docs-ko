@@ -8,7 +8,7 @@
 
 Claude Desktop 앱에는 세 개의 탭이 있습니다: 대화를 위한 **Chat**, [Dispatch 및 더 긴 에이전트 작업](https://claude.com/product/cowork)을 위한 **Cowork**, 소프트웨어 개발을 위한 **Code**입니다. 이 페이지는 Code 탭에 대한 참고 자료입니다.
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Download for macOS" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
     Universal build for Intel and Apple Silicon
   </Card>
@@ -16,9 +16,13 @@ Claude Desktop 앱에는 세 개의 탭이 있습니다: 대화를 위한 **Chat
   <Card title="Download for Windows" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
     For x64 processors
   </Card>
+
+  <Card title="Get Claude for Linux (beta)" icon="linux" href="/en/desktop-linux">
+    apt or .deb for Ubuntu and Debian
+  </Card>
 </CardGroup>
 
-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
+For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). On Linux, install with apt; see [Claude Desktop on Linux](/en/desktop-linux).
 
 설치 후 Claude를 실행하고, 로그인한 다음 **Code** 탭을 클릭합니다. Windows에서 처음 열 때는 [Git for Windows](https://git-scm.com/downloads/win)가 설치되어 있어야 하며, 설치 후 앱을 다시 시작합니다. 첫 번째 세션의 전체 안내는 [시작하기 가이드](/ko/desktop-quickstart)를 참조하세요.
 
@@ -67,7 +71,7 @@ Claude가 수행할 작업을 입력하고 **Enter**를 눌러 보냅니다. Cla
 
 프롬프트 상자는 외부 컨텍스트를 가져오는 두 가지 방법을 지원합니다:
 
-* **@mention 파일**: `@` 다음에 파일 이름을 입력하여 파일을 대화 컨텍스트에 추가합니다. Claude는 그 파일을 읽고 참조할 수 있습니다. @mention은 원격 세션에서 사용할 수 없습니다.
+* **@mention 파일**: `@` 다음에 파일 이름을 입력하여 파일을 대화 컨텍스트에 추가합니다. Claude는 그 파일을 읽고 참조할 수 있습니다. @mention은 클라우드 세션에서 사용할 수 없습니다.
 * **파일 첨부**: 첨부 버튼을 사용하여 이미지, PDF 및 기타 파일을 프롬프트에 첨부하거나, 파일을 프롬프트에 직접 드래그 앤 드롭합니다. 이는 버그 스크린샷, 디자인 목업 또는 참고 문서를 공유하는 데 유용합니다.
 
 <h3 id="choose-a-permission-mode">
@@ -76,25 +80,25 @@ Claude가 수행할 작업을 입력하고 **Enter**를 눌러 보냅니다. Cla
 
 권한 모드는 세션 중에 Claude가 가질 자율성을 제어합니다: 파일 편집, 명령 실행 또는 둘 다 전에 묻는지 여부입니다. 전송 버튼 옆의 모드 선택기를 사용하여 언제든지 모드를 전환할 수 있습니다. Claude가 수행하는 작업을 정확히 보기 위해 권한 요청으로 시작한 다음, 편하면 자동 수락 편집 또는 Plan mode로 이동합니다.
 
-| 모드            | 설정 키                | 동작                                                                                                                                                                               |
-| ------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **권한 요청**     | `default`           | Claude는 파일을 편집하거나 명령을 실행하기 전에 요청합니다. diff를 보고 각 변경 사항을 수락하거나 거부할 수 있습니다. 새 사용자에게 권장됩니다.                                                                                          |
-| **자동 수락 편집**  | `acceptEdits`       | Claude는 파일 편집을 자동으로 수락하고 `mkdir`, `touch`, `mv`와 같은 일반적인 파일시스템 명령을 자동으로 수락하지만 다른 터미널 명령 실행 전에는 여전히 요청합니다. 파일 변경을 신뢰하고 더 빠른 반복을 원할 때 사용합니다.                                       |
-| **Plan mode** | `plan`              | Claude는 파일을 읽고 명령을 실행하여 탐색한 다음 소스 코드를 편집하지 않고 계획을 제안합니다. 먼저 접근 방식을 검토하려는 복잡한 작업에 좋습니다.                                                                                           |
-| **Auto**      | `auto`              | Claude는 요청과의 정렬을 확인하는 백그라운드 안전 검사를 통해 모든 작업을 실행합니다. 감시를 유지하면서 권한 프롬프트를 줄입니다. Settings → Claude Code에서 활성화합니다. [가용성 요구 사항](#auto-mode-availability)을 아래에서 참조하세요.                  |
-| **권한 무시**     | `bypassPermissions` | Claude는 권한 프롬프트 없이 실행되며, CLI의 `--dangerously-skip-permissions`와 동일합니다. Settings → Claude Code의 "권한 무시 모드 허용"에서 활성화합니다. 샌드박스 컨테이너 또는 VM에서만 사용합니다. 엔터프라이즈 관리자는 이 옵션을 비활성화할 수 있습니다. |
+| 모드            | 설정 키                | 동작                                                                                                                                                                                                                                                         |
+| ------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **권한 요청**     | `default`           | Claude는 파일을 편집하거나 명령을 실행하기 전에 요청합니다. diff를 보고 각 변경 사항을 수락하거나 거부할 수 있습니다. 새 사용자에게 권장됩니다.                                                                                                                                                                    |
+| **자동 수락 편집**  | `acceptEdits`       | Claude는 파일 편집을 자동으로 수락하고 `mkdir`, `touch`, `mv`와 같은 일반적인 파일시스템 명령을 자동으로 수락하지만 다른 터미널 명령 실행 전에는 여전히 요청합니다. 파일 변경을 신뢰하고 더 빠른 반복을 원할 때 사용합니다.                                                                                                                 |
+| **Plan mode** | `plan`              | Claude는 파일을 읽고 명령을 실행하여 탐색한 다음 소스 코드를 편집하지 않고 계획을 제안합니다. 먼저 접근 방식을 검토하려는 복잡한 작업에 좋습니다.                                                                                                                                                                     |
+| **Auto**      | `auto`              | Claude는 요청과의 정렬을 확인하는 백그라운드 안전 검사를 통해 모든 작업을 실행합니다. 감시를 유지하면서 권한 프롬프트를 줄입니다. Settings → Claude Code에서 활성화합니다. [가용성 요구 사항](#auto-mode-availability)을 아래에서 참조하세요.                                                                                            |
+| **권한 무시**     | `bypassPermissions` | Claude는 명시적 [ask rules](/ko/permissions#manage-permissions)에 의해 강제된 권한 프롬프트를 제외하고 권한 프롬프트 없이 실행되며, CLI의 `--dangerously-skip-permissions`와 동일합니다. Settings → Claude Code의 "권한 무시 모드 허용"에서 활성화합니다. 샌드박스 컨테이너 또는 VM에서만 사용합니다. 엔터프라이즈 관리자는 이 옵션을 비활성화할 수 있습니다. |
 
 `dontAsk` 권한 모드는 [CLI](/ko/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)에서만 사용 가능합니다.
 
 <span id="auto-mode-availability" />
 
-Auto mode는 Anthropic API의 모든 사용자에게 제공되는 연구 미리보기이며 Claude Opus 4.6 이상 또는 Sonnet 4.6이 필요합니다. Google Cloud Vertex AI로 라우팅하는 엔터프라이즈 배포에서는 [set `CLAUDE_CODE_ENABLE_AUTO_MODE`](/ko/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)할 때까지 auto mode가 꺼져 있으며, 거기서는 Claude Opus 4.7과 Opus 4.8만 지원됩니다.
+Auto mode는 Anthropic API의 모든 사용자에게 제공되는 연구 미리보기이며 Claude Opus 4.6 이상 또는 Sonnet 4.6 이상이 필요합니다. Google Cloud Vertex AI로 라우팅하는 엔터프라이즈 배포에서는 [`CLAUDE_CODE_ENABLE_AUTO_MODE`를 설정](/ko/permission-modes#enable-auto-mode-on-bedrock-vertex-ai-or-foundry)할 때까지 auto mode가 꺼져 있으며, 거기서는 Claude Sonnet 5, Opus 4.7, Opus 4.8만 지원됩니다.
 
 <Tip title="모범 사례">
   복잡한 작업을 Plan mode에서 시작하여 Claude가 변경하기 전에 접근 방식을 매핑하도록 합니다. 계획을 승인한 후 자동 수락 편집 또는 권한 요청으로 전환하여 실행합니다. 이 워크플로우에 대한 자세한 내용은 [먼저 탐색, 그 다음 계획, 그 다음 코드](/ko/best-practices#explore-first-then-plan-then-code)를 참조하세요.
 </Tip>
 
-원격 세션은 자동 수락 편집 및 Plan mode를 지원합니다. 권한 요청은 원격 세션이 기본적으로 파일 편집을 자동으로 수락하기 때문에 사용할 수 없으며, 권한 무시는 원격 환경이 이미 샌드박스되어 있기 때문에 사용할 수 없습니다.
+클라우드 세션은 자동 수락 편집, Plan mode, Auto mode를 지원합니다. 자동 수락 편집은 `default` 모드에 해당합니다: 클라우드 세션은 파일 편집을 미리 승인하므로 선택기는 권한 요청 대신 자동 수락 편집을 표시합니다. 권한 무시는 클라우드 환경이 이미 샌드박스되어 있기 때문에 사용할 수 없습니다.
 
 엔터프라이즈 관리자는 사용 가능한 권한 모드를 제한할 수 있습니다. 자세한 내용은 [엔터프라이즈 구성](#enterprise-configuration)을 참조하세요.
 
@@ -403,7 +407,7 @@ Dispatch는 터미널에서 멀리 떨어져 있을 때 Claude와 작업하는 �
   외부 도구 연결하기
 </h3>
 
-로컬 및 [SSH](#ssh-sessions) 세션의 경우 프롬프트 상자 옆의 **+** 버튼을 클릭하고 **Connectors**를 선택하여 Google Calendar, Slack, GitHub, Linear, Notion 등과 같은 통합을 추가합니다. 세션 전이나 중에 커넥터를 추가할 수 있습니다. **+** 버튼은 원격 세션에서 사용할 수 없지만 [루틴](/ko/routines)은 루틴 생성 시 커넥터를 구성합니다.
+로컬 및 [SSH](#ssh-sessions) 세션의 경우 프롬프트 상자 옆의 **+** 버튼을 클릭하고 **Connectors**를 선택하여 Google Calendar, Slack, GitHub, Linear, Notion 등과 같은 통합을 추가합니다. 세션 전이나 중에 커넥터를 추가할 수 있습니다. **+** 버튼은 클라우드 세션에서 사용할 수 없지만 [루틴](/ko/routines)은 루틴 생성 시 커넥터를 구성합니다.
 
 커넥터를 관리하거나 연결을 해제하려면 데스크톱 앱의 Settings → Connectors로 이동하거나 프롬프트 상자의 Connectors 메뉴에서 **Manage connectors**를 선택합니다.
 
@@ -425,7 +429,7 @@ Dispatch는 터미널에서 멀리 떨어져 있을 때 Claude와 작업하는 �
 
 로컬 및 [SSH](#ssh-sessions) 세션의 경우 프롬프트 상자 옆의 **+** 버튼을 클릭하고 **Plugins**를 선택하여 설치된 플러그인과 해당 skills를 봅니다. 플러그인을 추가하려면 서브메뉴에서 **Add plugin**을 선택하여 플러그인 브라우저를 열면 공식 Anthropic marketplace를 포함한 구성된 [marketplaces](/ko/plugin-marketplaces)의 사용 가능한 플러그인이 표시됩니다. **Manage plugins**를 선택하여 플러그인을 활성화, 비활성화 또는 제거합니다.
 
-플러그인은 사용자 계정, 특정 프로젝트 또는 로컬 전용으로 범위를 지정할 수 있습니다. 조직이 플러그인을 중앙에서 관리하는 경우 해당 플러그인은 CLI에서와 동일한 방식으로 데스크톱 세션에서 사용 가능합니다. 플러그인은 원격 세션에는 사용할 수 없습니다. 자신의 플러그인을 만드는 것을 포함한 전체 플러그인 참조는 [plugins](/ko/plugins)를 참조하세요.
+플러그인은 사용자 계정, 특정 프로젝트 또는 로컬 전용으로 범위를 지정할 수 있습니다. 조직이 플러그인을 중앙에서 관리하는 경우 해당 플러그인은 CLI에서와 동일한 방식으로 데스크톱 세션에서 사용 가능합니다. 플러그인은 클라우드 세션에는 사용할 수 없습니다. 자신의 플러그인을 만드는 것을 포함한 전체 플러그인 참조는 [plugins](/ko/plugins)를 참조하세요.
 
 <h3 id="configure-preview-servers">
   미리보기 서버 구성하기
@@ -486,6 +490,8 @@ Claude는 개발 서버 설정을 자동으로 감지하고 세션을 시작할 
 | `autoPort`          | boolean   | 포트 충돌을 처리하는 방법. 아래를 참조하세요                                                                                                                     |
 | `program`           | string    | `node`로 실행할 스크립트. [언제 `program` vs `runtimeExecutable`을 사용할지](#when-to-use-program-vs-runtimeexecutable) 참조                                   |
 | `args`              | string\[] | `program`에 전달되는 인수. `program`이 설정된 경우에만 사용됨                                                                                                   |
+
+<a id="when-to-use-program-vs-runtimeexecutable" />
 
 <h5 id="when-to-use-program-vs-runtimeexecutable">
   `program` vs `runtimeExecutable` 사용 시기
@@ -598,15 +604,15 @@ Claude가 다른 포트를 선택하면 할당된 포트를 `PORT` 환경 변수
 
 로컬 세션 및 개발 서버에 대한 환경 변수를 설정하려면 프롬프트 상자의 환경 드롭다운을 열고 **Local** 위에 마우스를 올린 다음 기어 아이콘을 클릭하여 로컬 환경 편집기를 엽니다. 여기에 저장한 변수는 머신에 암호화되어 저장되며 시작하는 모든 로컬 세션 및 미리보기 서버에 적용됩니다. `~/.claude/settings.json` 파일의 `env` 키에 변수를 추가할 수도 있습니다. 단, 이는 Claude 세션에만 도달하고 개발 서버에는 도달하지 않습니다. 지원되는 변수의 전체 목록은 [환경 변수](/ko/env-vars)를 참조하세요.
 
-[Extended thinking](/ko/model-config#extended-thinking)은 기본적으로 활성화되어 있으며, 복잡한 추론 작업의 성능을 향상시키지만 추가 토큰을 사용합니다. 생각을 완전히 비활성화하려면 로컬 환경 편집기에서 `MAX_THINKING_TOKENS`을 `0`으로 설정합니다. [적응형 추론](/ko/model-config#adjust-effort-level)이 있는 모델에서는 적응형 추론이 생각 깊이를 제어하기 때문에 다른 `MAX_THINKING_TOKENS` 값은 무시됩니다. Opus 4.6 및 Sonnet 4.6에서는 `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`을 `1`로 설정하여 고정 생각 예산을 사용합니다. Opus 4.7 이상은 항상 적응형 추론을 사용하며 고정 예산 모드가 없습니다.
+[Extended thinking](/ko/model-config#extended-thinking)은 기본적으로 활성화되어 있으며, 복잡한 추론 작업의 성능을 향상시키지만 추가 토큰을 사용합니다. 생각을 완전히 비활성화하려면 로컬 환경 편집기에서 `MAX_THINKING_TOKENS`을 `0`으로 설정합니다. [third-party providers](/ko/third-party-integrations)에서 `0`은 `thinking` 매개변수를 대신 생략하며, 적응형 추론 모델은 여전히 생각할 수 있습니다. [적응형 추론](/ko/model-config#adjust-effort-level)이 있는 모델에서는 적응형 추론이 생각 깊이를 제어하기 때문에 다른 `MAX_THINKING_TOKENS` 값은 무시됩니다. Opus 4.6 및 Sonnet 4.6에서는 `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING`을 `1`로 설정하여 고정 생각 예산을 사용합니다. Fable 5, Sonnet 5, Opus 4.7 이상은 항상 적응형 추론을 사용하며 고정 예산 모드가 없습니다.
 
-<h3 id="remote-sessions">
-  원격 세션
+<h3 id="cloud-sessions">
+  클라우드 세션
 </h3>
 
-원격 세션은 앱을 닫아도 백그라운드에서 계속됩니다. 사용량은 별도의 컴퓨팅 요금 없이 [구독 계획 한도](/ko/costs)에 포함됩니다.
+클라우드 세션은 앱을 닫아도 백그라운드에서 계속됩니다. 사용량은 별도의 컴퓨팅 요금 없이 [구독 계획 한도](/ko/costs)에 포함됩니다.
 
-다양한 네트워크 액세스 수준 및 환경 변수를 가진 사용자 정의 클라우드 환경을 만들 수 있습니다. 원격 세션을 시작할 때 환경 드롭다운을 선택하고 **환경 추가**를 선택합니다. 네트워크 액세스 및 환경 변수 구성에 대한 자세한 내용은 [클라우드 환경](/ko/claude-code-on-the-web#the-cloud-environment)을 참조하세요.
+다양한 네트워크 액세스 수준 및 환경 변수를 가진 사용자 정의 클라우드 환경을 만들 수 있습니다. 클라우드 세션을 시작할 때 환경 드롭다운을 선택하고 **환경 추가**를 선택합니다. 네트워크 액세스 및 환경 변수 구성에 대한 자세한 내용은 [클라우드 환경](/ko/claude-code-on-the-web#the-cloud-environment)을 참조하세요.
 
 <h3 id="ssh-sessions">
   SSH 세션
@@ -689,18 +695,22 @@ Team 또는 Enterprise 계획의 조직은 관리 콘솔 컨트롤, 관리 설�
   관리 설정
 </h3>
 
-관리 설정은 프로젝트 및 사용자 설정을 재정의하고 Desktop이 CLI 세션을 생성할 때 적용됩니다. 조직의 [관리 설정](/ko/settings#settings-precedence) 파일에서 이러한 키를 설정하거나 관리 콘솔을 통해 원격으로 푸시할 수 있습니다.
+관리 설정은 프로젝트 및 사용자 설정을 재정의하고 Desktop의 Claude Code 세션에 적용됩니다. 조직의 [관리 설정](/ko/settings#settings-precedence) 파일에서 이러한 키를 설정하거나 관리 콘솔을 통해 원격으로 푸시할 수 있습니다.
 
-| 키                                          | 설명                                                                                                                                                                                        |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `permissions.disableBypassPermissionsMode` | 사용자가 권한 무시 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다.                                                                                                                                         |
-| `disableAutoMode`                          | 사용자가 [Auto](/ko/permission-modes#eliminate-prompts-with-auto-mode) 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다. 모드 선택기에서 Auto를 제거합니다. `permissions` 아래에서도 허용됩니다.                                |
-| `autoMode`                                 | 조직 전체에서 auto mode 분류기가 신뢰하고 차단하는 것을 사용자 정의합니다. [auto mode 구성](/ko/auto-mode-config)을 참조하세요.                                                                                               |
-| `sshConfigs`                               | 환경 드롭다운에 나타나는 [SSH 연결](#pre-configure-ssh-connections-for-your-team)을 사전 구성합니다. 사용자는 관리 연결을 편집하거나 삭제할 수 없습니다.                                                                             |
-| `sshHostAllowlist`                         | [SSH 세션](#restrict-which-ssh-hosts-users-can-connect-to)을 확인된 호스트명이 이러한 패턴 중 하나와 일치하는 호스트로 제한합니다. 빈 배열은 SSH 세션을 비활성화합니다. 관리 설정에서만 읽습니다.                                                   |
-| `managedMcpServers`                        | 타사 배포에서 모든 사용자에게 MCP 서버 구성을 푸시합니다. 각 항목은 `"http"`, `"sse"`, 또는 `"stdio"`의 전송, 연결 세부 정보, 그리고 선택적으로 해당 서버의 어떤 도구를 사용자가 호출할 수 있는지 제한하는 `toolPolicy` 맵을 지정합니다. 타사(3P) Desktop 배포에서만 사용 가능합니다. |
+| 키                                          | 설명                                                                                                                                                                                                                                                 |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `permissions.disableBypassPermissionsMode` | 사용자가 권한 무시 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다.                                                                                                                                                                                                  |
+| `disableAutoMode`                          | 사용자가 [Auto](/ko/permission-modes#eliminate-prompts-with-auto-mode) 모드를 활성화하지 못하도록 하려면 `"disable"`로 설정합니다. 모드 선택기에서 Auto를 제거합니다. `permissions` 아래에서도 허용됩니다.                                                                                         |
+| `autoMode`                                 | 조직 전체에서 auto mode 분류기가 신뢰하고 차단하는 것을 사용자 정의합니다. [auto mode 구성](/ko/auto-mode-config)을 참조하세요.                                                                                                                                                        |
+| `sshConfigs`                               | 환경 드롭다운에 나타나는 [SSH 연결](#pre-configure-ssh-connections-for-your-team)을 사전 구성합니다. 사용자는 관리 연결을 편집하거나 삭제할 수 없습니다.                                                                                                                                      |
+| `sshHostAllowlist`                         | [SSH 세션](#restrict-which-ssh-hosts-users-can-connect-to)을 확인된 호스트명이 이러한 패턴 중 하나와 일치하는 호스트로 제한합니다. 빈 배열은 SSH 세션을 비활성화합니다. 관리 설정에서만 읽습니다.                                                                                                            |
+| `managedMcpServers`                        | 타사 배포에서 모든 사용자에게 MCP 서버 구성을 푸시합니다. 각 항목은 `"http"`, `"sse"`, 또는 `"stdio"`의 전송, 연결 세부 정보, 그리고 선택적으로 해당 서버의 어떤 도구를 사용자가 호출할 수 있는지 제한하는 `toolPolicy` 맵을 지정합니다. 타사(3P) Desktop 배포에서만 사용 가능합니다. 타사 배포는 관리 콘솔 설정을 받지 않으므로 관리 설정 파일 또는 MDM을 통해 이 키를 전달합니다. |
 
-각 머신의 디스크에 배포된 관리 설정 파일은 Desktop 세션에 적용됩니다. 관리 콘솔을 통해 원격으로 푸시된 관리 설정은 현재 CLI 및 IDE 세션에만 도달하므로, Desktop 배포의 경우 MDM을 통해 파일을 배포하거나 위의 [관리 콘솔 컨트롤](#admin-console-controls)을 사용합니다.
+Desktop 세션이 어느 위치에서 실행되는지에 따라 어떤 관리 설정이 Desktop 세션에 도달하는지가 결정됩니다. [`availableModels`](/ko/model-config#restrict-model-selection)과 같은 모델 제한은 터미널 CLI와 동일한 방식으로 Desktop의 Claude Code 세션에서 적용됩니다. [표면 범위](/ko/model-config#surface-coverage)를 참조하세요.
+
+* **이 머신의 로컬 세션**: 디스크에 배포된 관리 설정 파일이 적용됩니다. 관리 콘솔을 통해 원격으로 푸시된 관리 설정도 세션이 조직 로그인 또는 직접 구성된 API 키로 인증할 때 Anthropic의 API에서 이러한 세션에 도달하며, 터미널 CLI와 동일한 [설정 우선순위](/ko/settings#settings-precedence)를 따릅니다.
+* **[클라우드 세션](#cloud-sessions)**: Anthropic이 관리하는 VM에서 실행되며 [서버 관리 설정](/ko/server-managed-settings)만 수신합니다.
+* **[SSH 세션](#ssh-sessions)**: 세션은 원격 호스트에서 관리 설정 파일을 읽습니다. Desktop 자체는 연결을 생성할 때 로컬 머신의 관리 설정에서 `sshConfigs` 및 `sshHostAllowlist`를 읽습니다.
 
 `permissions.disableBypassPermissionsMode` 및 `disableAutoMode`는 사용자 및 프로젝트 설정에서도 작동하지만 관리 설정에 배치하면 사용자가 재정의하지 못하도록 방지합니다. `autoMode`는 사용자 설정, `.claude/settings.local.json`, 관리 설정에서 읽혀지지만 체크인된 `.claude/settings.json`에서는 읽혀지지 않습니다: 복제된 저장소는 자신의 분류기 규칙을 주입할 수 없습니다. `allowManagedPermissionRulesOnly` 및 `allowManagedHooksOnly`를 포함한 관리 전용 설정의 전체 목록은 [관리 전용 설정](/ko/permissions#managed-only-settings)을 참조하세요.
 
@@ -710,7 +720,7 @@ Team 또는 Enterprise 계획의 조직은 관리 콘솔 컨트롤, 관리 설�
 
 IT 팀은 macOS의 MDM 또는 Windows의 그룹 정책을 통해 데스크톱 앱을 관리할 수 있습니다. 사용 가능한 정책에는 Claude Code 기능 활성화 또는 비활성화, 자동 업데이트 제어, 사용자 정의 배포 URL 설정이 포함됩니다.
 
-* **macOS**: Jamf 또는 Kandji와 같은 도구를 사용하여 `com.anthropic.Claude` 기본 설정 도메인을 통해 구성합니다
+* **macOS**: Jamf 또는 Kandji와 같은 도구를 사용하여 `com.anthropic.claudefordesktop` 기본 설정 도메인을 통해 구성합니다
 * **Windows**: `SOFTWARE\Policies\Claude`의 레지스트리를 통해 구성합니다
 
 <h3 id="authentication-and-sso">
@@ -723,7 +733,7 @@ IT 팀은 macOS의 MDM 또는 Windows의 그룹 정책을 통해 데스크톱 �
   데이터 처리
 </h3>
 
-Claude Code는 로컬 세션에서 코드를 로컬로 처리하거나 원격 세션에서 Anthropic의 클라우드 인프라에서 처리합니다. 대화 및 코드 컨텍스트는 처리를 위해 Anthropic의 API로 전송됩니다. 데이터 보존, 개인 정보 보호, 규정 준수에 대한 자세한 내용은 [데이터 처리](/ko/data-usage)를 참조하세요.
+Claude Code는 로컬 세션에서 코드를 로컬로 처리하거나 클라우드 세션에서 Anthropic의 클라우드 인프라에서 처리합니다. 대화 및 코드 컨텍스트는 처리를 위해 Anthropic의 API로 전송됩니다. 데이터 보존, 개인 정보 보호, 규정 준수에 대한 자세한 내용은 [데이터 처리](/ko/data-usage)를 참조하세요.
 
 <h3 id="deployment">
   배포
@@ -762,7 +772,7 @@ CLI 세션을 Desktop으로 이동하려면 터미널에서 `/desktop`을 실행
 | `--resume`, `--continue`              | 사이드바의 세션을 클릭합니다                                                                            |
 | `--permission-mode`                   | 전송 버튼 옆의 모드 선택기                                                                            |
 | `--dangerously-skip-permissions`      | 권한 무시 모드. Settings → Claude Code → "권한 무시 모드 허용"에서 활성화합니다. 엔터프라이즈 관리자는 이 설정을 비활성화할 수 있습니다. |
-| `--add-dir`                           | 원격 세션에서 **+** 버튼으로 여러 저장소 추가                                                               |
+| `--add-dir`                           | 클라우드 세션에서 **+** 버튼으로 여러 저장소 추가                                                             |
 | `--allowedTools`, `--disallowedTools` | 세션별 동등물이 없습니다. [설정 파일](/ko/settings)의 권한 규칙이 여전히 적용됩니다.                                    |
 | `--verbose`                           | [Verbose 보기 모드](#switch-view-modes) (Transcript 보기 드롭다운)                                   |
 | `--print`, `--output-format`          | 사용할 수 없습니다. Desktop은 대화형만 가능합니다.                                                           |
@@ -779,7 +789,7 @@ Desktop과 CLI는 동일한 구성 파일을 읽으므로 설정이 이월됩니
 * **[MCP servers](/ko/mcp)** `~/.claude.json` 또는 `.mcp.json`에 구성된 것은 둘 다에서 작동합니다
 * **[Hooks](/ko/hooks)** 및 **[skills](/ko/skills)** 설정에 정의된 것은 둘 다에 적용됩니다
 * **[Settings](/ko/settings)** `~/.claude.json` 및 `~/.claude/settings.json`에서 공유됩니다. `settings.json`의 권한 규칙, 허용된 도구 및 기타 설정은 Desktop 세션에 적용됩니다.
-* **Models**: Sonnet, Opus, Haiku는 둘 다에서 사용 가능합니다. Desktop에서 전송 버튼 옆의 드롭다운에서 모델을 선택합니다. 세션 중에 동일한 드롭다운에서 모델을 변경할 수 있습니다.
+* **Models**: 동일한 [모델](/ko/model-config#available-models)은 둘 다에서 사용 가능합니다. Desktop에서 전송 버튼 옆의 드롭다운에서 모델을 선택합니다. 세션 중에 동일한 드롭다운에서 모델을 변경할 수 있습니다.
 
 <Note>
   **Claude Desktop 채팅 앱의 MCP 서버**: Desktop 앱은 `claude_desktop_config.json`에서 MCP 서버를 Code 탭 세션으로 로드하며, `~/.claude.json` 및 `.mcp.json`의 서버와 함께 작동합니다. `claude_desktop_config.json`에 정의된 서버는 Desktop 채팅 표면과 Code 탭 모두에서 사용 가능합니다.
@@ -793,30 +803,30 @@ Desktop과 CLI는 동일한 구성 파일을 읽으므로 설정이 이월됩니
 
 이 표는 CLI와 Desktop 간의 핵심 기능을 비교합니다. CLI 플래그의 전체 목록은 [CLI 참조](/ko/cli-reference)를 참조하세요.
 
-| 기능                                                    | CLI                                                       | Desktop                                                                                                                                                               |
-| ----------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 권한 모드                                                 | `dontAsk`를 포함한 모든 모드                                      | 권한 요청, 자동 수락 편집, Plan mode, Auto, Settings를 통한 권한 무시                                                                                                                  |
-| `--dangerously-skip-permissions`                      | CLI 플래그                                                   | 권한 무시 모드. Settings → Claude Code → "권한 무시 모드 허용"에서 활성화합니다                                                                                                             |
-| [Third-party providers](/ko/third-party-integrations) | Bedrock, Vertex, Foundry                                  | Anthropic의 API (기본값). 엔터프라이즈 배포는 Vertex AI 및 게이트웨이 공급자를 구성할 수 있습니다. [엔터프라이즈 구성 가이드](https://support.claude.com/en/articles/12622667-enterprise-configuration)를 참조하세요. |
-| [MCP servers](/ko/mcp)                                | 설정 파일에 구성                                                 | 로컬 및 SSH 세션의 Connectors UI 또는 설정 파일                                                                                                                                   |
-| [Plugins](/ko/plugins)                                | `/plugin` 명령                                              | 플러그인 관리자 UI                                                                                                                                                           |
-| @mention 파일                                           | 텍스트 기반                                                    | 자동 완성 포함; 로컬 및 SSH 세션만                                                                                                                                                |
-| 파일 첨부                                                 | 사용할 수 없음                                                  | 이미지, PDF                                                                                                                                                              |
-| 세션 격리                                                 | [`--worktree`](/ko/cli-reference) 플래그                     | 자동 worktrees                                                                                                                                                          |
-| 여러 세션                                                 | 별도 터미널                                                    | 사이드바 탭                                                                                                                                                                |
-| 반복 작업                                                 | Cron 작업, CI 파이프라인                                         | [예약된 작업](/ko/desktop-scheduled-tasks)                                                                                                                                 |
-| 컴퓨터 사용                                                | [macOS에서 `/mcp`를 통해 활성화](/ko/computer-use)                | [macOS 및 Windows에서 앱 및 화면 제어](#let-claude-use-your-computer)                                                                                                          |
-| Dispatch 통합                                           | 사용할 수 없음                                                  | [사이드바의 Dispatch 세션](#sessions-from-dispatch)                                                                                                                          |
-| 스크립팅 및 자동화                                            | [`--print`](/ko/cli-reference), [Agent SDK](/ko/headless) | 사용할 수 없음                                                                                                                                                              |
+| 기능                                                    | CLI                                                       | Desktop                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 권한 모드                                                 | `dontAsk`를 포함한 모든 모드                                      | 권한 요청, 자동 수락 편집, Plan mode, Auto, Settings를 통한 권한 무시                                                                                                                                                                                                                                                             |
+| `--dangerously-skip-permissions`                      | CLI 플래그                                                   | 권한 무시 모드. Settings → Claude Code → "권한 무시 모드 허용"에서 활성화합니다                                                                                                                                                                                                                                                        |
+| [Third-party providers](/ko/third-party-integrations) | Bedrock, Vertex AI, Foundry                               | Anthropic의 API (기본값). 엔터프라이즈 배포는 Vertex AI 및 게이트웨이 공급자를 구성할 수 있습니다. [엔터프라이즈 구성 가이드](https://support.claude.com/en/articles/12622667-enterprise-configuration)를 참조하세요. Code 탭을 Bedrock, Vertex AI, Foundry 또는 자체 호스팅 LLM 게이트웨이에서 실행하려면 [Cowork on 3P 연구 미리보기](https://claude.com/docs/cowork/3p/overview)를 참조하세요. |
+| [MCP servers](/ko/mcp)                                | 설정 파일에 구성                                                 | 로컬 및 SSH 세션의 Connectors UI 또는 설정 파일                                                                                                                                                                                                                                                                              |
+| [Plugins](/ko/plugins)                                | `/plugin` 명령                                              | 플러그인 관리자 UI                                                                                                                                                                                                                                                                                                      |
+| @mention 파일                                           | 텍스트 기반                                                    | 자동 완성 포함; 로컬 및 SSH 세션만                                                                                                                                                                                                                                                                                           |
+| 파일 첨부                                                 | 사용할 수 없음                                                  | 이미지, PDF                                                                                                                                                                                                                                                                                                         |
+| 세션 격리                                                 | [`--worktree`](/ko/cli-reference) 플래그                     | 자동 worktrees                                                                                                                                                                                                                                                                                                     |
+| 여러 세션                                                 | 별도 터미널                                                    | 사이드바 탭                                                                                                                                                                                                                                                                                                           |
+| 반복 작업                                                 | Cron 작업, CI 파이프라인                                         | [예약된 작업](/ko/desktop-scheduled-tasks)                                                                                                                                                                                                                                                                            |
+| 컴퓨터 사용                                                | [macOS에서 `/mcp`를 통해 활성화](/ko/computer-use)                | [macOS 및 Windows에서 앱 및 화면 제어](#let-claude-use-your-computer)                                                                                                                                                                                                                                                     |
+| Dispatch 통합                                           | 사용할 수 없음                                                  | [사이드바의 Dispatch 세션](#sessions-from-dispatch)                                                                                                                                                                                                                                                                     |
+| 스크립팅 및 자동화                                            | [`--print`](/ko/cli-reference), [Agent SDK](/ko/headless) | 사용할 수 없음                                                                                                                                                                                                                                                                                                         |
 
-<h3 id="what-s-not-available-in-desktop">
+<h3 id="what’s-not-available-in-desktop">
   Desktop에서 사용할 수 없는 것
 </h3>
 
-다음 기능은 CLI 또는 VS Code 확장에서만 사용 가능합니다:
+다음 기능은 CLI 또는 VS Code 확장에서만 사용 가능하며, 명시된 경우를 제외하고는 그렇습니다:
 
-* **Third-party providers**: Desktop은 Anthropic의 API에 기본적으로 연결됩니다. 엔터프라이즈 배포는 [관리 설정](https://support.claude.com/en/articles/12622667-enterprise-configuration)을 통해 Vertex AI 및 게이트웨이 공급자를 구성할 수 있습니다. Bedrock 또는 Foundry의 경우 [CLI](/ko/quickstart)를 사용합니다.
-* **Linux**: 데스크톱 앱은 macOS 및 Windows에서만 사용 가능합니다. Linux에서는 [CLI](/ko/quickstart)를 사용합니다.
+* **Third-party providers**: Desktop은 Anthropic의 API에 기본적으로 연결됩니다. 엔터프라이즈 배포는 [관리 설정](https://support.claude.com/en/articles/12622667-enterprise-configuration)을 통해 Vertex AI 및 게이트웨이 공급자를 구성할 수 있습니다. CLI에서 Bedrock 또는 Foundry의 경우 [빠른 시작](/ko/quickstart)을 참조하세요. 위 섹션의 예외로, [Cowork on 3P 연구 미리보기](https://claude.com/docs/cowork/3p/overview)는 Code 탭을 Bedrock, Vertex AI, Foundry 또는 자체 호스팅 LLM 게이트웨이에서 실행합니다.
+* **Linux (베타)**: 컴퓨터 사용은 아직 Linux 데스크톱 앱에서 사용할 수 없습니다. [Linux에서 Claude Desktop](/ko/desktop-linux)을 참조하세요.
 * **Inline code suggestions**: Desktop은 자동 완성 스타일 제안을 제공하지 않습니다. 대화형 프롬프트 및 명시적 코드 변경을 통해 작동합니다.
 * **Agent teams**: 서로 메시지를 주고받는 병렬 Claude Code 세션은 [CLI](/ko/agent-teams)에서 사용 가능하며 Desktop에서는 사용할 수 없습니다. 한 세션 내에서 다중 에이전트 작업의 경우 [동적 워크플로우](/ko/workflows)를 사용합니다. 이는 Desktop에서 실행됩니다.
 * **Terminal-dialog commands**: `/permissions`, `/config`, `/agents`, `/doctor`와 같이 터미널에서 대화형 패널을 여는 기본 제공 명령은 Code 탭에서 사용할 수 없으며 `isn't available in this environment`로 응답합니다. [설정 파일](/ko/settings)을 직접 편집하여 권한 규칙 및 구성을 관리하거나 독립 실행형 CLI에서 명령을 실행합니다.
@@ -856,7 +866,7 @@ Code 탭을 사용할 때 `Error 403: Forbidden` 또는 기타 인증 실패가 
 앱이 열리지만 빈 화면이나 응답하지 않는 화면이 표시되면:
 
 1. 앱을 다시 시작합니다.
-2. 보류 중인 업데이트를 확인합니다. 앱은 시작 시 자동으로 업데이트됩니다.
+2. 보류 중인 업데이트를 확인합니다. macOS 및 Windows에서 앱은 시작 시 자동으로 업데이트됩니다. Linux에서는 [Claude Desktop on Linux](/ko/desktop-linux)에 설명된 대로 apt를 통해 업데이트합니다.
 3. Windows에서 Event Viewer의 **Windows Logs → Application** 아래에서 충돌 로그를 확인합니다.
 
 <h3 id="failed-to-load-session">
@@ -885,7 +895,7 @@ Windows에서 Git은 로컬 세션을 시작하기 위해 Code 탭에 필요합�
 
 MCP 서버 토글이 응답하지 않거나 Windows에서 서버가 연결되지 않으면 서버가 설정에 올바르게 구성되었는지 확인하고, 앱을 다시 시작하고, Task Manager에서 서버 프로세스가 실행 중인지 확인하고, 연결 오류에 대한 서버 로그를 검토합니다.
 
-<h3 id="app-won-t-quit">
+<h3 id="app-won’t-quit">
   앱이 종료되지 않음
 </h3>
 
@@ -899,7 +909,7 @@ MCP 서버 토글이 응답하지 않거나 Windows에서 서버가 연결되지
 * **설치 후 PATH가 업데이트되지 않음**: 새 터미널 창을 엽니다. PATH 업데이트는 새 터미널 세션에만 적용됩니다.
 * **동시 설치 오류**: 진행 중인 다른 설치에 대한 오류가 표시되지만 없으면 관리자로 설치 프로그램을 실행해 보세요.
 
-<h3 id="branch-doesn-t-exist-yet-when-opening-in-cli">
+<h3 id="branch-doesn’t-exist-yet-when-opening-in-cli">
   CLI에서 열 때 "Branch doesn't exist yet"
 </h3>
 
@@ -914,7 +924,7 @@ git checkout <branch-name>
   여전히 막혔나요?
 </h3>
 
-* [GitHub Issues](https://github.com/anthropics/claude-code/issues)에서 검색하거나 버그를 제출합니다
-* [Claude 지원 센터](https://support.claude.com/)를 방문합니다
+* 데스크톱 앱에서 Help → Get Support를 열거나 [Claude 지원 센터](https://support.claude.com/)를 직접 방문합니다
+* 독립 실행형 `claude` CLI에서도 재현되는 문제의 경우 [GitHub Issues](https://github.com/anthropics/claude-code/issues)에서 검색하거나 버그를 제출합니다
 
-버그를 제출할 때 데스크톱 앱 버전, 운영 체제, 정확한 오류 메시지, 관련 로그를 포함합니다. macOS에서는 Console.app을 확인합니다. Windows에서는 Event Viewer → Windows Logs → Application을 확인합니다.
+문제를 보고할 때 데스크톱 앱 버전, 운영 체제, 정확한 오류 메시지, 관련 로그를 포함합니다. macOS에서는 Console.app을 확인합니다. Windows에서는 Event Viewer → Windows Logs → Application을 확인합니다.

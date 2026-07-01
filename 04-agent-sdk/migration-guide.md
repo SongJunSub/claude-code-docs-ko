@@ -12,7 +12,7 @@
 
 Claude Code SDK의 이름이 **Claude Agent SDK**로 변경되었으며 설명서가 재구성되었습니다. 이 변경은 코딩 작업을 넘어 AI 에이전트를 구축하기 위한 SDK의 광범위한 기능을 반영합니다.
 
-<h2 id="what-s-changed">
+<h2 id="what’s-changed">
   변경 사항
 </h2>
 
@@ -82,7 +82,9 @@ import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk"
 }
 ```
 
-완료되었습니다! 다른 코드 변경은 필요하지 않습니다.
+**5. [주요 변경 사항](#breaking-changes) 검토**
+
+마이그레이션을 완료하는 데 필요한 코드 변경을 수행합니다.
 
 <h3 id="for-python-projects">
   Python 프로젝트의 경우
@@ -172,12 +174,14 @@ options = ClaudeAgentOptions(model="claude-opus-4-7", permission_mode="acceptEdi
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
+  import { query } from "@anthropic-ai/claude-agent-sdk";
+
   // 이전 (v0.0.x) - 기본적으로 Claude Code의 시스템 프롬프트 사용
-  const result = query({ prompt: "Hello" });
+  const before = query({ prompt: "Hello" });
 
   // 이후 (v0.1.0) - 기본적으로 최소 시스템 프롬프트 사용
   // 이전 동작을 얻으려면 Claude Code의 프리셋을 명시적으로 요청합니다:
-  const result = query({
+  const presetResult = query({
     prompt: "Hello",
     options: {
       systemPrompt: { type: "preset", preset: "claude_code" }
@@ -185,7 +189,7 @@ options = ClaudeAgentOptions(model="claude-opus-4-7", permission_mode="acceptEdi
   });
 
   // 또는 사용자 정의 시스템 프롬프트를 사용합니다:
-  const result = query({
+  const customResult = query({
     prompt: "Hello",
     options: {
       systemPrompt: "You are a helpful coding assistant"
@@ -233,7 +237,9 @@ options = ClaudeAgentOptions(model="claude-opus-4-7", permission_mode="acceptEdi
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
-  const result = query({
+  import { query } from "@anthropic-ai/claude-agent-sdk";
+
+  const isolatedResult = query({
     prompt: "Hello",
     options: {
       settingSources: [] // 파일 시스템 설정이 로드되지 않음
@@ -241,7 +247,7 @@ options = ClaudeAgentOptions(model="claude-opus-4-7", permission_mode="acceptEdi
   });
 
   // 또는 특정 소스만 로드합니다:
-  const result = query({
+  const projectOnlyResult = query({
     prompt: "Hello",
     options: {
       settingSources: ["project"] // 프로젝트 설정만

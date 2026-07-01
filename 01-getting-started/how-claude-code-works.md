@@ -16,7 +16,7 @@ Claude Code는 터미널에서 실행되는 에이전트 어시스턴트입니�
 
 Claude에게 작업을 주면 세 가지 단계를 거칩니다: **컨텍스트 수집**, **작업 수행**, **결과 검증**. 이 단계들은 함께 진행됩니다. Claude는 파일을 검색하여 코드를 이해하든, 변경을 위해 편집하든, 작업을 확인하기 위해 테스트를 실행하든 전체적으로 도구를 사용합니다.
 
-<img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/agentic-loop.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=5f1827dec8539f38adee90ead3a85a38" alt="에이전트 루프: 프롬프트가 Claude가 컨텍스트를 수집하고, 작업을 수행하고, 결과를 검증하고, 작업이 완료될 때까지 반복하도록 합니다. 언제든지 중단할 수 있습니다." width="720" height="280" data-path="images/agentic-loop.svg" />
+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/agentic-loop.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=4a30fb7ce2815012a9f27c955e2c6bb0" alt="에이전트 루프 다이어그램: 프롬프트가 Claude가 컨텍스트를 수집하고, 작업을 수행하고, 결과를 검증하고, 작업이 완료될 때까지 반복하도록 합니다. 언제든지 중단할 수 있습니다." width="720" height="280" data-path="images/agentic-loop.svg" />
 
 루프는 사용자가 요청한 내용에 맞게 조정됩니다. 코드베이스에 대한 질문은 컨텍스트 수집만 필요할 수 있습니다. 버그 수정은 세 단계를 반복적으로 거칩니다. 리팩토링은 광범위한 검증을 포함할 수 있습니다. Claude는 이전 단계에서 배운 내용을 바탕으로 각 단계에서 필요한 것을 결정하고, 수십 개의 작업을 연결하며 그 과정에서 방향을 수정합니다.
 
@@ -130,7 +130,7 @@ Claude는 현재 브랜치의 파일을 봅니다. 브랜치를 전환하면 Cla
 
 `claude --continue` 또는 `claude --resume`으로 세션을 재개하면 동일한 세션 ID를 사용하여 중단한 지점부터 시작합니다. 새 메시지는 기존 대화에 추가됩니다. `--fork-session` 또는 `/branch`로 포크하면 기록을 새 세션 ID로 복사하여 원본은 변경되지 않은 상태로 유지합니다.
 
-<img src="https://mintcdn.com/claude-code/c5r9_6tjPMzFdDDT/images/session-continuity.svg?fit=max&auto=format&n=c5r9_6tjPMzFdDDT&q=85&s=fa41d12bfb57579cabfeece907151d30" alt="세션 연속성: 재개는 동일한 세션을 계속하고, 포크는 새 ID로 새 브랜치를 생성합니다." width="560" height="280" data-path="images/session-continuity.svg" />
+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/session-continuity.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=04ed0984a58e4127e05b3640265241a3" alt="세션 연속성: 재개는 동일한 세션을 계속하고, 포크는 새 ID로 새 브랜치를 생성합니다." width="560" height="280" data-path="images/session-continuity.svg" />
 
 재개 플래그, `/resume` 선택기, 이름 지정, 동일한 세션이 두 터미널에서 열려 있을 때 발생하는 상황은 [세션 관리](/ko/sessions)를 참조하세요.
 
@@ -186,9 +186,9 @@ Claude는 두 가지 안전 메커니즘을 가지고 있습니다: 체크포인
 
 `Shift+Tab`을 눌러 권한 모드를 순환하세요:
 
-* **기본값**: Claude는 파일 편집 및 셸 명령 전에 요청
-* **자동 수락 편집**: Claude는 파일을 편집하고 `mkdir` 및 `mv`와 같은 일반적인 파일시스템 명령을 요청 없이 실행하지만 다른 명령은 여전히 요청
-* **계획 모드**: Claude는 읽기 전용 도구만 사용하여 실행 전에 승인할 수 있는 계획을 생성
+* **기본값**: Claude는 파일 편집 및 셸 명령 전에 요청합니다
+* **자동 수락 편집**: Claude는 파일을 편집하고 `mkdir` 및 `mv`와 같은 일반적인 파일시스템 명령을 요청 없이 실행하지만 다른 명령은 여전히 요청합니다
+* **계획 모드**: Claude는 소스 파일을 편집하지 않고 계획을 탐색하고 제안합니다. 기본 모드처럼 권한 프롬프트가 여전히 적용됩니다
 * **자동 모드**: Claude는 백그라운드 안전 검사로 모든 작업을 평가합니다. 현재 연구 미리보기입니다
 
 `.claude/settings.json`에서 특정 명령을 허용하여 Claude가 매번 요청하지 않도록 할 수 있습니다. 이는 `npm test` 또는 `git status`와 같은 신뢰할 수 있는 명령에 유용합니다. 설정은 조직 전체 정책에서 개인 선호도까지 범위를 지정할 수 있습니다. 자세한 내용은 [권한](/ko/permissions)을 참조하세요.
@@ -196,13 +196,13 @@ Claude는 두 가지 안전 메커니즘을 가지고 있습니다: 체크포인
 ***
 
 <h2 id="work-effectively-with-claude-code">
-  Claude Code를 효과적으로 사용
+  Claude Code를 효과적으로 사용하기
 </h2>
 
-이 팁은 Claude Code에서 더 나은 결과를 얻는 데 도움이 됩니다.
+이 팁들은 Claude Code에서 더 나은 결과를 얻는 데 도움이 됩니다.
 
 <h3 id="ask-claude-code-for-help">
-  Claude Code에 도움을 요청
+  Claude Code에 도움을 요청하기
 </h3>
 
 Claude Code는 사용 방법을 가르칠 수 있습니다. "hooks를 설정하려면 어떻게 하나요?" 또는 "CLAUDE.md를 구조화하는 최선의 방법은 무엇인가요?"와 같은 질문을 하면 Claude가 설명합니다.
@@ -213,8 +213,8 @@ Claude Code는 사용 방법을 가르칠 수 있습니다. "hooks를 설정하�
 * `/agents`는 사용자 정의 subagents 구성을 도와줍니다
 * `/doctor`는 설치의 일반적인 문제를 진단합니다
 
-<h3 id="it-s-a-conversation">
-  대화입니다
+<h3 id="it’s-a-conversation">
+  대화형입니다
 </h3>
 
 Claude Code는 대화형입니다. 완벽한 프롬프트가 필요하지 않습니다. 원하는 것으로 시작한 다음 개선하세요:
@@ -257,7 +257,7 @@ Claude Code는 대화형입니다. 완벽한 프롬프트가 필요하지 않습
 모호한 프롬프트는 작동하지만 더 많은 시간을 조종하는 데 소비합니다. 위와 같은 구체적인 프롬프트는 종종 첫 번째 시도에서 성공합니다.
 
 <h3 id="give-claude-something-to-verify-against">
-  Claude가 검증할 수 있는 것을 제공
+  Claude가 검증할 수 있는 것을 제공하기
 </h3>
 
 Claude는 자신의 작업을 확인할 수 있을 때 더 잘 수행합니다. 테스트 케이스를 포함하고, 예상 UI의 스크린샷을 붙여넣거나, 원하는 출력을 정의하세요.
@@ -270,7 +270,7 @@ validateEmail을 구현하세요. 테스트 케이스: 'user@example.com' → tr
 시각적 작업의 경우 디자인의 스크린샷을 붙여넣고 Claude에게 구현을 비교하도록 요청하세요.
 
 <h3 id="explore-before-implementing">
-  구현 전에 탐색
+  구현 전에 탐색하기
 </h3>
 
 복잡한 문제의 경우 연구와 코딩을 분리하세요. 계획 모드(`Shift+Tab` 두 번)를 사용하여 먼저 코드베이스를 분석하세요:
@@ -282,8 +282,8 @@ src/auth/를 읽고 세션을 처리하는 방법을 이해하세요.
 
 계획을 검토하고 대화를 통해 개선한 다음 Claude가 구현하도록 하세요. 이 2단계 접근 방식은 코드로 바로 뛰어드는 것보다 더 나은 결과를 생성합니다.
 
-<h3 id="delegate-don-t-dictate">
-  지시하지 말고 위임
+<h3 id="delegate-don’t-dictate">
+  지시하지 말고 위임하기
 </h3>
 
 능력 있는 동료에게 위임하는 것처럼 생각하세요. 컨텍스트와 방향을 제공한 다음 Claude가 세부 사항을 파악하도록 신뢰하세요:
@@ -295,7 +295,7 @@ src/auth/를 읽고 세션을 처리하는 방법을 이해하세요.
 
 읽을 파일이나 실행할 명령을 지정할 필요가 없습니다. Claude가 파악합니다.
 
-<h2 id="what-s-next">
+<h2 id="what’s-next">
   다음 단계
 </h2>
 

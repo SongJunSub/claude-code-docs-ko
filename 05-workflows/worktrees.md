@@ -36,7 +36,7 @@ claude --worktree
 
 세션 중에 Claude에게 "worktree에서 작업하기"를 요청할 수도 있으며, [`EnterWorktree`](/ko/tools-reference) 도구로 하나를 생성합니다. worktree에 들어가면 Claude는 `.claude/worktrees/` 아래의 다른 worktree로 `EnterWorktree`를 호출하여 직접 전환할 수 있습니다. 이전 worktree는 디스크에 그대로 남아 있습니다.
 
-처음으로 디렉터리에서 `--worktree`를 사용하기 전에 해당 디렉터리에서 `claude`를 한 번 실행하여 작업 공간 신뢰 대화를 수락합니다. 신뢰가 아직 수락되지 않았으면 `--worktree`는 오류와 함께 종료되고 먼저 디렉터리에서 `claude`를 실행하도록 요청하며, `-p`와 결합할 때도 마찬가지입니다.
+처음으로 디렉터리에서 `--worktree`를 사용하기 전에 해당 디렉터리에서 `claude`를 한 번 실행하여 작업 공간 신뢰 대화를 수락합니다. 신뢰가 아직 수락되지 않았으면 `--worktree`는 오류와 함께 종료되고 먼저 디렉터리에서 `claude`를 실행하도록 요청합니다. `-p`를 사용한 비대화형 실행은 [신뢰 확인](/ko/security)을 건너뛰므로 `claude -p --worktree`는 이를 수행하지 않고 진행됩니다.
 
 <Tip>
   `.claude/worktrees/`를 `.gitignore`에 추가하여 worktree 내용이 메인 체크아웃에서 추적되지 않은 파일로 나타나지 않도록 합니다.
@@ -101,6 +101,8 @@ worktree 세션을 종료할 때 정리는 변경 사항을 만들었는지 여�
 * **비대화형 실행**: `--worktree`와 함께 `-p`로 생성된 worktree는 종료 프롬프트가 없으므로 자동으로 정리되지 않습니다. `git worktree remove`로 제거합니다
 
 Claude가 서브에이전트 및 [백그라운드 세션](/ko/agent-view#how-file-edits-are-isolated)을 위해 생성한 worktree는 [`cleanupPeriodDays`](/ko/settings#available-settings) 설정보다 오래되면 자동으로 제거되며, 커밋되지 않은 변경 사항, 추적되지 않은 파일 및 푸시되지 않은 커밋이 없는 경우입니다. `--worktree`로 생성한 worktree는 이 스윕으로 절대 제거되지 않습니다.
+
+에이전트가 실행 중인 동안 Claude는 해당 worktree에서 `git worktree lock`을 실행하여 동시 정리가 이를 제거할 수 없도록 합니다. 에이전트가 완료되면 잠금이 해제됩니다. 스윕이 유지하는 worktree를 정리하려면 `git worktree remove`를 실행하고, worktree에 커밋되지 않은 변경 사항이나 추적되지 않은 파일이 있으면 `--force`를 추가합니다.
 
 <h2 id="manage-worktrees-manually">
   worktree 수동 관리

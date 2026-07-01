@@ -79,6 +79,8 @@ API는 각 요청의 시작 부분(프리픽스라고 함)을 최근에 처리�
 
 [`opusplan` 모델 설정](/ko/model-config#opusplan-model-setting)은 Plan 모드 중에 Opus로, 실행 중에 Sonnet으로 확인되므로 각 Plan 모드 토글은 모델 전환이고 새로운 캐시를 시작합니다.
 
+[Fable 5의 자동 모델 폴백](/ko/model-config#automatic-model-fallback)도 모델 전환입니다. 안전 분류기가 요청에 플래그를 지정하면 Claude Code는 기본 Opus 모델에서 다시 실행하고 세션이 계속됩니다.
+
 <h3 id="changing-effort-level">
   노력 수준 변경
 </h3>
@@ -101,7 +103,7 @@ API는 각 요청의 시작 부분(프리픽스라고 함)을 최근에 처리�
   MCP 서버 연결 또는 연결 해제
 </h3>
 
-도구 정의는 시스템 프롬프트 계층에 있으므로 요청 간에 도구 정의 집합이 변경되면 캐시가 무효화됩니다. [MCP 서버](/ko/mcp) 변경이 이를 수행하는지 여부는 해당 도구가 [도구 검색](/ko/mcp#scale-with-mcp-tool-search)으로 연기되는지 또는 프리픽스에 로드되는지에 따라 달라집니다:
+도구 정의는 시스템 프롬프트 계층에 있으므로 요청 간에 도구 정의 집합이 변경되면 캐시가 무효화됩니다. [advisor 도구](/ko/advisor)를 토글하는 것은 예외입니다: 해당 정의는 캐시 중단점 이후에 있으므로 `/advisor`를 활성화 또는 비활성화하면 캐시된 프리픽스가 그대로 유지됩니다. [MCP 서버](/ko/mcp) 변경이 이를 수행하는지 여부는 해당 도구가 [도구 검색](/ko/mcp#scale-with-mcp-tool-search)으로 연기되는지 또는 프리픽스에 로드되는지에 따라 달라집니다:
 
 * **연기된 도구**, 지원되는 모델의 기본값: 서버 연결, 연결 해제 또는 도구 목록 변경은 새로운 콘텐츠만 추가하고 이미 캐시된 항목을 방해하지 않습니다.
 * **프리픽스에 로드된 도구**: 이에 대한 모든 변경은 캐시를 무효화합니다. 이는 [도구 검색을 사용할 수 없거나 비활성화](/ko/mcp#configure-tool-search)된 경우(예: Haiku 모델, Vertex AI 또는 사용자 정의 `ANTHROPIC_BASE_URL` 게이트웨이)에 발생합니다. 또한 [`alwaysLoad`](/ko/mcp#exempt-a-server-from-deferral)로 표시된 서버 또는 도구, 그리고 [임계값 기반 로딩](/ko/mcp#configure-tool-search)으로 유지되는 정의에 대해서도 발생합니다.
@@ -114,11 +116,11 @@ MCP 구성을 편집해도 캐시가 자동으로 변경되지 않습니다. 새
   플러그인 활성화 또는 비활성화
 </h3>
 
-[플러그인](/ko/plugins)은 여러 구성 요소 유형을 번들로 제공하며, 변경 비용은 플러그인이 제공하는 구성 요소에 따라 달라집니다. 스킬, 명령, 에이전트, 훅, LSP 서버, 모니터 및 테마는 캐시를 무효화하지 않습니다: 이들이 요청에 추가하는 모든 것은 기존 대화 후에 추가되므로 다음 요청은 새로운 콘텐츠에 대해 비용을 지불하지만 여전히 그 이전의 모든 것을 캐시에서 읽습니다.
+[플러그인](/ko/plugins)은 여러 구성 요소 유형을 번들로 제공하며, 변경 비용은 플러그인이 제공하는 구성 요소에 따라 달라집니다. Skills, commands, agents, hooks, LSP 서버, monitors, themes는 캐시를 무효화하지 않습니다: 이들이 요청에 추가하는 모든 것은 기존 대화 후에 추가되므로 다음 요청은 새로운 콘텐츠에 대해 비용을 지불하지만 여전히 그 이전의 모든 것을 캐시에서 읽습니다.
 
 예외는 [MCP 서버](/ko/plugins-reference#mcp-servers)를 제공하는 플러그인입니다. 하나를 활성화 또는 비활성화하면 [MCP 서버 연결 또는 연결 해제](#connecting-or-disconnecting-an-mcp-server)와 동일한 규칙을 따릅니다: 서버의 도구가 연기될 때 캐시가 유지되고, 프리픽스에 로드될 때 다음 요청이 전체 대화를 다시 읽습니다.
 
-플러그인 변경은 [`/reload-plugins`](/ko/discover-plugins#apply-plugin-changes-without-restarting)를 실행하거나 새 세션을 시작할 때 적용됩니다. 비용(추가된 공지 사항이든 전체 다시 읽기든)은 다시 로드 후 첫 턴에 표시되며, `/plugin install`, `/plugin enable` 또는 `/plugin disable`을 실행할 때가 아닙니다.
+플러그인 변경은 [`/reload-plugins`](/ko/discover-plugins#apply-plugin-changes-without-restarting)를 실행하거나 새 세션을 시작할 때 적용됩니다. 비용(추가된 공지 사항이든 전체 다시 읽기든)은 다시 로드 후 첫 턴에 표시되며, `/plugin install`, `/plugin enable` 또는 `/plugin disable`을 실행할 때가 아닙니다. {/* min-version: 2.1.163 */}v2.1.163부터 다시 로드가 전체 다시 읽기를 트리거할 때 `/reload-plugins`는 경고를 표시하고 다시 로드를 적용하지 않습니다. `--force`를 전달하여 어차피 적용합니다.
 
 세션 초반에 활성화한 플러그인을 비활성화하면 이전 요청 형태가 복원됩니다. 해당 프리픽스가 여전히 [캐시 수명](#cache-lifetime) 내에 있으면 다음 요청이 다시 구축하는 대신 이전 캐시 항목을 읽습니다.
 
@@ -128,7 +130,7 @@ MCP 구성을 편집해도 캐시가 자동으로 변경되지 않습니다. 새
 
 `Bash` 또는 `WebFetch`와 같은 단순 도구 이름을 [거부 규칙](/ko/permissions#manage-permissions)으로 추가하면 해당 도구가 Claude의 컨텍스트에서 완전히 제거됩니다. 기본 제공 도구 정의는 시스템 프롬프트 계층에 로드되므로 이러한 규칙을 추가하거나 제거하면 세션 중에 캐시가 무효화됩니다. 변경 사항은 `/permissions`를 통해 추가하든 [설정 파일을 직접 편집](/ko/settings#when-edits-take-effect)하든 다음 턴에 적용됩니다.
 
-단순 도구 이름 또는 동등한 `Bash(*)` 형식만 이 효과를 가집니다. `Bash(rm *)`와 같은 범위가 지정된 거부 규칙과 모든 허용 및 요청 규칙은 Claude가 보는 도구를 변경하지 않습니다. Claude Code는 Claude가 호출을 시도할 때 이를 확인하여 프리픽스를 그대로 유지합니다.
+단순 도구 이름, 동등한 `Bash(*)` 형식, 또는 `"*"`와 같은 [도구 이름 글로브](/ko/permissions#tool-name-wildcards)만 이 효과를 가집니다. `"mcp__*"`와 같이 MCP 도구만 일치하는 글로브는 해당 도구를 동일한 방식으로 제거하지만 일치하는 도구가 [연기](#connecting-or-disconnecting-an-mcp-server)될 때 캐시를 그대로 유지합니다. 기본값이므로 연기된 정의는 캐시된 프리픽스에 없었습니다. `Bash(rm *)`와 같은 범위가 지정된 거부 규칙과 모든 허용 및 요청 규칙은 Claude가 보는 도구를 변경하지 않습니다. Claude Code는 Claude가 호출을 시도할 때 이를 확인하여 프리픽스를 그대로 유지합니다.
 
 <h3 id="compacting-the-conversation">
   대화 압축
@@ -219,7 +221,7 @@ MCP 구성을 편집해도 캐시가 자동으로 변경되지 않습니다. 새
 
 캐시된 프리픽스는 비활성 기간 후에 만료됩니다. 캐시에 히트하는 각 요청은 타이머를 재설정하므로 계속 작업하는 한 캐시는 따뜻하게 유지됩니다. 충분히 긴 간격 후에 다음 요청은 전체 입력을 다시 계산하고 캐시를 다시 설정합니다. 이것이 한동안 떨어진 후 돌아오는 첫 턴이 눈에 띄게 느릴 수 있는 이유입니다.
 
-TTL(Time To Live)은 캐시가 견디는 간격의 길이를 제어합니다. API는 두 가지를 제공합니다: 5분 TTL과 더 긴 휴식을 통해 캐시를 따뜻하게 유지하지만 [캐시 쓰기를 더 높은 속도로 청구](/ko/build-with-claude/prompt-caching#pricing)하는 [1시간 TTL](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#1-hour-cache-duration). Claude Code는 인증 방식에 따라 TTL을 선택하며, 환경 변수로 재정의할 수 있습니다.
+TTL(Time To Live)은 캐시가 견디는 간격의 길이를 제어합니다. API는 두 가지를 제공합니다: 5분 TTL과 더 긴 휴식을 통해 캐시를 따뜻하게 유지하지만 [캐시 쓰기를 더 높은 속도로 청구](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing)하는 [1시간 TTL](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#1-hour-cache-duration). Claude Code는 인증 방식에 따라 TTL을 선택하며, 환경 변수로 재정의할 수 있습니다.
 
 <h3 id="on-a-claude-subscription">
   Claude 구독에서
@@ -241,7 +243,7 @@ Bedrock에서 프롬프트 캐싱 지원, 최소 캐시 가능 프리픽스 길�
   TTL 재정의
 </h3>
 
-인증에 관계없이 5분 TTL을 강제하려면 `FORCE_PROMPT_CACHING_5M=1`을 설정합니다. 이는 특정 모델 또는 제공자로 캐싱 동작을 디버깅하거나, 두 TTL을 비교하거나, [관리 설정](/ko/settings#settings-files)에 설정된 `ENABLE_PROMPT_CACHING_1H`을 재정의할 때 유용합니다.
+`FORCE_PROMPT_CACHING_5M=1`을 설정하여 인증에 관계없이 5분 TTL을 강제합니다. 이는 캐시 동작을 디버깅하거나, 두 TTL을 비교하거나, [관리 설정](/ko/settings#settings-files)에 설정된 `ENABLE_PROMPT_CACHING_1H`을 재정의할 때 유용합니다.
 
 <h2 id="cache-scope">
   캐시 범위
@@ -251,7 +253,7 @@ Claude Code에서 캐시는 효과적으로 한 대의 머신과 디렉토리로
 
 동일한 디렉토리에서 병렬로 실행하는 세션은 일치하는 프리픽스를 구축하고 서로의 캐시를 읽습니다. 순차 세션은 시작 시 git 상태 스냅샷이 일치할 때만 프리픽스를 공유합니다. 시스템 프롬프트도 분기 및 최근 커밋을 캡처하기 때문입니다.
 
-기본 API 캐시는 더 광범위합니다. 캐시는 조직 간에 격리되며, 일부 제공자에서는 [조직 내 워크스페이스 간](https://platform.claude.com/docs/en/build-with-claude/prompt-caching#cache-storage-and-sharing)에 격리됩니다. 이러한 경계 내에서 동일한 모델과 프리픽스를 가진 두 요청은 동일한 캐시를 읽습니다. 자동화된 프로세스의 플릿을 실행하는 Agent SDK 호출자의 경우 [사용자 및 머신 간 프롬프트 캐싱 개선](/ko/agent-sdk/modifying-system-prompts#improve-prompt-caching-across-users-and-machines)을 참조하여 시스템 프롬프트의 머신별 섹션을 억제하고 머신 간 캐시를 공유합니다.
+기본 API 캐시는 더 광범위합니다. 캐시는 조직 간에 격리되며, 일부 제공자에서는 [조직 내 워크스페이스 간](https://platform.claude.com/docs/ko/build-with-claude/prompt-caching#cache-storage-and-sharing)에 격리됩니다. 이러한 경계 내에서 동일한 모델과 프리픽스를 가진 두 요청은 동일한 캐시를 읽습니다. 자동화된 프로세스의 플릿을 실행하는 Agent SDK 호출자의 경우 [사용자 및 머신 간 프롬프트 캐싱 개선](/ko/agent-sdk/modifying-system-prompts#improve-prompt-caching-across-users-and-machines)을 참조하여 시스템 프롬프트의 머신별 섹션을 억제하고 머신 간 캐시를 공유합니다.
 
 <h2 id="check-cache-performance">
   캐시 성능 확인
@@ -290,6 +292,7 @@ Claude Code에서 캐시는 효과적으로 한 대의 머신과 디렉토리로
 | `DISABLE_PROMPT_CACHING_HAIKU`  | Haiku만 비활성화    |
 | `DISABLE_PROMPT_CACHING_SONNET` | Sonnet만 비활성화   |
 | `DISABLE_PROMPT_CACHING_OPUS`   | Opus만 비활성화     |
+| `DISABLE_PROMPT_CACHING_FABLE`  | Fable만 비활성화    |
 
 조직 전체에 캐싱 정책을 설정하려면 이 중 하나 또는 [TTL 변수](#cache-lifetime)를 [관리 설정](/ko/settings#settings-files)의 `env` 블록에 넣습니다. 정상 사용의 경우 캐싱을 활성화된 상태로 유지합니다.
 

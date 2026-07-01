@@ -24,6 +24,7 @@
 | `TLS connect error` 또는 `SSL/TLS secure channel`                                             | [CA 인증서 업데이트](#tls-or-ssl-connection-errors)                                                   |
 | `Failed to fetch version` 또는 다운로드 서버에 도달할 수 없음                                              | [네트워크 및 프록시 설정 확인](#check-network-connectivity)                                                |
 | `irm is not recognized` 또는 `&& is not valid`                                                | [셸에 맞는 명령 사용](#wrong-install-command-on-windows)                                               |
+| `Cask 'claude-code' is unavailable: No Cask with this name exists`                          | [Homebrew 업데이트](#homebrew-cask-unavailable-or-outdated)                                        |
 | `'bash' is not recognized as the name of a cmdlet`                                          | [Windows 설치 프로그램 명령 사용](#wrong-install-command-on-windows)                                     |
 | `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`           | [셸 설치](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)         |
 | `Claude Code does not support 32-bit Windows`                                               | [Windows PowerShell 열기, x86 항목 아님](#claude-code-does-not-support-32-bit-windows)               |
@@ -31,7 +32,7 @@
 | `Error loading shared library`                                                              | [시스템에 맞는 잘못된 바이너리 변형](#linux-musl-or-glibc-binary-mismatch)                                    |
 | `Illegal instruction`                                                                       | [아키텍처 또는 CPU 명령어 세트 불일치](#illegal-instruction)                                                 |
 | WSL에서 `cannot execute binary file: Exec format error`                                       | [WSL1 네이티브 바이너리 회귀](#exec-format-error-on-wsl1)                                                |
-| PowerShell 설치 프로그램이 완료되지만 `claude`를 찾을 수 없거나 이전 버전 표시                                       | [터미널 다시 시작 및 PATH 확인](#verify-your-path)                                                       |
+| PowerShell 설치 프로그램이 완료되지만 `claude`를 찾을 수 없거나 이전 버전 표시                                       | [설치 디렉터리를 PATH에 추가](#verify-your-path), 그런 다음 새 터미널 열기                                         |
 | macOS에서 `dyld: cannot load`, `dyld: Symbol not found` 또는 `Abort trap`                       | [바이너리 비호환성](#dyld-cannot-load-on-macos)                                                        |
 | `Invoke-Expression: Missing argument in parameter list`                                     | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                     |
 | `App unavailable in region`                                                                 | Claude Code는 귀국에서 사용할 수 없습니다. [지원되는 국가](https://www.anthropic.com/supported-countries)를 참조하세요. |
@@ -44,7 +45,7 @@
 문제가 나열되지 않은 경우 아래의 진단 검사를 수행하여 원인을 좁혀보세요.
 
 <Tip>
-  터미널을 완전히 건너뛰고 싶다면 [Claude Code Desktop 앱](/ko/desktop-quickstart)을 사용하여 그래픽 인터페이스를 통해 Claude Code를 설치하고 사용할 수 있습니다. [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs) 또는 [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)용으로 다운로드하고 명령줄 설정 없이 코딩을 시작하세요.
+  터미널을 완전히 건너뛰고 싶다면 [Claude Code Desktop 앱](/ko/desktop-quickstart)을 사용하여 그래픽 인터페이스를 통해 Claude Code를 설치하고 사용할 수 있습니다. [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs), [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs) 또는 [Linux](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)용으로 다운로드하고 명령줄 설정 없이 코딩을 시작하세요.
 </Tip>
 
 <h2 id="run-diagnostic-checks">
@@ -60,6 +61,8 @@
 ```bash theme={null}
 curl -sI https://downloads.claude.ai/claude-code-releases/latest
 ```
+
+PowerShell에서는 `curl.exe -sI`를 대신 실행하세요. PowerShell은 `curl`을 `Invoke-WebRequest`로 별칭 지정하며, 이는 `-sI` 플래그를 거부합니다.
 
 `HTTP/2 200` 줄은 서버에 도달했음을 의미합니다. 출력이 없거나 `Could not resolve host` 또는 연결 시간 초과가 표시되면 네트워크가 연결을 차단하고 있습니다. 일반적인 원인:
 
@@ -94,6 +97,10 @@ curl -sI https://downloads.claude.ai/claude-code-releases/latest
 </h3>
 
 설치가 성공했지만 `claude`를 실행할 때 `command not found` 또는 `not recognized` 오류가 발생하면 설치 디렉토리가 PATH에 없습니다. 셸은 PATH에 나열된 디렉토리에서 프로그램을 검색하고 설치 프로그램은 macOS/Linux에서 `~/.local/bin/claude`에 또는 Windows에서 `%USERPROFILE%\.local\bin\claude.exe`에 `claude`를 배치합니다.
+
+<Note>
+  [VS Code 확장](/ko/vs-code)은 `claude`를 이 위치에 배치하지 않습니다. 확장 디렉토리 내에 CLI의 개인 복사본을 번들로 제공하며 자체 채팅 패널용으로 사용하고 PATH에 추가하지 않습니다. 확장만 설치한 경우 `~/.local/bin/claude`가 존재하지 않습니다. [독립 실행형 설치](/ko/setup)를 실행하여 터미널에서 `claude`를 사용한 다음 아래를 계속하세요.
+</Note>
 
 PATH 항목을 나열하고 `local/bin`을 필터링하여 설치 디렉토리가 PATH에 있는지 확인하세요:
 
@@ -187,6 +194,8 @@ PATH 항목을 나열하고 `local/bin`을 필터링하여 설치 디렉토리�
     ```bash theme={null}
     ls -la ~/.local/bin/claude
     ```
+
+    `ls` 명령이 `No such file or directory`를 인쇄하면 오류가 아닙니다. 이는 해당 위치에 아무것도 설치되지 않았음을 의미하므로 다음 검사로 이동하세요.
 
     ```bash theme={null}
     ls -la ~/.claude/local/
@@ -390,6 +399,19 @@ curl: (22) The requested URL returned error: 403
    winget install Anthropic.ClaudeCode
    ```
 
+<h3 id="homebrew-cask-unavailable-or-outdated">
+  Homebrew cask를 사용할 수 없거나 오래됨
+</h3>
+
+Homebrew가 `Error: Cask 'claude-code' is unavailable: No Cask with this name exists`를 보고하면 Homebrew cask 인덱스의 로컬 복사본이 cask의 게시 이전입니다. 인덱스를 새로 고치고 다시 시도하세요:
+
+```bash theme={null}
+brew update
+brew install --cask claude-code
+```
+
+Homebrew가 예상보다 이전 Claude Code 버전을 설치하면 동일한 오래된 인덱스가 일반적으로 원인입니다. `claude-code` cask는 안정적인 채널을 추적하며 일반적으로 최신 릴리스보다 약 1주일 뒤떨어져 있습니다. 최신 버전의 경우 대신 `brew install --cask claude-code@latest`를 실행하세요. 두 cask의 차이점은 [릴리스 채널 구성](/ko/setup#configure-release-channel)을 참조하세요.
+
 <h3 id="tls-or-ssl-connection-errors">
   TLS 또는 SSL 연결 오류
 </h3>
@@ -591,6 +613,10 @@ Git for Windows는 선택 사항입니다. Claude Code는 Git Bash가 없을 때
 ```
 
 Git이 다른 곳에 설치된 경우 PowerShell에서 `where.exe git`을 실행하여 경로를 찾고 해당 디렉토리의 `bin\bash.exe` 경로를 사용하세요.
+
+**경로가 올바르고 파일이 존재하지만** Claude Code가 여전히 찾을 수 없다고 보고하면 AppLocker, 그룹 정책 소프트웨어 제한 정책 또는 EDR 에이전트와 같은 엔드포인트 보안 소프트웨어가 간섭할 수 있습니다. v2.1.116 이전 버전에서 Claude Code는 경로를 확인하기 위해 자식 프로세스(`cmd.exe`)를 생성했으며, 이러한 정책이 차단할 수 있습니다. 일반적인 신호는 `cmd.exe /c dir "C:\Program Files\Git\bin\bash.exe"`가 PowerShell에서 직접 실행할 때는 작동하지만 `claude.exe`에서 시작할 때는 자동으로 실패한다는 것입니다.
+
+Claude Code v2.1.116 이상은 파일 시스템을 직접 확인하므로 먼저 업데이트하세요. 현재 버전에서 오류가 지속되면 IT 팀에 `claude.exe` 및 `cmd.exe`와 `bash.exe`를 포함한 생성하는 프로세스를 엔드포인트 보호 정책에서 허용 목록에 추가하도록 요청하세요.
 
 <h3 id="claude-code-does-not-support-32-bit-windows">
   Claude Code는 32비트 Windows를 지원하지 않음

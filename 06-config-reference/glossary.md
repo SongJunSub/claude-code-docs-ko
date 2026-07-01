@@ -44,6 +44,14 @@ Claude가 모든 작업을 수행하는 사이클입니다: 컨텍스트 수집,
 
 자세히 알아보기: [Claude Code 작동 방식](/ko/how-claude-code-works#the-agentic-loop)
 
+<h3 id="artifact">
+  Artifact
+</h3>
+
+Claude Code가 세션에서 claude.ai의 비공개 URL로 게시하는 라이브 대화형 웹 페이지이므로, 터미널 텍스트를 읽는 대신 시각적으로 출력을 보거나 조직 내에서 공유할 수 있습니다. 세션이 다시 게시될 때 페이지가 제자리에서 업데이트됩니다. Claude Code에서 만든 Artifact는 claude.ai 대화에서 만든 Artifact와 동일한 갤러리에 나타나지만, 공유는 조직에서 중단되며 공개할 수 없습니다.
+
+자세히 알아보기: [세션 출력을 Artifact로 공유](/ko/artifacts)
+
 <h3 id="auto-memory">
   Auto memory
 </h3>
@@ -162,7 +170,7 @@ Claude 모바일 앱에서 코딩 작업을 보낼 때 Desktop 앱에서 Claude 
   Effort level
 </h3>
 
-각 턴에서 Claude가 적응형 추론 사고 예산을 얼마나 사용할지 제어하는 설정입니다. 더 높은 노력은 더 많은 사고 토큰과 더 깊은 추론을 의미합니다. 더 낮은 노력은 더 빠르고 저렴합니다. Effort는 Opus 4.6 이상 및 Sonnet 4.6에서 지원됩니다.
+각 턴에서 Claude가 적응형 추론 사고 예산을 얼마나 사용할지 제어하는 설정입니다. 더 높은 노력은 더 많은 사고 토큰과 더 깊은 추론을 의미합니다. 더 낮은 노력은 더 빠르고 저렴합니다. Effort는 Fable 5, Opus 4.6 이상 및 Sonnet 4.6 이상에서 지원됩니다.
 
 자세히 알아보기: [노력 수준 조정](/ko/model-config#adjust-effort-level)
 
@@ -170,7 +178,7 @@ Claude 모바일 앱에서 코딩 작업을 보낼 때 Desktop 앱에서 Claude 
   Extended thinking
 </h3>
 
-모델이 응답하기 전에 수행하는 가시적인 단계별 추론입니다. `MAX_THINKING_TOKENS`로 사고 토큰을 제한하거나 [노력 수준](#effort-level)을 조정할 수 있습니다. 사고는 터미널에서 회색 이탤릭 텍스트로 나타납니다.
+모델이 응답하기 전에 수행하는 가시적인 단계별 추론입니다. [노력 수준](#effort-level)으로 조정하거나 고정된 사고 예산이 있는 모델에서 `MAX_THINKING_TOKENS`로 사고 토큰을 제한할 수 있습니다. 사고는 터미널에서 회색 이탤릭 텍스트로 나타납니다.
 
 자세히 알아보기: [확장 사고 사용](/ko/model-config#extended-thinking)
 
@@ -200,9 +208,9 @@ Claude Code의 라이프사이클의 특정 지점에서 자동으로 실행되�
   Managed settings
 </h3>
 
-IT 또는 DevOps에 의해 조직 전체에 적용되는 설정 파일이며, `~/.claude` 외부의 OS 수준 경로에 배치됩니다. 사용자는 관리 설정을 재정의하거나 제외할 수 없습니다. 보안 정책, 규정 준수 요구 사항 또는 플릿 전체의 표준화된 도구에 사용합니다.
+IT 또는 DevOps에 의해 조직 전체에 적용되는 설정이며, Anthropic의 서버를 통해 관리 콘솔에서 전달되거나 `~/.claude` 외부의 OS 수준 경로에 배치됩니다. 사용자 및 프로젝트 설정은 관리 설정을 재정의할 수 없습니다. 서버 관리 전달은 [적격 구성](/ko/server-managed-settings#platform-availability)에 적용됩니다. [보안 고려 사항](/ko/server-managed-settings#security-considerations)을 참조하십시오. 보안 정책, 규정 준수 요구 사항 또는 플릿 전체의 표준화된 도구에 사용합니다.
 
-자세히 알아보기: [서버 관리 설정](/ko/server-managed-settings)
+자세히 알아보기: [Server-managed settings](/ko/server-managed-settings) · [Settings files](/ko/settings#settings-files)
 
 <h3 id="mcp-model-context-protocol">
   MCP (Model Context Protocol)
@@ -284,7 +292,7 @@ Claude가 소스 파일을 편집하지 않고 변경 사항을 연구하고 제
   Project trust
 </h3>
 
-Claude Code가 구성을 로드하기 전에 디렉토리를 수락하는 일회성 대화입니다. 수락은 프로젝트 디렉토리별로 저장되며, 홈 디렉토리는 제외되고, 여기서 신뢰는 현재 세션에만 유지되며 각 실행 시 프롬프트가 다시 나타납니다. 신뢰는 마켓플레이스 플러그인의 자동 설치 및 프로젝트 정의 훅의 실행을 게이팅합니다. 디렉토리를 신뢰하면 `.claude/settings.json`, `.mcp.json` 및 기타 구성 파일이 적용됩니다.
+Claude Code가 구성을 로드하기 전에 디렉토리를 수락하는 대화입니다. 수락은 프로젝트 디렉토리별로 저장되며, 홈 디렉토리는 제외되고, 여기서 신뢰는 현재 세션에만 유지되며 각 실행 시 프롬프트가 다시 나타납니다. 신뢰는 마켓플레이스 플러그인의 자동 설치 및 프로젝트 정의 훅의 실행을 게이팅합니다. 디렉토리를 신뢰하면 `.claude/settings.json`, `.mcp.json` 및 기타 구성 파일이 적용됩니다.
 
 자세히 알아보기: [`.claude` 디렉토리](/ko/claude-directory)
 
@@ -292,7 +300,7 @@ Claude Code가 구성을 로드하기 전에 디렉토리를 수락하는 일회
   Prompt injection
 </h3>
 
-파일, 웹 페이지 또는 도구 결과에 포함된 적대적 지침이며, Claude를 요청하지 않은 작업으로 리디렉션하려고 시도합니다. Claude Code의 방어에는 권한 시스템, 명령 차단 목록 및 신뢰 확인이 포함됩니다. [Auto mode](#auto-mode)는 도구 결과에서 의심스러운 내용을 스캔하는 서버 측 프로브와 도구 결과를 보지 않는 분류기를 추가하므로 주입된 텍스트가 승인 결정에 영향을 미칠 수 없습니다.
+파일, 웹 페이지 또는 도구 결과에 포함된 적대적 지침이며, Claude를 요청하지 않은 작업으로 리디렉션하려고 시도합니다. Claude Code의 방어에는 권한 시스템, 명령 주입 탐지 및 신뢰 확인이 포함됩니다. [Auto mode](#auto-mode)는 도구 결과에서 의심스러운 내용을 스캔하는 서버 측 프로브와 도구 결과를 보지 않는 분류기를 추가하므로 주입된 텍스트가 승인 결정에 영향을 미칠 수 없습니다.
 
 자세히 알아보기: [프롬프트 주입으로부터 보호](/ko/security#protect-against-prompt-injection)
 

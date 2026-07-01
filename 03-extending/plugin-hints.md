@@ -16,7 +16,7 @@ Claude Code는 힌트 줄을 명령 출력에서 제거한 후 모델로 전송�
   작동 방식
 </h2>
 
-Claude Code는 Bash 및 PowerShell 도구를 통해 실행하는 모든 명령과 [hook](/ko/hooks) 명령에 대해 [`CLAUDECODE`](/ko/env-vars) 환경 변수를 `1`로 설정합니다. CLI가 해당 변수를 감지하면 자체 종료 `<claude-code-hint />` 태그를 stderr에 작성합니다. hook 명령에서 힌트 태그는 제거되고 무시됩니다. Bash 및 PowerShell 도구 출력만 설치 프롬프트를 트리거합니다.
+Claude Code는 Bash 및 PowerShell 도구를 통해 실행하는 모든 명령과 [hook](/ko/hooks) 명령에 대해 [`CLAUDECODE`](/ko/env-vars) 환경 변수를 `1`로 설정합니다. {/* min-version: 2.1.172 */}v2.1.172부터는 해당 동일한 서브프로세스에서 [`CLAUDE_CODE_CHILD_SESSION`](/ko/env-vars)도 `1`로 설정합니다. CLI가 이러한 변수 중 하나를 감지하면 자체 종료 `<claude-code-hint />` 태그를 stderr에 작성합니다. hook 명령에서 힌트 태그는 제거되고 무시됩니다. Bash 및 PowerShell 도구 출력만 설치 프롬프트를 트리거합니다.
 
 Claude Code가 명령 출력을 받으면 다음을 수행합니다:
 
@@ -31,9 +31,12 @@ Claude Code는 플러그인을 자동으로 설치하지 않습니다. 사용자
   힌트 내보내기
 </h2>
 
-`CLAUDECODE` 환경 변수에서 내보내기를 제어하여 마커가 일반 사용자의 터미널에 나타나지 않도록 합니다. 그런 다음 태그를 stderr에 자체 줄로 작성합니다.
+환경 변수에서 내보내기를 제어하여 마커가 일반 사용자가 CLI를 직접 실행할 때 나타나지 않도록 한 다음, 태그를 stderr에 자체 줄로 작성합니다. 확인할 변수를 선택합니다:
 
-다음 예제는 공식 마켓플레이스에서 `example-cli`라는 플러그인에 대한 힌트를 내보냅니다:
+* `CLAUDECODE`: 모든 Claude Code 버전에서 설정되므로 가장 많은 세션에 도달합니다. Claude Code가 시작하는 tmux 세션 및 stdio MCP 서버 서브프로세스에서도 설정되며, IDE 확장 프로그램은 일반 사용자가 CLI를 직접 실행할 수 있는 통합 터미널에서 설정합니다.
+* {/* min-version: 2.1.172 */}`CLAUDE_CODE_CHILD_SESSION`: 도구 호출, 훅 명령 및 [상태 줄](/ko/statusline) 명령과 같이 Claude Code 자체가 생성하는 서브프로세스에서만 설정되므로 태그가 일반적으로 사용자 터미널에 도달하지 않습니다. tmux 서버와 같이 세션 내에서 시작된 장기 실행 프로세스는 변수를 캡처하므로 해당 프로세스에서 나중에 시작된 셸은 여전히 원본 태그를 표시합니다. Claude Code v2.1.172 이상이 필요하므로 이전 버전의 세션은 힌트를 놓칩니다.
+
+다음 예제는 최대 도달 범위를 위해 `CLAUDECODE`에서 제어하고 공식 마켓플레이스의 `example-cli`라는 플러그인에 대한 힌트를 내보냅니다:
 
 <CodeGroup>
   ```javascript Node.js theme={null}
@@ -147,7 +150,7 @@ Claude Code는 힌트에 대해 조치를 취하기 전에 두 가지 조건을 
 나머지 지침은 권장되지만 적용되지 않습니다. Claude Code는 CLI가 이를 따르는지 관찰할 수 없습니다:
 
 * **stderr에 작성**: stderr는 `example-cli deploy | jq`와 같은 셸 파이프라인에서 태그를 제외합니다. Claude Code는 두 스트림을 모두 스캔하므로 stdout도 작동합니다.
-* **`CLAUDECODE`에서 제어**: `CLAUDECODE` 환경 변수가 설정된 경우에만 내보냅니다. 이렇게 하면 마커가 CLI를 직접 실행하는 사용자에게 나타나지 않습니다.
+* **환경 변수에서 제어**: `CLAUDECODE` 또는 `CLAUDE_CODE_CHILD_SESSION`이 설정된 경우에만 내보냅니다. 두 변수의 차이점은 [힌트 내보내기](#emit-the-hint)를 참조하세요.
 
 <h2 id="get-your-plugin-into-the-official-marketplace">
   공식 마켓플레이스에 플러그인 추가

@@ -46,6 +46,7 @@ Claude Code는 코드를 추론하는 모델과 파일 작업, 검색, 실행 �
 | **[Code intelligence](/ko/tools-reference#lsp-tool-behavior)** | 언어 서버 네비게이션 및 진단                           | 타입 언어, grep이 느리거나 부정확한 대규모 코드베이스 | 전체 파일을 읽는 대신 기호의 정의로 이동                               |
 | **MCP**                                                        | 외부 서비스에 연결                                 | 외부 데이터 또는 작업                     | 데이터베이스 쿼리, Slack에 게시, 브라우저 제어                         |
 | **Hook**                                                       | 이벤트에서 실행되는 스크립트, HTTP 요청, 프롬프트 또는 subagent | 모든 일치하는 이벤트에서 실행되어야 하는 자동화       | 모든 파일 편집 후 ESLint 실행                                  |
+| **[Artifact](/ko/artifacts)**                                  | 세션 출력을 비공개 대화형 웹 페이지로 게시                   | 터미널 텍스트가 아닌 시각적으로 보거나 공유하려는 출력   | Claude가 조사할 때 업데이트되는 인시던트 타임라인                        |
 
 \*\*[Plugins](/ko/plugins)\*\*는 패키징 계층입니다. 플러그인은 skill, hook, subagent 및 MCP 서버를 단일 설치 가능한 단위로 번들합니다. 플러그인 skill은 네임스페이스됩니다(예: `/my-plugin:review`). 따라서 여러 플러그인이 공존할 수 있습니다. 여러 저장소에서 동일한 설정을 재사용하거나 \*\*[marketplace](/ko/plugin-marketplaces)\*\*를 통해 다른 사용자에게 배포하려는 경우 플러그인을 사용하세요.
 
@@ -109,7 +110,7 @@ Claude Code는 코드를 추론하는 모델과 파일 작업, 검색, 실행 �
 
     **Skill에 넣으세요.** 참조 자료인 경우 Claude가 때때로 필요합니다(API 문서, 스타일 가이드) 또는 `/<name>`으로 트리거하는 워크플로우입니다(배포, 검토, 릴리스).
 
-    **경험 법칙:** CLAUDE.md를 200줄 이하로 유지하세요. 증가하면 참조 콘텐츠를 skill로 이동하거나 [`.claude/rules/`](/ko/memory#organize-rules-with-clauderules) 파일로 분할하세요.
+    **경험 법칙:** CLAUDE.md를 200줄 이하로 유지하세요. 증가하면 참조 콘텐츠를 skill로 이동하거나 [`.claude/rules/`](/ko/memory#organize-rules-with-claude%2Frules%2F) 파일로 분할하세요.
   </Tab>
 
   <Tab title="CLAUDE.md vs Rules vs Skills">
@@ -198,7 +199,7 @@ Claude Code는 코드를 추론하는 모델과 파일 작업, 검색, 실행 �
 
 기능은 여러 수준에서 정의될 수 있습니다. 사용자 전체, 프로젝트별, 플러그인을 통해, 또는 관리 정책을 통해. 또한 CLAUDE.md 파일을 하위 디렉토리에 중첩하거나 monorepo의 특정 패키지에 skill을 배치할 수 있습니다. 동일한 기능이 여러 수준에 존재할 때, 계층화 방식은 다음과 같습니다.
 
-* **CLAUDE.md 파일**은 추가적입니다. 모든 수준이 동시에 Claude의 컨텍스트에 콘텐츠를 제공합니다. 작업 디렉토리 및 위의 파일은 시작 시 로드되고, 하위 디렉토리는 작업할 때 로드됩니다. 지침이 충돌할 때, Claude는 판단을 사용하여 조정하며, 더 구체적인 지침이 일반적으로 우선합니다. [CLAUDE.md 파일이 로드되는 방식](/ko/memory#how-claudemd-files-load)을 참조하세요.
+* **CLAUDE.md 파일**은 추가적입니다. 모든 수준이 동시에 Claude의 컨텍스트에 콘텐츠를 제공합니다. 작업 디렉토리 및 위의 파일은 시작 시 로드되고, 하위 디렉토리는 작업할 때 로드됩니다. 지침이 충돌할 때, Claude는 판단을 사용하여 조정하며, 더 구체적인 지침이 일반적으로 우선합니다. [CLAUDE.md 파일이 로드되는 방식](/ko/memory#how-claude-md-files-load)을 참조하세요.
 * **Skill과 subagent**는 이름으로 재정의됩니다. 동일한 이름이 여러 수준에 존재할 때, 우선순위에 따라 하나의 정의가 승리합니다(skill의 경우 관리 > 사용자 > 프로젝트; subagent의 경우 관리 > CLI 플래그 > 프로젝트 > 사용자 > 플러그인). 플러그인 skill은 [네임스페이스됩니다](/ko/plugins#add-skills-to-your-plugin). 충돌을 피하기 위해. [Skill 검색](/ko/skills#where-skills-live) 및 [subagent 범위](/ko/sub-agents#choose-the-subagent-scope)를 참조하세요.
 * **MCP 서버**는 이름으로 재정의됩니다. 로컬 > 프로젝트 > 사용자. [MCP 범위](/ko/mcp#scope-hierarchy-and-precedence)를 참조하세요.
 * **Hooks**는 병합됩니다. 모든 등록된 hook은 소스에 관계없이 일치하는 이벤트에 대해 실행됩니다. [Hooks](/ko/hooks)를 참조하세요.
@@ -247,7 +248,7 @@ Claude Code는 코드를 추론하는 모델과 파일 작업, 검색, 실행 �
 
 각 기능은 세션의 다양한 지점에서 로드됩니다. 아래 탭은 각 기능이 언제 로드되고 무엇이 컨텍스트에 들어가는지 설명합니다.
 
-<img src="https://mintcdn.com/claude-code/6yTCYq1p37ZB8-CQ/images/context-loading.svg?fit=max&auto=format&n=6yTCYq1p37ZB8-CQ&q=85&s=5a58ce953a35a2412892015e2ad6cb67" alt="컨텍스트 로딩: CLAUDE.md는 세션 시작 시 로드되고 모든 요청에 유지됩니다. MCP 도구 이름은 시작 시 로드되고 전체 스키마는 사용 시까지 연기됩니다. Skill은 시작 시 설명을 로드하고 호출 시 전체 콘텐츠를 로드합니다. Subagent는 격리된 컨텍스트를 받습니다. Hook은 외부에서 실행됩니다." width="720" height="410" data-path="images/context-loading.svg" />
+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/context-loading.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=aab139e750494a237ae2e0c8f9139b0a" alt="컨텍스트 로딩: CLAUDE.md는 세션 시작 시 로드되고 모든 요청에 유지됩니다. MCP 도구 이름은 시작 시 로드되고 전체 스키마는 사용 시까지 연기됩니다. Skill은 시작 시 설명을 로드하고 호출 시 전체 콘텐츠를 로드합니다. Subagent는 격리된 컨텍스트를 받습니다. Hook은 외부에서 실행됩니다." width="720" height="382" data-path="images/context-loading.svg" />
 
 <Tabs>
   <Tab title="CLAUDE.md">
@@ -255,7 +256,7 @@ Claude Code는 코드를 추론하는 모델과 파일 작업, 검색, 실행 �
 
     **로드되는 내용:** 모든 CLAUDE.md 파일의 전체 콘텐츠(관리, 사용자 및 프로젝트 수준).
 
-    **상속:** Claude는 작업 디렉토리에서 루트까지 CLAUDE.md 파일을 읽고, 해당 파일에 접근할 때 하위 디렉토리에서 중첩된 파일을 검색합니다. 자세한 내용은 [CLAUDE.md 파일이 로드되는 방식](/ko/memory#how-claudemd-files-load)을 참조하세요.
+    **상속:** Claude는 작업 디렉토리에서 루트까지 CLAUDE.md 파일을 읽고, 해당 파일에 접근할 때 하위 디렉토리에서 중첩된 파일을 검색합니다. 자세한 내용은 [CLAUDE.md 파일이 로드되는 방식](/ko/memory#how-claude-md-files-load)을 참조하세요.
 
     <Tip>CLAUDE.md를 200줄 이하로 유지하세요. 참조 자료를 skill로 이동하면 온디맨드로 로드됩니다.</Tip>
   </Tab>

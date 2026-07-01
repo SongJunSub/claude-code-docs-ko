@@ -8,7 +8,7 @@
 
 데스크톱 앱은 여러 세션을 나란히 실행하도록 구축된 그래픽 인터페이스를 갖춘 Claude Code를 제공합니다: 병렬 작업을 관리하기 위한 사이드바, 통합 터미널 및 파일 편집기가 있는 드래그 앤 드롭 레이아웃, 시각적 diff 검토, 라이브 앱 미리보기, GitHub PR 모니터링 및 자동 병합, 그리고 예약된 작업입니다. 터미널이 필요하지 않습니다.
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Download for macOS" icon="apple" href="https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code&utm_medium=docs">
     Universal build for Intel and Apple Silicon
   </Card>
@@ -16,9 +16,13 @@
   <Card title="Download for Windows" icon="windows" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code&utm_medium=docs">
     For x64 processors
   </Card>
+
+  <Card title="Get Claude for Linux (beta)" icon="linux" href="/en/desktop-linux">
+    apt or .deb for Ubuntu and Debian
+  </Card>
 </CardGroup>
 
-For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). The desktop app is not available on Linux; use the [CLI](/en/quickstart) instead.
+For Windows ARM64, download the [ARM64 installer](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs). On Linux, install with apt; see [Claude Desktop on Linux](/en/desktop-linux).
 
 <Note>
   Claude Code는 [Pro, Max, Team, 또는 Enterprise 구독](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)이 필요합니다.
@@ -40,7 +44,7 @@ Chat과 Cowork는 [Claude Desktop 지원 문서](https://support.claude.com/en/c
 
 <Steps>
   <Step title="설치 및 로그인">
-    위의 링크에서 플랫폼에 맞는 설치 프로그램을 다운로드하고 실행합니다. macOS의 Applications 폴더 또는 Windows의 Start 메뉴에서 Claude를 실행한 다음 Anthropic 계정으로 로그인합니다.
+    macOS와 Windows에서는 위의 링크에서 설치 프로그램을 다운로드하고 실행합니다. Linux에서는 [Linux의 Claude Desktop](/ko/desktop-linux)에서 설치 단계를 따릅니다. macOS의 Applications 폴더, Windows의 Start 메뉴 또는 Linux의 애플리케이션 런처에서 Claude를 실행한 다음 Anthropic 계정으로 로그인합니다.
   </Step>
 
   <Step title="Code 탭 열기">
@@ -66,12 +70,12 @@ Code 탭이 열려 있으면 프로젝트를 선택하고 Claude에게 할 일�
 
     다음을 선택할 수도 있습니다:
 
-    * **Remote**: Anthropic의 클라우드 인프라에서 세션을 실행하며, 앱을 닫아도 계속됩니다. 원격 세션은 [웹의 Claude Code](/ko/claude-code-on-the-web)와 동일한 인프라를 사용합니다.
+    * **Remote**: Anthropic의 클라우드 인프라에서 세션을 실행하며, 앱을 닫아도 계속됩니다. 클라우드 세션은 [웹의 Claude Code](/ko/claude-code-on-the-web)와 동일한 인프라를 사용합니다.
     * **SSH**: SSH를 통해 원격 머신(자신의 서버, 클라우드 VM 또는 dev 컨테이너)에 연결합니다. Desktop은 처음 연결할 때 원격 머신에 Claude Code를 자동으로 설치합니다.
   </Step>
 
   <Step title="모델 선택">
-    전송 버튼 옆의 드롭다운에서 모델을 선택합니다. Opus, Sonnet, Haiku의 비교는 [모델](/ko/model-config#available-models)을 참조하세요. 나중에 동일한 드롭다운에서 모델을 변경할 수 있습니다.
+    전송 버튼 옆의 드롭다운에서 모델을 선택합니다. 사용 가능한 모델의 비교는 [모델](/ko/model-config#available-models)을 참조하세요. 나중에 동일한 드롭다운에서 모델을 변경할 수 있습니다.
   </Step>
 
   <Step title="Claude에게 할 일 지시">
@@ -129,7 +133,7 @@ Code 탭이 열려 있으면 프로젝트를 선택하고 Claude에게 할 일�
 
 Desktop은 그래픽 인터페이스를 갖춘 CLI와 동일한 엔진을 실행합니다. 동일한 프로젝트에서 둘 다 동시에 실행할 수 있으며, 구성(CLAUDE.md 파일, MCP servers, hooks, skills, 설정)을 공유합니다. 기능, 플래그 동등물, Desktop에서 사용할 수 없는 것의 전체 비교는 [CLI 비교](/ko/desktop#coming-from-the-cli)를 참조하세요.
 
-<h2 id="what-s-next">
+<h2 id="what’s-next">
   다음 단계
 </h2>
 

@@ -385,6 +385,6 @@ plugins: [
 
 * [플러그인](/ko/plugins) - 완전한 플러그인 개발 가이드
 * [플러그인 참조](/ko/plugins-reference) - 기술 사양
-* [슬래시 명령어](/ko/agent-sdk/slash-commands) - SDK에서 슬래시 명령어 사용
-* [서브에이전트](/ko/agent-sdk/subagents) - 전문화된 에이전트 작업
-* [스킬](/ko/agent-sdk/skills) - Agent Skills 사용
+* [Commands](/ko/agent-sdk/slash-commands) - SDK에서 명령어 사용
+* [Subagents](/ko/agent-sdk/subagents) - 전문화된 에이전트 작업
+* [Skills](/ko/agent-sdk/skills) - Agent Skills 사용

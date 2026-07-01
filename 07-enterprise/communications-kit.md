@@ -194,18 +194,19 @@ CTO, CIO 또는 SVP Engineering과 같은 스폰서 임원으로부터 자신의
 
 오타를 수정하기 위해 Opus를 사용하면 계산을 낭비합니다. 12파일 리팩토링에 Haiku를 사용하는 것은 다시 하도록 요청하는 것입니다.
 
-Claude Code는 Claude 앱과 같은 모델에서 실행되며, 세션 중에 전환할 수 있습니다. *Sonnet*은 일상적인 기능 작업, 버그, 테스트, 검토를 위한 기본 워크호스입니다. 대규모 리팩토링, 복잡한 디버깅 또는 높은 위험의 작업에는 *Opus*를 사용하십시오. 빠른 질문, 포맷팅, 속도가 중요한 기계적 편집에는 *Haiku*로 내려가십시오.
+Claude Code는 Claude 앱과 같은 모델에서 실행되며, 세션 중에 전환할 수 있습니다. *Sonnet*은 일상적인 기능 작업, 버그, 테스트, 검토를 위한 기본 워크호스입니다. 대규모 리팩토링, 복잡한 디버깅 또는 높은 위험의 작업에는 *Opus*를 사용하십시오. 빠른 질문, 포맷팅, 속도가 중요한 기계적 편집에는 *Haiku*로 내려가십시오. *Fable 5*는 가장 어렵고 오래 실행되는 작업을 위한 가장 강력한 모델입니다. 기본값이 아니므로 `/model fable`로 선택하십시오. 사이버 보안 및 생물학 콘텐츠는 자동으로 Opus로 폴백됩니다.
 
 *지금 시도하기:* `/model`을 입력하고 아직 하지 않았다면 Sonnet을 선택하십시오. 대부분의 작업에 올바른 기본값입니다.
 
-📖 모델 구성 → https://code.claude.com/docs/en/model-config
+📖 모델 구성 → https://code.claude.com/docs/ko/model-config
 ```
 
-| 모델     | 최적 용도                                      |
-| ------ | ------------------------------------------ |
-| Opus   | 대규모 리팩토링, 복잡한 디버깅, 아키텍처 결정, 높은 위험 변경       |
-| Sonnet | 일상적인 기능 작업, 버그 수정, 테스트, 문서, 코드 검토. 권장 기본값. |
-| Haiku  | 빠른 질문, 포맷팅, 기계적 편집, 빠른 반복                  |
+| 모델      | 최적 용도                                                                                                                           |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Fable 5 | 가장 어렵고 오래 실행되는 작업. 옵트인만 가능: `/model fable`로 선택하십시오. 사이버 보안 또는 생물학 콘텐츠는 [Opus로 폴백됩니다](/ko/model-config#automatic-model-fallback) |
+| Opus    | 대규모 리팩토링, 복잡한 디버깅, 아키텍처 결정, 높은 위험 변경                                                                                            |
+| Sonnet  | 일상적인 기능 작업, 버그 수정, 테스트, 문서, 코드 검토. 권장 기본값.                                                                                      |
+| Haiku   | 빠른 질문, 포맷팅, 기계적 편집, 빠른 반복                                                                                                       |
 
 **먼저 시도할 빠른 승리**
 
@@ -222,7 +223,7 @@ Claude Code를 설치했지만 실제로 무엇을 요청해야 할지 확실하
 
 *지금 시도하기:* 피해온 버그를 선택하고 오류 메시지를 붙여넣으십시오.
 
-📖 빠른 시작 → https://code.claude.com/docs/en/quickstart
+📖 빠른 시작 → https://code.claude.com/docs/ko/quickstart
 ```
 
 <h3 id="project-memory">
@@ -240,7 +241,7 @@ Claude Code를 설치했지만 실제로 무엇을 요청해야 할지 확실하
 
 *지금 시도하기:* 주 리포지토리를 열고, `claude`를 실행하고, `/init`를 입력하십시오. 30초, 그 이후 모든 세션에서 보상됩니다.
 
-📖 CLAUDE.md 및 프로젝트 메모리 → https://code.claude.com/docs/en/memory
+📖 CLAUDE.md 및 프로젝트 메모리 → https://code.claude.com/docs/ko/memory
 ```
 
 **@-참조**
@@ -256,7 +257,7 @@ Claude가 "볼 수 있도록" 프롬프트에 컴포넌트의 200줄을 복사�
 
 *지금 시도하기:* `@`를 입력한 다음 Tab을 누르십시오. 자동 완성은 도달 범위 내의 모든 파일을 표시합니다.
 
-📖 파일 참조 → https://code.claude.com/docs/en/common-workflows
+📖 파일 참조 → https://code.claude.com/docs/ko/common-workflows
 ```
 
 <h3 id="control-and-safety">
@@ -274,7 +275,7 @@ Claude가 "볼 수 있도록" 프롬프트에 컴포넌트의 200줄을 복사�
 
 *지금 시도하기:* 다음 리팩토링에서 Shift+Tab을 누르면 "plan"이 표시될 때까지 누른 다음 변경 사항을 설명하십시오. 단일 파일이 움직이기 전에 전체 제안을 받을 것입니다.
 
-📖 권한 모드 → https://code.claude.com/docs/en/permissions
+📖 권한 모드 → https://code.claude.com/docs/ko/permissions
 ```
 
 **체크포인팅 및 `/rewind`**
@@ -288,7 +289,7 @@ Claude가 3턴 전에 잘못된 경로로 내려갔고 이제 그것을 풀고 �
 
 *지금 시도하기:* *Esc*를 두 번 눌러 rewind 메뉴를 열거나 `/rewind`를 입력하십시오. 상황이 잘못되기 전의 지점을 선택하십시오.
 
-📖 체크포인팅 → https://code.claude.com/docs/en/checkpointing
+📖 체크포인팅 → https://code.claude.com/docs/ko/checkpointing
 ```
 
 <h3 id="connect-your-tools">
@@ -306,7 +307,7 @@ Jira 티켓을 터미널에 붙여넣는 것은 한 걸음 뒤로 물러나는 �
 
 *지금 시도하기:* Claude에게 "이 리포지토리에서 [GitHub/Jira/Linear]에 대한 MCP 커넥터를 설정하세요"라고 요청하십시오. 구성을 작성할 것입니다.
 
-📖 MCP 커넥터 → https://code.claude.com/docs/en/mcp
+📖 MCP 커넥터 → https://code.claude.com/docs/ko/mcp
 ```
 
 <h3 id="automate-your-workflows">
@@ -324,7 +325,7 @@ Jira 티켓을 터미널에 붙여넣는 것은 한 걸음 뒤로 물러나는 �
 
 *지금 시도하기:* "git log에서 오늘 작업한 내용을 요약하는 /standup skill을 만들어주세요"를 입력한 다음 내일 아침 `/standup`을 실행하십시오.
 
-📖 Skills → https://code.claude.com/docs/en/skills
+📖 Skills → https://code.claude.com/docs/ko/skills
 ```
 
 **Hooks**
@@ -338,7 +339,7 @@ Hooks는 Claude Code 이벤트에서 실행되는 셸 명령어입니다. 완료
 
 *지금 시도하기:* Claude에게 "완료되면 데스크톱 알림을 보내는 Stop hook를 추가하세요"라고 요청하십시오. 스크립트를 작성하고 연결할 것입니다.
 
-📖 Hooks 가이드 → https://code.claude.com/docs/en/hooks-guide
+📖 Hooks 가이드 → https://code.claude.com/docs/ko/hooks-guide
 ```
 
 <h3 id="day-to-day-development">
@@ -356,7 +357,7 @@ Hooks는 Claude Code 이벤트에서 실행되는 셸 명령어입니다. 완료
 
 *지금 시도하기:* 다음에 뭔가 시각적으로 깨지면, 스크린샷을 찍고 프롬프트에 직접 붙여넣으십시오. 그런 다음 "여기서 뭐가 잘못됐어요?"라고 입력하십시오.
 
-📖 이미지 작업 → https://code.claude.com/docs/en/common-workflows
+📖 이미지 작업 → https://code.claude.com/docs/ko/common-workflows
 ```
 
 **Git 워크플로우**
@@ -370,7 +371,7 @@ Claude는 전체 git 흐름을 처리합니다: 기존 메시지가 있는 커�
 
 *지금 시도하기:* 다음 수정 후, git 클라이언트로 전환하는 대신, "좋은 메시지로 커밋하고 PR을 열어주세요"라고 입력하십시오.
 
-📖 풀 요청 생성 → https://code.claude.com/docs/en/common-workflows
+📖 풀 요청 생성 → https://code.claude.com/docs/ko/common-workflows
 ```
 
 <h3 id="share-and-scale">
@@ -388,7 +389,7 @@ Skills는 플러그인으로 번들되고 공유됩니다. `/plugin`은 사용 �
 
 *지금 시도하기:* `/plugin`을 입력하고 스크롤하십시오. 알지 못했던 적어도 한 가지를 찾을 것입니다.
 
-📖 Plugins → https://code.claude.com/docs/en/plugins
+📖 Plugins → https://code.claude.com/docs/ko/plugins
 ```
 
 <h3 id="security-and-admin">
@@ -407,8 +408,8 @@ Skills는 플러그인으로 번들되고 공유됩니다. `/plugin`은 사용 �
 
 *지금 시도하기:* 다음에 질문이 나올 때를 위해 이 두 링크를 저장하십시오. 대부분의 보안 검토 질문에 답변합니다.
 
-📖 https://code.claude.com/docs/en/security
-📖 https://code.claude.com/docs/en/data-usage
+📖 https://code.claude.com/docs/ko/security
+📖 https://code.claude.com/docs/ko/data-usage
 ```
 
 **모범 사례**
@@ -425,7 +426,7 @@ Claude Code에서 튕겨나간 대부분의 사람들은 이 중 하나를 건�
 
 *지금 시도하기:* 이 중 하나 또는 두 개만 했다면, 누락된 것을 선택하고 다음 작업에서 하십시오. #claude-code에 변경 사항을 게시하십시오.
 
-📖 모범 사례 → https://code.claude.com/docs/en/best-practices
+📖 모범 사례 → https://code.claude.com/docs/ko/best-practices
 ```
 
 <h2 id="quick-reference">

@@ -12,11 +12,9 @@ Claude Code GitHub Actions는 GitHub 워크플로우에 AI 기반 자동화를 �
   Claude Code GitHub Actions는 [Claude Agent SDK](/ko/agent-sdk/overview)를 기반으로 구축되어 있으며, 이를 통해 Claude Code를 애플리케이션에 프로그래밍 방식으로 통합할 수 있습니다. SDK를 사용하여 GitHub Actions를 넘어서는 사용자 정의 자동화 워크플로우를 구축할 수 있습니다.
 </Note>
 
-<Info>
-  **Claude Opus 4.8을 이제 사용할 수 있습니다.** Claude Code GitHub Actions는 기본적으로 Sonnet을 사용합니다. Opus 4.8을 사용하려면 [모델 파라미터](#breaking-changes-reference)를 `claude-opus-4-8`을 사용하도록 구성하십시오.
-</Info>
-
-## Claude Code GitHub Actions를 사용하는 이유는 무엇입니까?
+<h2 id="why-use-claude-code-github-actions">
+  Claude Code GitHub Actions를 사용하는 이유는 무엇입니까?
+</h2>
 
 * **즉시 PR 생성**: 필요한 사항을 설명하면 Claude가 모든 필요한 변경 사항이 포함된 완전한 PR을 생성합니다
 * **자동화된 코드 구현**: 이슈를 단일 명령으로 작동하는 코드로 변환합니다
@@ -24,23 +22,31 @@ Claude Code GitHub Actions는 GitHub 워크플로우에 AI 기반 자동화를 �
 * **간단한 설정**: 설치 프로그램과 API 키로 몇 분 안에 시작할 수 있습니다
 * **기본적으로 안전**: 코드는 Github의 러너에 유지됩니다
 
-## Claude가 할 수 있는 것은 무엇입니까?
+<h2 id="what-can-claude-do">
+  Claude가 할 수 있는 것은 무엇입니까?
+</h2>
 
 Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 제공합니다:
 
-### Claude Code Action
+<h3 id="claude-code-action">
+  Claude Code Action
+</h3>
 
 이 GitHub Action을 사용하면 GitHub Actions 워크플로우 내에서 Claude Code를 실행할 수 있습니다. 이를 사용하여 Claude Code 위에 사용자 정의 워크플로우를 구축할 수 있습니다.
 
 [저장소 보기 →](https://github.com/anthropics/claude-code-action)
 
-## 설정
+<h2 id="setup">
+  설정
+</h2>
 
-## 빠른 설정
+<h2 id="quick-setup">
+  빠른 설정
+</h2>
 
-이 작업을 설정하는 가장 쉬운 방법은 터미널에서 Claude Code를 통하는 것입니다. claude를 열고 `/install-github-app`을 실행하면 됩니다.
+Claude Code 터미널에서 `/install-github-app`을 실행하여 통합을 대화형으로 설정합니다. 이 명령은 Claude GitHub 앱을 저장소에 설치한 다음 GitHub Actions 워크플로우 및 API 키 시크릿 추가 과정을 안내합니다.
 
-이 명령은 GitHub 앱 및 필수 시크릿 설정을 안내합니다.
+GitHub 앱이 설치된 후 명령은 GitHub Actions 설정을 계속할지 여부를 묻습니다. Claude Code v2.1.187 이상에서는 **지금 건너뛰기**를 선택하여 앱만 설치된 상태로 중지하고 `/install-github-app`을 다시 실행하여 워크플로우 및 시크릿 단계로 돌아갈 수 있습니다. 이전 버전은 워크플로우 선택으로 바로 진행합니다.
 
 <Note>
   * GitHub 앱을 설치하고 시크릿을 추가하려면 저장소 관리자여야 합니다
@@ -48,7 +54,9 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
   * 이 빠른 시작 방법은 직접 Claude API 사용자만 사용할 수 있습니다. Amazon Bedrock 또는 Google Vertex AI를 사용 중인 경우 [Amazon Bedrock & Google Vertex AI 사용](#using-with-amazon-bedrock-%26-google-vertex-ai) 섹션을 참조하십시오.
 </Note>
 
-## 수동 설정
+<h2 id="manual-setup">
+  수동 설정
+</h2>
 
 `/install-github-app` 명령이 실패하거나 수동 설정을 선호하는 경우 다음 수동 설정 지침을 따르십시오:
 
@@ -68,7 +76,9 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
   빠른 시작 또는 수동 설정을 완료한 후 이슈 또는 PR 댓글에서 `@claude`를 태그하여 작업을 테스트합니다.
 </Tip>
 
-## 베타에서 업그레이드
+<h2 id="upgrading-from-beta">
+  베타에서 업그레이드
+</h2>
 
 <Warning>
   Claude Code GitHub Actions v1.0은 베타 버전에서 v1.0으로 업그레이드하기 위해 워크플로우 파일을 업데이트해야 하는 주요 변경 사항을 도입합니다.
@@ -76,7 +86,9 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
 
 현재 Claude Code GitHub Actions의 베타 버전을 사용 중인 경우 워크플로우를 GA 버전을 사용하도록 업데이트하는 것이 좋습니다. 새 버전은 자동 모드 감지와 같은 강력한 새 기능을 추가하면서 구성을 단순화합니다.
 
-### 필수 변경 사항
+<h3 id="essential-changes">
+  필수 변경 사항
+</h3>
 
 모든 베타 사용자는 업그레이드하기 위해 워크플로우 파일에서 다음 변경 사항을 수행해야 합니다:
 
@@ -85,7 +97,9 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
 3. **프롬프트 입력 업데이트**: `direct_prompt`를 `prompt`로 바꿉니다
 4. **CLI 옵션 이동**: `max_turns`, `model`, `custom_instructions` 등을 `claude_args`로 변환합니다
 
-### 주요 변경 사항 참조
+<h3 id="breaking-changes-reference">
+  주요 변경 사항 참조
+</h3>
 
 | 이전 베타 입력              | 새 v1.0 입력                             |
 | --------------------- | ------------------------------------- |
@@ -99,7 +113,9 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
 | `disallowed_tools`    | `claude_args: --disallowedTools`      |
 | `claude_env`          | `settings` JSON 형식                    |
 
-### 이전 및 이후 예제
+<h3 id="before-and-after-example">
+  이전 및 이후 예제
+</h3>
 
 **베타 버전:**
 
@@ -111,7 +127,7 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
     anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
     custom_instructions: "Follow our coding standards"
     max_turns: "10"
-    model: "claude-sonnet-4-6"
+    model: "claude-sonnet-5"
 ```
 
 **GA 버전 (v1.0):**
@@ -124,18 +140,22 @@ Claude Code는 코드 작업 방식을 변환하는 강력한 GitHub Action을 �
     claude_args: |
       --append-system-prompt "Follow our coding standards"
       --max-turns 10
-      --model claude-sonnet-4-6
+      --model claude-sonnet-5
 ```
 
 <Tip>
   작업은 이제 구성에 따라 대화형 모드(`@claude` 멘션에 응답) 또는 자동화 모드(프롬프트로 즉시 실행)에서 실행할지 여부를 자동으로 감지합니다.
 </Tip>
 
-## 예제 사용 사례
+<h2 id="example-use-cases">
+  예제 사용 사례
+</h2>
 
 Claude Code GitHub Actions는 다양한 작업에 도움이 될 수 있습니다. [examples 디렉토리](https://github.com/anthropics/claude-code-action/tree/main/examples)에는 다양한 시나리오에 대한 즉시 사용 가능한 워크플로우가 포함되어 있습니다.
 
-### 기본 워크플로우
+<h3 id="basic-workflow">
+  기본 워크플로우
+</h3>
 
 ```yaml theme={null}
 name: Claude Code
@@ -154,7 +174,9 @@ jobs:
           # Responds to @claude mentions in comments
 ```
 
-### skills 사용
+<h3 id="using-skills">
+  skills 사용
+</h3>
 
 `prompt` 입력은 [skill](/ko/skills) 호출뿐만 아니라 일반 텍스트도 허용합니다:
 
@@ -180,7 +202,9 @@ jobs:
           prompt: "/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
 ```
 
-### 프롬프트를 사용한 사용자 정의 자동화
+<h3 id="custom-automation-with-prompts">
+  프롬프트를 사용한 사용자 정의 자동화
+</h3>
 
 ```yaml theme={null}
 name: Daily Report
@@ -198,11 +222,13 @@ jobs:
           claude_args: "--model opus"
 ```
 
-### 일반적인 사용 사례
+<h3 id="common-use-cases">
+  일반적인 사용 사례
+</h3>
 
 이슈 또는 PR 댓글에서:
 
-```text theme={null}
+```text wrap theme={null}
 @claude implement this feature based on the issue description
 @claude how should I implement user authentication for this endpoint?
 @claude fix the TypeError in the user dashboard component
@@ -210,13 +236,19 @@ jobs:
 
 Claude는 자동으로 컨텍스트를 분석하고 적절하게 응답합니다.
 
-## 모범 사례
+<h2 id="best-practices">
+  모범 사례
+</h2>
 
-### CLAUDE.md 구성
+<h3 id="claude-md-configuration">
+  CLAUDE.md 구성
+</h3>
 
 저장소 루트에 `CLAUDE.md` 파일을 생성하여 코드 스타일 지침, 리뷰 기준, 프로젝트별 규칙 및 선호하는 패턴을 정의합니다. 이 파일은 Claude의 프로젝트 표준 이해를 안내합니다.
 
-### 보안 고려 사항
+<h3 id="security-considerations">
+  보안 고려 사항
+</h3>
 
 <Warning>API 키를 저장소에 직접 커밋하지 마십시오.</Warning>
 
@@ -231,11 +263,15 @@ Claude는 자동으로 컨텍스트를 분석하고 적절하게 응답합니다
 
 API 키를 워크플로우 파일에 직접 하드코딩하는 대신 항상 GitHub Secrets(예: `${{ secrets.ANTHROPIC_API_KEY }}`)를 사용합니다.
 
-### 성능 최적화
+<h3 id="optimizing-performance">
+  성능 최적화
+</h3>
 
 이슈 템플릿을 사용하여 컨텍스트를 제공하고, `CLAUDE.md`를 간결하고 집중적으로 유지하고, 워크플로우에 적절한 타임아웃을 구성합니다.
 
-### CI 비용
+<h3 id="ci-costs">
+  CI 비용
+</h3>
 
 Claude Code GitHub Actions를 사용할 때 관련 비용을 인식합니다:
 
@@ -257,7 +293,9 @@ Claude Code GitHub Actions를 사용할 때 관련 비용을 인식합니다:
 * 워크플로우 수준 타임아웃을 설정하여 실행 중인 작업을 방지합니다
 * GitHub의 동시성 제어를 사용하여 병렬 실행을 제한하는 것을 고려합니다
 
-## 구성 예제
+<h2 id="configuration-examples">
+  구성 예제
+</h2>
 
 Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
 
@@ -282,22 +320,30 @@ Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
   이슈 또는 PR 댓글에 응답할 때 Claude는 자동으로 @claude 멘션에 응답합니다. 다른 이벤트의 경우 `prompt` 파라미터를 사용하여 지침을 제공합니다.
 </Tip>
 
-## Amazon Bedrock & Google Vertex AI 사용
+<h2 id="using-with-amazon-bedrock--google-vertex-ai">
+  Amazon Bedrock & Google Vertex AI 사용
+</h2>
 
 엔터프라이즈 환경의 경우 자신의 클라우드 인프라와 함께 Claude Code GitHub Actions를 사용할 수 있습니다. 이 접근 방식은 동일한 기능을 유지하면서 데이터 거주지 및 청구에 대한 제어를 제공합니다.
 
-### 필수 조건
+<h3 id="prerequisites">
+  필수 조건
+</h3>
 
 클라우드 공급자와 함께 Claude Code GitHub Actions를 설정하기 전에 다음이 필요합니다:
 
-#### Google Cloud Vertex AI의 경우:
+<h4 id="for-google-cloud-vertex-ai">
+  Google Cloud Vertex AI의 경우:
+</h4>
 
 1. Vertex AI가 활성화된 Google Cloud 프로젝트
 2. GitHub Actions에 대해 구성된 Workload Identity Federation
 3. 필요한 권한이 있는 서비스 계정
 4. GitHub 앱(권장) 또는 기본 GITHUB\_TOKEN 사용
 
-#### Amazon Bedrock의 경우:
+<h4 id="for-amazon-bedrock">
+  Amazon Bedrock의 경우:
+</h4>
 
 1. Amazon Bedrock이 활성화된 AWS 계정
 2. AWS에서 구성된 GitHub OIDC Identity Provider
@@ -609,23 +655,35 @@ Claude Code Action v1은 통합 파라미터로 구성을 단순화합니다:
   </Step>
 </Steps>
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
-### Claude가 @claude 명령에 응답하지 않음
+<h3 id="claude-not-responding-to-claude-commands">
+  Claude가 @claude 명령에 응답하지 않음
+</h3>
 
 GitHub 앱이 올바르게 설치되었는지 확인하고, 워크플로우가 활성화되었는지 확인하고, API 키가 저장소 시크릿에 설정되었는지 확인하고, 댓글에 `@claude`가 포함되어 있는지 확인합니다 (`/claude` 아님).
 
-### Claude의 커밋에서 CI가 실행되지 않음
+<h3 id="ci-not-running-on-claude’s-commits">
+  Claude의 커밋에서 CI가 실행되지 않음
+</h3>
 
 GitHub 앱 또는 사용자 정의 앱을 사용 중인지 확인합니다 (Actions 사용자 아님), 워크플로우 트리거에 필요한 이벤트가 포함되어 있는지 확인하고, 앱 권한에 CI 트리거가 포함되어 있는지 확인합니다.
 
-### 인증 오류
+<h3 id="authentication-errors">
+  인증 오류
+</h3>
 
 API 키가 유효하고 충분한 권한이 있는지 확인합니다. Bedrock/Vertex의 경우 자격 증명 구성을 확인하고 시크릿이 워크플로우에서 올바르게 명명되었는지 확인합니다.
 
-## 고급 구성
+<h2 id="advanced-configuration">
+  고급 구성
+</h2>
 
-### 작업 파라미터
+<h3 id="action-parameters">
+  작업 파라미터
+</h3>
 
 Claude Code Action v1은 단순화된 구성을 사용합니다:
 
@@ -644,23 +702,27 @@ Claude Code Action v1은 단순화된 구성을 사용합니다:
 \*프롬프트는 선택 사항입니다. 이슈/PR 댓글에서 생략하면 Claude는 트리거 구문에 응답합니다\
 \*\*직접 Claude API에 필수이며, Bedrock/Vertex에는 필수가 아닙니다
 
-#### CLI 인수 전달
+<h4 id="pass-cli-arguments">
+  CLI 인수 전달
+</h4>
 
 `claude_args` 파라미터는 모든 Claude Code CLI 인수를 허용합니다:
 
 ```yaml theme={null}
-claude_args: "--max-turns 5 --model claude-sonnet-4-6 --mcp-config /path/to/config.json"
+claude_args: "--max-turns 5 --model claude-sonnet-5 --mcp-config /path/to/config.json"
 ```
 
 일반적인 인수:
 
 * `--max-turns`: 최대 대화 턴 (기본값: 10)
-* `--model`: 사용할 모델 (예: `claude-sonnet-4-6`)
+* `--model`: 사용할 모델 (예: `claude-sonnet-5`)
 * `--mcp-config`: MCP 구성 경로
 * `--allowedTools`: 허용된 도구의 쉼표로 구분된 목록. `--allowed-tools` 별칭도 작동합니다.
 * `--debug`: 디버그 출력 활성화
 
-### 대체 통합 방법
+<h3 id="alternative-integration-methods">
+  대체 통합 방법
+</h3>
 
 `/install-github-app` 명령이 권장되는 접근 방식이지만 다음을 수행할 수도 있습니다:
 
@@ -670,7 +732,9 @@ claude_args: "--max-turns 5 --model claude-sonnet-4-6 --mcp-config /path/to/conf
 
 자세한 인증, 보안 및 고급 구성 가이드는 [Claude Code Action 설명서](https://github.com/anthropics/claude-code-action/blob/main/docs)를 참조하십시오.
 
-### Claude의 동작 사용자 정의
+<h3 id="customizing-claude’s-behavior">
+  Claude의 동작 사용자 정의
+</h3>
 
 두 가지 방법으로 Claude의 동작을 구성할 수 있습니다:
 

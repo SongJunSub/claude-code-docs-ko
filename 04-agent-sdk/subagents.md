@@ -41,9 +41,9 @@
   병렬화
 </h3>
 
-여러 서브에이전트를 동시에 실행하여 복잡한 워크플로우의 속도를 대폭 향상시킬 수 있습니다.
+여러 서브에이전트를 동시에 실행할 수 있으므로, 독립적인 부분 작업은 모든 작업의 합이 아닌 가장 느린 작업의 시간에 완료됩니다.
 
-**예시:** 코드 리뷰 중에 `style-checker`, `security-scanner`, `test-coverage` 서브에이전트를 동시에 실행하여 리뷰 시간을 분 단위에서 초 단위로 단축할 수 있습니다.
+**예시:** 코드 리뷰 중에 `style-checker`, `security-scanner`, `test-coverage` 서브에이전트를 순차적으로 실행하는 대신 동시에 실행할 수 있습니다.
 
 <h3 id="specialized-instructions-and-knowledge">
   특화된 지침 및 지식
@@ -70,6 +70,8 @@
 </h3>
 
 `agents` 매개변수를 사용하여 코드에서 직접 서브에이전트를 정의합니다. 이 예시는 읽기 전용 액세스가 있는 코드 리뷰어와 명령을 실행할 수 있는 테스트 러너라는 두 개의 서브에이전트를 생성합니다. Claude가 `Agent` 도구를 통해 서브에이전트를 호출하므로 `allowedTools`에 `Agent`를 포함하여 권한 프롬프트 없이 서브에이전트 호출을 자동으로 승인합니다.
+
+이 페이지의 대부분의 예시는 최종 결과만 출력합니다. Claude가 서브에이전트에 위임했는지 직접 답변했는지 확인하려면 [서브에이전트 호출 감지](#detecting-subagent-invocation)를 참조하세요.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -177,25 +179,26 @@
   AgentDefinition 구성
 </h3>
 
-| 필드                | 유형                                                          | 필수  | 설명                                                                                                               |
-| :---------------- | :---------------------------------------------------------- | :-- | :--------------------------------------------------------------------------------------------------------------- |
-| `description`     | `string`                                                    | 예   | 이 에이전트를 사용할 때를 설명하는 자연어 설명                                                                                       |
-| `prompt`          | `string`                                                    | 예   | 에이전트의 역할과 동작을 정의하는 시스템 프롬프트                                                                                      |
-| `tools`           | `string[]`                                                  | 아니오 | 허용된 도구 이름의 배열입니다. 생략하면 모든 도구를 상속합니다.                                                                             |
-| `disallowedTools` | `string[]`                                                  | 아니오 | 에이전트의 도구 세트에서 제거할 도구 이름의 배열                                                                                      |
-| `model`           | `string`                                                    | 아니오 | 이 에이전트의 모델 재정의입니다. `'sonnet'`, `'opus'`, `'haiku'`, `'inherit'` 또는 전체 모델 ID와 같은 별칭을 허용합니다. 생략하면 메인 모델로 기본 설정됩니다. |
-| `skills`          | `string[]`                                                  | 아니오 | 시작 시 에이전트의 컨텍스트에 미리 로드할 스킬 이름 목록입니다. 나열되지 않은 스킬은 Skill 도구를 통해 호출 가능합니다.                                          |
-| `memory`          | `'user' \| 'project' \| 'local'`                            | 아니오 | 이 에이전트의 메모리 소스                                                                                                   |
-| `mcpServers`      | `(string \| object)[]`                                      | 아니오 | 이 에이전트가 사용할 수 있는 MCP 서버(이름 또는 인라인 구성)                                                                            |
-| `maxTurns`        | `number`                                                    | 아니오 | 에이전트가 중지되기 전의 최대 에이전트 턴 수                                                                                        |
-| `background`      | `boolean`                                                   | 아니오 | 호출될 때 이 에이전트를 비차단 백그라운드 작업으로 실행합니다.                                                                              |
-| `effort`          | `'low' \| 'medium' \| 'high' \| 'xhigh' \| 'max' \| number` | 아니오 | 이 에이전트의 추론 노력 수준                                                                                                 |
-| `permissionMode`  | `PermissionMode`                                            | 아니오 | 이 에이전트 내의 도구 실행을 위한 권한 모드                                                                                        |
+| 필드                | 유형                                                          | 필수  | 설명                                                                                                                                             |
+| :---------------- | :---------------------------------------------------------- | :-- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| `description`     | `string`                                                    | 예   | 이 에이전트를 사용할 때를 설명하는 자연어 설명                                                                                                                     |
+| `prompt`          | `string`                                                    | 예   | 에이전트의 역할과 동작을 정의하는 시스템 프롬프트                                                                                                                    |
+| `tools`           | `string[]`                                                  | 아니오 | 허용된 도구 이름의 배열입니다. 생략하면 모든 도구를 상속합니다.                                                                                                           |
+| `disallowedTools` | `string[]`                                                  | 아니오 | 에이전트의 도구 세트에서 제거할 도구 이름의 배열입니다. MCP 서버 수준 패턴도 허용됩니다: `mcp__server` 또는 `mcp__server__*`는 해당 서버의 모든 도구를 제거하고, `mcp__*`는 모든 서버의 모든 MCP 도구를 제거합니다. |
+| `model`           | `string`                                                    | 아니오 | 이 에이전트의 모델 재정의입니다. `'fable'`, `'opus'`, `'sonnet'`, `'haiku'`, `'inherit'` 또는 전체 모델 ID와 같은 별칭을 허용합니다. 생략하면 메인 모델로 기본 설정됩니다.                    |
+| `skills`          | `string[]`                                                  | 아니오 | 시작 시 에이전트의 컨텍스트에 미리 로드할 스킬 이름 목록입니다. 나열되지 않은 스킬은 Skill 도구를 통해 호출 가능합니다.                                                                        |
+| `memory`          | `'user' \| 'project' \| 'local'`                            | 아니오 | 이 에이전트의 메모리 소스                                                                                                                                 |
+| `mcpServers`      | `(string \| object)[]`                                      | 아니오 | 이 에이전트가 사용할 수 있는 MCP 서버(이름 또는 인라인 구성)                                                                                                          |
+| `initialPrompt`   | `string`                                                    | 아니오 | 이 에이전트가 메인 스레드 에이전트로 실행될 때 첫 번째 사용자 턴으로 자동 제출됩니다. 에이전트가 서브에이전트로 호출될 때는 무시됩니다.                                                                  |
+| `maxTurns`        | `number`                                                    | 아니오 | 에이전트가 중지되기 전의 최대 에이전트 턴 수                                                                                                                      |
+| `background`      | `boolean`                                                   | 아니오 | 호출될 때 이 에이전트를 비차단 백그라운드 작업으로 실행합니다.                                                                                                            |
+| `effort`          | `'low' \| 'medium' \| 'high' \| 'xhigh' \| 'max' \| number` | 아니오 | 이 에이전트의 추론 노력 수준                                                                                                                               |
+| `permissionMode`  | `PermissionMode`                                            | 아니오 | 이 에이전트 내의 도구 실행을 위한 권한 모드                                                                                                                      |
 
-Python SDK에서 이러한 필드 이름은 와이어 형식과 일치하도록 camelCase를 사용합니다. 자세한 내용은 [`AgentDefinition` 참조](/ko/agent-sdk/python#agentdefinition)를 참조하세요.
+Python SDK에서 `disallowedTools` 및 `mcpServers`와 같은 여러 단어로 된 필드 이름은 Python의 snake\_case 규칙을 따르지 않고 와이어 형식과 일치하도록 camelCase를 유지합니다. 자세한 내용은 [`AgentDefinition` 참조](/ko/agent-sdk/python#agentdefinition)를 참조하세요.
 
 <Note>
-  서브에이전트는 자신의 서브에이전트를 생성할 수 없습니다. 서브에이전트의 `tools` 배열에 `Agent`를 포함하지 마세요.
+  {/* min-version: 2.1.172 */}Claude Code v2.1.172부터 서브에이전트는 자신의 서브에이전트를 생성할 수 있습니다. 메인 에이전트 아래 5단계 깊이의 서브에이전트는 추가 서브에이전트를 생성할 수 없습니다. 포그라운드 또는 백그라운드에서 실행되는지 여부와 관계없이 이 제한이 적용됩니다. 서브에이전트가 다른 서브에이전트를 생성하지 못하도록 하려면 `tools` 배열에서 `Agent`를 생략하거나 `disallowedTools`에 추가합니다. 전체 깊이 규칙은 [중첩된 서브에이전트](/ko/sub-agents#spawn-nested-subagents)를 참조하세요.
 </Note>
 
 <h3 id="filesystem-based-definition-alternative">
@@ -214,11 +217,11 @@ Python SDK에서 이러한 필드 이름은 와이어 형식과 일치하도록 
 
 서브에이전트의 컨텍스트 윈도우는 새로 시작되지만(부모 대화 없음) 비어 있지 않습니다. 부모에서 서브에이전트로의 유일한 채널은 Agent 도구의 프롬프트 문자열이므로, 서브에이전트가 필요한 파일 경로, 오류 메시지 또는 결정을 해당 프롬프트에 직접 포함하세요.
 
-| 서브에이전트가 받는 것                                           | 서브에이전트가 받지 않는 것                                    |
-| :----------------------------------------------------- | :------------------------------------------------- |
-| 자신의 시스템 프롬프트(`AgentDefinition.prompt`)와 Agent 도구의 프롬프트 | 부모의 대화 기록 또는 도구 결과                                 |
-| 프로젝트 CLAUDE.md (`settingSources`를 통해 로드됨)              | 미리 로드된 스킬 콘텐츠(`AgentDefinition.skills`에 나열된 경우 제외) |
-| 도구 정의 (부모에서 상속되거나 `tools`의 부분 집합)                      | 부모의 시스템 프롬프트                                       |
+| 서브에이전트가 받는 것                                                                                                                    | 서브에이전트가 받지 않는 것                                    |
+| :------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------- |
+| 자신의 시스템 프롬프트(`AgentDefinition.prompt`)와 Agent 도구의 프롬프트                                                                          | 부모의 대화 기록 또는 도구 결과                                 |
+| 프로젝트 CLAUDE.md ([`settingSources`](/ko/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources)를 통해 로드됨) | 미리 로드된 스킬 콘텐츠(`AgentDefinition.skills`에 나열된 경우 제외) |
+| 도구 정의 (부모에서 상속되거나 `tools`의 부분 집합)                                                                                               | 부모의 시스템 프롬프트                                       |
 
 <Note>
   부모는 서브에이전트의 최종 메시지를 Agent 도구 결과로 그대로 받지만, 자신의 응답에서 요약할 수 있습니다. 서브에이전트 출력을 사용자 대면 응답에서 그대로 유지하려면, **메인** `query()` 호출에 전달하는 프롬프트 또는 `systemPrompt` 옵션에 그렇게 하도록 지시하는 지침을 포함하세요.
@@ -240,7 +243,7 @@ Claude가 작업을 올바른 서브에이전트와 일치시킬 수 있도록 �
   명시적 호출
 </h3>
 
-Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬프트에서 이름으로 언급하세요.
+Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬프트에서 이름으로 언급하세요:
 
 ```text theme={null}
 "Use the code-reviewer agent to check the authentication module"
@@ -336,11 +339,9 @@ Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬�
   도구 이름은 Claude Code v2.1.63에서 `"Task"`에서 `"Agent"`로 변경되었습니다. 현재 SDK 릴리스는 `tool_use` 블록에서 `"Agent"`를 내보내지만 여전히 `system:init` 도구 목록과 `result.permission_denials[].tool_name`에서 `"Task"`를 사용합니다. `block.name`에서 두 값을 모두 확인하면 SDK 버전 간 호환성이 보장됩니다.
 </Note>
 
-이 예시는 스트리밍된 메시지를 반복하여 서브에이전트가 호출될 때와 후속 메시지가 해당 서브에이전트의 실행 컨텍스트 내에서 시작될 때를 기록합니다.
+메시지 구조는 SDK 간에 다릅니다. Python에서는 콘텐츠 블록이 `message.content`를 통해 직접 액세스됩니다. TypeScript에서는 `SDKAssistantMessage`가 Claude API 메시지를 래핑하므로 콘텐츠는 `message.message.content`를 통해 액세스됩니다.
 
-<Note>
-  메시지 구조는 SDK 간에 다릅니다. Python에서는 콘텐츠 블록이 `message.content`를 통해 직접 액세스됩니다. TypeScript에서는 `SDKAssistantMessage`가 Claude API 메시지를 래핑하므로 콘텐츠는 `message.message.content`를 통해 액세스됩니다.
-</Note>
+이 예시는 스트리밍된 메시지를 반복하여 서브에이전트가 호출될 때와 후속 메시지가 해당 서브에이전트의 실행 컨텍스트 내에서 시작될 때를 기록합니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -427,121 +428,149 @@ Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬�
 
 서브에이전트를 재개하여 중단한 지점에서 계속할 수 있습니다. 재개된 서브에이전트는 이전의 모든 도구 호출, 결과 및 추론을 포함한 전체 대화 기록을 유지합니다. 서브에이전트는 새로 시작하는 대신 정확히 중단한 지점에서 계속됩니다.
 
-서브에이전트가 완료되면, Claude는 Agent 도구 결과에서 에이전트 ID를 받습니다. 서브에이전트를 프로그래밍 방식으로 재개하려면:
+서브에이전트가 완료되면, Agent 도구 결과에는 `agentId: <id>`를 포함하는 텍스트 블록이 포함됩니다. 기본 제공 [`Explore` 및 `Plan` 에이전트](/ko/sub-agents#built-in-subagents)는 일회성이며 `agentId`를 반환하지 않으므로, 재개가 필요한 경우 사용자 정의 에이전트 또는 `general-purpose`를 사용하세요. 서브에이전트를 프로그래밍 방식으로 재개하려면:
 
 1. **세션 ID 캡처**: 첫 번째 쿼리 중에 메시지에서 `session_id` 추출
-2. **에이전트 ID 추출**: 메시지 콘텐츠에서 `agentId` 파싱
+2. **에이전트 ID 추출**: Agent 도구 결과 텍스트에서 `agentId` 파싱
 3. **세션 재개**: 두 번째 쿼리의 옵션에서 `resume: sessionId`를 전달하고, 프롬프트에 에이전트 ID 포함
 
 <Note>
   서브에이전트의 트랜스크립트에 액세스하려면 같은 세션을 재개해야 합니다. 각 `query()` 호출은 기본적으로 새 세션을 시작하므로, 같은 세션에서 계속하려면 `resume: sessionId`를 전달하세요.
 
-  기본 제공 에이전트가 아닌 사용자 정의 에이전트를 사용하는 경우, 두 쿼리 모두에서 `agents` 매개변수에 같은 에이전트 정의를 전달해야 합니다.
+  사용자 정의 에이전트를 사용하는 경우, 두 쿼리 모두에서 `agents` 매개변수에 같은 에이전트 정의를 전달하세요.
 </Note>
 
-아래 예시는 이 흐름을 보여줍니다. 첫 번째 쿼리는 서브에이전트를 실행하고 세션 ID와 에이전트 ID를 캡처하고, 두 번째 쿼리는 세션을 재개하여 첫 번째 분석의 컨텍스트가 필요한 후속 질문을 합니다.
+아래 예시는 사용자 정의 `endpoint-finder` 에이전트를 정의합니다. 첫 번째 쿼리는 이를 실행하고 Agent 도구 결과에서 세션 ID와 에이전트 ID를 캡처하고, 두 번째 쿼리는 세션을 재개하여 첫 번째 분석의 컨텍스트가 필요한 후속 질문을 합니다.
 
 <CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { query, type SDKMessage } from "@anthropic-ai/claude-agent-sdk";
-
-  // Helper to extract agentId from message content
-  // Stringify to avoid traversing different block types (TextBlock, ToolResultBlock, etc.)
-  function extractAgentId(message: SDKMessage): string | undefined {
-    if (message.type !== "assistant" && message.type !== "user") return undefined;
-    // Stringify the content so we can search it without traversing nested blocks
-    const content = JSON.stringify(message.message.content);
-    const match = content.match(/agentId:\s*([a-f0-9-]+)/);
-    return match?.[1];
-  }
-
-  let agentId: string | undefined;
-  let sessionId: string | undefined;
-
-  // First invocation - use the Explore agent to find API endpoints
-  for await (const message of query({
-    prompt: "Use the Explore agent to find all API endpoints in this codebase",
-    options: { allowedTools: ["Read", "Grep", "Glob", "Agent"] }
-  })) {
-    // Capture session_id from ResultMessage (needed to resume this session)
-    if ("session_id" in message) sessionId = message.session_id;
-    // Search message content for the agentId (appears in Agent tool results)
-    const extractedId = extractAgentId(message);
-    if (extractedId) agentId = extractedId;
-    // Print the final result
-    if ("result" in message) console.log(message.result);
-  }
-
-  // Second invocation - resume and ask follow-up
-  if (agentId && sessionId) {
-    for await (const message of query({
-      prompt: `Resume agent ${agentId} and list the top 3 most complex endpoints`,
-      options: { allowedTools: ["Read", "Grep", "Glob", "Agent"], resume: sessionId }
-    })) {
-      if ("result" in message) console.log(message.result);
-    }
-  }
-  ```
-
   ```python Python theme={null}
   import asyncio
-  import json
   import re
-  from claude_agent_sdk import query, ClaudeAgentOptions
+  from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition, ToolResultBlock
+
+  AGENTS = {
+      "endpoint-finder": AgentDefinition(
+          description="Locates and catalogs API endpoints in a codebase.",
+          prompt="You find and document API endpoints. Report each endpoint's path, method, and handler.",
+          tools=["Read", "Grep", "Glob"],
+      )
+  }
 
 
-  def extract_agent_id(text: str) -> str | None:
-      """Extract agentId from Agent tool result text."""
-      match = re.search(r"agentId:\s*([a-f0-9-]+)", text)
-      return match.group(1) if match else None
+  def extract_agent_id(block: ToolResultBlock) -> str | None:
+      """Extract agentId from an Agent tool result's text content."""
+      parts = block.content if isinstance(block.content, list) else [{"text": block.content}]
+      for part in parts:
+          if match := re.search(r"agentId:\s*([\w-]+)", part.get("text") or ""):
+              return match.group(1)
+      return None
 
 
   async def main():
       agent_id = None
       session_id = None
 
-      # First invocation - use the Explore agent to find API endpoints
-      async for message in query(
-          prompt="Use the Explore agent to find all API endpoints in this codebase",
-          options=ClaudeAgentOptions(allowed_tools=["Read", "Grep", "Glob", "Agent"]),
-      ):
-          # Capture session_id from ResultMessage (needed to resume this session)
-          if hasattr(message, "session_id"):
-              session_id = message.session_id
-          # Search message content for the agentId (appears in Agent tool results)
-          if hasattr(message, "content"):
-              # Stringify the content so we can search it without traversing nested blocks
-              content_str = json.dumps(message.content, default=str)
-              extracted = extract_agent_id(content_str)
-              if extracted:
-                  agent_id = extracted
-          # Print the final result
-          if hasattr(message, "result"):
-              print(message.result)
+      # First invocation - run the endpoint-finder subagent
+      try:
+          async for message in query(
+              prompt="Use the endpoint-finder agent to find all API endpoints in this codebase",
+              options=ClaudeAgentOptions(allowed_tools=["Read", "Grep", "Glob", "Agent"], agents=AGENTS),
+          ):
+              # Capture session_id from ResultMessage (needed to resume this session)
+              if hasattr(message, "session_id"):
+                  session_id = message.session_id
+              # Search tool results for the agentId trailer
+              for block in getattr(message, "content", None) or []:
+                  if isinstance(block, ToolResultBlock):
+                      agent_id = extract_agent_id(block) or agent_id
+              # Print the final result
+              if hasattr(message, "result"):
+                  print(message.result)
+      except Exception as error:
+          # A single-shot query() raises after yielding an error result,
+          # so session_id and agent_id have already been captured by the loop above.
+          print(f"Session ended with an error: {error}")
 
       # Second invocation - resume and ask follow-up
       if agent_id and session_id:
           async for message in query(
               prompt=f"Resume agent {agent_id} and list the top 3 most complex endpoints",
               options=ClaudeAgentOptions(
-                  allowed_tools=["Read", "Grep", "Glob", "Agent"], resume=session_id
+                  allowed_tools=["Read", "Grep", "Glob", "Agent"], agents=AGENTS, resume=session_id
               ),
           ):
               if hasattr(message, "result"):
                   print(message.result)
+      else:
+          print("No agentId found in the first query, so there is no subagent to resume.")
 
 
   asyncio.run(main())
   ```
+
+  ```typescript TypeScript theme={null}
+  import { query, type SDKMessage } from "@anthropic-ai/claude-agent-sdk";
+
+  const agents = {
+    "endpoint-finder": {
+      description: "Locates and catalogs API endpoints in a codebase.",
+      prompt: "You find and document API endpoints. Report each endpoint's path, method, and handler.",
+      tools: ["Read", "Grep", "Glob"]
+    }
+  };
+
+  // Stringify content to search for agentId without traversing nested block types
+  function extractAgentId(message: SDKMessage): string | undefined {
+    if (message.type !== "assistant" && message.type !== "user") return undefined;
+    const content = JSON.stringify(message.message.content);
+    const match = content.match(/agentId:\s*([\w-]+)/);
+    return match?.[1];
+  }
+
+  let agentId: string | undefined;
+  let sessionId: string | undefined;
+
+  // First invocation - run the endpoint-finder subagent
+  try {
+    for await (const message of query({
+      prompt: "Use the endpoint-finder agent to find all API endpoints in this codebase",
+      options: { allowedTools: ["Read", "Grep", "Glob", "Agent"], agents }
+    })) {
+      // Capture session_id from ResultMessage (needed to resume this session)
+      if ("session_id" in message) sessionId = message.session_id;
+      // Search message content for the agentId (appears in Agent tool results)
+      const extractedId = extractAgentId(message);
+      if (extractedId) agentId = extractedId;
+      // Print the final result
+      if ("result" in message) console.log(message.result);
+    }
+  } catch (error) {
+    // A single-shot query() throws after yielding an error result,
+    // so sessionId and agentId have already been captured by the loop above.
+    console.error(`Session ended with an error: ${error}`);
+  }
+
+  // Second invocation - resume and ask follow-up
+  if (agentId && sessionId) {
+    for await (const message of query({
+      prompt: `Resume agent ${agentId} and list the top 3 most complex endpoints`,
+      options: { allowedTools: ["Read", "Grep", "Glob", "Agent"], agents, resume: sessionId }
+    })) {
+      if ("result" in message) console.log(message.result);
+    }
+  } else {
+    console.log("No agentId found in the first query, so there is no subagent to resume.");
+  }
+  ```
 </CodeGroup>
 
-서브에이전트 트랜스크립트는 메인 대화와 독립적으로 유지됩니다.
+서브에이전트 트랜스크립트는 메인 대화와 독립적으로 유지됩니다:
 
 * **메인 대화 압축**: 메인 대화가 압축될 때, 서브에이전트 트랜스크립트는 영향을 받지 않습니다. 이들은 별도의 파일에 저장됩니다.
 * **세션 지속성**: 서브에이전트 트랜스크립트는 해당 세션 내에서 유지됩니다. 같은 세션을 재개하여 Claude Code를 다시 시작한 후 서브에이전트를 재개할 수 있습니다.
 * **자동 정리**: 트랜스크립트는 `cleanupPeriodDays` 설정(기본값: 30일)에 따라 정리됩니다.
 
-<h2 id="tool-restrictions">
+<h2 id="tool-restrictions-1">
   도구 제한
 </h2>
 
@@ -654,5 +683,5 @@ Windows에서는 매우 긴 프롬프트가 있는 서브에이전트가 명령�
 </h2>
 
 * [Claude Code 서브에이전트](/ko/sub-agents): 파일 시스템 기반 정의를 포함한 포괄적인 서브에이전트 문서
-* [동적 워크플로우](/ko/workflows): 한 대화에 너무 큰 작업을 위해 스크립트에서 많은 서브에이전트를 오케스트레이션합니다.
+* [동적 워크플로우](/ko/workflows): 한 대화에 너무 큰 작업을 위해 스크립트에서 많은 서브에이전트를 오케스트레이션합니다
 * [SDK 개요](/ko/agent-sdk/overview): Claude Agent SDK 시작하기

@@ -16,11 +16,13 @@ Agent SDK는 셸, 작업 디렉토리 및 디스크의 세션 파일을 소유�
   기본 샌드박싱을 넘어선 보안 강화(네트워크 제어, 자격증명 관리 및 격리 옵션 포함)에 대해서는 [보안 배포](/ko/agent-sdk/secure-deployment)를 참조하십시오.
 </Info>
 
-## 서브프로세스 모델
+<h2 id="the-subprocess-model">
+  서브프로세스 모델
+</h2>
 
 이 페이지의 모든 호스팅 결정은 SDK가 에이전트를 실행하는 방식에서 비롯됩니다. 코드에서 `query()`를 호출하면 SDK는 별도의 `claude` CLI 프로세스를 생성하고 stdio를 통해 통신합니다. 해당 서브프로세스는 셸, 작업 디렉토리 및 로컬 디스크의 JSONL 세션 트랜스크립트를 소유합니다.
 
-<img src="https://mintcdn.com/claude-code/Akpoo6g0xDlAmvHv/images/agent-sdk/hosting-subprocess.svg?fit=max&auto=format&n=Akpoo6g0xDlAmvHv&q=85&s=d348cc9687d47e0bc954075fd88d0e60" alt="요청 흐름: 클라이언트에서 앱으로, 컨테이너 내 stdio를 통해 claude CLI 서브프로세스를 생성하고, 서브프로세스는 로컬 디스크에 쓰고 HTTPS를 통해 api.anthropic.com을 호출합니다" width="920" height="220" data-path="images/agent-sdk/hosting-subprocess.svg" />
+<img src="https://mintcdn.com/claude-code/ikqp3_70mqIahteV/images/agent-sdk/hosting-subprocess.svg?fit=max&auto=format&n=ikqp3_70mqIahteV&q=85&s=9dac857ca9d3b1410c3734900c386004" alt="요청 흐름: 클라이언트에서 앱으로, 컨테이너 내 stdio를 통해 claude CLI 서브프로세스를 생성하고, 서브프로세스는 로컬 디스크에 쓰고 HTTPS를 통해 api.anthropic.com을 호출합니다" width="920" height="220" data-path="images/agent-sdk/hosting-subprocess.svg" />
 
 하나의 에이전트 세션은 하나의 서브프로세스에 매핑됩니다. N개의 동시 세션을 실행하면 각각 자체 프로세스 트리와 트랜스크립트 파일을 가진 N개의 서브프로세스가 생성됩니다. 기본적으로 모두 애플리케이션의 작업 디렉토리를 상속하므로, 세션이 별도의 파일 시스템이 필요한 경우 각 `query()` 호출에서 `cwd`를 전달합니다:
 
@@ -34,7 +36,9 @@ Agent SDK는 셸, 작업 디렉토리 및 디스크의 세션 파일을 소유�
   ```
 </CodeGroup>
 
-### 로컬 디스크에 존재하는 상태
+<h3 id="state-that-lives-on-local-disk">
+  로컬 디스크에 존재하는 상태
+</h3>
 
 세 가지 종류의 에이전트 상태가 기본적으로 컨테이너의 파일 시스템에 존재합니다. 이들 중 어느 것도 컨테이너 재시작, 축소 또는 다른 노드로의 이동을 견딜 수 없습니다.
 
@@ -48,11 +52,15 @@ Agent SDK는 셸, 작업 디렉토리 및 디스크의 세션 파일을 소유�
 
 세션, 재개 및 포킹이 API 수준에서 어떻게 작동하는지에 대해서는 [세션](/ko/agent-sdk/sessions)을 참조합니다.
 
-## 세션 패턴 선택
+<h2 id="choose-a-session-pattern">
+  세션 패턴 선택
+</h2>
 
 이 네 가지 패턴은 세션 수명 주기를 다룹니다: 컨테이너가 제공하는 세션에 상대적으로 얼마나 오래 존재하는지입니다. 컨테이너가 실행되는 위치에 대해서는 [호스팅 쿡북](https://github.com/anthropics/claude-cookbooks/blob/main/claude_agent_sdk/07_Hosting_the_agent.ipynb)에 로컬 Docker, Modal, Kubernetes용 [배포 가능한 코드](https://github.com/anthropics/claude-cookbooks/tree/main/claude_agent_sdk/hosting)가 있습니다. 여기서 세션 패턴을 선택하고 쿡북에서 배포 대상을 선택하십시오.
 
-### 임시 세션
+<h3 id="ephemeral-sessions">
+  임시 세션
+</h3>
 
 각 사용자 작업에 대해 컨테이너를 생성하고 작업이 완료되면 삭제합니다. 일회성 작업에 최적입니다. 사용자는 작업이 완료되는 동안 AI와 상호작용할 수 있지만, 완료되면 컨테이너가 삭제됩니다.
 
@@ -69,7 +77,9 @@ for await (const message of query({ prompt, options: { maxTurns: 20 } })) {
 }
 ```
 
-### 장기 실행 세션
+<h3 id="long-running-sessions">
+  장기 실행 세션
+</h3>
 
 지속적인 컨테이너 인스턴스를 실행하며, 종종 컨테이너당 여러 SDK 프로세스를 호스팅하여 진행 중인 작업을 제공합니다. 자율적으로 조치를 취하거나 콘텐츠를 제공하거나 대량의 메시지 스트림을 처리하는 에이전트에 최적입니다.
 
@@ -77,7 +87,9 @@ for await (const message of query({ prompt, options: { maxTurns: 20 } })) {
 
 컨테이너는 HTTP 또는 WebSocket 엔드포인트를 노출하고 각 활성 세션을 장기 실행 쿼리 및 그 뒤의 서브프로세스에 매핑합니다. TypeScript에서는 [`streamInput()`](/ko/agent-sdk/typescript#query-object)을 사용하여 활성 세션에 턴을 추가하고 [`startup()`](/ko/agent-sdk/typescript#startup)을 사용하여 들어오는 트래픽 전에 서브프로세스를 미리 준비합니다. Python에서는 [`ClaudeSDKClient`](/ko/agent-sdk/python#claudesdkclient)를 사용하여 여러 턴에 걸쳐 세션을 열린 상태로 유지합니다. 컨테이너 크기를 메모리에 보유할 수 있는 최대 동시 세션 수에 맞게 조정하십시오.
 
-### 하이브리드 세션
+<h3 id="hybrid-sessions">
+  하이브리드 세션
+</h3>
 
 시작 시 [`SessionStore`](/ko/agent-sdk/session-storage)에서 수화되고 업데이트를 다시 유지하는 임시 컨테이너입니다. 많은 상호작용에 걸쳐 있지만 그 사이에 유휴 상태인 세션에 최적입니다. 컨테이너는 유휴 기간 동안 종료되고 사용자가 돌아올 때 다시 시작됩니다.
 
@@ -119,15 +131,21 @@ for await (const message of query({ prompt, options: { maxTurns: 20 } })) {
 
 전체 `SessionStore` 인터페이스 및 참조 어댑터는 [세션 저장소](/ko/agent-sdk/session-storage)를 참조하십시오.
 
-### 다중 에이전트 컨테이너
+<h3 id="multi-agent-container">
+  다중 에이전트 컨테이너
+</h3>
 
 하나의 컨테이너 내에서 여러 SDK 서브프로세스를 실행합니다. 예를 들어 에이전트가 공유 환경에서 서로 상호작용하는 다중 에이전트 시뮬레이션과 같이 에이전트가 긴밀하게 협력해야 하는 경우에 최적입니다.
 
 각 에이전트에 자신의 작업 디렉토리를 제공하여 서로의 파일을 덮어쓰지 않도록 하고, 에이전트별 `CLAUDE.md` 파일이 에이전트 간에 유출되지 않도록 설정 로딩을 격리합니다. 특정 옵션은 [다중 테넌트 격리](#multi-tenant-isolation)를 참조하십시오.
 
-## 컨테이너 제공
+<h2 id="provision-the-container">
+  컨테이너 제공
+</h2>
 
-### 컨테이너 기반 샌드박싱
+<h3 id="container-based-sandboxing">
+  컨테이너 기반 샌드박싱
+</h3>
 
 프로세스 격리, 리소스 제한, 네트워크 제어 및 임시 파일 시스템을 위해 샌드박스 컨테이너 내에서 SDK를 실행합니다. 여러 제공자가 Agent SDK의 모델에 맞는 샌드박스 컨테이너 환경을 전문으로 합니다.
 
@@ -150,7 +168,9 @@ for await (const message of query({ prompt, options: { maxTurns: 20 } })) {
 
 Docker, gVisor 및 Firecracker와 같은 자체 호스팅 옵션 및 상세한 격리 구성에 대해서는 [격리 기술](/ko/agent-sdk/secure-deployment#isolation-technologies)을 참조하십시오.
 
-### 런타임 종속성
+<h3 id="runtime-dependencies">
+  런타임 종속성
+</h3>
 
 컨테이너는 SDK의 언어 런타임만 필요합니다:
 
@@ -159,21 +179,29 @@ Docker, gVisor 및 Firecracker와 같은 자체 호스팅 옵션 및 상세한 �
 
 번들된 바이너리는 SDK 패키지 버전에 고정되므로 SDK를 업데이트하는 것이 CLI를 업데이트하는 방법입니다. SDK는 semver를 따릅니다: 패치 릴리스를 지속적으로 적용하고 마이너 버전을 적용하기 전에 [TypeScript](https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md) 또는 [Python](https://github.com/anthropics/claude-agent-sdk-python/blob/main/CHANGELOG.md) 변경 로그를 검토하십시오.
 
-### 리소스
+<h3 id="resources">
+  리소스
+</h3>
 
 새로 시작된 인스턴스의 경우 에이전트당 1GiB RAM, 5GiB 디스크 및 1 CPU가 합리적인 시작점입니다. 메모리 사용량은 세션 길이 및 도구 활동에 따라 증가하므로 유휴 기준선이 아닌 실제로 필요한 세션 길이 및 동시성에 맞게 크기를 조정하십시오. 호스트당 에이전트를 계산하는 방법은 [확장 및 동시성](#scaling-and-concurrency)을 참조하십시오.
 
-### 네트워크
+<h3 id="network">
+  네트워크
+</h3>
 
 SDK는 `api.anthropic.com`으로 또는 Bedrock 또는 Vertex에서 실행할 때 제공자의 지역 엔드포인트로 아웃바운드 HTTPS가 필요합니다. 에이전트가 [MCP 서버](/ko/agent-sdk/mcp) 또는 외부 도구를 사용하는 경우 해당 엔드포인트에 대한 아웃바운드 액세스도 필요합니다. 프로덕션의 경우 도메인 허용 목록을 적용하고, 자격 증명을 주입하고, 요청을 기록하는 송신 프록시를 통해 아웃바운드 트래픽을 라우팅하십시오. 전체 패턴은 [보안 배포](/ko/agent-sdk/secure-deployment)를 참조하십시오.
 
 인바운드 트래픽의 경우 컨테이너에서 HTTP 또는 WebSocket 포트를 노출합니다. 애플리케이션은 해당 포트에서 클라이언트 요청을 처리하고 내부적으로 SDK를 호출합니다. 서브프로세스 자체는 네트워크에서 수신 대기하지 않습니다.
 
-## 프로덕션 배포 문제 처리
+<h2 id="handle-production-concerns">
+  프로덕션 배포 문제 처리
+</h2>
 
 자체 호스팅 에이전트를 배포하기 전에 이러한 결정 사항을 검토하십시오.
 
-### 세션 및 상태 지속성
+<h3 id="session-and-state-persistence">
+  세션 및 상태 지속성
+</h3>
 
 기본 로컬 디스크는 재시작, 축소 또는 다른 노드로의 이동 시 손실됩니다. 사용자가 재개할 것으로 예상하는 모든 세션에 대해 [`SessionStore` 어댑터](/ko/agent-sdk/session-storage)를 사용하여 트랜스크립트를 지속 가능한 스토리지에 미러링하십시오. S3, Redis 및 Postgres 어댑터와 자신의 어댑터를 위한 적합성 제품군에 대해서는 [참조 구현](/ko/agent-sdk/session-storage#reference-implementations)을 참조하십시오.
 
@@ -181,9 +209,11 @@ SDK는 `api.anthropic.com`으로 또는 Bedrock 또는 Vertex에서 실행할 �
 
 * **트랜스크립트만**: `SessionStore`는 트랜스크립트를 미러링하며, `CLAUDE.md` 메모리 파일이나 다른 작업 디렉토리 아티팩트는 미러링하지 않습니다. 공유 볼륨을 마운트하거나 별도로 동기화하십시오.
 * **미러링, 대체 아님**: 서브프로세스는 먼저 로컬 디스크에 쓰고, 스토어는 각 배치의 복사본을 받습니다. 로컬 쓰기가 권한이 있습니다.
-* **`mirror_error` 메시지**: 스토어가 거부하거나 시간 초과되면 SDK는 `{ type: "system", subtype: "mirror_error" }` 메시지를 내보내고 재시도 없이 쿼리를 계속합니다. 스토어 지속성이 중요한 경우 이에 대해 경고하십시오.
+* **`mirror_error` 메시지**: 스토어가 거부하는 배치는 각 재시도 전에 짧은 백오프를 사용하여 총 최대 3회 전송됩니다. 시간 초과된 호출은 재시도되지 않습니다. 배치가 여전히 실패하면 SDK는 이를 삭제하고, `{ type: "system", subtype: "mirror_error" }` 메시지를 내보내고, 쿼리를 계속합니다. 스토어 지속성이 중요한 경우 이에 대해 경고하십시오.
 
-### 관찰성
+<h3 id="observability">
+  관찰성
+</h3>
 
 Agent SDK 에이전트는 많은 API 왕복에 걸쳐 도구 호출을 생성하는 장기 실행 프로세스입니다. 텔레메트리 없이는 어떤 도구가 실행되었는지, 얼마나 오래 걸렸는지, 또는 세션이 어디서 정체되었는지 볼 수 없습니다.
 
@@ -201,7 +231,9 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://collector.example.com:4318
 
 프롬프트 텍스트 및 도구 입력은 기본적으로 내보내기에 포함되지 않습니다. 옵트인 플래그에 대해서는 [내보내기에서 민감한 데이터 제어](/ko/agent-sdk/observability#control-sensitive-data-in-exports)를 참조하고, 전체 신호 카탈로그에 대해서는 [관찰성](/ko/agent-sdk/observability)을 참조하십시오.
 
-### 인증 및 비밀
+<h3 id="auth-and-secrets">
+  인증 및 비밀
+</h3>
 
 호스팅 시점에 세 가지 인증 문제가 중요합니다:
 
@@ -209,7 +241,9 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://collector.example.com:4318
 * **인바운드**: 에이전트 컨테이너 앞의 게이트웨이에 인증을 배치하십시오. 에이전트는 사전 인증된 요청을 받아야 하며 사용자 토큰을 검증하는 구성 요소가 아니어야 합니다.
 * **아웃바운드 도구**: 에이전트 환경에서 도구 자격 증명을 유지하십시오. 아웃바운드 호출을 요청이 컨테이너를 떠난 후 API 키를 주입하는 프록시를 통해 라우팅하십시오. 에이전트가 호출을 수행합니다. 프록시가 자격 증명을 추가합니다.
 
-### 확장 및 동시성
+<h3 id="scaling-and-concurrency">
+  확장 및 동시성
+</h3>
 
 각 세션은 자체 서브프로세스에서 실행되므로 호스트의 동시성은 RAM이 보유할 수 있는 서브프로세스 수로 제한됩니다.
 
@@ -225,11 +259,15 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://collector.example.com:4318
 
 단일 세션에서 [서브에이전트](/ko/agent-sdk/subagents)의 대규모 팬아웃은 API 속도 제한에 도달할 수 있습니다. 하나의 넓은 디스패치를 발행하는 대신 작업을 더 작은 배치로 나누십시오.
 
-### 비용
+<h3 id="cost">
+  비용
+</h3>
 
 Anthropic 토큰 비용은 일반적으로 컨테이너 인프라 비용을 한 자릿수 이상으로 지배합니다. 최소한으로 프로비저닝된 컨테이너는 시간당 약 \$0.05를 실행하는 반면, 단일 장기 에이전트 세션은 토큰에서 수 달러를 소비할 수 있습니다. 세션당 토큰 회계에 대해서는 [비용 추적](/ko/agent-sdk/cost-tracking)을 참조하십시오.
 
-### 다중 테넌트 격리
+<h3 id="multi-tenant-isolation">
+  다중 테넌트 격리
+</h3>
 
 기본 SDK 동작은 파일 시스템에서 설정 및 `CLAUDE.md` 메모리 파일을 읽습니다. 여러 테넌트를 제공하는 공유 컨테이너에서 이러한 파일은 한 테넌트의 컨텍스트를 다른 테넌트의 세션으로 유출할 수 있습니다.
 
@@ -287,18 +325,22 @@ Anthropic 토큰 비용은 일반적으로 컨테이너 인프라 비용을 한 
 
 테넌트별 네트워크 제어에 대해서는 [보안 배포](/ko/agent-sdk/secure-deployment)를 참조하십시오.
 
-## 알려진 제한사항
+<h2 id="known-limitations">
+  알려진 제한사항
+</h2>
 
 배포 설계에서 이러한 사항들을 고려하십시오.
 
 | 제한사항                            | 해결 방법                                                                                                                                                                                                                     |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 최상위 세션 타임아웃 없음                  | 세션은 자동으로 타임아웃되지 않습니다. `Options`에서 `maxTurns`를 설정하여 에이전트가 중지되기 전에 수행하는 도구 사용 왕복 횟수를 제한하십시오.                                                                                                                                |
-| 장시간 세션에서의 메모리 증가                | 세션 길이를 제한하거나 서브프로세스를 주기적으로 재활용하십시오. [확장성 및 동시성](#확장성-및-동시성)을 참조하십시오.                                                                                                                                                      |
+| 장시간 세션에서의 메모리 증가                | 세션 길이를 제한하거나 서브프로세스를 주기적으로 재활용하십시오. [확장성 및 동시성](#scaling-and-concurrency)을 참조하십시오.                                                                                                                                        |
 | 대규모 병렬 서브에이전트 팬아웃으로 인한 속도 제한 도달 | 한 번에 광범위한 디스패치를 발행하는 대신 작업을 더 작은 배치로 나누십시오.                                                                                                                                                                               |
 | 서브에이전트별 벽시계 데드라인 없음             | 각 [서브에이전트](/ko/agent-sdk/subagents)를 `AgentDefinition`의 `maxTurns`로 제한하십시오. 백그라운드 서브에이전트만의 경우, `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`는 `run_in_background` 서브에이전트가 출력 생성을 중지할 때 발동하는 정지 감시 장치를 설정합니다. 이는 총 런타임 데드라인이 아닙니다. |
 
-## 다음 단계
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
 * [호스팅 쿡북](https://github.com/anthropics/claude-cookbooks/blob/main/claude_agent_sdk/07_Hosting_the_agent.ipynb): Docker, Modal, Kubernetes용 [배포 가능한 코드](https://github.com/anthropics/claude-cookbooks/tree/main/claude_agent_sdk/hosting)가 포함된 노트북 안내입니다.
 * [세션 저장소](/ko/agent-sdk/session-storage): `SessionStore` 어댑터를 사용하여 호스트 간에 트랜스크립트를 유지합니다.

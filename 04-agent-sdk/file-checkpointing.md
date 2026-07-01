@@ -729,7 +729,7 @@ Claude가 여러 턴에 걸쳐 변경을 수행하는 경우, 모든 방식으�
 * **Python**: `pip install --upgrade claude-agent-sdk`
 * **TypeScript**: `npm install @anthropic-ai/claude-agent-sdk@latest`
 
-<h3 id="user-messages-don-t-have-uuids">
+<h3 id="user-messages-don’t-have-uuids">
   사용자 메시지에 UUID가 없음
 </h3>
 

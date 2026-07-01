@@ -11,23 +11,27 @@
 이 가이드는 Claude Code CLI를 사용하여 한 개의 MCP 서버를 처음부터 끝까지 연결하는 과정을 안내합니다. 완료하면 서버가 연결되어 응답하고, 디스크에서 구성이 어디에 있는지 알 수 있으며, 가장 일반적인 연결 오류를 해결하는 방법을 알게 됩니다.
 
 <Note>
-  데스크톱 앱, VS Code, 웹 등 다른 표면에서도 MCP 서버를 추가할 수 있습니다. [다른 표면에서 연결하기](#다른-표면에서-연결하기)를 참조하세요.
+  데스크톱 앱, VS Code, 웹 등 다른 표면에서도 MCP 서버를 추가할 수 있습니다. [다른 표면에서 연결하기](#connect-from-other-surfaces)를 참조하세요.
 </Note>
 
 Claude Code에서 MCP 서버를 연결하고 구성하는 모든 방법은 [MCP 참조](/ko/mcp)를 참조하세요.
 
-## 시작하기 전에
+<h2 id="before-you-begin">
+  시작하기 전에
+</h2>
 
 다음을 확인하세요:
 
 * [Claude Code 설치](/ko/quickstart) 및 인증 완료
 * 프로젝트 디렉토리에서 터미널 열기. 빈 디렉토리를 포함한 모든 디렉토리가 작동합니다.
 
-## 서버 추가 및 확인
+<h2 id="add-and-verify-a-server">
+  서버 추가 및 확인
+</h2>
 
 아래 예제는 [Claude Code 문서 MCP 서버](https://code.claude.com/docs/mcp)에 연결합니다. 이는 Claude Code 문서에 대한 전체 텍스트 검색이 가능한 호스팅된 서버입니다. 인증이나 특별한 구성이 필요하지 않으므로 설정 흐름을 테스트하기 위한 첫 번째 서버로 적합합니다.
 
-단계는 모든 서버에 대해 동일합니다: 추가, 연결 상태 확인, 세션에서 사용, 선택적 정리 단계. 일부 서버는 [추가 MCP 서버 예제](#추가-mcp-서버-예제)에 표시된 브라우저 로그인과 같은 단계를 추가합니다. 더 많은 서버를 연결하려면 [Anthropic Directory](/ko/mcp#mcp-서버-찾기-및-구축)를 참조하세요.
+단계는 모든 서버에 대해 동일합니다: 추가, 연결 상태 확인, 세션에서 사용, 선택적 정리 단계. 일부 서버는 [추가 MCP 서버 예제](#additional-mcp-server-examples)에 표시된 브라우저 로그인과 같은 단계를 추가합니다. 더 많은 서버를 연결하려면 [Anthropic Directory](/ko/mcp#find-and-build-mcp-servers)를 참조하세요.
 
 <Steps>
   <Step title="MCP 서버 추가">
@@ -44,7 +48,7 @@ Claude Code에서 MCP 서버를 연결하고 구성하는 모든 방법은 [MCP 
     * `claude-code-docs`: 사용자가 만드는 이름입니다. 동일한 서버를 `docs`라고 호출해도 동일하게 작동합니다. Claude Code는 선택한 이름을 사용하여 Claude의 출력에서 서버의 도구에 레이블을 지정하고 `claude mcp remove`와 같은 명령에서 서버를 참조합니다.
     * `https://code.claude.com/docs/mcp`: 서버가 호스팅되는 URL입니다.
 
-    명령은 `Added HTTP MCP server claude-code-docs with URL: https://code.claude.com/docs/mcp to local config`와 같은 확인을 출력합니다. `local config` 부분은 서버가 이 프로젝트에서 사용자에게 등록되었음을 의미합니다: 다른 프로젝트에서 Claude Code를 시작하면 이 서버는 활성화되지 않습니다. 모든 프로젝트에 대해 한 번 서버를 등록하려면 사용자 범위에서 추가하세요. [서버 범위 변경](#서버-범위-변경)에서 다룹니다.
+    명령은 `Added HTTP MCP server claude-code-docs with URL: https://code.claude.com/docs/mcp to local config`와 같은 확인을 출력합니다. `local config` 부분은 서버가 이 프로젝트에서 사용자에게 등록되었음을 의미합니다: 다른 프로젝트에서 Claude Code를 시작하면 이 서버는 활성화되지 않습니다. 모든 프로젝트에 대해 한 번 서버를 등록하려면 사용자 범위에서 추가하세요. [서버 범위 변경](#change-server-scope)에서 다룹니다.
   </Step>
 
   <Step title="연결 상태 확인">
@@ -56,13 +60,14 @@ Claude Code에서 MCP 서버를 연결하고 구성하는 모든 방법은 [MCP 
 
     서버는 상태 표시기와 함께 나타납니다:
 
-    | 상태                       | 의미                                                                                                    |
-    | :----------------------- | :---------------------------------------------------------------------------------------------------- |
-    | `✓ Connected`            | 사용할 준비가 되었습니다. `claude-code-docs`에서 이것을 봐야 합니다                                                        |
-    | `! Needs authentication` | 서버에 도달할 수 있지만 브라우저 로그인이 필요하거나 `--header`로 전달된 토큰이 필요합니다. [로그인이 필요한 서버 연결하기](#로그인이-필요한-서버-연결하기)를 참조하세요 |
-    | `✗ Failed to connect`    | 서버가 응답하지 않았습니다. [문제 해결](#문제-해결)을 참조하세요                                                                |
-    | `✗ Connection error`     | 연결 시도에서 오류가 발생했습니다. [문제 해결](#문제-해결)을 참조하세요                                                            |
-    | `⏸ Pending approval`     | 아직 승인하지 않은 프로젝트 범위 서버입니다. [.mcp.json 직접 편집하기](#mcp-json-직접-편집하기)를 참조하세요                               |
+    | 상태                                 | 의미                                                                                                                          |
+    | :--------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+    | `✓ Connected`                      | 사용할 준비가 되었습니다. `claude-code-docs`에서 이것을 봐야 합니다                                                                              |
+    | `! Connected · tools fetch failed` | 서버가 연결되었지만 도구를 나열할 수 없습니다. 오류 세부 정보는 `claude mcp get <name>`을 실행하세요                                                         |
+    | `! Needs authentication`           | 서버에 도달할 수 있지만 브라우저 로그인이 필요하거나 `--header`로 전달된 토큰이 필요합니다. [로그인이 필요한 서버 연결하기](#connect-a-server-that-requires-sign-in)를 참조하세요 |
+    | `✗ Failed to connect`              | 서버가 응답하지 않았습니다. [문제 해결](#troubleshooting)을 참조하세요                                                                            |
+    | `✗ Connection error`               | 연결 시도에서 오류가 발생했습니다. [문제 해결](#troubleshooting)을 참조하세요                                                                        |
+    | `⏸ Pending approval`               | 아직 승인하지 않은 프로젝트 범위 서버입니다. [.mcp.json 직접 편집하기](#edit-mcp-json-directly)를 참조하세요                                               |
   </Step>
 
   <Step title="서버 사용">
@@ -91,14 +96,16 @@ Claude Code에서 MCP 서버를 연결하고 구성하는 모든 방법은 [MCP 
     ```
 
     <Note>
-      연결된 각 서버는 도구 이름과 서버 지침이 모든 세션에 로드되기 때문에 [Claude의 컨텍스트 윈도우](/ko/how-claude-code-works#컨텍스트-윈도우)에서 일부 공간을 차지합니다. 더 이상 사용하지 않는 서버를 제거하면 해당 공간을 확보할 수 있습니다.
+      연결된 각 서버는 도구 이름과 서버 지침이 모든 세션에 로드되기 때문에 [Claude의 컨텍스트 윈도우](/ko/how-claude-code-works#the-context-window)에서 일부 공간을 차지합니다. 더 이상 사용하지 않는 서버를 제거하면 해당 공간을 확보할 수 있습니다.
     </Note>
   </Step>
 </Steps>
 
-## 서버가 저장되는 위치
+<h2 id="where-servers-are-saved">
+  서버가 저장되는 위치
+</h2>
 
-`claude mcp add` 명령은 서버의 세부 정보를 구성 파일에 씁니다. 기본적으로 `local` 범위에서 서버를 등록합니다: 사용자에게만 비공개이며 현재 프로젝트에서만 활성화됩니다. `--scope user`를 전달하여 모든 프로젝트에 대해 한 번 등록하거나 `--scope project`를 전달하여 팀원과 공유합니다. [서버 범위 변경](#서버-범위-변경)에서 둘 다 설명합니다.
+`claude mcp add` 명령은 서버의 세부 정보를 구성 파일에 씁니다. 기본적으로 `local` 범위에서 서버를 등록합니다: 사용자에게만 비공개이며 현재 프로젝트에서만 활성화됩니다. `--scope user`를 전달하여 모든 프로젝트에 대해 한 번 등록하거나 `--scope project`를 전달하여 팀원과 공유합니다. [서버 범위 변경](#change-server-scope)에서 둘 다 설명합니다.
 
 <Note>
   `claude mcp add`는 PowerShell 및 Command Prompt를 포함한 모든 셸에서 동일하게 작동합니다. `claude` 세션 내부에서 `/mcp` 명령을 사용하여 이미 추가한 서버를 확인하고 관리합니다.
@@ -106,13 +113,15 @@ Claude Code에서 MCP 서버를 연결하고 구성하는 모든 방법은 [MCP 
 
 서버를 추가하는 다른 방법이 있으며, 각각은 이 페이지의 뒷부분에서 다룹니다:
 
-* [로컬 서버 추가](#로컬-서버-추가): URL에 연결하는 대신 머신에서 프로그램을 실행합니다.
-* [`.mcp.json` 직접 편집하기](#mcp-json-직접-편집하기): 명령을 사용하는 대신 JSON 항목을 직접 작성합니다.
-* [로그인이 필요한 서버 연결하기](#로그인이-필요한-서버-연결하기): 도구가 작동하기 전에 브라우저 로그인이 필요한 호스팅된 서버를 추가합니다.
+* [로컬 서버 추가](#add-a-local-server): URL에 연결하는 대신 머신에서 프로그램을 실행합니다.
+* [`.mcp.json` 직접 편집하기](#edit-mcp-json-directly): 명령을 사용하는 대신 JSON 항목을 직접 작성합니다.
+* [로그인이 필요한 서버 연결하기](#connect-a-server-that-requires-sign-in): 도구가 작동하기 전에 브라우저 로그인이 필요한 호스팅된 서버를 추가합니다.
 
-### 디스크에서 구성 찾기
+<h3 id="find-your-configuration-on-disk">
+  디스크에서 구성 찾기
+</h3>
 
-[범위 테이블](#디스크에서-구성-찾기)의 모든 파일은 `--scope` 플래그에 따라 두 파일에 저장된 서버 항목에 대해 동일한 JSON 형식을 사용합니다. 이러한 파일을 직접 편집할 필요는 없지만 위치를 알면 디버깅 및 버전 제어에 도움이 됩니다.
+`claude mcp add` 명령은 `--scope` 플래그에 따라 두 파일에 걸쳐 저장된 세 가지 범위 중 하나에 서버를 씁니다. 이러한 파일을 직접 편집할 필요는 없지만 위치를 알면 디버깅 및 버전 제어에 도움이 됩니다.
 
 | 범위        | 파일                                      | 사용 가능 대상           |
 | :-------- | :-------------------------------------- | :----------------- |
@@ -122,9 +131,11 @@ Claude Code에서 MCP 서버를 연결하고 구성하는 모든 방법은 [MCP 
 
 Windows에서 `~/.claude.json`은 `%USERPROFILE%\.claude.json`으로 확인되며, 일반적으로 `C:\Users\YourName\.claude.json`입니다. [`CLAUDE_CONFIG_DIR`](/ko/env-vars)을 설정한 경우 Claude Code는 대신 해당 디렉토리 내에서 `.claude.json`을 읽습니다.
 
-`claude mcp get claude-code-docs`를 실행하여 어느 범위가 서버의 정의를 보유하는지 확인합니다. 동일한 서버가 둘 이상의 범위에서 정의될 때 범위가 상호 작용하는 방식은 [MCP 설치 범위](/ko/mcp#mcp-설치-범위)를 참조하세요.
+`claude mcp get claude-code-docs`를 실행하여 어느 범위가 서버의 정의를 보유하는지 확인합니다. 동일한 서버가 둘 이상의 범위에서 정의될 때 범위가 상호 작용하는 방식은 [MCP 설치 범위](/ko/mcp#mcp-installation-scopes)를 참조하세요.
 
-## 서버 범위 변경
+<h2 id="change-server-scope">
+  서버 범위 변경
+</h2>
 
 서버의 범위는 추가할 때 고정되므로 범위를 변경하려면 항목을 제거하고 새 범위에서 다시 추가해야 합니다. 아래의 두 경우 모두 첫 번째 연습에서 로컬 항목을 제거하여 시작하므로 서버는 정의가 하나만 있습니다. 해당 연습의 끝에서 이미 제거한 경우 이 명령을 건너뜁니다:
 
@@ -132,7 +143,9 @@ Windows에서 `~/.claude.json`은 `%USERPROFILE%\.claude.json`으로 확인되�
 claude mcp remove claude-code-docs --scope local
 ```
 
-### 모든 프로젝트에서 서버 사용
+<h3 id="use-a-server-in-all-your-projects">
+  모든 프로젝트에서 서버 사용
+</h3>
 
 `user` 범위에서 서버를 다시 추가하여 열 수 있는 모든 프로젝트에서 활성화하되, 여전히 사용자에게만 비공개입니다:
 
@@ -140,7 +153,9 @@ claude mcp remove claude-code-docs --scope local
 claude mcp add --scope user --transport http claude-code-docs https://code.claude.com/docs/mcp
 ```
 
-### 팀과 서버 공유
+<h3 id="share-a-server-with-your-team">
+  팀과 서버 공유
+</h3>
 
 `project` 범위에서 서버를 다시 추가하여 프로젝트 루트의 `.mcp.json`에 씁니다:
 
@@ -150,11 +165,15 @@ claude mcp add --scope project --transport http claude-code-docs https://code.cl
 
 `.mcp.json`을 버전 제어에 커밋합니다. 저장소를 복제하고 Claude Code를 시작하는 팀원은 서버를 승인하라는 프롬프트를 보고 그들도 연결됩니다.
 
-## 추가 MCP 서버 예제
+<h2 id="additional-mcp-server-examples">
+  추가 MCP 서버 예제
+</h2>
 
 첫 번째 연습에서는 로그인 없이 연결되는 호스팅된 서버를 사용했습니다. 아래 예제는 동일한 추가, 확인, 사용 흐름을 포함하는 다른 두 가지 일반적인 형태를 다룹니다.
 
-### 로컬 서버 추가
+<h3 id="add-a-local-server">
+  로컬 서버 추가
+</h3>
 
 로컬 stdio 서버는 Claude Code가 URL을 통해 도달하는 서비스가 아닌 머신에서 서브프로세스로 시작하는 프로그램입니다. 브라우저, 파일 시스템 또는 데이터베이스 소켓과 같은 로컬 리소스에 액세스해야 하는 도구에 사용합니다.
 
@@ -200,11 +219,13 @@ claude mcp add --scope project --transport http claude-code-docs https://code.cl
   </Step>
 </Steps>
 
-### 로그인이 필요한 서버 연결하기
+<h3 id="connect-a-server-that-requires-sign-in">
+  로그인이 필요한 서버 연결하기
+</h3>
 
 Sentry, Linear, Notion과 같은 호스팅된 서비스는 OAuth 뒤에서 MCP 서버를 실행합니다: 서버의 URL을 추가한 다음 브라우저를 통해 로그인합니다.
 
-아래 단계는 Sentry를 예제로 사용합니다. 다른 서비스에 연결하려면 [Anthropic Directory](/ko/mcp#mcp-서버-찾기-및-구축) 또는 서비스의 문서에서 찾을 수 있는 URL을 대체합니다.
+아래 단계는 Sentry를 예제로 사용합니다. 다른 서비스에 연결하려면 [Anthropic Directory](/ko/mcp#find-and-build-mcp-servers) 또는 서비스의 문서에서 찾을 수 있는 URL을 대체합니다.
 
 <Steps>
   <Step title="서버 추가">
@@ -226,7 +247,7 @@ Sentry, Linear, Notion과 같은 호스팅된 서비스는 OAuth 뒤에서 MCP �
 
     목록에서 `sentry`를 선택하고 Enter를 누른 다음 `Authenticate`를 선택합니다. 브라우저가 Sentry의 로그인 페이지로 열립니다. 거기서 연결을 승인합니다.
 
-    Claude Code로 돌아가면 서버의 상태가 연결됨으로 변경됩니다. 로그인이 실패하거나 브라우저가 열리지 않으면 [문제 해결](#문제-해결)을 참조하세요.
+    Claude Code로 돌아가면 서버의 상태가 연결됨으로 변경됩니다. 로그인이 실패하거나 브라우저가 열리지 않으면 [문제 해결](#troubleshooting)을 참조하세요.
   </Step>
 
   <Step title="서버 사용">
@@ -234,11 +255,13 @@ Sentry, Linear, Notion과 같은 호스팅된 서비스는 OAuth 뒤에서 MCP �
   </Step>
 </Steps>
 
-OAuth 대신 정적 토큰으로 인증하는 서버는 `--header "Authorization: Bearer <token>"`을 사용하여 추가 시간에 토큰을 가져옵니다. 작동하는 버전은 [GitHub 예제](/ko/mcp#예제-코드-검토를-위해-github에-연결하기)를 참조하세요.
+OAuth 대신 정적 토큰으로 인증하는 서버는 `--header "Authorization: Bearer <token>"`을 사용하여 추가 시간에 토큰을 가져옵니다. 작동하는 버전은 [GitHub 예제](/ko/mcp#example-connect-to-github-for-code-reviews)를 참조하세요.
 
-## .mcp.json 직접 편집하기
+<h2 id="edit-mcp-json-directly">
+  .mcp.json 직접 편집하기
+</h2>
 
-[범위 테이블](#디스크에서-구성-찾기)의 모든 파일은 서버 항목에 대해 동일한 JSON 형식을 사용합니다. 이 섹션은 프로젝트 범위 파일인 `.mcp.json`을 편집합니다. 저장소에 체크인되므로 팀을 위한 구성 코드로도 작동하기 때문에 손으로 작성할 가치가 있습니다.
+[범위 테이블](#find-your-configuration-on-disk)의 모든 파일은 서버 항목에 대해 동일한 JSON 형식을 사용합니다. 이 섹션은 프로젝트 범위 파일인 `.mcp.json`을 편집합니다. 저장소에 체크인되므로 팀을 위한 구성 코드로도 작동하기 때문에 손으로 작성할 가치가 있습니다.
 
 프로젝트 루트에 `.mcp.json`을 만듭니다. 아래 예제는 이 가이드의 두 서버, HTTP를 통해 도달하는 호스팅된 문서 서버 및 로컬 `stdio` 프로세스로서의 Playwright 서버를 정의합니다:
 
@@ -267,19 +290,23 @@ OAuth 대신 정적 토큰으로 인증하는 서버는 `--header "Authorization
 
 Claude Code가 처음으로 프로젝트 범위 서버를 보면 승인하도록 요청합니다. 프롬프트는 복제한 저장소가 동의 없이 머신에서 프로세스를 시작할 수 없도록 존재합니다. 프롬프트를 승인하거나 놓친 경우 나중에 승인하려면 `/mcp`를 실행합니다.
 
-승인한 후 `/mcp`를 실행하고 서버가 연결됨으로 표시되는지 확인합니다. 대신 오류를 표시하면 [문제 해결](#문제-해결)을 참조하세요.
+승인한 후 `/mcp`를 실행하고 서버가 연결됨으로 표시되는지 확인합니다. 대신 오류를 표시하면 [문제 해결](#troubleshooting)을 참조하세요.
 
-## 다른 표면에서 연결하기
+<h2 id="connect-from-other-surfaces">
+  다른 표면에서 연결하기
+</h2>
 
 이 가이드는 `claude mcp` CLI 명령을 사용하지만 모든 Claude Code 표면은 MCP 서버에 연결할 수 있습니다:
 
-* **Claude Code 데스크톱 앱**: [Connectors UI](/ko/desktop#외부-도구-연결)를 통해 서버를 추가합니다.
+* **Claude Code 데스크톱 앱**: [Connectors UI](/ko/desktop#connect-external-tools)를 통해 서버를 추가합니다.
 * **Claude Desktop 채팅 앱**: Claude Code와 별개의 앱입니다. `claude_desktop_config.json`에서 CLI로 서버를 복사하려면 macOS 또는 WSL에서 `claude mcp add-from-claude-desktop`을 실행합니다.
-* **VS Code**: [MCP를 사용하여 외부 도구에 연결하기](/ko/vs-code#mcp를-사용하여-외부-도구에-연결하기)를 참조하세요.
-* **웹의 Claude Code**: 저장소에서 `.mcp.json`을 읽습니다. [.mcp.json 직접 편집하기](#mcp-json-직접-편집하기)를 참조하세요.
-* **Claude.ai**: [claude.ai/customize/connectors](https://claude.ai/customize/connectors)에서 추가한 커넥터는 해당 계정으로 로그인할 때 CLI에 자동으로 로드됩니다. [Claude.ai에서 MCP 서버 사용하기](/ko/mcp#claude-ai에서-mcp-서버-사용하기)를 참조하세요.
+* **VS Code**: [MCP를 사용하여 외부 도구에 연결하기](/ko/vs-code#connect-to-external-tools-with-mcp)를 참조하세요.
+* **웹의 Claude Code**: 저장소에서 `.mcp.json`을 읽습니다. [.mcp.json 직접 편집하기](#edit-mcp-json-directly)를 참조하세요.
+* **Claude.ai**: [claude.ai/customize/connectors](https://claude.ai/customize/connectors)에서 추가한 커넥터는 해당 계정으로 로그인할 때 CLI에 자동으로 로드됩니다. [Claude.ai에서 MCP 서버 사용하기](/ko/mcp#use-mcp-servers-from-claude-ai)를 참조하세요.
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
 서버가 연결되지 않으면 세션 내부에서 `/mcp`를 사용하거나 셸에서 `claude mcp list`를 사용하여 상태를 확인한 다음 아래 증상과 일치시킵니다. `/mcp` 패널을 사용하면 세션을 떠나지 않고도 다시 연결하거나 인증할 수 있습니다.
 
@@ -292,7 +319,9 @@ Claude Code가 처음으로 프로젝트 범위 서버를 보면 승인하도록
   </Accordion>
 
   <Accordion title="Status shows Failed to connect or Connection error">
-    두 상태 모두 서버가 시작되지 않았거나 URL이 응답하지 않았음을 의미합니다. [로그인이 필요한 서버 연결하기](#로그인이-필요한-서버-연결하기)에서 다룬 브라우저 로그인이 아닌 토큰을 예상하는 HTTP 서버에도 나타날 수 있습니다.
+    두 상태 모두 서버가 시작되지 않았거나 URL이 응답하지 않았음을 의미합니다. [로그인이 필요한 서버 연결하기](#connect-a-server-that-requires-sign-in)에서 다룬 브라우저 로그인이 아닌 토큰을 예상하는 HTTP 서버에도 나타날 수 있습니다.
+
+    v2.1.191부터 `404 Not Found`를 반환하는 HTTP 서버는 `/mcp`에서 서버를 선택할 때 `MCP endpoint not found at <url>. Check the URL in your MCP config.`를 표시하며, Claude Code가 시도한 URL을 포함합니다. 이전 버전은 URL 없이 일반적인 `Error POSTing to endpoint` 메시지를 표시합니다. URL을 서버의 문서화된 MCP 엔드포인트 경로와 비교한 다음 `claude mcp remove <name>`을 실행하고 올바른 URL로 다시 추가합니다.
 
     HTTP 서버의 경우 URL이 머신에서 도달 가능한지 확인합니다:
 
@@ -305,7 +334,7 @@ Claude Code가 처음으로 프로젝트 범위 서버를 보면 승인하도록
     응답은 어떤 종류의 문제가 있는지 알려줍니다:
 
     * `404` 또는 `405`: 서버가 실행 중입니다. 많은 MCP 엔드포인트는 POST 요청에만 응답하므로 이는 여전히 URL이 머신에서 도달 가능함을 확인합니다.
-    * `401` 또는 `403`: 서버가 실행 중이고 인증이 필요합니다. [로그인이 필요한 서버 연결하기](#로그인이-필요한-서버-연결하기)에서 브라우저 로그인을 사용하거나 GitHub와 같이 토큰을 가져오는 서버의 경우 `claude mcp add` 명령에서 `--header "Authorization: Bearer <token>"`으로 전달합니다.
+    * `401` 또는 `403`: 서버가 실행 중이고 인증이 필요합니다. [로그인이 필요한 서버 연결하기](#connect-a-server-that-requires-sign-in)에서 브라우저 로그인을 사용하거나 GitHub와 같이 토큰을 가져오는 서버의 경우 `claude mcp add` 명령에서 `--header "Authorization: Bearer <token>"`으로 전달합니다.
     * 응답 없음: URL과 네트워크를 확인합니다.
 
     stdio 서버의 경우 터미널에서 구성된 명령을 직접 실행하여 기본 오류를 확인합니다. 이 가이드의 Playwright 서버의 경우 다음을 실행합니다:
@@ -363,17 +392,19 @@ Claude Code가 처음으로 프로젝트 범위 서버를 보면 승인하도록
   </Accordion>
 
   <Accordion title="OAuth sign-in fails or browser doesn't open">
-    `/mcp`를 실행하고 서버를 선택한 다음 `Authenticate`를 다시 선택합니다. 브라우저가 자동으로 열리지 않으면 터미널에 표시된 URL을 복사하여 수동으로 엽니다. 고정 콜백 포트 및 사전 구성된 자격 증명은 [원격 MCP 서버로 인증하기](/ko/mcp#원격-mcp-서버로-인증하기)를 참조하세요.
+    `/mcp`를 실행하고 서버를 선택한 다음 `Authenticate`를 다시 선택합니다. 브라우저가 자동으로 열리지 않으면 터미널에 표시된 URL을 복사하여 수동으로 엽니다. 고정 콜백 포트 및 사전 구성된 자격 증명은 [원격 MCP 서버로 인증하기](/ko/mcp#authenticate-with-remote-mcp-servers)를 참조하세요.
   </Accordion>
 </AccordionGroup>
 
-## 다음 단계
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
 한 개의 서버가 연결되면 MCP가 활성화하는 나머지를 탐색합니다:
 
-* [더 많은 MCP 서버 찾기](/ko/mcp#mcp-서버-찾기-및-구축) Anthropic Directory에서
-* [설치 범위를 사용하여 팀과 서버 공유하기](/ko/mcp#mcp-설치-범위)
+* [더 많은 MCP 서버 찾기](/ko/mcp#find-and-build-mcp-servers) Anthropic Directory에서
+* [설치 범위를 사용하여 팀과 서버 공유하기](/ko/mcp#mcp-installation-scopes)
 * [관리되는 설정 및 정책 제어로 조직을 위한 MCP 액세스 관리하기](/ko/managed-mcp)
-* [프롬프트에서 @ 언급으로 MCP 리소스 참조하기](/ko/mcp#mcp-리소스-사용)
-* [`/` 메뉴에서 MCP 프롬프트를 명령으로 실행하기](/ko/mcp#mcp-프롬프트를-명령으로-사용)
+* [프롬프트에서 @ 언급으로 MCP 리소스 참조하기](/ko/mcp#use-mcp-resources)
+* [`/` 메뉴에서 MCP 프롬프트를 명령으로 실행하기](/ko/mcp#use-mcp-prompts-as-commands)
 * [MCP SDK를 사용하여 자신의 서버 구축하기](https://modelcontextprotocol.io/quickstart/server)

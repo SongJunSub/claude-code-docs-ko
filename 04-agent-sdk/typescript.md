@@ -100,7 +100,7 @@ function startup(params?: {
 }): Promise<WarmQuery>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-1">
   매개변수
 </h4>
 
@@ -109,7 +109,7 @@ function startup(params?: {
 | `options`             | [`Options`](#options) | 선택적 구성 객체입니다. `query()`의 `options` 매개변수와 동일합니다                                           |
 | `initializeTimeoutMs` | `number`              | 서브프로세스 초기화를 기다릴 최대 시간(밀리초)입니다. 기본값은 `60000`입니다. 초기화가 시간 내에 완료되지 않으면 프로미스는 타임아웃 오류로 거부됩니다 |
 
-<h4 id="returns">
+<h4 id="returns-1">
   반환값
 </h4>
 
@@ -149,7 +149,7 @@ function tool<Schema extends AnyZodRawShape>(
 ): SdkMcpToolDefinition<Schema>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-2">
   매개변수
 </h4>
 
@@ -204,7 +204,7 @@ function createSdkMcpServer(options: {
 }): McpSdkServerConfigWithInstance;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-3">
   매개변수
 </h4>
 
@@ -224,7 +224,7 @@ function createSdkMcpServer(options: {
 function listSessions(options?: ListSessionsOptions): Promise<SDKSessionInfo[]>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-4">
   매개변수
 </h4>
 
@@ -251,7 +251,7 @@ function listSessions(options?: ListSessionsOptions): Promise<SDKSessionInfo[]>;
 | `tag`          | `string \| undefined` | 사용자가 설정한 세션 태그 ([`tagSession()`](#tagsession) 참조) |
 | `createdAt`    | `number \| undefined` | 첫 번째 항목의 타임스탬프에서 에포크 이후 밀리초 단위의 생성 시간             |
 
-<h4 id="example">
+<h4 id="example-1">
   예제
 </h4>
 
@@ -280,7 +280,7 @@ function getSessionMessages(
 ): Promise<SessionMessage[]>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-5">
   매개변수
 </h4>
 
@@ -303,7 +303,7 @@ function getSessionMessages(
 | `message`            | `unknown`               | 트랜스크립트의 원본 메시지 페이로드                                                             |
 | `parent_tool_use_id` | `string \| null`        | 서브에이전트 메시지의 경우 생성 `Agent` 도구 호출의 `tool_use_id`입니다. 메인 세션 메시지 및 이전 세션의 경우 `null` |
 
-<h4 id="example">
+<h4 id="example-2">
   예제
 </h4>
 
@@ -337,7 +337,7 @@ function getSessionInfo(
 ): Promise<SDKSessionInfo | undefined>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-6">
   매개변수
 </h4>
 
@@ -362,7 +362,7 @@ function renameSession(
 ): Promise<void>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-7">
   매개변수
 </h4>
 
@@ -386,7 +386,7 @@ function tagSession(
 ): Promise<void>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-8">
   매개변수
 </h4>
 
@@ -412,18 +412,18 @@ function resolveSettings(
 ): Promise<ResolvedSettings>;
 ```
 
-<h4 id="parameters">
+<h4 id="parameters-9">
   매개변수
 </h4>
 
 `resolveSettings()`는 단일 옵션 객체를 수락합니다. 모든 필드는 선택적입니다.
 
-| 매개변수                            | 타입                                    | 기본값             | 설명                                                                             |
-| :------------------------------ | :------------------------------------ | :-------------- | :----------------------------------------------------------------------------- |
-| `options.cwd`                   | `string`                              | `process.cwd()` | 프로젝트 및 로컬 설정을 상대적으로 해결할 디렉토리                                                   |
-| `options.settingSources`        | [`SettingSource`](#settingsource)`[]` | 모든 소스           | 로드할 파일 시스템 소스입니다. 사용자, 프로젝트 및 로컬 설정을 건너뛰려면 `[]`를 전달합니다. 관리 정책 설정은 모든 경우에 로드됩니다 |
-| `options.managedSettings`       | `Settings`                            | `undefined`     | 관리 정책 우선순위 수준에서 병합된 제한적 정책 계층 설정입니다. `model`과 같은 제한적이지 않은 키는 자동으로 삭제됩니다        |
-| `options.serverManagedSettings` | `Settings`                            | `undefined`     | `/api/claude_code/settings`의 서버 관리 설정 페이로드입니다. 제한적이지 않은 키는 필터링 없이 통과합니다        |
+| 매개변수                            | 타입                                    | 기본값             | 설명                                                                                                                                                                                      |
+| :------------------------------ | :------------------------------------ | :-------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `options.cwd`                   | `string`                              | `process.cwd()` | 프로젝트 및 로컬 설정을 상대적으로 해결할 디렉토리                                                                                                                                                            |
+| `options.settingSources`        | [`SettingSource`](#settingsource)`[]` | 모든 소스           | 로드할 파일 시스템 소스입니다. 사용자, 프로젝트 및 로컬 설정을 건너뛰려면 `[]`를 전달합니다. 관리 정책 설정은 모든 경우에 로드됩니다. 서버 관리 설정은 호스트가 `serverManagedSettings`를 전달할 때 가져오거나, 그렇지 않으면 CLI의 온디스크 캐시에서 읽습니다. 스냅샷은 네트워크에서 가져오지 않습니다 |
+| `options.managedSettings`       | `Settings`                            | `undefined`     | 관리 정책 우선순위 수준에서 병합된 제한적 정책 계층 설정입니다. `model`과 같은 제한적이지 않은 키는 자동으로 삭제됩니다                                                                                                                 |
+| `options.serverManagedSettings` | `Settings`                            | `undefined`     | `/api/claude_code/settings`의 서버 관리 설정 페이로드입니다. 제한적이지 않은 키는 필터링 없이 통과합니다                                                                                                                 |
 
 <h4 id="return-type-resolvedsettings">
   반환 타입: `ResolvedSettings`
@@ -437,7 +437,7 @@ function resolveSettings(
 | `provenance` | `Partial<Record<keyof Settings, ProvenanceEntry>>`  | `effective`의 각 최상위 키에 대해 값을 제공한 소스         |
 | `sources`    | `Array<{ source, settings, path?, policyOrigin? }>` | 소스별 원본 설정, 가장 낮은 우선순위에서 가장 높은 우선순위 순서로 정렬됨 |
 
-<h4 id="example">
+<h4 id="example-3">
   예제
 </h4>
 
@@ -472,16 +472,16 @@ console.log(`Set by: ${provenance.cleanupPeriodDays?.source}`);
 | `agent`                           | `string`                                                                                                 | `undefined`                        | 메인 스레드의 에이전트 이름입니다. 에이전트는 `agents` 옵션 또는 설정에서 정의되어야 합니다                                                                                                                                                                                                                                                                                                     |
 | `agents`                          | `Record<string, [`AgentDefinition`](#agentdefinition)>`                                                  | `undefined`                        | 프로그래밍 방식으로 서브에이전트 정의                                                                                                                                                                                                                                                                                                                                        |
 | `agentProgressSummaries`          | `boolean`                                                                                                | `false`                            | `true`일 때 서브에이전트에 대한 한 줄 진행 요약을 생성하고 `summary` 필드를 통해 [`task_progress`](#sdktaskprogressmessage) 이벤트에서 전달합니다. 포그라운드 및 백그라운드 서브에이전트에 적용됩니다                                                                                                                                                                                                                   |
-| `allowDangerouslySkipPermissions` | `boolean`                                                                                                | `false`                            | 권한 건너뛰기 활성화합니다. `permissionMode: 'bypassPermissions'`를 사용할 때 필수입니다                                                                                                                                                                                                                                                                                          |
+| `allowDangerouslySkipPermissions` | `boolean`                                                                                                | `false`                            | 권한 건너뛰기를 활성화합니다. `permissionMode: 'bypassPermissions'`를 사용할 때 필수입니다                                                                                                                                                                                                                                                                                         |
 | `allowedTools`                    | `string[]`                                                                                               | `[]`                               | 프롬프트 없이 자동 승인할 도구입니다. 이것은 Claude를 이 도구들로만 제한하지 않습니다. 나열되지 않은 도구는 `permissionMode` 및 `canUseTool`로 넘어갑니다. `disallowedTools`를 사용하여 도구를 차단합니다. [권한](/ko/agent-sdk/permissions#allow-and-deny-rules) 참조                                                                                                                                                         |
 | `betas`                           | [`SdkBeta`](#sdkbeta)`[]`                                                                                | `[]`                               | 베타 기능 활성화                                                                                                                                                                                                                                                                                                                                                   |
-| `canUseTool`                      | [`CanUseTool`](#canusetool)                                                                              | `undefined`                        | 도구 사용을 위한 사용자 정의 권한 함수                                                                                                                                                                                                                                                                                                                                      |
+| `canUseTool`                      | [`CanUseTool`](#canusetool)                                                                              | `undefined`                        | 사용자 정의 권한 함수로, [권한 흐름](/ko/agent-sdk/permissions#how-permissions-are-evaluated)이 프롬프트로 넘어갈 때만 호출됩니다. `allowedTools`, 허용 규칙 또는 `permissionMode`에 의해 자동 승인된 호출에 대해서는 호출되지 않습니다. 자세한 내용은 [`CanUseTool`](#canusetool) 참조                                                                                                                                        |
 | `continue`                        | `boolean`                                                                                                | `false`                            | 가장 최근 대화 계속                                                                                                                                                                                                                                                                                                                                                 |
 | `cwd`                             | `string`                                                                                                 | `process.cwd()`                    | 현재 작업 디렉토리                                                                                                                                                                                                                                                                                                                                                  |
 | `debug`                           | `boolean`                                                                                                | `false`                            | Claude Code 프로세스에 대한 디버그 모드 활성화                                                                                                                                                                                                                                                                                                                             |
 | `debugFile`                       | `string`                                                                                                 | `undefined`                        | 특정 파일 경로에 디버그 로그를 작성합니다. 암묵적으로 디버그 모드를 활성화합니다                                                                                                                                                                                                                                                                                                               |
 | `disallowedTools`                 | `string[]`                                                                                               | `[]`                               | 거부할 도구입니다. `Bash`와 같은 단순 이름은 Claude의 컨텍스트에서 도구를 제거합니다. `Bash(rm *)`와 같은 범위 지정 규칙은 도구를 사용 가능하게 유지하고 `bypassPermissions`를 포함한 모든 권한 모드에서 일치하는 호출을 거부합니다. [권한](/ko/agent-sdk/permissions#allow-and-deny-rules) 참조                                                                                                                                              |
-| `effort`                          | `'low' \| 'medium' \| 'high' \| 'xhigh' \| 'max'`                                                        | `'high'`                           | Claude가 응답에 투입하는 노력의 양을 제어합니다. 적응형 사고와 함께 작동하여 사고 깊이를 안내합니다                                                                                                                                                                                                                                                                                                 |
+| `effort`                          | `'low' \| 'medium' \| 'high' \| 'xhigh' \| 'max'`                                                        | 모델 기본값                             | Claude가 응답에 투입하는 노력의 양을 제어합니다. 적응형 사고와 함께 작동하여 사고 깊이를 안내합니다. [노력 수준 조정](/ko/model-config#adjust-effort-level) 참조                                                                                                                                                                                                                                            |
 | `enableFileCheckpointing`         | `boolean`                                                                                                | `false`                            | 되감기를 위한 파일 변경 추적을 활성화합니다. [파일 체크포인팅](/ko/agent-sdk/file-checkpointing) 참조                                                                                                                                                                                                                                                                                   |
 | `env`                             | `Record<string, string \| undefined>`                                                                    | `process.env`                      | 환경 변수입니다. 설정하면 이는 `process.env`와 병합하는 대신 서브프로세스 환경을 대체하므로 `PATH`와 같은 상속된 변수를 유지하려면 `{ ...process.env, YOUR_VAR: 'value' }`를 전달합니다. [느린 또는 정지된 API 응답 처리](#handle-slow-or-stalled-api-responses)에서 이 패턴의 예제를 참조하고, 기본 CLI가 읽는 변수는 [환경 변수](/ko/env-vars)를 참조하세요. User-Agent 헤더에서 앱을 식별하려면 `CLAUDE_AGENT_SDK_CLIENT_APP`을 설정합니다                                |
 | `executable`                      | `'bun' \| 'deno' \| 'node'`                                                                              | 자동 감지                              | 사용할 JavaScript 런타임                                                                                                                                                                                                                                                                                                                                          |
@@ -499,7 +499,7 @@ console.log(`Set by: ${provenance.cleanupPeriodDays?.source}`);
 | `maxThinkingTokens`               | `number`                                                                                                 | `undefined`                        | *더 이상 사용되지 않음:* 대신 `thinking`을 사용합니다. 사고 프로세스의 최대 토큰                                                                                                                                                                                                                                                                                                        |
 | `maxTurns`                        | `number`                                                                                                 | `undefined`                        | 최대 에이전트 턴 (도구 사용 왕복)                                                                                                                                                                                                                                                                                                                                        |
 | `mcpServers`                      | `Record<string, [`McpServerConfig`](#mcpserverconfig)>`                                                  | `{}`                               | MCP 서버 구성                                                                                                                                                                                                                                                                                                                                                   |
-| `model`                           | `string`                                                                                                 | CLI의 기본값                           | 사용할 Claude 모델                                                                                                                                                                                                                                                                                                                                               |
+| `model`                           | `string`                                                                                                 | CLI의 기본값                           | Claude 모델 별칭 또는 전체 모델 이름입니다. [허용되는 값 및 공급자별 ID](/ko/model-config#available-models) 참조                                                                                                                                                                                                                                                                       |
 | `onElicitation`                   | `(request: ElicitationRequest, options: { signal: AbortSignal }) => Promise<ElicitationResult>`          | `undefined`                        | MCP 유도 요청을 처리하기 위한 콜백입니다. MCP 서버가 사용자 입력을 요청하고 훅이 먼저 처리하지 않을 때 호출됩니다. 제공되지 않으면 처리되지 않은 유도 요청이 자동으로 거부됩니다                                                                                                                                                                                                                                                    |
 | `outputFormat`                    | `{ type: 'json_schema', schema: JSONSchema }`                                                            | `undefined`                        | 에이전트 결과의 출력 형식을 정의합니다. [구조화된 출력](/ko/agent-sdk/structured-outputs) 참조                                                                                                                                                                                                                                                                                       |
 | `outputStyle`                     | `string`                                                                                                 | `undefined`                        | `Options` 필드가 아닙니다. 대신 인라인 [`settings`](/ko/settings) 객체 또는 설정 파일에서 `outputStyle`을 설정합니다. [출력 스타일 활성화](/ko/agent-sdk/modifying-system-prompts#activate-an-output-style) 참조                                                                                                                                                                                  |
@@ -517,7 +517,7 @@ console.log(`Set by: ${provenance.cleanupPeriodDays?.source}`);
 | `sessionStore`                    | [`SessionStore`](/ko/agent-sdk/session-storage#the-sessionstore-interface)                               | `undefined`                        | 세션 대화를 외부 백엔드로 미러링하여 모든 호스트가 이를 재개할 수 있습니다. [세션을 외부 저장소에 유지](/ko/agent-sdk/session-storage) 참조                                                                                                                                                                                                                                                              |
 | `sessionStoreFlush`               | `'batched' \| 'eager'`                                                                                   | `'batched'`                        | *알파.* `sessionStore`의 플러시 모드입니다. `sessionStore`가 설정되지 않으면 무시됩니다                                                                                                                                                                                                                                                                                             |
 | `settings`                        | `string \| Settings`                                                                                     | `undefined`                        | 인라인 [설정](/ko/settings) 객체 또는 설정 파일의 경로입니다. [우선순위 순서](/ko/settings#settings-precedence)에서 플래그 설정 계층을 채웁니다. [`applyFlagSettings()`](#applyflagsettings)로 런타임에 변경합니다                                                                                                                                                                                           |
-| `settingSources`                  | [`SettingSource`](#settingsource)`[]`                                                                    | CLI 기본값 (모든 소스)                    | 로드할 파일 시스템 설정을 제어합니다. 사용자, 프로젝트 및 로컬 설정을 비활성화하려면 `[]`을 전달합니다. 관리되는 정책 설정은 어쨌든 로드됩니다. [Claude Code 기능 사용](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control) 참조                                                                                                                                                                        |
+| `settingSources`                  | [`SettingSource`](#settingsource)`[]`                                                                    | CLI 기본값 (모든 소스)                    | 로드할 파일 시스템 설정을 제어합니다. 사용자, 프로젝트 및 로컬 설정을 비활성화하려면 `[]`을 전달합니다. 관리되는 정책 설정은 어쨌든 로드됩니다. 서버 관리 설정은 조직 자격 증명으로 세션이 [적격 구성](/ko/server-managed-settings#platform-availability)에서 인증할 때 가져옵니다. [Claude Code 기능 사용](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)을 참조하여 이 옵션과 관계없이 읽히는 입력과 이를 비활성화하는 방법을 확인하세요                           |
 | `skills`                          | `string[] \| 'all'`                                                                                      | `undefined`                        | 세션에서 사용 가능한 스킬입니다. 모든 발견된 스킬을 활성화하려면 `'all'`을 전달하거나 스킬 이름 목록을 전달합니다. 설정하면 SDK는 `allowedTools`에 Skill 도구를 자동으로 추가합니다. `tools`도 전달하는 경우 해당 목록에 `'Skill'`을 포함합니다. [스킬](/ko/agent-sdk/skills) 참조                                                                                                                                                                |
 | `spawnClaudeCodeProcess`          | `(options: SpawnOptions) => SpawnedProcess`                                                              | `undefined`                        | Claude Code 프로세스를 생성하는 사용자 정의 함수입니다. VM, 컨테이너 또는 원격 환경에서 Claude Code를 실행하는 데 사용합니다                                                                                                                                                                                                                                                                          |
 | `stderr`                          | `(data: string) => void`                                                                                 | `undefined`                        | stderr 출력에 대한 콜백                                                                                                                                                                                                                                                                                                                                            |
@@ -551,9 +551,9 @@ const result = query({
 ```
 
 * `API_TIMEOUT_MS`: Anthropic 클라이언트의 요청당 타임아웃 (밀리초 단위). 기본값 `600000`. 메인 루프 및 모든 서브에이전트에 적용됩니다.
-* `CLAUDE_CODE_MAX_RETRIES`: 최대 API 재시도 횟수. 기본값 `10`. 각 재시도는 자체 `API_TIMEOUT_MS` 윈도우를 가지므로 최악의 경우 벽시간은 대략 `API_TIMEOUT_MS × (CLAUDE_CODE_MAX_RETRIES + 1)` 더하기 백오프입니다.
+* `CLAUDE_CODE_MAX_RETRIES`: 최대 API 재시도 횟수. 기본값 `10`, 최대 `15`로 제한됩니다. 각 재시도는 자체 `API_TIMEOUT_MS` 윈도우를 가지므로 최악의 경우 벽시간은 대략 `API_TIMEOUT_MS × (CLAUDE_CODE_MAX_RETRIES + 1)` 더하기 백오프입니다. 더 긴 중단을 기다려야 하는 무인 실행의 경우 `CLAUDE_CODE_RETRY_WATCHDOG=1`을 설정하여 용량 오류를 무한정 재시도합니다.
 * `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`: `run_in_background`으로 시작된 서브에이전트에 대한 정지 감시견입니다. 기본값 `600000`. 각 스트림 이벤트에서 재설정되며, 정지 시 서브에이전트를 중단하고 작업을 실패로 표시하며 부분 결과와 함께 오류를 부모에게 표시합니다. 동기 서브에이전트에는 적용되지 않습니다.
-* `CLAUDE_ENABLE_STREAM_WATCHDOG=1` 및 `CLAUDE_STREAM_IDLE_TIMEOUT_MS`: 헤더가 도착했지만 응답 본문이 스트리밍을 중지할 때 요청을 중단합니다. 기본적으로 꺼져 있습니다. `CLAUDE_STREAM_IDLE_TIMEOUT_MS`는 기본값 `300000`이고 해당 최소값으로 고정됩니다. 중단된 요청은 일반 재시도 경로를 거칩니다.
+* `CLAUDE_ENABLE_STREAM_WATCHDOG` 및 `CLAUDE_STREAM_IDLE_TIMEOUT_MS`: 헤더가 도착했지만 응답 본문이 스트리밍을 중지할 때 요청을 중단합니다. 감시견은 모든 공급자에 대해 기본적으로 켜져 있습니다. `CLAUDE_ENABLE_STREAM_WATCHDOG=0`으로 설정하여 비활성화합니다. `CLAUDE_STREAM_IDLE_TIMEOUT_MS`는 기본값 `300000`이고 해당 최소값으로 고정됩니다. 중단된 요청은 일반 재시도 경로를 거칩니다.
 
 <h3 id="query-object">
   `Query` 객체
@@ -573,6 +573,7 @@ interface Query extends AsyncGenerator<SDKMessage, void> {
   setMaxThinkingTokens(maxThinkingTokens: number | null): Promise<void>;
   applyFlagSettings(settings: { [K in keyof Settings]?: Settings[K] | null }): Promise<void>;
   initializationResult(): Promise<SDKControlInitializeResponse>;
+  reinitialize(): Promise<SDKControlInitializeResponse>;
   supportedCommands(): Promise<SlashCommand[]>;
   supportedModels(): Promise<ModelInfo[]>;
   supportedAgents(): Promise<AgentInfo[]>;
@@ -591,26 +592,27 @@ interface Query extends AsyncGenerator<SDKMessage, void> {
   메서드
 </h4>
 
-| 메서드                                    | 설명                                                                                                                                                           |
-| :------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `interrupt()`                          | 쿼리를 중단합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                              |
-| `rewindFiles(userMessageId, options?)` | 파일을 지정된 사용자 메시지의 상태로 복원합니다. 변경 사항을 미리 보려면 `{ dryRun: true }`를 전달합니다. `enableFileCheckpointing: true`가 필요합니다. [파일 체크포인팅](/ko/agent-sdk/file-checkpointing) 참조 |
-| `setPermissionMode()`                  | 권한 모드를 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                           |
-| `setModel()`                           | 모델을 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                              |
-| `setMaxThinkingTokens()`               | *더 이상 사용되지 않음:* 대신 `thinking` 옵션을 사용합니다. 최대 사고 토큰을 변경합니다                                                                                                     |
-| `applyFlagSettings(settings)`          | 런타임에 세션의 플래그 설정 계층으로 설정을 병합합니다 (스트리밍 입력 모드에서만 사용 가능). [`applyFlagSettings()`](#applyflagsettings) 참조                                                         |
-| `initializationResult()`               | 지원되는 명령, 모델, 계정 정보 및 출력 스타일 구성을 포함한 전체 초기화 결과를 반환합니다                                                                                                         |
-| `supportedCommands()`                  | 사용 가능한 슬래시 명령을 반환합니다                                                                                                                                         |
-| `supportedModels()`                    | 표시 정보를 포함한 사용 가능한 모델을 반환합니다                                                                                                                                  |
-| `supportedAgents()`                    | 사용 가능한 서브에이전트를 [`AgentInfo`](#agentinfo)`[]`로 반환합니다                                                                                                          |
-| `mcpServerStatus()`                    | 연결된 MCP 서버의 상태를 반환합니다                                                                                                                                        |
-| `accountInfo()`                        | 계정 정보를 반환합니다                                                                                                                                                 |
-| `reconnectMcpServer(serverName)`       | 이름으로 MCP 서버를 다시 연결합니다                                                                                                                                        |
-| `toggleMcpServer(serverName, enabled)` | 이름으로 MCP 서버를 활성화 또는 비활성화합니다                                                                                                                                  |
-| `setMcpServers(servers)`               | 이 세션의 MCP 서버 집합을 동적으로 바꿉니다. 추가, 제거 및 오류가 발생한 서버에 대한 정보를 반환합니다                                                                                                |
-| `streamInput(stream)`                  | 다중 턴 대화를 위해 입력 메시지를 쿼리로 스트리밍합니다                                                                                                                              |
-| `stopTask(taskId)`                     | ID로 실행 중인 백그라운드 작업을 중지합니다                                                                                                                                    |
-| `close()`                              | 쿼리를 닫고 기본 프로세스를 종료합니다. 쿼리를 강제로 종료하고 모든 리소스를 정리합니다                                                                                                            |
+| 메서드                                    | 설명                                                                                                                                                                                                                                                             |
+| :------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `interrupt()`                          | 쿼리를 중단합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                                                                                                                                |
+| `rewindFiles(userMessageId, options?)` | 파일을 지정된 사용자 메시지의 상태로 복원합니다. 변경 사항을 미리 보려면 `{ dryRun: true }`를 전달합니다. `enableFileCheckpointing: true`가 필요합니다. [파일 체크포인팅](/ko/agent-sdk/file-checkpointing) 참조                                                                                                   |
+| `setPermissionMode()`                  | 권한 모드를 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                                                                                                                             |
+| `setModel()`                           | 모델을 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                                                                                                                                |
+| `setMaxThinkingTokens()`               | *더 이상 사용되지 않음:* 대신 `thinking` 옵션을 사용합니다. 최대 사고 토큰을 변경합니다                                                                                                                                                                                                       |
+| `applyFlagSettings(settings)`          | 런타임에 세션의 플래그 설정 계층으로 설정을 병합합니다 (스트리밍 입력 모드에서만 사용 가능). [`applyFlagSettings()`](#applyflagsettings) 참조                                                                                                                                                           |
+| `initializationResult()`               | 지원되는 명령, 모델, 계정 정보 및 출력 스타일 구성을 포함한 전체 초기화 결과를 반환합니다                                                                                                                                                                                                           |
+| `reinitialize()`                       | {/* min-version: 2.1.195 */}실행 중인 CLI에 `initialize` 제어 요청을 다시 보내고 캐시된 첫 연결 결과 대신 새로운 결과를 반환합니다. 연결 해제 후 세션에 다시 연결하는 것과 같은 전송 간격 후에 사용하여 보류 중인 권한 요청이 `canUseTool` 콜백에 다시 도달하도록 합니다. 응답이 손실된 요청은 다시 전달되므로 요청 ID당 콜백을 멱등성으로 만듭니다. Claude Code v2.1.195 이상이 필요합니다 |
+| `supportedCommands()`                  | 사용 가능한 슬래시 명령을 반환합니다                                                                                                                                                                                                                                           |
+| `supportedModels()`                    | 표시 정보를 포함한 사용 가능한 모델을 반환합니다                                                                                                                                                                                                                                    |
+| `supportedAgents()`                    | 사용 가능한 서브에이전트를 [`AgentInfo`](#agentinfo)`[]`로 반환합니다                                                                                                                                                                                                            |
+| `mcpServerStatus()`                    | 연결된 MCP 서버의 상태를 반환합니다                                                                                                                                                                                                                                          |
+| `accountInfo()`                        | 계정 정보를 반환합니다                                                                                                                                                                                                                                                   |
+| `reconnectMcpServer(serverName)`       | 이름으로 MCP 서버를 다시 연결합니다                                                                                                                                                                                                                                          |
+| `toggleMcpServer(serverName, enabled)` | 이름으로 MCP 서버를 활성화 또는 비활성화합니다                                                                                                                                                                                                                                    |
+| `setMcpServers(servers)`               | 이 세션의 MCP 서버 집합을 동적으로 바꿉니다. 추가, 제거 및 오류가 발생한 서버에 대한 정보를 반환합니다                                                                                                                                                                                                  |
+| `streamInput(stream)`                  | 다중 턴 대화를 위해 입력 메시지를 쿼리로 스트리밍합니다                                                                                                                                                                                                                                |
+| `stopTask(taskId)`                     | ID로 실행 중인 백그라운드 작업을 중지합니다                                                                                                                                                                                                                                      |
+| `close()`                              | 쿼리를 닫고 기본 프로세스를 종료합니다. 쿼리를 강제로 종료하고 모든 리소스를 정리합니다                                                                                                                                                                                                              |
 
 <h4 id="applyflagsettings">
   `applyFlagSettings()`
@@ -658,7 +660,7 @@ interface WarmQuery extends AsyncDisposable {
 }
 ```
 
-<h4 id="methods">
+<h4 id="methods-1">
   메서드
 </h4>
 
@@ -689,7 +691,7 @@ type SDKControlInitializeResponse = {
 
 클라이언트가 이미 실행 중인 세션에 `initialize`를 보낼 때 제어 응답 래퍼는 선택적 `pending_permission_requests` 배열도 전달합니다. 필드는 응답 래퍼 자체에 있으며, 위의 `SDKControlInitializeResponse` 페이로드에는 없습니다. 각 항목은 세션이 실행 중일 때 권한 요청에 대해 스트리밍하는 것과 동일한 `{ type: "control_request", request_id, request }` 형태의 완전한 `control_request` 메시지입니다.
 
-이들은 클라이언트가 연결되기 전에 발급되었으며 여전히 회신을 기다리고 있는 요청이므로 이 배열을 읽어 진행 중인 권한 프롬프트를 즉시 표시합니다. 이들은 다시 전송되지 않습니다.
+이들은 클라이언트가 연결되기 전에 발급되었으며 여전히 회신을 기다리고 있는 요청입니다. SDK는 배열을 읽고 각 항목을 [`canUseTool`](#canusetool) 콜백으로 전달하며, 이는 전송 간격 후 [`reinitialize()`](#query-object)가 트리거하는 것과 동일한 재전달입니다. 반복된 요청 ID를 멱등성으로 처리합니다. 연결이 끊어지기 전에 콜백이 이미 받은 요청을 반복할 수 있기 때문입니다.
 
 <h3 id="agentdefinition">
   `AgentDefinition`
@@ -716,22 +718,22 @@ type AgentDefinition = {
 };
 ```
 
-| 필드                                    | 필수  | 설명                                                                                                                         |
-| :------------------------------------ | :-- | :------------------------------------------------------------------------------------------------------------------------- |
-| `description`                         | 예   | 이 에이전트를 사용할 시기에 대한 자연어 설명                                                                                                  |
-| `tools`                               | 아니오 | 허용된 도구 이름의 배열입니다. 생략하면 부모의 모든 도구를 상속합니다. 에이전트의 컨텍스트에 스킬을 미리 로드하려면 `'Skill'`을 여기에 나열하는 대신 `skills` 필드를 사용합니다                |
-| `disallowedTools`                     | 아니오 | 이 에이전트에 대해 명시적으로 허용하지 않을 도구 이름의 배열                                                                                         |
-| `prompt`                              | 예   | 에이전트의 시스템 프롬프트                                                                                                             |
-| `model`                               | 아니오 | 이 에이전트의 모델 재정의입니다. `'sonnet'`, `'opus'`, `'haiku'`, `'inherit'` 같은 별칭 또는 전체 모델 ID를 허용합니다. 생략하거나 `'inherit'`이면 메인 모델을 사용합니다 |
-| `mcpServers`                          | 아니오 | 이 에이전트에 사용 가능한 MCP 서버 사양                                                                                                   |
-| `skills`                              | 아니오 | 에이전트 컨텍스트에 미리 로드할 스킬 이름의 배열                                                                                                |
-| `initialPrompt`                       | 아니오 | 이 에이전트가 메인 스레드 에이전트로 실행될 때 첫 번째 사용자 턴으로 자동 제출됨                                                                             |
-| `maxTurns`                            | 아니오 | 중지하기 전의 최대 에이전트 턴 수 (API 왕복)                                                                                               |
-| `background`                          | 아니오 | 호출될 때 이 에이전트를 비차단 백그라운드 작업으로 실행                                                                                            |
-| `memory`                              | 아니오 | 이 에이전트의 메모리 소스: `'user'`, `'project'` 또는 `'local'`                                                                         |
-| `effort`                              | 아니오 | 이 에이전트의 추론 노력 수준입니다. 명명된 수준 또는 정수를 허용합니다                                                                                   |
-| `permissionMode`                      | 아니오 | 이 에이전트 내 도구 실행을 위한 권한 모드입니다. [`PermissionMode`](#permissionmode) 참조                                                        |
-| `criticalSystemReminder_EXPERIMENTAL` | 아니오 | 실험적: 시스템 프롬프트에 추가된 중요한 알림                                                                                                  |
+| 필드                                    | 필수  | 설명                                                                                                                                                   |
+| :------------------------------------ | :-- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `description`                         | 예   | 이 에이전트를 사용할 시기에 대한 자연어 설명                                                                                                                            |
+| `tools`                               | 아니오 | 허용된 도구 이름의 배열입니다. 생략하면 부모의 모든 도구를 상속합니다. 에이전트의 컨텍스트에 스킬을 미리 로드하려면 `'Skill'`을 여기에 나열하는 대신 `skills` 필드를 사용합니다                                          |
+| `disallowedTools`                     | 아니오 | 이 에이전트에 대해 명시적으로 허용하지 않을 도구 이름의 배열입니다. MCP 서버 수준 패턴도 허용됩니다: `mcp__server` 또는 `mcp__server__*`는 해당 서버의 모든 도구를 제거하고, `mcp__*`는 모든 서버의 모든 MCP 도구를 제거합니다 |
+| `prompt`                              | 예   | 에이전트의 시스템 프롬프트                                                                                                                                       |
+| `model`                               | 아니오 | 이 에이전트의 모델 재정의입니다. `'fable'`, `'opus'`, `'sonnet'`, `'haiku'`, `'inherit'` 같은 별칭 또는 전체 모델 ID를 허용합니다. 생략하거나 `'inherit'`이면 메인 모델을 사용합니다                |
+| `mcpServers`                          | 아니오 | 이 에이전트에 사용 가능한 MCP 서버 사양                                                                                                                             |
+| `skills`                              | 아니오 | 에이전트 컨텍스트에 미리 로드할 스킬 이름의 배열                                                                                                                          |
+| `initialPrompt`                       | 아니오 | 이 에이전트가 메인 스레드 에이전트로 실행될 때 첫 번째 사용자 턴으로 자동 제출됨                                                                                                       |
+| `maxTurns`                            | 아니오 | 중지하기 전의 최대 에이전트 턴 수 (API 왕복)                                                                                                                         |
+| `background`                          | 아니오 | 호출될 때 이 에이전트를 비차단 백그라운드 작업으로 실행                                                                                                                      |
+| `memory`                              | 아니오 | 이 에이전트의 메모리 소스: `'user'`, `'project'` 또는 `'local'`                                                                                                   |
+| `effort`                              | 아니오 | 이 에이전트의 추론 노력 수준입니다. 명명된 수준 또는 정수를 허용합니다                                                                                                             |
+| `permissionMode`                      | 아니오 | 이 에이전트 내 도구 실행을 위한 권한 모드입니다. [`PermissionMode`](#permissionmode) 참조                                                                                  |
+| `criticalSystemReminder_EXPERIMENTAL` | 아니오 | 실험적: 시스템 프롬프트에 추가된 중요한 알림                                                                                                                            |
 
 <h3 id="agentmcpserverspec">
   `AgentMcpServerSpec`
@@ -765,7 +767,7 @@ type SettingSource = "user" | "project" | "local";
   기본 동작
 </h4>
 
-`settingSources`가 생략되거나 `undefined`일 때 `query()`는 Claude Code CLI와 동일한 파일 시스템 설정을 로드합니다: 사용자, 프로젝트 및 로컬입니다. 관리되는 정책 설정은 모든 경우에 로드됩니다. [Claude Code 기능 사용](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)을 참조하여 이 옵션과 관계없이 읽히는 입력과 이를 비활성화하는 방법을 확인하세요.
+`settingSources`가 생략되거나 `undefined`일 때 `query()`는 Claude Code CLI와 동일한 파일 시스템 설정을 로드합니다: 사용자, 프로젝트 및 로컬입니다. 관리되는 정책 설정은 모든 경우에 로드됩니다. 서버 관리 설정은 조직 자격 증명으로 세션이 [적격 구성](/ko/server-managed-settings#platform-availability)에서 인증할 때 가져옵니다. [Claude Code 기능 사용](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)을 참조하여 이 옵션과 관계없이 읽히는 입력과 이를 비활성화하는 방법을 확인하세요.
 
 <h4 id="why-use-settingsources">
   settingSources를 사용하는 이유
@@ -874,8 +876,8 @@ const result = query({
 type PermissionMode =
   | "default" // 표준 권한 동작
   | "acceptEdits" // 파일 편집 자동 수락
-  | "bypassPermissions" // 모든 권한 확인 무시
-  | "plan" // 계획 모드 - 읽기 전용 도구만
+  | "bypassPermissions" // 권한 확인 무시; 명시적 요청 규칙은 여전히 프롬프트
+  | "plan" // 계획 모드 - 편집 없이 탐색
   | "dontAsk" // 권한에 대해 프롬프트하지 않음, 미리 승인되지 않으면 거부
   | "auto"; // 모델 분류기를 사용하여 각 도구 호출을 승인 또는 거부
 ```
@@ -885,6 +887,8 @@ type PermissionMode =
 </h3>
 
 도구 사용을 제어하기 위한 사용자 정의 권한 함수 타입입니다.
+
+함수는 대화형 권한 프롬프트의 SDK 대체입니다: [권한 평가 흐름](/ko/agent-sdk/permissions#how-permissions-are-evaluated)이 프롬프트로 해결될 때만 호출됩니다. `allowedTools` 항목, 설정 허용 규칙 또는 `acceptEdits` 또는 `bypassPermissions`와 같은 권한 모드에 의해 이미 승인된 도구 호출은 이를 호출하지 않습니다. 모든 도구 호출을 제어하려면 [`PreToolUse` 훅](/ko/agent-sdk/hooks)을 사용합니다.
 
 ```typescript theme={null}
 type CanUseTool = (
@@ -1035,13 +1039,15 @@ SDK에서 플러그인을 로드하기 위한 구성입니다.
 type SdkPluginConfig = {
   type: "local";
   path: string;
+  skipMcpDiscovery?: boolean;
 };
 ```
 
-| 필드     | 타입        | 설명                                 |
-| :----- | :-------- | :--------------------------------- |
-| `type` | `'local'` | `'local'`이어야 합니다 (현재 로컬 플러그인만 지원됨) |
-| `path` | `string`  | 플러그인 디렉토리의 절대 또는 상대 경로             |
+| 필드                 | 타입        | 설명                                                                                                                                   |
+| :----------------- | :-------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `type`             | `'local'` | `'local'`이어야 합니다 (현재 로컬 플러그인만 지원됨)                                                                                                   |
+| `path`             | `string`  | 플러그인 디렉토리의 절대 또는 상대 경로                                                                                                               |
+| `skipMcpDiscovery` | `boolean` | `true`일 때 SDK는 이 플러그인에서 스킬, 훅, 에이전트 및 명령을 로드하지만 해당 `.mcp.json` 또는 매니페스트 `mcpServers`를 읽지 않습니다. 애플리케이션이 플러그인의 MCP 연결을 소유할 때 이를 설정합니다. |
 
 **예제:**
 
@@ -1086,6 +1092,7 @@ type SDKMessage =
   | SDKTaskProgressMessage
   | SDKTaskUpdatedMessage
   | SDKSessionStateChangedMessage
+  | SDKWorkerShuttingDownMessage
   | SDKCommandsChangedMessage
   | SDKNotificationMessage
   | SDKFilesPersistedEvent
@@ -1096,7 +1103,8 @@ type SDKMessage =
   | SDKPermissionDeniedMessage
   | SDKPromptSuggestionMessage
   | SDKAPIRetryMessage
-  | SDKMirrorErrorMessage;
+  | SDKMirrorErrorMessage
+  | SDKInformationalMessage;
 ```
 
 <h3 id="sdkassistantmessage">
@@ -1183,6 +1191,7 @@ type SDKResultMessage =
       result: string;
       stop_reason: string | null;
       ttft_ms?: number;
+      ttft_stream_ms?: number;
       total_cost_usd: number;
       usage: NonNullableUsage;
       modelUsage: { [modelName: string]: ModelUsage };
@@ -1221,7 +1230,8 @@ type SDKResultMessage =
 결과의 여러 필드는 `subtype` 이상의 진단 세부 정보를 전달합니다:
 
 * `api_error_status`: 대화를 종료한 API 오류의 HTTP 상태 코드입니다. API 오류 없이 턴이 종료되었을 때는 없거나 `null`입니다.
-* `ttft_ms`: 첫 번째 토큰까지의 시간(밀리초)입니다. 성공 경로에만 표시됩니다.
+* `ttft_ms`: 첫 번째 토큰까지의 시간(밀리초)입니다. 첫 번째 완전한 어시스턴트 메시지가 도착할 때 측정됩니다. 성공 경로에만 표시됩니다.
+* `ttft_stream_ms`: 응답 스트림이 열릴 때 첫 번째 `message_start` 스트림 이벤트까지의 시간(밀리초)입니다. `ttft_ms`보다 낮습니다. 두 시간 사이의 간격은 첫 번째 메시지를 스트리밍하는 데 소요된 시간입니다. 성공 경로에만 표시됩니다.
 * `terminal_reason`: 루프가 종료된 이유입니다. `"completed"`, `"max_turns"`, `"tool_deferred"`, `"aborted_streaming"`, `"aborted_tools"`, `"hook_stopped"`, `"stop_hook_prevented"`, `"blocking_limit"`, `"rapid_refill_breaker"`, `"prompt_too_long"`, `"image_error"` 또는 `"model_error"` 중 하나입니다.
 * `fast_mode_state`: `"on"`, `"off"` 또는 `"cooldown"` 중 하나입니다.
 
@@ -1273,6 +1283,7 @@ type SDKPartialAssistantMessage = {
   parent_tool_use_id: string | null;
   uuid: UUID;
   session_id: string;
+  ttft_ms?: number; // 첫 번째 토큰까지의 시간(ms), message_start 이벤트에만 표시됨
 };
 ```
 
@@ -1292,6 +1303,41 @@ type SDKCompactBoundaryMessage = {
     trigger: "manual" | "auto";
     pre_tokens: number;
   };
+};
+```
+
+<h3 id="sdkinformationalmessage">
+  `SDKInformationalMessage`
+</h3>
+
+루프에서 내보낸 일반 텍스트 배너입니다. 비오류 상태 라인, `UserPromptSubmit` 훅의 블록 이유와 같은 훅 피드백, 및 명령 출력을 전달합니다. `content`를 주어진 `level`에서 일반 텍스트로 렌더링합니다.
+
+```typescript theme={null}
+type SDKInformationalMessage = {
+  type: "system";
+  subtype: "informational";
+  content: string;
+  level: "info" | "notice" | "suggestion" | "warning";
+  tool_use_id?: string;
+  prevent_continuation?: boolean;
+  uuid: UUID;
+  session_id: string;
+};
+```
+
+<h3 id="sdkworkershuttingdownmessage">
+  `SDKWorkerShuttingDownMessage`
+</h3>
+
+원격 클라이언트가 하트비트 타임아웃을 기다리는 대신 워커가 사라진 이유를 표시할 수 있도록 정상적인 워커 종료 시 내보내집니다. `reason`은 호스트 CLI에서 설정한 짧은 snake\_case 문자열입니다(예: `"host_exit"` 또는 `"remote_control_disabled"`). 라이브 스트리밍할 때만 이에 대해 조치합니다. 재개된 세션은 이 메시지의 과거 인스턴스를 재생하므로 그 경우 무시합니다.
+
+```typescript theme={null}
+type SDKWorkerShuttingDownMessage = {
+  type: "system";
+  subtype: "worker_shutting_down";
+  reason: string;
+  uuid: UUID;
+  session_id: string;
 };
 ```
 
@@ -1369,18 +1415,20 @@ type SDKPermissionDenial = {
 type SDKMessageOrigin =
   | { kind: "human" }
   | { kind: "channel"; server: string }
-  | { kind: "peer"; from: string; name?: string }
+  | { kind: "peer"; from: string; name?: string; senderTaskId?: string }
   | { kind: "task-notification" }
-  | { kind: "coordinator" };
+  | { kind: "coordinator" }
+  | { kind: "auto-continuation" };
 ```
 
-| `kind`              | 의미                                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------------------- |
-| `human`             | 최종 사용자의 직접 입력입니다. 사용자 메시지에서 없는 `origin`도 인간 입력을 의미합니다.                                            |
-| `channel`           | [채널](/ko/channels)에 도착한 메시지입니다. `server`는 소스 MCP 서버 이름입니다.                                        |
-| `peer`              | `SendMessage`를 통한 다른 에이전트 세션의 메시지입니다. `from`은 발신자 주소이고 `name`은 사용 가능할 때 발신자의 표시 이름입니다.            |
-| `task-notification` | 백그라운드 작업이 완료된 후 주입된 합성 턴입니다. [`SDKTaskNotificationMessage`](#sdktasknotificationmessage)를 참조하십시오. |
-| `coordinator`       | [에이전트 팀](/ko/agent-teams)의 팀 코디네이터로부터의 메시지입니다.                                                    |
+| `kind`              | 의미                                                                                                                                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `human`             | 최종 사용자의 직접 입력입니다. 사용자 메시지에서 없는 `origin`도 인간 입력을 의미합니다.                                                                                                                                                                                |
+| `channel`           | [채널](/ko/channels)에 도착한 메시지입니다. `server`는 소스 MCP 서버 이름입니다.                                                                                                                                                                            |
+| `peer`              | 다른 에이전트의 메시지입니다. 프로세스 내 [팀원](/ko/agent-teams)이 `SendMessage`를 통해 `main`으로 보내는 경우, `from`은 팀원의 이름이고 `senderTaskId`는 해당 작업 ID입니다. 다른 로컬 Claude Code 프로세스와 같은 교차 세션 피어의 경우, `from`은 발신자 주소이고 `senderTaskId`는 없습니다. `name` 필드는 예약되어 있습니다. |
+| `task-notification` | 백그라운드 작업이 완료된 후 주입된 합성 턴입니다. [`SDKTaskNotificationMessage`](#sdktasknotificationmessage)를 참조하십시오.                                                                                                                                     |
+| `coordinator`       | [에이전트 팀](/ko/agent-teams)의 팀 코디네이터로부터의 메시지입니다.                                                                                                                                                                                        |
+| `auto-continuation` | 새로운 사용자 입력 없이 세션이 계속될 때 주입된 합성 턴입니다. 예를 들어 후속 프롬프트를 트리거하는 명령 결과입니다.                                                                                                                                                                   |
 
 <h2 id="hook-types">
   훅 타입
@@ -1487,12 +1535,15 @@ type BaseHookInput = {
   session_id: string;
   transcript_path: string;
   cwd: string;
+  prompt_id?: string;
   permission_mode?: string;
   effort?: { level: string };
   agent_id?: string;
   agent_type?: string;
 };
 ```
+
+`prompt_id` 필드는 현재 처리 중인 사용자 프롬프트를 식별하는 UUID입니다. [OpenTelemetry 이벤트의 `prompt.id` 속성](/ko/monitoring-usage#event-correlation-attributes)과 일치하며 첫 번째 사용자 입력까지는 없습니다. Claude Code v2.1.196 이상이 필요합니다.
 
 <h4 id="pretoolusehookinput">
   `PreToolUseHookInput`
@@ -1712,6 +1763,7 @@ type SetupHookInput = BaseHookInput & {
 type TeammateIdleHookInput = BaseHookInput & {
   hook_event_name: "TeammateIdle";
   teammate_name: string;
+  /** @deprecated v2.1.178 이후로 사용되지 않음. 세션에서 파생된 팀 이름을 전달합니다. 제거될 예정입니다. */
   team_name: string;
 };
 ```
@@ -1727,6 +1779,7 @@ type TaskCompletedHookInput = BaseHookInput & {
   task_subject: string;
   task_description?: string;
   teammate_name?: string;
+  /** @deprecated v2.1.178 이후로 사용되지 않음. 세션에서 파생된 팀 이름을 전달합니다. 제거될 예정입니다. */
   team_name?: string;
 };
 ```
@@ -1934,12 +1987,11 @@ type AgentInput = {
   description: string;
   prompt: string;
   subagent_type: string;
-  model?: "sonnet" | "opus" | "haiku";
+  model?: "sonnet" | "opus" | "haiku" | "fable";
   resume?: string;
   run_in_background?: boolean;
   max_turns?: number;
   name?: string;
-  team_name?: string;
   mode?: "acceptEdits" | "bypassPermissions" | "default" | "dontAsk" | "plan";
   isolation?: "worktree";
 };
@@ -1992,14 +2044,20 @@ type BashInput = {
 
 ```typescript theme={null}
 type MonitorInput = {
-  command: string;
+  command?: string;
+  ws?: {
+    url: string;
+    protocols?: string[];
+  };
   description: string;
   timeout_ms?: number;
   persistent?: boolean;
 };
 ```
 
-백그라운드 스크립트를 실행하고 각 stdout 라인을 Claude에 이벤트로 전달하므로 폴링 없이 반응할 수 있습니다. 로그 테일과 같은 세션 길이 감시의 경우 `persistent: true`를 설정합니다. Monitor는 Bash와 동일한 권한 규칙을 따릅니다. [Monitor 도구 참조](/ko/tools-reference#monitor-tool)에서 동작 및 공급자 가용성을 참조하세요.
+백그라운드 소스를 실행하고 각 이벤트를 Claude에 전달하므로 폴링 없이 반응할 수 있습니다: `command`는 스크립트를 실행하고 stdout 라인당 하나의 이벤트를 내보내며, `ws`는 WebSocket을 열고 텍스트 프레임당 하나의 이벤트를 내보냅니다. `command` 또는 `ws` 중 정확히 하나를 제공합니다. {/* min-version: 2.1.195 */}`ws` 소스는 Claude Code v2.1.195 이상이 필요합니다.
+
+로그 테일과 같은 세션 길이 감시의 경우 `persistent: true`를 설정합니다. Monitor가 명령을 실행할 때, Bash와 동일한 권한 규칙을 따릅니다. WebSocket 감시는 별도로 승인을 요청합니다. 동작 및 공급자 가용성은 [Monitor 도구 참조](/ko/tools-reference#monitor-tool)를 참조하세요.
 
 <h3 id="taskoutput">
   TaskOutput
@@ -2190,13 +2248,13 @@ type WorkflowInput = {
 
 [동적 워크플로우](/ko/workflows)를 실행합니다: 백그라운드에서 많은 서브에이전트를 조율하고 하나의 통합된 결과를 반환하는 스크립트입니다. `Workflow` 도구는 Agent SDK v0.3.149 이상에서 사용 가능합니다. `script`, `name` 또는 `scriptPath` 중 최소 하나가 필요합니다.
 
-| 필드                | 타입        | 설명                                                                                                                                                          |
-| ----------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `script`          | `string`  | 인라인 워크플로우 스크립트입니다. `export const meta = { name, description, phases }`로 시작해야 하며, 그 뒤에 `agent()`, `parallel()`, `pipeline()` 및 `phase()`를 사용하는 스크립트 본문이 따릅니다 |
-| `name`            | `string`  | 기본 제공 워크플로우의 이름 또는 `.claude/workflows/`에 저장된 워크플로우입니다. 스크립트로 확인됩니다                                                                                          |
-| `scriptPath`      | `string`  | 디스크의 워크플로우 스크립트 파일 경로입니다. `script` 및 `name`보다 우선합니다. 모든 호출은 스크립트를 유지하고 결과에서 경로를 반환하므로, 해당 파일을 편집하고 동일한 `scriptPath`로 다시 호출하여 반복할 수 있습니다                     |
-| `args`            | `unknown` | 스크립트에 전역 `args`로 노출되는 입력 값으로, 연구 질문이나 파일 경로 목록과 같은 매개변수화된 명명된 워크플로우용입니다. 배열과 객체를 JSON 인코딩된 문자열이 아닌 실제 JSON 값으로 전달합니다                                        |
-| `resumeFromRunId` | `string`  | 재개할 이전 `Workflow` 호출의 실행 ID입니다. 입력이 변경되지 않은 완료된 `agent()` 호출은 캐시된 결과를 반환합니다. 변경되거나 새로운 호출만 실시간으로 실행됩니다. 동일한 세션만 해당됩니다                                       |
+| 필드                | 타입        | 설명                                                                                                                                                                                                               |
+| ----------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `script`          | `string`  | 인라인 워크플로우 스크립트입니다. `export const meta = { name, description }`로 시작해야 하며, 그 뒤에 `agent()`, `parallel()`, `pipeline()` 및 `phase()`를 사용하는 스크립트 본문이 따릅니다. `meta`의 선택적 `phases` 배열은 진행 상황 보기에서 에이전트를 명명된 단계 아래에 그룹화합니다 |
+| `name`            | `string`  | 기본 제공 워크플로우의 이름 또는 `.claude/workflows/`에 저장된 워크플로우입니다. 스크립트로 확인됩니다                                                                                                                                               |
+| `scriptPath`      | `string`  | 디스크의 워크플로우 스크립트 파일 경로입니다. `script` 및 `name`보다 우선합니다. 모든 호출은 스크립트를 유지하고 결과에서 경로를 반환하므로, 해당 파일을 편집하고 동일한 `scriptPath`로 다시 호출하여 반복할 수 있습니다                                                                          |
+| `args`            | `unknown` | 스크립트에 전역 `args`로 노출되는 입력 값으로, 연구 질문이나 파일 경로 목록과 같은 매개변수화된 명명된 워크플로우용입니다. 배열과 객체를 JSON 인코딩된 문자열이 아닌 실제 JSON 값으로 전달합니다                                                                                             |
+| `resumeFromRunId` | `string`  | 재개할 이전 `Workflow` 호출의 실행 ID입니다. 입력이 변경되지 않은 완료된 `agent()` 호출은 캐시된 결과를 반환합니다. 변경되거나 새로운 호출만 실시간으로 실행됩니다. 동일한 세션만 해당됩니다                                                                                            |
 
 <h3 id="todowrite">
   TodoWrite
@@ -2385,7 +2443,7 @@ type ToolOutputSchemas =
   | WorkflowOutput;
 ```
 
-<h3 id="agent">
+<h3 id="agent-1">
   Agent
 </h3>
 
@@ -2397,6 +2455,7 @@ type AgentOutput =
       status: "completed";
       agentId: string;
       content: Array<{ type: "text"; text: string }>;
+      resolvedModel?: string;
       totalToolUseCount: number;
       totalDurationMs: number;
       totalTokens: number;
@@ -2421,6 +2480,7 @@ type AgentOutput =
       status: "async_launched";
       agentId: string;
       description: string;
+      resolvedModel?: string;
       prompt: string;
       outputFile: string;
       canReadOutputFile?: boolean;
@@ -2434,7 +2494,9 @@ type AgentOutput =
 
 서브에이전트의 결과를 반환합니다. `status` 필드에서 구분됩니다: 완료된 작업의 경우 `"completed"`, 백그라운드 작업의 경우 `"async_launched"`, 대화형 서브에이전트의 경우 `"sub_agent_entered"`.
 
-<h3 id="askuserquestion">
+`resolvedModel` 필드는 `completed` 및 `async_launched` 변형에서 서브에이전트가 실제로 실행된 모델의 이름을 지정하며, 이는 [`availableModels`](/ko/model-config#restrict-model-selection) 또는 다른 재정의가 적용될 때 요청된 `model` 입력과 다를 수 있습니다. {/* min-version: 2.1.174 */}이 필드는 Claude Code v2.1.174 이상이 필요합니다.
+
+<h3 id="askuserquestion-1">
   AskUserQuestion
 </h3>
 
@@ -2455,7 +2517,7 @@ type AskUserQuestionOutput = {
 
 질문과 사용자의 답변을 반환합니다. `response`는 사용자가 구조화된 질문에 답하는 대신 자유 형식 답변을 입력했을 때 설정됩니다. 존재할 때, Claude는 질문별 답변 목록 대신 "사용자가 응답했습니다: …"를 받습니다.
 
-<h3 id="bash">
+<h3 id="bash-1">
   Bash
 </h3>
 
@@ -2480,7 +2542,7 @@ type BashOutput = {
 
 stdout/stderr가 분할된 명령 출력을 반환합니다. 백그라운드 명령은 `backgroundTaskId`를 포함합니다.
 
-<h3 id="monitor">
+<h3 id="monitor-1">
   Monitor
 </h3>
 
@@ -2496,7 +2558,7 @@ type MonitorOutput = {
 
 실행 중인 모니터의 백그라운드 작업 ID를 반환합니다. 이 ID를 `TaskStop`과 함께 사용하여 감시를 조기에 취소합니다.
 
-<h3 id="edit">
+<h3 id="edit-1">
   Edit
 </h3>
 
@@ -2530,7 +2592,7 @@ type FileEditOutput = {
 
 편집 작업의 구조화된 diff를 반환합니다.
 
-<h3 id="read">
+<h3 id="read-1">
   Read
 </h3>
 
@@ -2590,7 +2652,7 @@ type FileReadOutput =
 
 파일 타입에 적합한 형식의 파일 콘텐츠를 반환합니다. `type` 필드에서 구분됩니다.
 
-<h3 id="write">
+<h3 id="write-1">
   Write
 </h3>
 
@@ -2622,7 +2684,7 @@ type FileWriteOutput = {
 
 구조화된 diff 정보를 포함한 쓰기 결과를 반환합니다.
 
-<h3 id="glob">
+<h3 id="glob-1">
   Glob
 </h3>
 
@@ -2639,7 +2701,7 @@ type GlobOutput = {
 
 glob 패턴과 일치하는 파일 경로를 수정 시간별로 정렬하여 반환합니다.
 
-<h3 id="grep">
+<h3 id="grep-1">
   Grep
 </h3>
 
@@ -2660,7 +2722,7 @@ type GrepOutput = {
 
 검색 결과를 반환합니다. 형태는 `mode`에 따라 다릅니다: 파일 목록, 일치 항목이 있는 콘텐츠 또는 일치 항목 수.
 
-<h3 id="taskstop">
+<h3 id="taskstop-1">
   TaskStop
 </h3>
 
@@ -2677,7 +2739,7 @@ type TaskStopOutput = {
 
 백그라운드 작업 중지 후 확인을 반환합니다.
 
-<h3 id="notebookedit">
+<h3 id="notebookedit-1">
   NotebookEdit
 </h3>
 
@@ -2699,7 +2761,7 @@ type NotebookEditOutput = {
 
 원본 및 업데이트된 파일 콘텐츠를 포함한 노트북 편집 결과를 반환합니다.
 
-<h3 id="webfetch">
+<h3 id="webfetch-1">
   WebFetch
 </h3>
 
@@ -2718,7 +2780,7 @@ type WebFetchOutput = {
 
 HTTP 상태 및 메타데이터를 포함한 가져온 콘텐츠를 반환합니다.
 
-<h3 id="websearch">
+<h3 id="websearch-1">
   WebSearch
 </h3>
 
@@ -2740,7 +2802,7 @@ type WebSearchOutput = {
 
 웹에서 검색 결과를 반환합니다.
 
-<h3 id="workflow">
+<h3 id="workflow-1">
   Workflow
 </h3>
 
@@ -2770,7 +2832,7 @@ type WorkflowOutput = {
 | `scriptPath`    | `string`           | 이 실행을 위해 유지된 워크플로우 스크립트의 경로입니다. 스크립트를 다시 보내지 않고 다시 실행하려면 편집하고 `scriptPath`로 다시 전달하십시오 |
 | `error`         | `string`           | 스크립트가 구문 검사에 실패할 때 설정됩니다. 존재할 때, `async_launched` 상태에도 불구하고 실행이 시작되지 않았습니다            |
 
-<h3 id="todowrite">
+<h3 id="todowrite-1">
   TodoWrite
 </h3>
 
@@ -2797,7 +2859,7 @@ type TodoWriteOutput = {
   TypeScript Agent SDK 0.3.142부터 `TodoWrite`는 기본적으로 비활성화됩니다. 대신 `TaskCreate`, `TaskGet`, `TaskUpdate`, `TaskList`를 사용하십시오. 모니터링 코드를 업데이트하려면 [작업 도구로 마이그레이션](/ko/agent-sdk/todo-tracking#migrate-to-task-tools)을 참조하거나, `CLAUDE_CODE_ENABLE_TASKS=0`을 설정하여 `TodoWrite`로 되돌립니다.
 </Note>
 
-<h3 id="taskcreate">
+<h3 id="taskcreate-1">
   TaskCreate
 </h3>
 
@@ -2814,7 +2876,7 @@ type TaskCreateOutput = {
 
 할당된 ID와 함께 생성된 작업을 반환합니다.
 
-<h3 id="taskupdate">
+<h3 id="taskupdate-1">
   TaskUpdate
 </h3>
 
@@ -2835,7 +2897,7 @@ type TaskUpdateOutput = {
 
 업데이트 결과를 반환하며, 어떤 필드가 변경되었는지 포함합니다.
 
-<h3 id="taskget">
+<h3 id="taskget-1">
   TaskGet
 </h3>
 
@@ -2856,7 +2918,7 @@ type TaskGetOutput = {
 
 전체 작업 레코드를 반환하거나, ID를 찾을 수 없을 때 `null`을 반환합니다.
 
-<h3 id="tasklist">
+<h3 id="tasklist-1">
   TaskList
 </h3>
 
@@ -2876,7 +2938,7 @@ type TaskListOutput = {
 
 현재 목록의 모든 작업의 스냅샷을 반환합니다.
 
-<h3 id="exitplanmode">
+<h3 id="exitplanmode-1">
   ExitPlanMode
 </h3>
 
@@ -2895,7 +2957,7 @@ type ExitPlanModeOutput = {
 
 계획 모드 종료 후 계획 상태를 반환합니다.
 
-<h3 id="listmcpresources">
+<h3 id="listmcpresources-1">
   ListMcpResources
 </h3>
 
@@ -2913,7 +2975,7 @@ type ListMcpResourcesOutput = Array<{
 
 사용 가능한 MCP 리소스의 배열을 반환합니다.
 
-<h3 id="readmcpresource">
+<h3 id="readmcpresource-1">
   ReadMcpResource
 </h3>
 
@@ -2931,7 +2993,7 @@ type ReadMcpResourceOutput = {
 
 요청된 MCP 리소스의 콘텐츠를 반환합니다.
 
-<h3 id="enterworktree">
+<h3 id="enterworktree-1">
   EnterWorktree
 </h3>
 
@@ -2955,7 +3017,7 @@ git worktree에 대한 정보를 반환합니다.
   `PermissionUpdate`
 </h3>
 
-권한 업데이트 작업입니다.
+권한을 업데이트하기 위한 작업입니다.
 
 ```typescript theme={null}
 type PermissionUpdate =
@@ -3010,7 +3072,7 @@ type PermissionBehavior = "allow" | "deny" | "ask";
 type PermissionUpdateDestination =
   | "userSettings" // 전역 사용자 설정
   | "projectSettings" // 디렉토리별 프로젝트 설정
-  | "localSettings" // Gitignored 로컬 설정
+  | "localSettings" // 로컬 프로젝트 설정
   | "session" // 현재 세션만
   | "cliArg"; // CLI 인수
 ```
@@ -3049,7 +3111,7 @@ type SdkBeta = "context-1m-2025-08-07";
 ```
 
 <Warning>
-  `context-1m-2025-08-07` 베타는 2026년 4월 30일부터 폐기되었습니다. Claude Sonnet 4.5 또는 Sonnet 4와 함께 이 값을 전달하면 효과가 없으며, 표준 200k 토큰 컨텍스트 윈도우를 초과하는 요청은 오류를 반환합니다. 1M 토큰 컨텍스트 윈도우를 사용하려면 [Claude Sonnet 4.6, Claude Opus 4.6 또는 Claude Opus 4.7](https://platform.claude.com/docs/ko/about-claude/models/overview)로 마이그레이션하세요. 이들은 베타 헤더 없이 표준 가격으로 1M 컨텍스트를 포함합니다.
+  `context-1m-2025-08-07` 베타는 2026년 4월 30일부터 폐기되었습니다. Claude Sonnet 4.5 또는 Sonnet 4와 함께 이 값을 전달하면 효과가 없으며, 표준 200k 토큰 컨텍스트 윈도우를 초과하는 요청은 오류를 반환합니다. 1M 토큰 컨텍스트 윈도우를 사용하려면 [Claude Sonnet 5, Claude Sonnet 4.6, Claude Opus 4.6, Claude Opus 4.7 또는 Claude Opus 4.8](https://platform.claude.com/docs/ko/about-claude/models/overview)로 마이그레이션하세요. 이들은 베타 헤더 없이 표준 가격으로 1M 컨텍스트를 포함합니다.
 </Warning>
 
 <h3 id="slashcommand">
@@ -3241,7 +3303,7 @@ MCP 도구 결과 타입 (`@modelcontextprotocol/sdk/types.js`에서). `structur
 ```typescript theme={null}
 type CallToolResult = {
   content: Array<{
-    type: "text" | "image" | "resource";
+    type: "text" | "image" | "audio" | "resource" | "resource_link";
     // 추가 필드는 타입에 따라 다릅니다
   }>;
   structuredContent?: Record<string, unknown>;
@@ -3605,11 +3667,16 @@ type SDKRateLimitEvent = {
     status: "allowed" | "allowed_warning" | "rejected";
     resetsAt?: number;
     utilization?: number;
+    errorCode?: "credits_required";
+    canUserPurchaseCredits?: boolean;
+    hasChargeableSavedPaymentMethod?: boolean;
   };
   uuid: UUID;
   session_id: string;
 };
 ```
+
+{/* min-version: 2.1.181 */}`errorCode`가 `"credits_required"`일 때, 거부는 포함된 사용량이 소진된 claude.ai 구독에서 발생하며, 사용자가 사용 크레딧을 구매할 때까지 세션을 계속할 수 없습니다. `canUserPurchaseCredits`는 인증된 사용자가 계정에 대한 크레딧을 구매할 수 있는지 여부를 나타내고, `hasChargeableSavedPaymentMethod`는 저장된 결제 방법이 파일에 있는지 여부를 나타냅니다. 세 필드 모두 크레딧 필수 거부가 아닌 속도 제한 이벤트에서는 없습니다. Claude Code v2.1.181 이상이 필요합니다.
 
 <h3 id="sdklocalcommandoutputmessage">
   `SDKLocalCommandOutputMessage`

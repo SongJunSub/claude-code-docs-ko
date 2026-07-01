@@ -26,7 +26,7 @@
   </Step>
 
   <Step title="SDK가 등록된 훅을 수집합니다">
-    SDK는 해당 이벤트 유형에 대해 등록된 훅을 확인합니다. 여기에는 `options.hooks`에 전달하는 콜백 훅과 해당 [`settingSources`](/ko/agent-sdk/typescript#settingSources) 또는 [`setting_sources`](/ko/agent-sdk/python#setting_sources) 항목이 활성화된 경우 설정 파일의 셸 명령 훅이 포함되며, 기본 `query()` 옵션에서는 활성화됩니다.
+    SDK는 해당 이벤트 유형에 대해 등록된 훅을 확인합니다. 여기에는 `options.hooks`에 전달하는 콜백 훅과 해당 [`settingSources`](/ko/agent-sdk/typescript#settingsource) 또는 [`setting_sources`](/ko/agent-sdk/python#settingsource) 항목이 활성화된 경우 설정 파일의 셸 명령 훅이 포함되며, 기본 `query()` 옵션에서는 활성화됩니다.
   </Step>
 
   <Step title="매처가 실행할 훅을 필터링합니다">
@@ -205,8 +205,8 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 
 `hooks` 옵션은 다음과 같은 딕셔너리(Python) 또는 객체(TypeScript)입니다:
 
-* **키**는 [훅 이벤트 이름](#available-hooks)입니다(예: `'PreToolUse'`, `'PostToolUse'`, `'Stop'`).
-* **값**은 [매처](#matchers) 배열이며, 각각 선택적 필터 패턴과 [콜백 함수](#callback-functions)를 포함합니다.
+* **키**: [훅 이벤트 이름](#available-hooks)입니다(예: `'PreToolUse'`, `'PostToolUse'`, `'Stop'`).
+* **값**: [매처](#matchers) 배열이며, 각각 선택적 필터 패턴과 [콜백 함수](#callback-functions)를 포함합니다.
 
 <h3 id="matchers">
   매처
@@ -214,7 +214,13 @@ SDK는 에이전트 실행의 다양한 단계에 대한 훅을 제공합니다.
 
 매처를 사용하여 콜백이 발생할 때를 필터링합니다. `matcher` 필드는 훅 이벤트 유형에 따라 다른 값과 일치합니다. 예를 들어 도구 기반 훅은 도구 이름과 일치하고, `Notification` 훅은 알림 유형과 일치합니다. 각 이벤트 유형에 대한 매처 값의 전체 목록은 [Claude Code 훅 참조](/ko/hooks#matcher-patterns)를 참조하세요.
 
-SDK 매처는 [설정 파일의 매처](/ko/hooks#matcher-patterns)와 동일한 규칙을 따릅니다: 문자, 숫자, `_`, `|`만 포함하는 매처는 정확한 문자열로 비교되며, `|`는 대안을 구분하므로 `Write|Edit`는 정확히 이 두 도구와 일치합니다. `*` 매처, 빈 문자열, 또는 매처를 완전히 생략하면 이벤트의 모든 발생과 일치합니다. 다른 문자를 포함하는 매처는 정규식으로 평가되므로 `^mcp__`는 모든 MCP 도구와 일치합니다. `mcp__memory`와 같은 매처는 문자와 밑줄만 포함하므로 정확한 문자열로 비교되며 도구와 일치하지 않습니다. 해당 서버의 모든 도구와 일치하려면 `mcp__memory__.*`를 사용합니다.
+SDK 매처는 [설정 파일의 매처](/ko/hooks#matcher-patterns)와 동일한 규칙을 따릅니다. 문자, 숫자, `_`, `-`, 공백, `,`, `|`만 포함하는 매처는 정확한 문자열로 비교되며, `|` 또는 `,`로 구분된 대안이 있고 선택적 주변 공백이 있으므로 `Write|Edit`와 `Write, Edit`는 각각 정확히 이 두 도구와 일치하고 `code-reviewer`는 해당 에이전트 유형만 일치합니다. `*` 매처, 빈 문자열, 또는 매처를 완전히 생략하면 이벤트의 모든 발생과 일치합니다.
+
+다른 문자를 포함하는 매처는 앵커되지 않은 정규식으로 평가되므로 `^mcp__`는 모든 MCP 도구와 일치하고 `Edit.*`는 `Edit`과 `NotebookEdit` 모두와 일치합니다. 전체 문자열 일치가 필요할 때는 정규식을 `^`와 `$`로 감싸세요.
+
+`mcp__memory` 또는 `mcp__brave-search`와 같은 매처는 정확한 일치 문자만 포함하므로 정확한 문자열로 비교되며 도구와 일치하지 않습니다. 해당 서버의 모든 도구와 일치하려면 `mcp__memory__.*`를 사용합니다.
+
+매처의 정확한 일치 집합에 있는 하이픈은 Claude Code 런타임 v2.1.195 이상이 필요합니다. 이전 버전에서는 `code-reviewer`와 같은 하이픈이 있는 이름이 앵커되지 않은 정규식으로 평가되며 정확히 일치하려면 `^code-reviewer$`로 앵커되어야 합니다.
 
 | 옵션        | 타입               | 기본값         | 설명                                                                                                                                                                                                                                                                |
 | --------- | ---------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -222,7 +228,9 @@ SDK 매처는 [설정 파일의 매처](/ko/hooks#matcher-patterns)와 동일한
 | `hooks`   | `HookCallback[]` | -           | 필수입니다. 패턴이 일치할 때 실행할 콜백 함수의 배열                                                                                                                                                                                                                                    |
 | `timeout` | `number`         | `60`        | 초 단위의 타임아웃                                                                                                                                                                                                                                                        |
 
-가능할 때마다 `matcher` 패턴을 사용하여 특정 도구를 대상으로 합니다. `'Bash'` 매처는 Bash 명령에만 실행되지만 패턴을 생략하면 콜백이 이벤트의 모든 발생에 대해 실행됩니다. 도구 기반 훅의 경우 매처는 **도구 이름**으로만 필터링하며, 파일 경로나 다른 인수로는 필터링하지 않습니다. 파일 경로로 필터링하려면 콜백 내에서 `tool_input.file_path`를 확인합니다.
+가능할 때마다 `matcher` 패턴을 사용하여 특정 도구를 대상으로 합니다. `'Bash'` 매처는 Bash 명령에만 실행되지만 패턴을 생략하면 콜백이 이벤트의 모든 발생에 대해 실행됩니다.
+
+도구 기반 훅의 경우 매처는 도구 이름으로만 필터링하며, 파일 경로나 다른 인수로는 필터링하지 않습니다. 파일 경로로 필터링하려면 콜백 내에서 `tool_input.file_path`를 확인합니다.
 
 <Tip>
   **도구 이름 발견:** [도구 입력 타입](/ko/agent-sdk/typescript#tool-input-types)에서 기본 제공 도구 이름의 전체 목록을 참조하거나, 매처 없이 훅을 추가하여 세션이 수행하는 모든 도구 호출을 기록합니다.
@@ -240,7 +248,7 @@ SDK 매처는 [설정 파일의 매처](/ko/hooks#matcher-patterns)와 동일한
 
 모든 훅 콜백은 세 가지 인수를 받습니다:
 
-* **입력 데이터:** 이벤트 세부 정보를 포함하는 입력된 객체입니다. 각 훅 유형은 자체 입력 형태를 가집니다(예: `PreToolUseHookInput`은 `tool_name`과 `tool_input`을 포함하고, `NotificationHookInput`은 `message`를 포함합니다). [TypeScript](/ko/agent-sdk/typescript#hookinput) 및 [Python](/ko/agent-sdk/python#hookinput) SDK 참조에서 전체 타입 정의를 참조하세요.
+* **입력 데이터:** 이벤트 세부 정보를 포함하는 입력된 객체입니다. 각 훅 유형은 자체 입력 형태를 가집니다. 예를 들어 `PreToolUseHookInput`은 `tool_name`과 `tool_input`을 포함하고, `NotificationHookInput`은 `message`를 포함합니다. [TypeScript](/ko/agent-sdk/typescript#hookinput) 및 [Python](/ko/agent-sdk/python#hookinput) SDK 참조에서 전체 타입 정의를 참조하세요.
   * 모든 훅 입력은 `session_id`, `cwd`, `hook_event_name`을 공유합니다.
   * `agent_id`와 `agent_type`은 훅이 서브에이전트 내에서 발생할 때 채워집니다. TypeScript에서는 기본 훅 입력에 있으며 모든 훅 유형에서 사용 가능합니다. Python에서는 `PreToolUse`, `PostToolUse`, `PostToolUseFailure`에만 있습니다.
 * **도구 사용 ID** (`str | None` / `string | undefined`): 동일한 도구 호출에 대해 `PreToolUse` 및 `PostToolUse` 이벤트를 연결합니다.
@@ -258,7 +266,7 @@ SDK 매처는 [설정 파일의 매처](/ko/hooks#matcher-patterns)와 동일한
 변경 없이 작업을 허용하려면 `{}`를 반환합니다. SDK 콜백 훅은 [Claude Code 셸 명령 훅](/ko/hooks#json-output)과 동일한 JSON 출력 형식을 사용하며, 이는 모든 필드와 이벤트별 옵션을 문서화합니다. SDK 타입 정의는 [TypeScript](/ko/agent-sdk/typescript#synchookjsonoutput) 및 [Python](/ko/agent-sdk/python#synchookjsonoutput) SDK 참조를 참조하세요.
 
 <Note>
-  여러 훅 또는 권한 규칙이 적용되는 경우 **deny**는 **defer**보다 우선하고, **defer**는 **ask**보다 우선하고, **ask**는 **allow**보다 우선합니다. 훅이 `deny`를 반환하면 다른 훅에 관계없이 작업이 차단됩니다.
+  여러 훅 또는 권한 규칙이 적용되는 경우 `deny`는 `defer`보다 우선하고, `defer`는 `ask`보다 우선하고, `ask`는 `allow`보다 우선합니다. 훅이 `deny`를 반환하면 다른 훅에 관계없이 작업이 차단됩니다.
 </Note>
 
 <h4 id="asynchronous-output">
@@ -782,14 +790,14 @@ SDK 매처는 [설정 파일의 매처](/ko/hooks#matcher-patterns)와 동일한
 * 훅 이벤트 이름이 올바르고 대소문자를 구분하는지 확인합니다(`preToolUse`가 아닌 `PreToolUse`).
 * 매처 패턴이 도구 이름과 정확히 일치하는지 확인합니다.
 * 훅이 `options.hooks`의 올바른 이벤트 유형 아래에 있는지 확인합니다.
-* `Stop` 및 `SubagentStop` 같은 도구가 아닌 훅의 경우 매처는 다른 필드와 일치합니다([매처 패턴](/ko/hooks#matcher-patterns) 참조).
+* `Notification` 및 `SubagentStop` 같은 도구가 아닌 훅의 경우 매처는 다른 필드와 일치하며, `Stop`은 매처를 무시합니다([매처 패턴](/ko/hooks#matcher-patterns) 참조).
 * 에이전트가 [`max_turns`](/ko/agent-sdk/python#claudeagentoptions) 제한에 도달하면 훅이 발생하지 않을 수 있습니다. 세션이 훅을 실행하기 전에 종료되기 때문입니다.
 
 <h3 id="matcher-not-filtering-as-expected">
   매처가 예상대로 필터링하지 않음
 </h3>
 
-매처는 **도구 이름**만 일치하며, 파일 경로나 다른 인수는 일치하지 않습니다. 파일 경로로 필터링하려면 훅 내에서 `tool_input.file_path`를 확인합니다:
+매처는 도구 이름만 일치하며, 파일 경로나 다른 인수는 일치하지 않습니다. 파일 경로로 필터링하려면 훅 내에서 `tool_input.file_path`를 확인합니다:
 
 ```typescript theme={null}
 const myHook: HookCallback = async (input, toolUseID, { signal }) => {

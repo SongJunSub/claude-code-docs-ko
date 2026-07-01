@@ -35,7 +35,7 @@ github.com의 저장소의 경우 [웹에서 Claude Code](/ko/claude-code-on-the
   관리자 설정
 </h2>
 
-관리자가 GHES 인스턴스를 Claude Code에 한 번 연결합니다. 그 후 조직의 개발자는 추가 구성 없이 GHES 저장소를 사용할 수 있습니다. Claude 조직에 대한 관리자 액세스 권한과 GHES 인스턴스에서 GitHub App을 만들 수 있는 권한이 필요합니다.
+관리자가 GHES 인스턴스를 Claude Code에 한 번 연결합니다. 그 후 조직의 개발자는 추가 구성 없이 GHES 저장소를 사용할 수 있습니다. Claude 조직에 대한 관리자 또는 주 관리자 역할과 GHES 인스턴스에서 GitHub App을 만들 수 있는 권한이 필요합니다.
 
 안내식 설정은 GitHub App 매니페스트를 생성하고 한 번의 클릭으로 앱을 만들기 위해 GHES 인스턴스로 리디렉션합니다. 환경이 리디렉션 흐름을 차단하는 경우 [대체 수동 설정](#manual-setup)을 사용할 수 있습니다.
 
@@ -110,10 +110,10 @@ cd api-service
 claude --remote "Add retry logic to the payment webhook handler"
 ```
 
-세션은 Anthropic 인프라에서 실행되고, GHES에서 저장소를 복제하며, 변경 사항을 분기로 다시 푸시합니다. `/tasks`를 사용하거나 [claude.ai/code](https://claude.ai/code)에서 진행 상황을 모니터링합니다. diff 리뷰, 자동 수정 및 루틴을 포함한 전체 원격 세션 워크플로우는 [웹에서 Claude Code](/ko/claude-code-on-the-web)를 참조하십시오.
+세션은 Anthropic 인프라에서 실행되고, GHES에서 저장소를 복제하며, 변경 사항을 분기로 다시 푸시합니다. `/tasks`를 사용하거나 [claude.ai/code](https://claude.ai/code)에서 진행 상황을 모니터링합니다. diff 리뷰, 자동 수정 및 루틴을 포함한 전체 클라우드 세션 워크플로우는 [웹에서 Claude Code](/ko/claude-code-on-the-web)를 참조하십시오.
 
 <h3 id="teleport-sessions-to-your-terminal">
-  세션을 터미널로 Teleport
+  터미널로 세션 Teleport
 </h3>
 
 `claude --teleport`를 사용하여 웹 세션을 로컬 터미널로 가져옵니다. Teleport는 분기를 가져오고 세션 기록을 로드하기 전에 동일한 GHES 저장소의 체크아웃에 있는지 확인합니다. 자세한 내용은 [teleport 요구 사항](/ko/claude-code-on-the-web#teleport-requirements)을 참조하십시오.
@@ -193,7 +193,7 @@ HTTPS URL도 작동합니다:
   웹 세션이 저장소 복제에 실패함
 </h3>
 
-`claude --remote`가 복제 오류로 실패하면 관리자가 GHES 인스턴스에 대한 설정을 완료했는지 확인하고 GitHub App이 작업 중인 저장소에 설치되어 있는지 확인합니다. 관리자에게 Claude 설정에 등록된 인스턴스 호스트명이 git 원격의 호스트명과 일치하는지 확인하도록 요청합니다.
+`claude --remote`가 복제 오류로 실패하면 Owner가 GHES 인스턴스에 대한 설정을 완료했는지 확인하고 GitHub App이 작업 중인 저장소에 설치되어 있는지 확인합니다. 인스턴스를 연결한 Owner에게 Claude 설정에 등록된 호스트명이 git 원격의 호스트명과 일치하는지 확인하도록 요청합니다.
 
 <h3 id="marketplace-add-fails-with-a-policy-error">
   마켓플레이스 추가가 정책 오류로 실패함
@@ -205,7 +205,7 @@ GHES URL에 대해 `/plugin marketplace add`가 차단되면 조직이 마켓플
   GHES 인스턴스에 도달할 수 없음
 </h3>
 
-리뷰 또는 웹 세션이 시간 초과되면 GHES 인스턴스가 Anthropic 인프라에서 도달 가능하지 않을 수 있습니다. 방화벽이 [Anthropic API IP 주소](https://platform.claude.com/docs/en/api/ip-addresses)에서 인바운드 연결을 허용하는지 확인합니다.
+리뷰 또는 웹 세션이 시간 초과되면 GHES 인스턴스가 Anthropic 인프라에서 도달 가능하지 않을 수 있습니다. 방화벽이 [Anthropic API IP 주소](https://platform.claude.com/docs/ko/api/ip-addresses)에서 인바운드 연결을 허용하는지 확인합니다.
 
 <h2 id="related-resources">
   관련 리소스

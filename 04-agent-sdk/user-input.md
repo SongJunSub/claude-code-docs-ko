@@ -16,7 +16,9 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 
 이 가이드는 각 유형의 요청을 감지하고 적절하게 응답하는 방법을 보여줍니다.
 
-## Claude가 입력이 필요한 시점 감지
+<h2 id="detect-when-claude-needs-input">
+  Claude가 입력이 필요한 시점 감지
+</h2>
 
 쿼리 옵션에 `canUseTool` 콜백을 전달합니다. 콜백은 Claude가 사용자 입력이 필요할 때마다 실행되며, 도구 이름과 입력을 인수로 받습니다.
 
@@ -42,14 +44,18 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 
 콜백은 두 가지 경우에 실행됩니다.
 
-1. **도구가 승인 필요**: Claude가 [권한 규칙](/ko/agent-sdk/permissions) 또는 모드에 의해 자동 승인되지 않은 도구를 사용하려고 합니다. 도구에 대해 `tool_name`을 확인합니다(예: `"Bash"`, `"Write"`).
-2. **Claude가 질문함**: Claude가 `AskUserQuestion` 도구를 호출합니다. `tool_name == "AskUserQuestion"`을 확인하여 다르게 처리합니다. `tools` 배열을 지정하는 경우 이것이 작동하려면 `AskUserQuestion`을 포함하십시오. 자세한 내용은 [명확화 질문 처리](#명확화-질문-처리)를 참조하십시오.
+1. **도구가 승인 필요**: Claude가 [권한 규칙](/ko/agent-sdk/permissions) 또는 권한 모드에 의해 자동 승인되지 않은 도구를 사용하려고 합니다. 도구에 대해 `tool_name`을 확인합니다(예: `"Bash"`, `"Write"`).
+2. **Claude가 질문함**: Claude가 `AskUserQuestion` 도구를 호출합니다. `tool_name == "AskUserQuestion"`을 확인하여 다르게 처리합니다. `tools` 배열을 지정하는 경우 이것이 작동하려면 `AskUserQuestion`을 포함하십시오. 자세한 내용은 [명확화 질문 처리](#handle-clarifying-questions)를 참조하십시오.
 
-<Note>
-  사용자에게 프롬프트하지 않고 도구를 자동으로 허용하거나 거부하려면 [훅](/ko/agent-sdk/hooks)을 대신 사용하십시오. 훅은 `canUseTool` 전에 실행되며 자신의 로직에 따라 요청을 허용, 거부 또는 수정할 수 있습니다. [`PermissionRequest` 훅](/ko/agent-sdk/hooks#available-hooks)을 사용하여 Claude가 승인을 기다리고 있을 때 외부 알림(Slack, 이메일, 푸시)을 보낼 수도 있습니다.
-</Note>
+<Warning>
+  **콜백은 자동 승인된 도구에 대해서는 실행되지 않습니다.** [권한 평가 흐름](/ko/agent-sdk/permissions#how-permissions-are-evaluated)의 이전 단계에서 허용 규칙이나 `acceptEdits` 또는 `bypassPermissions`와 같은 모드가 `canUseTool`을 확인하기 전에 호출을 해결합니다. `allowed_tools`에 도구를 나열하면, 요청이 질문 규칙이나 `plan` 모드에 의해 프롬프트로 다시 라우팅되지 않는 한 해당 도구에 대한 `canUseTool` 확인이 실행되지 않습니다. 모든 도구 호출에 적용되어야 하는 로직의 경우 흐름의 나머지 부분 전에 실행되고 요청을 허용, 거부 또는 수정할 수 있는 [`PreToolUse` 훅](/ko/agent-sdk/hooks)을 사용하십시오.
+</Warning>
 
-## 도구 승인 요청 처리
+또한 [`PermissionRequest` 훅](/ko/agent-sdk/hooks#available-hooks)을 사용하여 Claude가 승인을 기다리고 있을 때 외부 알림(Slack, 이메일, 푸시)을 보낼 수 있습니다.
+
+<h2 id="handle-tool-approval-requests">
+  도구 승인 요청 처리
+</h2>
 
 쿼리 옵션에 `canUseTool` 콜백을 전달하면, Claude가 자동 승인되지 않은 도구를 사용하려고 할 때 실행됩니다. 콜백은 세 가지 인수를 받습니다.
 
@@ -195,9 +201,11 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
   Python에서 `can_use_tool`은 [스트리밍 모드](/ko/agent-sdk/streaming-vs-single-mode)와 스트림을 열어 두기 위해 `{"continue_": True}`를 반환하는 `PreToolUse` 훅이 필요합니다. 이 훅이 없으면 권한 콜백이 호출되기 전에 스트림이 닫힙니다.
 </Note>
 
-이 예제는 `y` 이외의 모든 입력이 거부로 처리되는 y/n 흐름을 사용합니다. 실제로는 사용자가 요청을 수정하거나, 피드백을 제공하거나, Claude를 완전히 리디렉션할 수 있는 더 풍부한 UI를 구축할 수 있습니다. 응답할 수 있는 모든 방법은 [도구 요청에 응답](#도구-요청에-응답)을 참조하십시오.
+이 예제는 `y` 이외의 모든 입력이 거부로 처리되는 y/n 흐름을 사용합니다. 실제로는 사용자가 요청을 수정하거나, 피드백을 제공하거나, Claude를 완전히 리디렉션할 수 있는 더 풍부한 UI를 구축할 수 있습니다. 응답할 수 있는 모든 방법은 [도구 요청에 응답](#respond-to-tool-requests)을 참조하십시오.
 
-### 도구 요청에 응답
+<h3 id="respond-to-tool-requests">
+  도구 요청에 응답
+</h3>
 
 콜백은 두 가지 응답 유형 중 하나를 반환합니다.
 
@@ -407,7 +415,9 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
   </Tab>
 </Tabs>
 
-## 명확화 질문 처리
+<h2 id="handle-clarifying-questions">
+  명확화 질문 처리
+</h2>
 
 Claude가 여러 유효한 접근 방식이 있는 작업에 대해 더 많은 방향이 필요할 때 `AskUserQuestion` 도구를 호출합니다. 이는 `toolName`이 `AskUserQuestion`으로 설정된 `canUseTool` 콜백을 트리거합니다. 입력에는 Claude의 질문이 객관식 옵션으로 포함되어 있으며, 이를 사용자에게 표시하고 선택 사항을 반환합니다.
 
@@ -505,7 +515,7 @@ Claude가 여러 유효한 접근 방식이 있는 작업에 대해 더 많은 �
     }
     ```
 
-    전체 필드 설명은 [질문 형식](#질문-형식)을 참조하십시오.
+    전체 필드 설명은 [질문 형식](#question-format)을 참조하십시오.
   </Step>
 
   <Step title="사용자로부터 답변 수집">
@@ -520,7 +530,7 @@ Claude가 여러 유효한 접근 방식이 있는 작업에 대해 더 많은 �
     | `question` 필드(예: `"How should I format the output?"`) | 키       |
     | 선택된 옵션의 `label` 필드(예: `"Summary"`)                    | 값       |
 
-    다중 선택 질문의 경우 레이블 배열을 전달하거나 `", "`로 조인합니다. [자유 텍스트 입력을 지원](#자유-텍스트-입력-지원)하는 경우 사용자의 사용자 정의 텍스트를 값으로 사용합니다.
+    다중 선택 질문의 경우 레이블 배열을 전달하거나 `", "`로 조인합니다. [자유 텍스트 입력을 지원](#support-free-text-input)하는 경우 사용자의 사용자 정의 텍스트를 값으로 사용합니다.
 
     <CodeGroup>
       ```python Python theme={null}
@@ -551,16 +561,18 @@ Claude가 여러 유효한 접근 방식이 있는 작업에 대해 더 많은 �
   </Step>
 </Steps>
 
-### 질문 형식
+<h3 id="question-format">
+  질문 형식
+</h3>
 
 입력에는 `questions` 배열의 Claude 생성 질문이 포함됩니다. 각 질문에는 다음 필드가 있습니다.
 
-| 필드            | 설명                                                                                                                   |
-| ------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `question`    | 표시할 전체 질문 텍스트                                                                                                        |
-| `header`      | 질문의 짧은 레이블(최대 12자)                                                                                                   |
-| `options`     | 각각 `label` 및 `description`이 있는 2-4개 선택 사항의 배열입니다. TypeScript: 선택적으로 `preview`([아래](#option-previews-type-script) 참조) |
-| `multiSelect` | `true`인 경우 사용자가 여러 옵션을 선택할 수 있습니다.                                                                                   |
+| 필드            | 설명                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `question`    | 표시할 전체 질문 텍스트                                                                                                       |
+| `header`      | 질문의 짧은 레이블(최대 12자)                                                                                                  |
+| `options`     | 각각 `label` 및 `description`이 있는 2-4개 선택 사항의 배열입니다. TypeScript: 선택적으로 `preview`([아래](#option-previews-typescript) 참조) |
+| `multiSelect` | `true`인 경우 사용자가 여러 옵션을 선택할 수 있습니다.                                                                                  |
 
 콜백이 받는 구조:
 
@@ -580,7 +592,9 @@ Claude가 여러 유효한 접근 방식이 있는 작업에 대해 더 많은 �
 }
 ```
 
-#### 옵션 미리보기(TypeScript)
+<h4 id="option-previews-typescript">
+  옵션 미리보기(TypeScript)
+</h4>
 
 `toolConfig.askUserQuestion.previewFormat`은 각 옵션에 `preview` 필드를 추가하므로 앱이 레이블 옆에 시각적 목업을 표시할 수 있습니다. 이 설정이 없으면 Claude는 미리보기를 생성하지 않으며 필드가 없습니다.
 
@@ -621,7 +635,9 @@ HTML 미리보기가 있는 옵션:
 }
 ```
 
-### 응답 형식
+<h3 id="response-format">
+  응답 형식
+</h3>
 
 각 질문의 `question` 필드를 선택된 옵션의 `label`에 매핑하는 `answers` 객체를 반환합니다.
 
@@ -631,7 +647,7 @@ HTML 미리보기가 있는 옵션:
 | `answers`   | 키가 질문 텍스트이고 값이 선택된 레이블인 객체입니다.               |
 | `response`  | 선택적 자유형 회신으로 사용자가 구조화된 질문에 답하는 대신 입력한 내용입니다. |
 
-다중 선택 질문의 경우 레이블 배열을 전달하거나 `", "`로 조인합니다. "Other" 옵션과 같은 질문별 자유 텍스트의 경우 사용자의 텍스트를 [자유 텍스트 입력 지원](#자유-텍스트-입력-지원)에 표시된 대로 `answers[question]`에 입력합니다. `response`는 사용자가 질문 카드를 닫고 특정 질문에 대한 답변이 아닌 일반적인 회신을 입력할 수 있는 UI가 있을 때만 설정합니다. `response`가 설정되면 Claude는 질문별 답변 목록 대신 "사용자가 응답했습니다: …"를 받습니다.
+다중 선택 질문의 경우 레이블 배열을 전달하거나 `", "`로 조인합니다. "Other" 옵션과 같은 질문별 자유 텍스트의 경우 사용자의 텍스트를 [자유 텍스트 입력 지원](#support-free-text-input)에 표시된 대로 `answers[question]`에 입력합니다. `response`는 사용자가 질문 카드를 닫고 특정 질문에 대한 답변이 아닌 일반적인 회신을 입력할 수 있는 UI가 있을 때만 설정합니다. `response`가 설정되면 Claude는 질문별 답변 목록 대신 "사용자가 응답했습니다: …"를 받습니다.
 
 ```json theme={null}
 {
@@ -645,16 +661,20 @@ HTML 미리보기가 있는 옵션:
 }
 ```
 
-#### 자유 텍스트 입력 지원
+<h4 id="support-free-text-input">
+  자유 텍스트 입력 지원
+</h4>
 
 Claude의 사전 정의된 옵션이 항상 사용자가 원하는 것을 다루지는 않습니다. 사용자가 자신의 답변을 입력하도록 허용하려면:
 
 * Claude의 옵션 후에 추가 "Other" 선택을 표시하여 텍스트 입력을 허용합니다.
 * 사용자의 사용자 정의 텍스트를 답변 값으로 사용합니다("Other"라는 단어가 아님).
 
-전체 구현은 아래의 [완전한 예제](#완전한-예제)를 참조하십시오.
+전체 구현은 아래의 [완전한 예제](#complete-example)를 참조하십시오.
 
-### 완전한 예제
+<h3 id="complete-example">
+  완전한 예제
+</h3>
 
 Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문을 합니다. 예를 들어 모바일 앱의 기술 스택을 결정하는 데 도움을 달라는 요청을 받으면 Claude는 크로스 플랫폼 대 네이티브, 백엔드 선호도 또는 대상 플랫폼에 대해 물어볼 수 있습니다. 이러한 질문은 Claude가 추측하기보다는 사용자의 선호도와 일치하는 결정을 내리는 데 도움이 됩니다.
 
@@ -821,16 +841,22 @@ Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문
   ```
 </CodeGroup>
 
-## 제한 사항
+<h2 id="limitations">
+  제한 사항
+</h2>
 
 * **서브에이전트**: `AskUserQuestion`은 현재 Agent 도구를 통해 생성된 서브에이전트에서 사용할 수 없습니다.
 * **질문 제한**: 각 `AskUserQuestion` 호출은 각각 2-4개 옵션이 있는 1-4개 질문을 지원합니다.
 
-## 사용자 입력을 얻는 다른 방법
+<h2 id="other-ways-to-get-user-input">
+  사용자 입력을 얻는 다른 방법
+</h2>
 
 `canUseTool` 콜백과 `AskUserQuestion` 도구는 대부분의 승인 및 명확화 시나리오를 다루지만, SDK는 사용자로부터 입력을 얻는 다른 방법을 제공합니다.
 
-### 스트리밍 입력
+<h3 id="streaming-input">
+  스트리밍 입력
+</h3>
 
 다음이 필요할 때 [스트리밍 입력](/ko/agent-sdk/streaming-vs-single-mode)을 사용하십시오.
 
@@ -840,7 +866,9 @@ Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문
 
 스트리밍 입력은 사용자가 승인 체크포인트에서만이 아니라 실행 전체에서 에이전트와 상호 작용하는 대화형 UI에 이상적입니다.
 
-### 사용자 정의 도구
+<h3 id="custom-tools">
+  사용자 정의 도구
+</h3>
 
 다음이 필요할 때 [사용자 정의 도구](/ko/agent-sdk/custom-tools)를 사용하십시오.
 
@@ -850,7 +878,9 @@ Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문
 
 사용자 정의 도구는 상호 작용을 완전히 제어할 수 있지만 기본 제공 `canUseTool` 콜백을 사용하는 것보다 더 많은 구현 작업이 필요합니다.
 
-## 관련 리소스
+<h2 id="related-resources">
+  관련 리소스
+</h2>
 
 * [권한 구성](/ko/agent-sdk/permissions): 권한 모드 및 규칙 설정
 * [훅으로 실행 제어](/ko/agent-sdk/hooks): 에이전트 수명 주기의 주요 지점에서 사용자 정의 코드 실행

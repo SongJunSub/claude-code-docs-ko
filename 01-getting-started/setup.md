@@ -36,7 +36,7 @@ Claude Code는 다음 플랫폼 및 구성에서 실행됩니다:
 </h2>
 
 <Tip>
-  그래픽 인터페이스를 선호하시나요? [Desktop 앱](/ko/desktop-quickstart)을 사용하면 터미널 없이 Claude Code를 사용할 수 있습니다. [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs) 또는 [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)용으로 다운로드하세요.
+  그래픽 인터페이스를 선호하시나요? [Desktop 앱](/ko/desktop-quickstart)을 사용하면 터미널 없이 Claude Code를 사용할 수 있습니다. [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs), [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs) 또는 [Linux](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)용으로 다운로드하세요.
 
   터미널이 처음이신가요? 단계별 지침은 [터미널 가이드](/ko/terminal-guide)를 참조하세요.
 </Tip>
@@ -64,6 +64,8 @@ To install Claude Code, use one of the following methods:
     ```
 
     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
+
+    If the install command fails with `syntax error near unexpected token '<'`, a `403`, or another curl error, see [Troubleshoot installation](/en/troubleshoot-install#find-your-error) to match the error to a fix and for alternative install methods.
 
     [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
 
@@ -258,6 +260,8 @@ Homebrew 설치는 이 설정 대신 cask 이름으로 채널을 선택합니다
 
 [관리 설정](/ko/permissions#managed-settings)에서 이는 사용자 및 프로젝트 설정이 재정의할 수 없는 조직 전체 최소값을 적용합니다.
 
+`minimumVersion` 핀은 업데이트만 제한합니다. Claude Code가 버전 범위 외에서 시작되지 않도록 하려면 관리 설정 `requiredMinimumVersion` 및 `requiredMaximumVersion`을 대신 사용하세요. 업데이트는 또한 `requiredMaximumVersion` 상한을 준수합니다. [사용 가능한 설정](/ko/settings#available-settings)을 참조하세요.
+
 <h3 id="disable-auto-updates">
   자동 업데이트 비활성화
 </h3>
@@ -366,13 +370,13 @@ claude update
   Linux 패키지 관리자로 설치
 </h3>
 
-Claude Code는 서명된 apt, dnf 및 apk 저장소를 게시합니다. 롤링 채널의 경우 `stable`을 `latest`로 바꾸세요. 패키지 관리자 설치는 Claude Code를 통해 자동 업데이트되지 않습니다. 업데이트는 일반적인 시스템 업그레이드 워크플로우를 통해 제공됩니다.
+Claude Code는 서명된 apt, dnf 및 apk 저장소를 게시합니다. 각 저장소는 두 가지 채널을 제공합니다. `stable`은 일반적으로 약 1주일 된 버전을 제공하며 주요 회귀가 있는 릴리스를 건너뛰고, `latest`는 모든 릴리스를 출시되는 즉시 제공합니다. 아래 명령은 대부분의 사용자에게 적합한 `stable` 채널을 구성합니다. 각 탭에는 `latest` 저장소 URL도 표시됩니다. 패키지 관리자 설치는 Claude Code를 통해 자동 업데이트되지 않습니다. 업데이트는 일반적인 시스템 업그레이드 워크플로우를 통해 제공됩니다.
 
 모든 저장소는 [Claude Code 릴리스 서명 키](#binary-integrity-and-code-signing)로 서명됩니다. 키를 신뢰하기 전에 각 탭에 설명된 대로 확인하세요.
 
 <Tabs>
   <Tab title="apt">
-    Debian 및 Ubuntu용입니다. 롤링 채널을 사용하려면 `deb` 줄의 두 `stable` 항목을 변경하세요: URL 경로 및 제품군 이름입니다.
+    Debian 및 Ubuntu용입니다. 다음 명령은 `stable` 채널을 구성합니다:
 
     ```bash theme={null}
     sudo install -d -m 0755 /etc/apt/keyrings
@@ -384,13 +388,20 @@ Claude Code는 서명된 apt, dnf 및 apk 저장소를 게시합니다. 롤링 �
     sudo apt install claude-code
     ```
 
+    대신 `latest` 채널을 사용하려면 URL 경로와 제품군 이름이 모두 변경됩니다. 이 `deb` 줄을 사용하세요:
+
+    ```bash theme={null}
+    echo "deb [signed-by=/etc/apt/keyrings/claude-code.asc] https://downloads.claude.ai/claude-code/apt/latest latest main" \
+      | sudo tee /etc/apt/sources.list.d/claude-code.list
+    ```
+
     신뢰하기 전에 GPG 키 지문을 확인하세요: `gpg --show-keys /etc/apt/keyrings/claude-code.asc`는 `31DD DE24 DDFA B679 F42D 7BD2 BAA9 29FF 1A7E CACE`를 보고해야 합니다.
 
     나중에 업그레이드하려면 `sudo apt update && sudo apt upgrade claude-code`를 실행하세요.
   </Tab>
 
   <Tab title="dnf">
-    Fedora 및 RHEL용입니다:
+    Fedora 및 RHEL용입니다. 다음 명령은 `stable` 채널을 구성합니다:
 
     ```bash theme={null}
     sudo tee /etc/yum.repos.d/claude-code.repo <<'EOF'
@@ -404,19 +415,32 @@ Claude Code는 서명된 apt, dnf 및 apk 저장소를 게시합니다. 롤링 �
     sudo dnf install claude-code
     ```
 
+    대신 `latest` 채널을 사용하려면 `baseurl`을 `latest` 저장소로 설정하세요:
+
+    ```ini theme={null}
+    baseurl=https://downloads.claude.ai/claude-code/rpm/latest
+    ```
+
     dnf는 첫 설치 시 키를 다운로드하고 지문을 확인하도록 요청합니다. `31DD DE24 DDFA B679 F42D 7BD2 BAA9 29FF 1A7E CACE`와 일치하는지 확인한 후 수락하세요.
 
     나중에 업그레이드하려면 `sudo dnf upgrade claude-code`를 실행하세요.
   </Tab>
 
   <Tab title="apk">
-    Alpine Linux용입니다:
+    Alpine Linux용입니다. 다음 명령은 `stable` 채널을 구성합니다:
 
     ```sh theme={null}
     wget -O /etc/apk/keys/claude-code.rsa.pub \
       https://downloads.claude.ai/keys/claude-code.rsa.pub
     echo "https://downloads.claude.ai/claude-code/apk/stable" >> /etc/apk/repositories
     apk add claude-code
+    ```
+
+    `latest` 채널로 전환하려면 `stable` 저장소 줄을 제거하고 `latest` 저장소를 추가하세요:
+
+    ```sh theme={null}
+    sed -i '\|downloads.claude.ai/claude-code/apk/stable|d' /etc/apk/repositories
+    echo "https://downloads.claude.ai/claude-code/apk/latest" >> /etc/apk/repositories
     ```
 
     `sha256sum /etc/apk/keys/claude-code.rsa.pub`로 다운로드한 키를 확인하세요. 이는 `395759c1f7449ef4cdef305a42e820f3c766d6090d142634ebdb049f113168b6`을 보고해야 합니다.
@@ -455,7 +479,7 @@ npm 설치를 업그레이드하려면 `npm install -g @anthropic-ai/claude-code
   매니페스트 서명 확인
 </h4>
 
-다음 단계 1-3에는 `gpg` 및 `curl`이 있는 POSIX 셸이 필요합니다. Windows에서는 Git Bash 또는 WSL에서 실행하세요. 4단계에는 PowerShell 옵션이 포함됩니다.
+단계 1-3에는 `gpg` 및 `curl`이 있는 POSIX 셸이 필요합니다. Windows에서는 Git Bash 또는 WSL에서 실행하세요. 단계 4에는 PowerShell 옵션이 포함됩니다.
 
 <Steps>
   <Step title="공개 키 다운로드 및 가져오기">
@@ -498,7 +522,7 @@ npm 설치를 업그레이드하려면 `npm install -g @anthropic-ai/claude-code
 
     유효한 결과는 `Good signature from "Anthropic Claude Code Release Signing <security@anthropic.com>"`을 보고합니다.
 
-    `gpg`는 또한 새로 가져온 키에 대해 `WARNING: This key is not certified with a trusted signature!`을 인쇄합니다. 이는 예상된 것입니다. `Good signature` 줄은 암호화 확인이 통과했음을 확인합니다. 1단계의 지문 비교는 키 자체가 진정함을 확인합니다.
+    `gpg`는 또한 새로 가져온 키에 대해 `WARNING: This key is not certified with a trusted signature!`을 인쇄합니다. 이는 예상된 것입니다. `Good signature` 줄은 암호화 확인이 통과했음을 확인합니다. 단계 1의 지문 비교는 키 자체가 진정함을 확인합니다.
   </Step>
 
   <Step title="바이너리를 매니페스트와 비교">

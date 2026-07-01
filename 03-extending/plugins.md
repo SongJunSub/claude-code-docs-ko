@@ -197,7 +197,7 @@ claude plugin init my-tool
   플러그인 구조 개요
 </h2>
 
-skills를 사용하여 플러그인을 만들었지만, 플러그인에는 훨씬 더 많은 것이 포함될 수 있습니다: 사용자 정의 agents, hooks, MCP servers, LSP servers, 백그라운드 모니터.
+skill을 사용하여 플러그인을 만들었지만, 플러그인에는 훨씬 더 많은 것이 포함될 수 있습니다: 사용자 정의 agents, hooks, MCP servers, LSP servers, 백그라운드 모니터.
 
 <Warning>
   **일반적인 실수**: `commands/`, `agents/`, `skills/`, `hooks/`를 `.claude-plugin/` 디렉토리 내에 넣지 마세요. `.claude-plugin/` 내에는 `plugin.json`만 들어갑니다. 다른 모든 디렉토리는 플러그인 루트 수준에 있어야 합니다.
@@ -215,6 +215,8 @@ skills를 사용하여 플러그인을 만들었지만, 플러그인에는 훨�
 | `monitors/`       | 플러그인 루트 | `monitors.json`의 백그라운드 모니터 구성                            |
 | `bin/`            | 플러그인 루트 | 플러그인이 활성화된 동안 Bash tool의 `PATH`에 추가되는 실행 파일              |
 | `settings.json`   | 플러그인 루트 | 플러그인이 활성화될 때 적용되는 기본 [설정](/ko/settings)                  |
+
+정확히 하나의 skill을 제공하는 플러그인은 `skills/` 디렉토리를 만드는 대신 `SKILL.md`를 플러그인 루트에 직접 배치할 수 있습니다. Claude Code는 이를 단일 skill로 로드하고 frontmatter `name` 필드를 호출 이름으로 사용합니다. 플러그인이 하나 이상의 skill로 성장할 수 있는 경우 `skills/` 레이아웃을 사용하세요.
 
 <Note>
   **다음 단계**: 더 많은 기능을 추가할 준비가 되셨나요? [더 복잡한 플러그인 개발](#develop-more-complex-plugins)로 이동하여 agents, hooks, MCP servers, LSP servers를 추가하세요. 모든 플러그인 구성 요소의 완전한 기술 사양은 [플러그인 참조](/ko/plugins-reference)를 참조하세요.
@@ -343,7 +345,7 @@ claude --plugin-dir ./my-plugin
 claude --plugin-dir ./my-plugin.zip
 ```
 
-`--plugin-dir` 플러그인이 설치된 마켓플레이스 플러그인과 동일한 이름을 가진 경우 로컬 복사본이 해당 세션에 우선합니다. 이를 통해 먼저 제거하지 않고도 이미 설치한 플러그인의 변경 사항을 테스트할 수 있습니다. 관리 설정에 의해 강제로 활성화된 마켓플레이스 플러그인은 유일한 예외이며 재정의할 수 없습니다.
+`--plugin-dir` 플러그인이 설치된 마켓플레이스 플러그인과 동일한 이름을 가진 경우 로컬 복사본이 해당 세션에 우선합니다. 이를 통해 먼저 제거하지 않고도 이미 설치한 플러그인의 변경 사항을 테스트할 수 있습니다. 관리 설정에 의해 강제로 활성화되거나 비활성화된 플러그인은 유일한 예외이며 `--plugin-dir`로 재정의할 수 없습니다.
 
 플러그인을 변경할 때 `/reload-plugins`를 실행하여 다시 시작하지 않고 업데이트를 적용합니다. 이는 플러그인, skills, agents, hooks, 플러그인 MCP servers, 플러그인 LSP servers를 다시 로드합니다. 플러그인 구성 요소를 테스트합니다:
 
@@ -402,13 +404,15 @@ claude --plugin-url "https://example.com/my-plugin.zip https://example.com/other
 
 Anthropic은 Claude Code 플러그인을 위한 두 개의 공개 마켓플레이스를 유지합니다:
 
-* **`claude-plugins-official`**: Anthropic에서 유지 관리하는 엄선된 플러그인 세트입니다. 모든 Claude Code 설치에서 자동으로 사용 가능합니다.
+* **`claude-plugins-official`**: Anthropic에서 유지 관리하는 엄선된 플러그인 세트입니다. Claude Code를 처음 대화형으로 시작할 때 자동으로 등록됩니다. 첫 번째 시작 전에 실행되는 비대화형 스크립트는 `claude plugin marketplace add anthropics/claude-plugins-official`로 명시적으로 추가해야 합니다.
 * **`claude-community`**: 검토 후 타사 제출이 도착하는 공개 커뮤니티 마켓플레이스입니다. 사용자는 `/plugin marketplace add anthropics/claude-plugins-community`로 추가하고 `@claude-community`로 설치합니다.
 
 커뮤니티 마켓플레이스 검토를 위해 플러그인을 제출하려면 다음 앱 내 양식 중 하나를 사용하세요:
 
-* **Claude.ai**: [claude.ai/settings/plugins/submit](https://claude.ai/settings/plugins/submit)
+* **claude.ai**: [claude.ai/admin-settings/directory/submissions/plugins/new](https://claude.ai/admin-settings/directory/submissions/plugins/new)
 * **Console**: [platform.claude.com/plugins/submit](https://platform.claude.com/plugins/submit)
+
+claude.ai 양식은 Team 또는 Enterprise 조직과 디렉토리 관리 액세스가 필요합니다. 조직 소유자는 기본적으로 이 액세스 권한을 가집니다. Team 또는 Enterprise 조직에 속하지 않은 개별 작성자는 대신 Console 양식을 사용할 수 있습니다.
 
 제출하기 전에 로컬에서 `claude plugin validate`를 실행하세요. 검토 파이프라인은 모든 제출에 대해 동일한 검사를 실행하며, 자동화된 안전 검사도 함께 수행합니다.
 
@@ -512,7 +516,7 @@ Anthropic이 플러그인을 공식 마켓플레이스에 나열하면 CLI에서
 | 공유하려면 수동으로 복사해야 함       | `/plugin install`로 설치       |
 
 <Note>
-  마이그레이션 후 중복을 피하기 위해 `.claude/`에서 원본 파일을 제거할 수 있습니다. 플러그인 버전이 로드될 때 우선합니다.
+  마이그레이션 후 중복을 피하기 위해 `.claude/`에서 원본 파일을 제거합니다. 프로젝트 및 사용자 `.claude/agents/` 정의는 같은 이름의 플러그인 agents를 재정의하므로, 원본이 제거되면 플러그인 버전만 적용됩니다.
 </Note>
 
 <h2 id="next-steps">

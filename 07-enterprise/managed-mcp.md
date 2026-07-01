@@ -44,7 +44,7 @@ Claude Code는 다양한 제한 수준을 지원합니다. 각 패턴은 아래�
   managed-mcp.json으로 독점 제어
 </h2>
 
-`managed-mcp.json` 파일을 배포하면 Claude Code는 해당 파일이 정의하는 서버만 로드합니다. 사용자는 플러그인 제공 서버를 포함한 다른 MCP 서버를 추가, 수정 또는 사용할 수 없으며, claude.ai 커넥터도 사용할 수 없습니다. 이 파일은 [관리형 집합과 함께 허용](#allow-claude-ai-connectors-alongside-the-managed-set)하지 않는 한 claude.ai 커넥터도 억제합니다.
+`managed-mcp.json` 파일을 배포하면 Claude Code는 해당 파일이 정의하는 서버만 로드합니다. 사용자는 플러그인 제공 서버를 포함한 다른 MCP 서버를 추가, 수정 또는 사용할 수 없습니다. 이 파일은 [관리형 집합과 함께 허용](#allow-claude-ai-connectors-alongside-the-managed-set)하지 않는 한 claude.ai 커넥터도 억제합니다.
 
 두 가지 다른 설정이 관리형 집합을 추가로 필터링할 수 있습니다:
 
@@ -161,8 +161,15 @@ Claude Code는 이 설정을 관리자 제어 정책 계층에서만 읽습니�
 | `deniedMcpServers`  | 서버 없음 차단      | 서버 없음 차단  | 일치하는 서버 차단  |
 
 <Warning>
-  `serverName` 항목만 사용하는 허용 목록은 보안 제어가 아닙니다. 이름은 `claude mcp add`를 실행하거나 구성 파일을 편집할 때 사용자가 할당하는 레이블이며, 기본 서버가 아니므로, 사용자는 모든 서버를 `github`라고 부를 수 있습니다. 실제로 실행되는 서버를 적용하려면, `serverCommand` 또는 `serverUrl` 항목을 추가합니다.
+  `serverName` 항목은 두 목록 중 하나에서 보안 제어가 아닙니다. 이름은 `claude mcp add`를 실행하거나 구성 파일을 편집할 때 사용자가 할당하는 레이블이며, 기본 서버가 아니므로, 사용자는 모든 서버를 `github`라고 부를 수 있습니다. claude.ai 커넥터의 경우 이름은 claude.ai에서 반환하는 표시 이름이며, 이는 변경될 수 있습니다. 실제로 실행되는 서버를 적용하려면, `serverCommand` 또는 `serverUrl` 항목을 추가합니다.
 </Warning>
+
+`serverName` 검증은 두 목록 간에 다릅니다:
+
+* {/* min-version: 2.1.182 */}`deniedMcpServers`에서, `serverName`은 모든 비어있지 않은 문자열을 허용하므로, 표시 이름으로 [claude.ai 커넥터](/ko/mcp#use-mcp-servers-from-claude-ai)를 차단할 수 있습니다. 예를 들어, `{ "serverName": "claude.ai Slack" }`은 Slack 커넥터를 차단합니다. 거부가 이름 변경에 강력해야 할 때 또는 커넥터 이름이 충돌하고 ` (N)` 접미사를 얻을 때 `serverUrl` 항목을 선호합니다.
+* `allowedMcpServers`에서, `serverName`은 문자, 숫자, 하이픈 및 밑줄로 제한됩니다. claude.ai 커넥터를 허용 목록에 추가하려면 `serverUrl`을 사용합니다.
+
+모든 claude.ai 커넥터를 끄려면, [`disableClaudeAiConnectors`](/ko/mcp#disable-claude-ai-connectors)를 참조합니다.
 
 <h3 id="how-a-server-is-evaluated">
   서버 평가 방법

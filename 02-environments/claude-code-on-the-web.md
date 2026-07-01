@@ -59,27 +59,29 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
 
 각 세션은 저장소가 복제된 새로운 Anthropic 관리 VM에서 실행됩니다. 이 섹션에서는 세션이 시작될 때 사용 가능한 것과 이를 사용자 정의하는 방법을 다룹니다.
 
-<h3 id="what-s-available-in-cloud-sessions">
+<h3 id="what’s-available-in-cloud-sessions">
   클라우드 세션에서 사용 가능한 것
 </h3>
 
-클라우드 세션은 저장소의 새로운 복제본에서 시작됩니다. 저장소에 커밋된 모든 것이 사용 가능합니다. 자신의 머신에만 설치하거나 구성한 것은 사용할 수 없습니다.
+클라우드 세션은 저장소의 새로운 복제본에서 시작됩니다. 저장소에 커밋된 모든 것이 사용 가능합니다. 자신의 머신에만 설치하거나 구성한 것은 사용할 수 없습니다. 조직의 정책은 [서버 관리 설정](/ko/server-managed-settings)을 통해 별도로 도착합니다.
 
-|                                                                | 클라우드 세션에서 사용 가능 | 이유                                                                                            |
-| :------------------------------------------------------------- | :-------------- | :-------------------------------------------------------------------------------------------- |
-| 저장소의 `CLAUDE.md`                                               | 예               | 복제본의 일부                                                                                       |
-| 저장소의 `.claude/settings.json` hooks                             | 예               | 복제본의 일부                                                                                       |
-| 저장소의 `.mcp.json` MCP 서버                                        | 예               | 복제본의 일부                                                                                       |
-| 저장소의 `.claude/rules/`                                          | 예               | 복제본의 일부                                                                                       |
-| 저장소의 `.claude/skills/`, `.claude/agents/`, `.claude/commands/` | 예               | 복제본의 일부                                                                                       |
-| `.claude/settings.json`에 선언된 플러그인                              | 예               | 선언한 [마켓플레이스](/ko/plugin-marketplaces)에서 세션 시작 시 설치됩니다. 마켓플레이스 소스에 도달하려면 네트워크 액세스가 필요합니다       |
-| 사용자 `~/.claude/CLAUDE.md`                                      | 아니오             | 저장소가 아닌 머신에 있습니다                                                                              |
-| 사용자 설정에서만 활성화된 플러그인                                            | 아니오             | 사용자 범위 `enabledPlugins`는 `~/.claude/settings.json`에 있습니다. 저장소의 `.claude/settings.json`에 선언하세요 |
-| `claude mcp add`로 추가한 MCP 서버                                   | 아니오             | 저장소가 아닌 로컬 사용자 구성에 씁니다. [`.mcp.json`](/ko/mcp#project-scope)에 서버를 선언하세요                       |
-| 정적 API 토큰 및 자격 증명                                              | 아니오             | 아직 전용 비밀 저장소가 없습니다. 아래를 참조하세요                                                                 |
-| AWS SSO와 같은 대화형 인증                                             | 아니오             | 지원되지 않습니다. SSO는 클라우드 세션에서 실행할 수 없는 브라우저 기반 로그인이 필요합니다                                         |
+|                                                                     | 클라우드 세션에서 사용 가능 | 이유                                                                                                                                                                                                |
+| :------------------------------------------------------------------ | :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 저장소의 `CLAUDE.md`                                                    | 예               | 복제본의 일부                                                                                                                                                                                           |
+| 저장소의 `.claude/settings.json` hooks                                  | 예               | 복제본의 일부                                                                                                                                                                                           |
+| 저장소의 `.mcp.json` MCP 서버                                             | 예               | 복제본의 일부                                                                                                                                                                                           |
+| 저장소의 `.claude/rules/`                                               | 예               | 복제본의 일부                                                                                                                                                                                           |
+| 저장소의 `.claude/skills/`, `.claude/agents/`, `.claude/commands/`      | 예               | 복제본의 일부                                                                                                                                                                                           |
+| `.claude/settings.json`에 선언된 플러그인                                   | 예               | 선언한 [마켓플레이스](/ko/plugin-marketplaces)에서 세션 시작 시 설치됩니다. 마켓플레이스 소스에 도달하려면 네트워크 액세스가 필요합니다                                                                                                           |
+| 조직의 [서버 관리 설정](/ko/server-managed-settings)                         | 예               | 세션이 시작될 때 Anthropic의 서버에서 가져옵니다. 클라우드 세션에서 `availableModels`이 어떻게 적용되는지는 [표면 범위](/ko/model-config#surface-coverage)를 참조하세요. MDM 또는 관리 설정 파일을 통해 장치에 배포된 설정은 세션이 Anthropic 관리 VM에서 실행되므로 적용되지 않습니다 |
+| 사용자 `~/.claude/CLAUDE.md`                                           | 아니오             | 저장소가 아닌 머신에 있습니다                                                                                                                                                                                  |
+| 사용자 `~/.claude/skills/`, `~/.claude/agents/`, `~/.claude/commands/` | 아니오             | 저장소가 아닌 머신에 있습니다. 대신 저장소의 `.claude/` 디렉토리에 커밋하세요. claude.ai에서 활성화한 Skills는 클라우드 세션에 자동으로 로드됩니다                                                                                                    |
+| 사용자 설정에서만 활성화된 플러그인                                                 | 아니오             | 사용자 범위 `enabledPlugins`는 `~/.claude/settings.json`에 있습니다. 저장소의 `.claude/settings.json`에 선언하세요                                                                                                     |
+| `claude mcp add`로 추가한 MCP 서버                                        | 아니오             | 저장소가 아닌 로컬 사용자 구성에 씁니다. [`.mcp.json`](/ko/mcp#project-scope)에 서버를 선언하세요                                                                                                                           |
+| 정적 API 토큰 및 자격 증명                                                   | 아니오             | 아직 전용 비밀 저장소가 없습니다. 아래를 참조하세요                                                                                                                                                                     |
+| AWS SSO와 같은 대화형 인증                                                  | 아니오             | 지원되지 않습니다. SSO는 클라우드 세션에서 실행할 수 없는 브라우저 기반 로그인이 필요합니다                                                                                                                                             |
 
-클라우드 세션에서 구성을 사용 가능하게 하려면 저장소에 커밋하세요. 아직 전용 비밀 저장소가 없습니다. 환경 변수와 설정 스크립트 모두 환경 구성에 저장되며, 해당 환경을 편집할 수 있는 모든 사람이 볼 수 있습니다. 클라우드 세션에서 비밀이 필요하면 이러한 가시성을 염두에 두고 환경 변수로 추가하세요.
+클라우드 세션에서 구성을 사용 가능하게 하려면 저장소에 커밋하세요. 조직 정책은 [서버 관리 설정](/ko/server-managed-settings)을 통해 별도로 도착합니다. 아직 전용 비밀 저장소가 없습니다. 환경 변수와 설정 스크립트 모두 환경 구성에 저장되며, 해당 환경을 편집할 수 있는 모든 사람이 볼 수 있습니다. 클라우드 세션에서 비밀이 필요하면 이러한 가시성을 염두에 두고 환경 변수로 추가하세요.
 
 <h3 id="installed-tools">
   설치된 도구
@@ -123,13 +125,15 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
   </Step>
 </Steps>
 
-<h3 id="link-artifacts-back-to-the-session">
-  아티팩트를 세션으로 다시 연결
+<h3 id="link-output-back-to-the-session">
+  세션으로 출력 다시 연결
 </h3>
 
 각 클라우드 세션에는 claude.ai의 트랜스크립트 URL이 있으며, 세션은 `CLAUDE_CODE_REMOTE_SESSION_ID` 환경 변수에서 자신의 ID를 읽을 수 있습니다. 이를 사용하여 PR 본문, 커밋 메시지, Slack 게시물 또는 생성된 보고서에 추적 가능한 링크를 넣어서 검토자가 이를 생성한 실행을 열 수 있습니다.
 
-변수의 값은 `cse_` 접두사를 사용하고, 트랜스크립트 URL 경로는 `session_` 접두사를 사용하는 동일한 ID를 사용합니다. 링크를 구성할 때 접두사를 대체하세요. 다음 명령은 URL을 인쇄합니다:
+v2.1.179부터 Claude가 웹 세션에서 생성하는 커밋에는 `Claude-Session: <url>` git 트레일러가 포함되며, PR 본문에는 세션 URL이 자체 줄에 포함됩니다. {/* min-version: 2.1.182 */}v2.1.182부터 [`attribution.sessionUrl`](/ko/settings#attribution-settings)을 `false`로 설정하여 트레일러와 PR 본문 링크를 생략할 수 있습니다.
+
+커밋이나 PR이 아닌 다른 것(예: Claude가 게시하는 Slack 메시지 또는 작성하는 보고서 파일)에 세션 링크를 포함하려면 Claude에 다음 명령을 실행하도록 하고 출력을 사용하세요. 이 명령은 환경 변수의 값에서 `cse_` 접두사를 트랜스크립트 URL이 예상하는 `session_` 접두사로 변환합니다:
 
 ```bash theme={null}
 echo "https://claude.ai/code/${CLAUDE_CODE_REMOTE_SESSION_ID/#cse_/session_}"
@@ -182,7 +186,7 @@ Docker는 컨테이너화된 서비스를 실행하는 데 사용 가능합니�
 | 환경 보관              | 환경을 편집하기 위해 열고 **Archive**를 선택합니다. 보관된 환경은 선택기에서 숨겨지지만 기존 세션은 계속 실행됩니다.                                             |
 | `--remote`의 기본값 설정 | 터미널에서 `/remote-env`를 실행합니다. 단일 환경이 있으면 이 명령은 현재 구성을 표시합니다. `/remote-env`는 기본값만 선택합니다. 웹 인터페이스에서 환경을 추가, 편집 및 보관합니다. |
 
-환경 변수는 `.env` 형식을 사용하며 한 줄에 하나의 `KEY=value` 쌍입니다. 따옴표는 값의 일부로 저장되므로 값을 따옴표로 감싸지 마세요.
+환경 변수는 `.env` 형식을 사용하며 한 줄에 하나의 `KEY=value` 쌍입니다. 따옴표는 값의 일부로 저장되므로 값을 따옴표로 감싸지 마세요. 이 예제는 세 개의 변수를 정의합니다:
 
 ```text theme={null}
 NODE_ENV=development
@@ -242,7 +246,7 @@ apt update && apt install -y gh
 | 실행    | Claude Code 시작 전, [캐시된 환경](#environment-caching)이 없을 때만 | Claude Code 시작 후, 재개된 세션을 포함한 모든 세션에서 |
 | 범위    | 클라우드 환경만                                                | 로컬 및 클라우드 모두                          |
 
-SessionStart hooks는 로컬의 사용자 수준 `~/.claude/settings.json`에서도 정의할 수 있지만 사용자 수준 설정은 클라우드 세션으로 이월되지 않습니다. 클라우드에서는 저장소에 커밋된 hooks만 실행됩니다.
+SessionStart hooks는 로컬의 사용자 수준 `~/.claude/settings.json`에서도 정의할 수 있지만 사용자 수준 설정은 클라우드 세션으로 이월되지 않습니다. 클라우드에서는 저장소에서 그리고 조직의 [서버 관리 설정](/ko/server-managed-settings)에서 hooks가 제공됩니다.
 
 <h3 id="install-dependencies-with-a-sessionstart-hook">
   SessionStart hook로 종속성 설치
@@ -353,6 +357,7 @@ registry.example.com
 * 악의적인 요청으로부터의 보호
 * 속도 제한 및 남용 방지
 * 향상된 보안을 위한 콘텐츠 필터링
+* 요청된 호스트명의 DNS 수준 감사 추적
 
 <h3 id="default-allowed-domains">
   기본 허용 도메인
@@ -588,6 +593,7 @@ registry.example.com
     * \*.sentry.io
     * downloads.sentry-cdn.com
     * http-intake.logs.datadoghq.com
+    * browser-intake-us5-datadoghq.com
     * \*.datadoghq.com
     * \*.datadoghq.eu
     * api.honeycomb.io
@@ -635,6 +641,8 @@ claude --remote "Fix the authentication bug in src/auth/login.ts"
 ```
 
 이렇게 하면 claude.ai에서 새 클라우드 세션이 생성됩니다. 세션은 현재 디렉토리의 GitHub 원격을 현재 분기에서 복제하므로, VM이 머신이 아닌 GitHub에서 복제하기 때문에 로컬 커밋이 있으면 먼저 푸시하세요. `--remote`는 한 번에 하나의 저장소에서 작동합니다. 작업은 클라우드에서 실행되는 동안 로컬에서 계속 작업할 수 있습니다.
+
+{/* min-version: 2.1.195 */}v2.1.195부터 CLI는 저장소 복제 및 [설정 스크립트](#setup-scripts) 실행과 같은 설정 단계의 라이브 체크리스트를 표시하며, 클라우드 컨테이너가 시작됩니다. 컨테이너가 프로비저닝되는 동안 입력한 메시지는 큐에 저장되었다가 세션이 준비되면 전송됩니다.
 
 <Note>
   `--remote`는 클라우드 세션을 생성합니다. `--remote-control`은 관련이 없습니다: 로컬 CLI 세션을 노출하여 웹에서 모니터링할 수 있습니다. [Remote Control](/ko/remote-control)을 참조하세요.
@@ -699,8 +707,8 @@ CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
 
 * **`--teleport` 사용**: 명령줄에서 `claude --teleport`를 실행하여 대화형 세션 선택기를 사용하거나 `claude --teleport <session-id>`를 실행하여 특정 세션을 직접 재개합니다. 커밋되지 않은 변경 사항이 있으면 먼저 stash하라는 메시지가 표시됩니다.
 * **`/teleport` 사용**: 기존 CLI 세션 내에서 `/teleport`(또는 `/tp`)를 실행하여 Claude Code를 다시 시작하지 않고 동일한 세션 선택기를 엽니다.
-* **`/tasks`에서**: `/tasks`를 실행하여 백그라운드 세션을 보고 `t`를 눌러 하나로 텔레포트합니다
-* **웹 인터페이스에서**: **Open in CLI**를 선택하여 터미널에 붙여넣을 수 있는 명령을 복사합니다
+* **`/tasks`에서**: `/tasks`를 실행하여 백그라운드 세션을 보고 `t`를 눌러 하나로 텔레포트합니다.
+* **웹 인터페이스에서**: **Open in CLI**를 선택하여 터미널에 붙여넣을 수 있는 명령을 복사합니다.
 
 세션을 텔레포트하면 Claude가 올바른 저장소에 있는지 확인하고, 클라우드 세션에서 분기를 가져와 체크아웃하고, 전체 대화 기록을 터미널에 로드합니다.
 
@@ -745,9 +753,11 @@ CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
 | `/context` | 예            | 현재 컨텍스트 윈도우에 있는 것을 표시합니다                                                    |
 | `/clear`   | 아니오          | 사이드바에서 새 세션을 시작하세요                                                          |
 
-자동 압축은 컨텍스트 윈도우가 용량에 접근할 때 자동으로 실행되며, CLI와 동일합니다. 더 일찍 트리거하려면 [환경 변수](#configure-your-environment)에서 [`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/ko/env-vars)를 설정하세요. 예를 들어 `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70`은 기본값 \~95% 대신 70% 용량에서 압축합니다. 압축 계산을 위한 유효 윈도우 크기를 변경하려면 [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/ko/env-vars)를 사용하세요.
+자동 압축은 컨텍스트 윈도우가 용량에 접근할 때 자동으로 실행됩니다. 더 일찍 트리거하려면 [환경 변수](#configure-your-environment)에서 [`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/ko/env-vars)를 설정하세요. 예를 들어 `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70`은 윈도우가 거의 가득 찰 때까지 기다리는 대신 70% 용량에서 압축합니다. 압축 계산을 위한 유효 윈도우 크기를 변경하려면 [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/ko/env-vars)를 사용하세요.
 
-[Subagents](/ko/sub-agents)는 로컬과 동일한 방식으로 작동합니다. Claude는 Task 도구로 이들을 생성하여 연구 또는 병렬 작업을 별도의 컨텍스트 윈도우로 오프로드하여 주 대화를 더 가볍게 유지할 수 있습니다. 저장소의 `.claude/agents/`에 정의된 Subagents는 자동으로 선택됩니다. [Agent teams](/ko/agent-teams)는 기본적으로 꺼져 있지만 [환경 변수](#configure-your-environment)에 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`을 추가하여 활성화할 수 있습니다.
+[Subagents](/ko/sub-agents)는 로컬과 동일한 방식으로 작동합니다. Claude는 Task 도구로 이들을 생성하여 연구 또는 병렬 작업을 별도의 컨텍스트 윈도우로 오프로드하여 주 대화를 더 가볍게 유지할 수 있습니다. 저장소의 `.claude/agents/`에 정의된 Subagents는 자동으로 선택됩니다.
+
+[Agent teams](/ko/agent-teams)는 기본적으로 꺼져 있지만 [환경 변수](#configure-your-environment)에 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`을 추가하여 활성화할 수 있습니다.
 
 <h3 id="review-changes">
   변경 사항 검토
@@ -765,7 +775,9 @@ CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
   Enterprise 또는 Team 계정에서 공유
 </h4>
 
-Enterprise 및 Team 계정의 경우 두 가지 가시성 옵션은 **Private** 및 **Team**입니다. Team 가시성은 claude.ai 조직의 다른 구성원에게 세션을 표시합니다. 저장소 액세스 확인은 기본적으로 수신자의 계정에 연결된 GitHub 계정을 기반으로 활성화됩니다. 계정의 표시 이름은 액세스 권한이 있는 모든 수신자에게 표시됩니다. [Claude in Slack](/ko/slack) 세션은 자동으로 Team 가시성으로 공유됩니다.
+Enterprise 및 Team 계정의 경우 두 가지 가시성 옵션은 **Private** 및 **Team**입니다. Team 가시성은 claude.ai 조직의 다른 구성원에게 세션을 표시합니다. [Claude in Slack](/ko/slack) 세션은 자동으로 Team 가시성으로 공유됩니다.
+
+저장소 액세스 확인은 기본적으로 수신자의 계정에 연결된 GitHub 계정을 기반으로 활성화됩니다. 계정의 표시 이름은 액세스 권한이 있는 모든 수신자에게 표시됩니다.
 
 <h4 id="share-from-a-max-or-pro-account">
   Max 또는 Pro 계정에서 공유
@@ -868,7 +880,7 @@ Claude는 GitHub의 검토 주석 스레드에 회신할 수 있습니다. 이�
 
 * 로컬에서 `/login`을 실행하여 자격 증명을 새로 고친 다음 다시 연결하세요
 * 세션을 소유한 동일한 계정으로 로그인했는지 확인하세요
-* `Remote Control may not be available for this organization`이 표시되면 관리자가 계획에 대해 원격 세션을 활성화하지 않았습니다
+* `Remote Control may not be available for this organization`이 표시되면 관리자가 클라우드 세션을 조직에 대해 활성화하지 않았습니다
 
 <h3 id="environment-expired">
   환경 만료
@@ -900,3 +912,4 @@ Claude는 GitHub의 검토 주석 스레드에 회신할 수 있습니다. 이�
 * [설정 참조](/ko/settings): 모든 구성 옵션
 * [보안](/ko/security): 격리 보장 및 데이터 처리
 * [데이터 사용](/ko/data-usage): Anthropic이 클라우드 세션에서 보유하는 것
+* [Claude Tag](https://claude.com/docs/claude-tag/overview): 동일한 클라우드 환경에서 실행되는 조직 관리형 Slack의 @Claude

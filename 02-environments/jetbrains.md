@@ -8,7 +8,9 @@
 
 Claude Code는 전용 플러그인을 통해 JetBrains IDE와 통합되며, 대화형 diff 보기, 선택 영역 컨텍스트 공유 등의 기능을 제공합니다.
 
-## 지원되는 IDE
+<h2 id="supported-ides">
+  지원되는 IDE
+</h2>
 
 Claude Code 플러그인은 다음을 포함한 대부분의 JetBrains IDE와 호환됩니다:
 
@@ -19,7 +21,9 @@ Claude Code 플러그인은 다음을 포함한 대부분의 JetBrains IDE와 �
 * PhpStorm
 * GoLand
 
-## 기능
+<h2 id="features">
+  기능
+</h2>
 
 * **빠른 실행**: `Cmd+Esc` (Mac) 또는 `Ctrl+Esc` (Windows/Linux)를 사용하여 편집기에서 직접 Claude Code를 열거나, UI의 Claude Code 버튼을 클릭합니다
 * **Diff 보기**: 코드 변경 사항을 터미널 대신 IDE diff 뷰어에 직접 표시할 수 있습니다
@@ -27,25 +31,43 @@ Claude Code 플러그인은 다음을 포함한 대부분의 JetBrains IDE와 �
 * **파일 참조 바로가기**: `Cmd+Option+K` (Mac) 또는 `Alt+Ctrl+K` (Linux/Windows)를 사용하여 `@src/auth.ts#L1-99`와 같은 파일 참조를 삽입합니다
 * **진단 공유**: IDE의 진단 오류 (lint 및 구문 오류 등)가 작업할 때 Claude와 자동으로 공유됩니다
 
-## 설치
+<h2 id="installation">
+  설치
+</h2>
 
-### 마켓플레이스 설치
+플러그인은 IDE의 통합 터미널에서 `claude` 명령을 실행하고 이에 연결합니다. 자체 CLI 복사본을 번들로 제공하지 않으므로 두 부분을 모두 설치해야 합니다.
 
-JetBrains 마켓플레이스에서 [Claude Code 플러그인](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-)을 찾아 설치하고 IDE를 다시 시작합니다.
+<Steps>
+  <Step title="Claude Code CLI 설치">
+    아직 설치하지 않았다면 [빠른 시작](/ko/quickstart)을 따라 CLI를 설치합니다. `claude`가 PATH에 없으면 플러그인에 "Claude Code를 시작할 수 없음" 알림이 표시됩니다.
+  </Step>
 
-Claude Code를 아직 설치하지 않았다면, [빠른 시작 가이드](/ko/quickstart)에서 설치 지침을 참조하세요.
+  <Step title="JetBrains 플러그인 설치">
+    JetBrains 마켓플레이스에서 [Claude Code 플러그인](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-)을 설치하고 IDE를 다시 시작합니다.
+  </Step>
+</Steps>
+
+`claude`가 IDE가 찾을 수 없는 위치에 설치된 경우 플러그인의 [Claude 명령 설정](#general-settings)에서 전체 경로를 설정합니다.
+
+Claude Code는 모든 유료 Claude 구독(Pro, Max, Team 또는 Enterprise) 또는 Claude Console 계정과 함께 작동하며, API 키가 필요하지 않습니다. `claude`를 처음 실행할 때 [로그인](/ko/authentication#log-in-to-claude-code)하라는 메시지가 표시됩니다.
 
 <Note>
   플러그인을 설치한 후 IDE를 완전히 다시 시작해야 적용될 수 있습니다.
 </Note>
 
-## 사용법
+<h2 id="usage">
+  사용법
+</h2>
 
-### IDE에서
+<h3 id="from-your-ide">
+  IDE에서
+</h3>
 
 IDE의 통합 터미널에서 `claude`를 실행하면 모든 통합 기능이 활성화됩니다.
 
-### 외부 터미널에서
+<h3 id="from-external-terminals">
+  외부 터미널에서
+</h3>
 
 모든 외부 터미널에서 `/ide` 명령을 사용하여 Claude Code를 JetBrains IDE에 연결하고 모든 기능을 활성화합니다:
 
@@ -59,9 +81,13 @@ claude
 
 Claude가 IDE와 동일한 파일에 액세스하도록 하려면, IDE 프로젝트 루트와 동일한 디렉터리에서 Claude Code를 시작합니다.
 
-## 구성
+<h2 id="configuration">
+  구성
+</h2>
 
-### Claude Code 설정
+<h3 id="claude-code-settings">
+  Claude Code 설정
+</h3>
 
 Claude Code의 설정을 통해 IDE 통합을 구성합니다:
 
@@ -69,11 +95,15 @@ Claude Code의 설정을 통해 IDE 통합을 구성합니다:
 2. `/config` 명령 입력
 3. diff 도구를 `auto`로 설정하여 IDE에서 diff를 표시하거나, `terminal`로 설정하여 터미널에 유지합니다
 
-### 플러그인 설정
+<h3 id="plugin-settings">
+  플러그인 설정
+</h3>
 
 \*\*설정 → 도구 → Claude Code \[Beta]\*\*로 이동하여 Claude Code 플러그인을 구성합니다:
 
-#### 일반 설정
+<h4 id="general-settings">
+  일반 설정
+</h4>
 
 * **Claude 명령**: Claude를 실행할 사용자 정의 명령을 지정합니다 (예: `claude`, `/usr/local/bin/claude`, 또는 `npx @anthropic-ai/claude-code`)
 * **Claude 명령을 찾을 수 없음에 대한 알림 표시 안 함**: Claude 명령을 찾을 수 없다는 알림을 건너뜁니다
@@ -84,7 +114,9 @@ Claude Code의 설정을 통해 IDE 통합을 구성합니다:
   WSL 사용자의 경우: Claude 명령으로 `wsl -d Ubuntu -- bash -lic "claude"`를 설정합니다 (`Ubuntu`를 WSL 배포판 이름으로 바꿉니다)
 </Tip>
 
-#### ESC 키 구성
+<h4 id="esc-key-configuration">
+  ESC 키 구성
+</h4>
 
 ESC 키가 JetBrains 터미널에서 Claude Code 작업을 중단하지 않는 경우:
 
@@ -96,9 +128,13 @@ ESC 키가 JetBrains 터미널에서 Claude Code 작업을 중단하지 않는 �
 
 이렇게 하면 ESC 키가 Claude Code 작업을 제대로 중단할 수 있습니다.
 
-## 특수 구성
+<h2 id="special-configurations">
+  특수 구성
+</h2>
 
-### 원격 개발
+<h3 id="remote-development">
+  원격 개발
+</h3>
 
 <Warning>
   JetBrains 원격 개발을 사용할 때는 \*\*설정 → 플러그인 (호스트)\*\*를 통해 원격 호스트에 플러그인을 설치해야 합니다.
@@ -106,11 +142,15 @@ ESC 키가 JetBrains 터미널에서 Claude Code 작업을 중단하지 않는 �
 
 플러그인은 로컬 클라이언트 머신이 아닌 원격 호스트에 설치해야 합니다.
 
-### WSL 구성
+<h3 id="wsl-configuration">
+  WSL 구성
+</h3>
 
 Claude Code를 WSL2의 JetBrains IDE와 함께 사용하고 "사용 가능한 IDE가 감지되지 않음"이 표시되는 경우, 원인은 일반적으로 WSL2의 NAT 네트워킹 또는 Windows 방화벽이 WSL2와 Windows 호스트에서 실행 중인 IDE 간의 연결을 차단하기 때문입니다. WSL1은 호스트의 네트워크를 직접 사용하므로 영향을 받지 않습니다.
 
-#### Windows 방화벽을 통해 WSL2 트래픽 허용
+<h4 id="allow-wsl2-traffic-through-windows-firewall">
+  Windows 방화벽을 통해 WSL2 트래픽 허용
+</h4>
 
 이것이 권장되는 해결책입니다. 기존 WSL2 네트워킹 모드를 유지하기 때문입니다.
 
@@ -138,7 +178,9 @@ Claude Code를 WSL2의 JetBrains IDE와 함께 사용하고 "사용 가능한 ID
   </Step>
 </Steps>
 
-#### WSL2를 미러링된 네트워킹으로 전환
+<h4 id="switch-wsl2-to-mirrored-networking">
+  WSL2를 미러링된 네트워킹으로 전환
+</h4>
 
 미러링된 네트워킹에는 Windows 11 22H2 이상이 필요합니다. Windows 10을 사용 중이면 대신 위의 방화벽 규칙을 사용합니다.
 
@@ -151,9 +193,13 @@ networkingMode=mirrored
 
 그런 다음 PowerShell에서 `wsl --shutdown`으로 WSL을 다시 시작합니다.
 
-## 문제 해결
+<h2 id="troubleshooting">
+  문제 해결
+</h2>
 
-### 플러그인이 작동하지 않음
+<h3 id="plugin-not-working">
+  플러그인이 작동하지 않음
+</h3>
 
 플러그인이 설치되었지만 Claude Code 기능이 IDE에 나타나지 않는 경우:
 
@@ -162,16 +208,20 @@ networkingMode=mirrored
 * IDE를 완전히 다시 시작합니다 (여러 번 수행해야 할 수 있습니다)
 * 원격 개발의 경우 플러그인이 원격 호스트에 설치되어 있는지 확인합니다
 
-### IDE가 감지되지 않음
+<h3 id="ide-not-detected">
+  IDE가 감지되지 않음
+</h3>
 
 `claude` 실행 시 "사용 가능한 IDE가 감지되지 않음"이 표시되는 경우:
 
 * 플러그인이 설치되고 활성화되어 있는지 확인합니다
 * IDE를 완전히 다시 시작합니다
 * 통합 터미널에서 Claude Code를 실행 중인지 확인합니다
-* WSL 사용자의 경우 위의 [WSL 구성](#wsl-구성)을 참조하세요
+* WSL 사용자의 경우 위의 [WSL 구성](#wsl-configuration)을 참조하세요
 
-### 명령을 찾을 수 없음
+<h3 id="command-not-found">
+  명령을 찾을 수 없음
+</h3>
 
 Claude 아이콘을 클릭하면 "명령을 찾을 수 없음"이 표시되는 경우:
 
@@ -179,9 +229,11 @@ Claude 아이콘을 클릭하면 "명령을 찾을 수 없음"이 표시되는 �
 2. 플러그인 설정에서 Claude 명령 경로를 구성합니다
 3. WSL 사용자의 경우 구성 섹션에서 언급한 WSL 명령 형식을 사용합니다
 
-## 보안 고려 사항
+<h2 id="security-considerations">
+  보안 고려 사항
+</h2>
 
-Claude Code가 자동 편집 권한이 활성화된 JetBrains IDE에서 실행될 때, IDE에서 자동으로 실행될 수 있는 IDE 구성 파일을 수정할 수 있습니다. 이는 자동 편집 모드에서 Claude Code를 실행하는 위험을 증가시킬 수 있으며 bash 실행에 대한 Claude Code의 권한 프롬프트를 우회할 수 있습니다.
+Claude Code가 [`acceptEdits` 권한 모드](/ko/permission-modes#auto-approve-file-edits-with-acceptedits-mode)에서 JetBrains IDE에서 실행될 때, IDE에서 자동으로 실행될 수 있는 IDE 구성 파일을 수정할 수 있습니다. 이는 `acceptEdits` 모드에서 Claude Code를 실행하는 위험을 증가시킬 수 있으며 bash 실행에 대한 Claude Code의 권한 프롬프트를 우회할 수 있습니다.
 
 JetBrains IDE에서 실행할 때 다음을 고려합니다:
 

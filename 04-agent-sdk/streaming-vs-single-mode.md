@@ -218,6 +218,12 @@ sequenceDiagram
   ```
 </CodeGroup>
 
+<Note>
+  TypeScript SDK에서 예를 들어 읽는 파일이 누락되었을 때 메시지 생성기가 throw하면, 스트림은 원래 오류 대신 `Claude Code process aborted by user`라고 읽는 오류로 끝나므로, 해당 메시지가 표시되면 먼저 생성기 내부의 코드를 확인하십시오. 오류 앞에 번들된 SDK 소스의 긴 축소된 줄이 있을 수도 있으므로, 오류 텍스트를 찾기 위해 출력의 끝까지 읽으십시오.
+
+  Python SDK에서는 생성기 예외가 디버그 수준에서 기록되고 세션이 raise하지 않고 정지되므로, 스트리밍 세션이 출력 없이 중단되면 디버그 로깅을 활성화하고 생성기를 확인하십시오.
+</Note>
+
 <h2 id="single-message-input">
   단일 메시지 입력
 </h2>
@@ -247,7 +253,9 @@ sequenceDiagram
   * 자연스러운 다중 턴 대화
 </Warning>
 
-<h3 id="implementation-example">
+쿼리가 `error_max_turns`와 같은 오류 결과로 끝나면, 단일 메시지 `query()` 호출은 최종 결과 메시지를 생성한 후 실패 텍스트를 포함하는 오류를 발생시키므로, 코드가 계속 실행되어야 하는 경우 루프를 try 블록으로 감싸십시오. 결과 하위 유형에 대해서는 [결과 처리](/ko/agent-sdk/agent-loop#handle-the-result)를 참조하십시오.
+
+<h3 id="implementation-example-1">
   구현 예제
 </h3>
 

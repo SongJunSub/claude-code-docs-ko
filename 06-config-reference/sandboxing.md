@@ -8,13 +8,6 @@
 
 Bash 샌드박스를 사용하면 Claude가 대부분의 셸 명령을 권한을 요청하지 않고 실행할 수 있습니다. 각 명령을 승인하는 대신 명령이 접근할 수 있는 파일과 네트워크 도메인을 정의하면 운영 체제가 모든 Bash 명령과 그 자식 프로세스에 대해 해당 경계를 적용합니다.
 
-이 페이지에서는 다음을 다룹니다:
-
-* [샌드박스 활성화](#get-started) 및 샌드박싱된 명령이 승인되는 방식 선택
-* [경로 및 네트워크 도메인 구성](#configure-sandboxing) 명령이 접근할 수 있는 것
-* [샌드박싱을 권한 규칙 및 권한 모드와 결합](#how-sandboxing-relates-to-permissions-and-permission-modes)
-* [조직 전체에서 샌드박싱 적용](#configure-the-sandbox-for-your-organization) 관리 설정 사용
-
 <Note>
   dev 컨테이너, 사용자 정의 컨테이너, 가상 머신 등 다른 격리 방식을 비교하려면 [샌드박스 환경](/ko/sandbox-environments)을 참조하세요. Bash 이외의 도구에 대한 권한 프롬프트를 줄이려면 [권한 모드](/ko/permission-modes)를 참조하세요.
 </Note>
@@ -49,7 +42,7 @@ macOS에서는 설치할 것이 없습니다: 샌드박싱은 기본 제공 Seat
   </Step>
 
   <Step title="Bash 명령 실행">
-    Claude에게 빌드 또는 테스트 스위트와 같은 명령을 실행하도록 요청합니다. 기본적으로 샌드박스 내의 명령은 작업 디렉토리에만 쓸 수 있습니다. 명령이 새 네트워크 도메인에 처음 액세스해야 할 때 Claude Code가 승인을 요청합니다.
+    Claude에게 빌드 또는 테스트 스위트와 같은 명령을 실행하도록 요청합니다. 기본적으로 샌드박스 내의 명령은 작업 디렉토리 및 세션 임시 디렉토리에만 쓸 수 있습니다. 명령이 새 네트워크 도메인에 처음 액세스해야 할 때 Claude Code가 승인을 요청합니다.
 
     샌드박싱할 수 없는 명령은 일반 권한 흐름으로 폴백합니다. 이러한 경계를 확대하거나 축소하려면 [샌드박싱 구성](#configure-sandboxing)을 참조하세요.
   </Step>
@@ -134,11 +127,14 @@ Claude Code는 두 가지 샌드박스 모드를 제공합니다:
 
 * 명시적 [거부 규칙](/ko/permissions)은 항상 존중됩니다
 * `/`, 홈 디렉토리 또는 기타 중요한 시스템 경로를 대상으로 하는 `rm` 또는 `rmdir` 명령은 여전히 권한 프롬프트를 트리거합니다
-* [Ask 규칙](/ko/permissions)은 일반 권한 흐름으로 폴백되는 명령에 적용됩니다
+* `Bash(git push *)`와 같은 콘텐츠 범위 [ask 규칙](/ko/permissions)은 샌드박싱된 명령에 대해서도 프롬프트를 강제합니다
+* 단순 `Bash` ask 규칙 또는 동등한 `Bash(*)` 형식은 샌드박싱된 명령에 대해 건너뛰어지며, 일반 권한 흐름으로 폴백되는 명령에는 여전히 적용됩니다
 
 **일반 권한 모드**: 모든 Bash 명령은 샌드박싱되었더라도 일반 권한 흐름을 거칩니다. 이는 더 많은 제어를 제공하지만 더 많은 승인이 필요합니다.
 
 두 모드 모두에서 샌드박스는 동일한 파일시스템 및 네트워크 제한을 적용합니다. 차이점은 샌드박싱된 명령이 자동 승인되는지 또는 명시적 권한이 필요한지 여부뿐입니다.
+
+세션 임시 디렉토리는 기본적으로 작업 디렉토리와 함께 샌드박스 내에서 쓰기 가능합니다. Claude Code는 샌드박싱된 명령에 대해 `$TMPDIR`을 이 디렉토리로 설정하므로 임시 파일을 작성하는 도구는 추가 구성 없이 작동합니다. 샌드박싱되지 않은 명령은 셸의 `$TMPDIR`을 변경되지 않은 상태로 상속하므로, 샌드박싱된 명령과 샌드박싱되지 않은 명령은 `$TMPDIR`을 다른 디렉토리로 해석합니다. 두 명령 간에 임시 파일을 전달하려면 작업 디렉토리 아래에 작성하세요.
 
 일부 명령은 샌드박스 내에서 전혀 실행할 수 없습니다. 예를 들어 호환되지 않는 도구나 허용하지 않은 호스트가 필요한 도구입니다. 작업을 실패하거나 샌드박싱을 끄도록 요구하는 대신 Claude Code는 탈출 해치를 포함합니다: 명령이 샌드박스 제한으로 인해 실패하면 Claude는 실패를 분석하고 `dangerouslyDisableSandbox` 매개변수로 명령을 다시 시도할 수 있습니다. 다시 시도된 명령은 샌드박스 외부에서 실행되므로 일반 권한 흐름을 거치고 승인이 필요합니다.
 
@@ -154,7 +150,7 @@ Claude Code는 두 가지 샌드박스 모드를 제공합니다:
 
 `settings.json` 파일을 통해 샌드박스 동작을 사용자 정의합니다. 전체 구성 참조는 [설정](/ko/settings#sandbox-settings)을 참조하세요.
 
-기본적으로 샌드박싱된 명령은 현재 작업 디렉토리에만 쓸 수 있습니다. `kubectl`, `terraform` 또는 `npm`과 같은 하위 프로세스 명령이 프로젝트 디렉토리 외부에 쓰기해야 하면 `sandbox.filesystem.allowWrite`를 사용하여 특정 경로에 대한 액세스를 부여합니다:
+기본적으로 샌드박싱된 명령은 현재 작업 디렉토리와 세션 임시 디렉토리에만 쓸 수 있습니다. `kubectl`, `terraform` 또는 `npm`과 같은 하위 프로세스 명령이 해당 디렉토리 외부에 쓰기해야 하면 `sandbox.filesystem.allowWrite`를 사용하여 특정 경로에 대한 액세스를 부여합니다:
 
 ```json theme={null}
 {
@@ -199,6 +195,36 @@ Claude Code는 두 가지 샌드박스 모드를 제공합니다:
 
 `.`의 `allowRead`는 이 구성이 프로젝트 설정에 있으므로 프로젝트 루트로 해석됩니다. 동일한 구성을 `~/.claude/settings.json`에 배치했다면 `.`은 `~/.claude`로 해석되고 프로젝트 파일은 `denyRead` 규칙에 의해 차단된 상태로 유지됩니다.
 
+<h3 id="protect-credentials">
+  자격증명 보호
+</h3>
+
+`sandbox.credentials` 설정은 샌드박싱된 명령이 액세스하면 안 되는 자격증명 파일 및 환경 변수를 선언합니다. 나열된 파일 경로는 샌드박스 내에서 읽기가 거부되며, `filesystem.denyRead`가 적용하는 것과 동일한 제한이고, 나열된 환경 변수는 각 샌드박싱된 명령 실행 전에 설정 해제됩니다. 전용 `credentials` 블록은 자격증명 규칙을 환경 변수 설정 해제와 함께 그룹화하고 일반 파일시스템 규칙과 분리합니다. Claude Code v2.1.187 이상이 필요합니다.
+
+아래 예제는 AWS 자격증명 파일 및 SSH 디렉토리의 읽기를 차단하고 샌드박싱된 명령의 환경에서 `GITHUB_TOKEN` 및 `NPM_TOKEN`을 제거합니다:
+
+```json theme={null}
+{
+  "sandbox": {
+    "enabled": true,
+    "credentials": {
+      "files": [
+        { "path": "~/.aws/credentials", "mode": "deny" },
+        { "path": "~/.ssh", "mode": "deny" }
+      ],
+      "envVars": [
+        { "name": "GITHUB_TOKEN", "mode": "deny" },
+        { "name": "NPM_TOKEN", "mode": "deny" }
+      ]
+    }
+  }
+}
+```
+
+각 항목은 `"mode": "deny"`를 포함하며, 이는 유일하게 지원되는 값입니다. 명시적 `mode` 필드는 스키마를 향후 모드와의 호환성을 유지합니다. 파일 경로는 `sandbox.filesystem.*` 설정과 동일한 [접두사 규칙](/ko/settings#sandbox-path-prefixes)을 따르며, 모든 [설정 범위](/ko/settings#settings-precedence)의 항목이 병합됩니다. 유일한 모드가 `deny`이므로 모든 범위는 제한을 추가할 수 있지만 제거할 수는 없습니다.
+
+기본 제공 자격증명 거부 목록이 없으므로 나열한 파일 및 변수만 제한됩니다. 이 설정은 샌드박싱된 Bash 명령에만 영향을 미칩니다. 샌드박싱 여부와 관계없이 모든 하위 프로세스에서 Anthropic 및 클라우드 공급자 자격증명을 제거하려면 [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/ko/env-vars)를 설정합니다.
+
 <h2 id="how-sandboxing-works">
   샌드박싱 작동 방식
 </h2>
@@ -209,9 +235,9 @@ Claude Code는 두 가지 샌드박스 모드를 제공합니다:
 
 샌드박싱된 Bash 도구는 파일 시스템 액세스를 특정 디렉토리로 제한합니다:
 
-* **기본 쓰기 동작**: 현재 작업 디렉토리 및 그 하위 디렉토리에 대한 읽기 및 쓰기 액세스
-* **기본 읽기 동작**: 특정 거부된 디렉토리를 제외한 전체 컴퓨터에 대한 읽기 액세스. 이 기본값은 여전히 `~/.aws/credentials` 및 `~/.ssh/`와 같은 자격 증명 파일 읽기를 허용합니다. 이를 차단하려면 `denyRead`에 추가합니다.
-* **차단된 액세스**: 명시적 권한 없이 현재 작업 디렉토리 외부의 파일을 수정할 수 없습니다. `~/.bashrc`와 같은 셸 구성 파일 및 `/bin/`의 시스템 바이너리 포함
+* **기본 쓰기 동작**: 현재 작업 디렉토리 및 그 하위 디렉토리에 대한 읽기 및 쓰기 액세스, 그리고 `$TMPDIR`이 가리키는 세션 임시 디렉토리에 대한 액세스
+* **기본 읽기 동작**: 특정 거부된 디렉토리를 제외한 전체 컴퓨터에 대한 읽기 액세스. 이 기본값은 여전히 `~/.aws/credentials` 및 `~/.ssh/`와 같은 자격 증명 파일 읽기를 허용합니다. [`sandbox.credentials`](#protect-credentials)를 사용하여 이러한 파일의 읽기를 차단하고 비밀 환경 변수를 설정 해제하거나, 경로를 `denyRead`에 추가합니다.
+* **차단된 액세스**: 명시적 권한 없이 현재 작업 디렉토리 및 세션 임시 디렉토리 외부의 파일을 수정할 수 없습니다. `~/.bashrc`와 같은 셸 구성 파일 및 `/bin/`의 시스템 바이너리 포함
 * **Git worktrees**: 작업 디렉토리가 [연결된 git worktree](/ko/worktrees)일 때, 샌드박스는 또한 메인 저장소의 공유 `.git` 디렉토리에 대한 쓰기를 허용하므로 `git commit`과 같은 명령이 refs 및 인덱스를 업데이트할 수 있습니다. 해당 디렉토리 내의 `hooks/` 및 `config`에 대한 쓰기는 계속 거부됩니다.
 * **구성 가능**: 설정을 통해 사용자 정의 허용 및 거부 경로를 정의합니다
 
@@ -223,7 +249,7 @@ Claude Code는 두 가지 샌드박스 모드를 제공합니다:
 
 네트워크 액세스는 샌드박스 외부에서 실행되는 프록시 서버를 통해 제어됩니다:
 
-* **도메인 제한**: 사전 허용된 도메인이 없습니다. 명령이 새 도메인에 처음 액세스해야 할 때 Claude Code가 승인을 요청합니다. [`allowedDomains`](/ko/settings#sandbox-settings)로 도메인을 사전 허용하여 프롬프트를 피합니다.
+* **도메인 제한**: 사전 허용된 도메인이 없습니다. 명령이 새 도메인에 처음 액세스해야 할 때 Claude Code가 승인을 요청합니다. {/* min-version: 2.1.191 */}v2.1.191부터 예를 선택하면 현재 세션의 나머지 기간 동안 호스트가 허용되므로 나중에 동일한 호스트에 연결해도 다시 프롬프트가 표시되지 않습니다. [`allowedDomains`](/ko/settings#sandbox-settings)로 도메인을 사전 허용하여 프롬프트를 피합니다.
 * **관리 잠금**: [`allowManagedDomainsOnly`](/ko/settings#sandbox-settings)가 관리 설정에서 설정되면 허용되지 않은 도메인이 프롬프트 대신 자동으로 차단되며 관리 설정의 `allowedDomains`만 존중됩니다.
 * **사용자 정의 프록시 지원**: 고급 사용자는 나가는 트래픽에 대한 사용자 정의 규칙을 구현할 수 있습니다
 * **포괄적 범위**: 제한은 명령으로 생성된 모든 스크립트, 프로그램 및 하위 프로세스에 적용됩니다
@@ -286,11 +312,11 @@ WSL1은 bubblewrap이 WSL2에서만 사용 가능한 커널 기능을 필요로 
 
 `/sandbox`는 [권한 모드](/ko/permission-modes)가 아닙니다. 권한 모드는 도구 호출이 실행되는지 여부와 먼저 프롬프트되는지 여부를 결정하는 반면, 샌드박스는 Bash 명령이 실행되면 액세스할 수 있는 것을 제한합니다. 제어하는 것과 작업별 프롬프트를 대체하는 것이 다릅니다:
 
-|                                                                | 제어하는 것                    | 프롬프트를 대체하는 것                                                                                |
-| :------------------------------------------------------------- | :------------------------ | :------------------------------------------------------------------------------------------ |
-| `/sandbox`                                                     | Bash 명령이 실행되면 액세스할 수 있는 것 | [자동 허용 모드](#sandbox-modes)의 샌드박스 경계 자체                                                      |
-| [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode) | 각 도구 호출이 실행되는지 여부         | 작업을 검토하는 분류기                                                                                |
-| `--dangerously-skip-permissions`                               | 각 도구 호출이 실행되는지 여부         | 없음. [보호된 경로](/ko/permission-modes#protected-paths) 확인도 건너뜁니다. `/` 또는 홈 디렉토리 제거만 여전히 프롬프트합니다 |
+|                                                                | 제어하는 것                    | 프롬프트를 대체하는 것                                                                                                                                     |
+| :------------------------------------------------------------- | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/sandbox`                                                     | Bash 명령이 실행되면 액세스할 수 있는 것 | [자동 허용 모드](#sandbox-modes)의 샌드박스 경계 자체                                                                                                           |
+| [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode) | 각 도구 호출이 실행되는지 여부         | 작업을 검토하는 분류기                                                                                                                                     |
+| `--dangerously-skip-permissions`                               | 각 도구 호출이 실행되는지 여부         | 없음. [보호된 경로](/ko/permission-modes#protected-paths) 확인도 건너뜁니다. 명시적 [요청 규칙](/ko/permissions#manage-permissions) 제거 및 `/` 또는 홈 디렉토리 제거만 여전히 프롬프트합니다 |
 
 샌드박스의 [자동 허용 모드](#sandbox-modes)는 [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)와 별개입니다: 자동 허용은 샌드박스 경계가 이를 포함하기 때문에 Bash 명령을 승인하는 반면, 자동 모드는 분류기를 사용하여 작업을 검토합니다. 두 가지는 독립적으로 작동하며 결합할 수 있습니다. 무인 실행을 위한 격리 경계를 선택하려면 [샌드박스 환경](/ko/sandbox-environments#how-isolation-relates-to-permission-modes)을 참조하세요.
 
@@ -323,7 +349,7 @@ WSL1은 bubblewrap이 WSL2에서만 사용 가능한 커널 기능을 필요로 
 * **`failIfUnavailable`**: Linux의 bubblewrap과 같은 누락된 종속성이 경고를 표시하고 샌드박싱 없는 실행으로 폴백하는 대신 Claude Code가 시작되는 것을 차단합니다
 * **`allowUnsandboxedCommands: false`**: `dangerouslyDisableSandbox` 탈출 해치가 무시되므로 샌드박스에서 실패한 명령을 샌드박스 외부에서 다시 시도할 수 없습니다
 
-함께 고려할 가치가 있는 두 가지 추가 사항이 있습니다. 격리 없이 실행해야 하는 조직 승인 도구에 대해 `excludedCommands`를 추가합니다. `~/.aws` 및 `~/.ssh`와 같은 자격 증명 디렉토리에 대해 [`denyRead`](#filesystem-isolation) 항목을 추가합니다. 기본 읽기 정책은 여전히 이를 허용합니다.
+함께 고려할 가치가 있는 두 가지 추가 사항이 있습니다. 격리 없이 실행해야 하는 조직 승인 도구에 대해 `excludedCommands`를 추가합니다. `~/.aws` 및 `~/.ssh`와 같은 자격 증명 디렉토리에 대해 [`sandbox.credentials`](#protect-credentials) 항목을 추가합니다. 기본 읽기 정책은 여전히 이를 허용합니다.
 
 샌드박스는 기본 Windows에서 실행되지 않으므로 플릿에 Windows 호스트가 포함되면 이 구성을 macOS 및 Linux로 범위를 지정하거나 해당 사용자가 WSL2 또는 컨테이너 내에서 Claude Code를 실행하도록 합니다.
 
@@ -370,6 +396,7 @@ Claude Code를 프록시로 지정하려면 [샌드박스 설정](/ko/settings#s
 * **명령이 host-not-allowed 오류로 실패**: 많은 CLI 도구는 특정 호스트에 도달해야 합니다. 프롬프트될 때 권한을 부여하면 호스트가 허용 목록에 추가되므로 도구가 향후 샌드박스 내에서 실행됩니다.
 * **`jest`가 중단되거나 실패**: `watchman`은 샌드박스와 호환되지 않습니다. 대신 `jest --no-watchman`을 실행합니다.
 * **Go 기반 CLI가 macOS에서 TLS 검증 실패**: `gh`, `gcloud`, `terraform`과 같은 도구는 Seatbelt에서 TLS 검증에 실패할 수 있습니다. 이러한 도구를 `excludedCommands`에 나열하여 샌드박스 외부에서 실행합니다. MITM 프록시 및 사용자 정의 CA와 함께 `httpProxyPort`를 사용하는 경우 대신 [`enableWeakerNetworkIsolation`](/ko/settings#sandbox-settings)을 `true`로 설정합니다.
+* **`open`, `osascript`, 또는 브라우저 기반 인증 흐름이 macOS에서 오류 `-600`으로 실패**: 샌드박스는 기본적으로 Apple Events를 차단합니다. 사용자, 관리 또는 CLI 설정에서 [`allowAppleEvents`](/ko/settings#sandbox-settings)를 `true`로 설정하여 이를 허용합니다. 프로젝트 설정은 이 키에 대해 무시됩니다. 이를 활성화하면 샌드박싱된 명령이 사용자 프롬프트 없이 다른 애플리케이션을 비샌드박싱된 상태로 시작할 수 있고 실행 중인 애플리케이션에 AppleScript 명령을 보낼 수 있으므로 코드 실행 격리가 제거됩니다. 이는 macOS 자동화 동의 프롬프트(TCC)의 적용을 받습니다. 또는 명령을 `excludedCommands`에 추가하여 샌드박스 외부에서 실행합니다.
 * **`docker` 명령 실패**: `docker`는 샌드박스와 호환되지 않습니다. `docker *`를 `excludedCommands`에 추가하여 샌드박스 외부에서 실행합니다.
 * **컨테이너 내에서 Bubblewrap 시작 실패**: 권한 없는 컨테이너에서 bubblewrap은 새로운 `/proc` 파일시스템을 마운트할 수 없습니다. [`enableWeakerNestedSandbox`](/ko/settings#sandbox-settings)를 `true`로 설정하여 내부 샌드박스가 컨테이너의 기존 `/proc`을 바인드 마운트하도록 합니다. 외부 컨테이너가 이미 필요한 격리 경계를 제공할 때만 이 설정을 사용합니다. 새로운 `/proc` 마운트가 숨길 프로세스 정보를 샌드박싱된 명령에 노출하기 때문입니다.
 * **Linux의 Seccomp 필터**: seccomp 필터는 Unix 도메인 소켓을 차단하는 데 필요합니다. `/sandbox`의 Dependencies 탭은 사용 가능한지 보여줍니다. 누락된 경우 `npm install -g @anthropic-ai/sandbox-runtime`을 실행하여 도우미를 설치합니다.
@@ -394,6 +421,7 @@ Claude Code를 프록시로 지정하려면 [샌드박스 설정](/ko/settings#s
 * **Unix 소켓을 통한 권한 상승**: `allowUnixSockets` 구성은 실수로 샌드박스 우회로 이어질 수 있는 강력한 시스템 서비스에 대한 액세스를 부여할 수 있습니다. 예를 들어 `/var/run/docker.sock`에 대한 액세스를 허용하면 Docker 소켓을 통해 호스트 시스템에 대한 액세스를 효과적으로 부여합니다. 샌드박스를 통해 허용하는 모든 Unix 소켓을 신중하게 고려합니다.
 * **파일시스템 권한 상승**: 과도하게 광범위한 파일시스템 쓰기 권한은 권한 상승 공격을 가능하게 할 수 있습니다. `$PATH`의 실행 파일을 포함하는 디렉토리, 시스템 구성 디렉토리 또는 `.bashrc` 또는 `.zshrc`와 같은 사용자 셸 구성 파일에 대한 쓰기를 허용하면 다른 사용자 또는 시스템 프로세스가 이러한 파일에 액세스할 때 다른 보안 컨텍스트에서 코드 실행으로 이어질 수 있습니다.
 * **Linux 샌드박스 강도**: Linux 구현은 강력한 파일시스템 및 네트워크 격리를 제공하지만 권한 있는 네임스페이스 없이 Docker 환경 내에서 작동할 수 있도록 하는 `enableWeakerNestedSandbox` 모드를 포함합니다. 또는 권한 없는 사용자 네임스페이스가 sysctl에 의해 비활성화된 Linux 호스트에서. 이 옵션은 보안을 상당히 약화시키며 추가 격리가 다른 방식으로 적용되는 경우에만 사용해야 합니다.
+* **macOS의 Apple Events**: macOS 샌드박스는 기본적으로 Apple Events를 차단합니다. `allowAppleEvents` 설정은 이 제한을 해제하여 `open` 및 `osascript`와 같은 도구가 작동하지만 코드 실행 격리를 제거합니다. 샌드박싱된 명령은 사용자 프롬프트 없이 다른 애플리케이션을 샌드박싱되지 않은 상태로 시작할 수 있으며 실행 중인 애플리케이션에 AppleScript 명령을 보낼 수 있습니다. 이는 앱별 macOS 자동화 동의 프롬프트(TCC)의 적용을 받습니다. 이는 사용자, 관리 또는 CLI 설정에서만 적용됩니다. 프로젝트 설정은 이를 활성화할 수 없습니다.
 * **설정 파일 보호**: 샌드박스는 모든 범위의 Claude Code `settings.json` 파일 및 관리 설정 디렉토리에 대한 쓰기 액세스를 자동으로 거부하므로 샌드박싱된 명령은 자신의 정책을 수정할 수 없습니다.
 
 <h3 id="platform-and-tool-compatibility">
@@ -412,7 +440,7 @@ Claude Code를 프록시로 지정하려면 [샌드박스 설정](/ko/settings#s
 
 * **기본 제공 파일 도구**: Read, Edit 및 Write는 샌드박스를 통해 실행되지 않고 권한 시스템을 직접 사용합니다. [권한](/ko/permissions)을 참조하세요.
 * **컴퓨터 사용**: Claude가 앱을 열고 화면을 제어할 때 격리된 환경이 아닌 실제 데스크톱에서 실행됩니다. 앱별 권한 프롬프트가 각 애플리케이션을 제어합니다. [CLI의 컴퓨터 사용](/ko/computer-use) 또는 [Desktop의 컴퓨터 사용](/ko/desktop#let-claude-use-your-computer)을 참조하세요.
-* **환경 변수**: 샌드박싱된 Bash 명령은 기본적으로 부모 프로세스 환경을 상속합니다. 여기에는 설정된 모든 자격 증명이 포함됩니다. 하위 프로세스에서 Anthropic 및 클라우드 공급자 자격 증명을 제거하려면 [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/ko/env-vars)를 설정합니다.
+* **환경 변수**: 샌드박싱된 Bash 명령은 기본적으로 부모 프로세스 환경을 상속합니다. 여기에는 설정된 모든 자격 증명이 포함됩니다. [`sandbox.credentials`](#protect-credentials)를 사용하여 샌드박싱된 명령에 대한 특정 변수를 설정 해제하거나 [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](/ko/env-vars)를 설정하여 모든 하위 프로세스에서 Anthropic 및 클라우드 공급자 자격 증명을 제거합니다.
 * **하위 에이전트**: [하위 에이전트](/ko/sub-agents)는 부모 세션과 동일한 프로세스에서 실행되며 동일한 샌드박스 구성을 사용합니다. 부모 세션에서 샌드박싱이 활성화되면 하위 에이전트 내의 Bash 명령이 샌드박싱됩니다.
 
 <Warning>

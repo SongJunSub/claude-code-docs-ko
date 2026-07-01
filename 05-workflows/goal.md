@@ -19,13 +19,6 @@
 * 각각이 크기 예산 이하가 될 때까지 큰 파일을 집중된 모듈로 분할
 * 큐가 비워질 때까지 레이블이 지정된 이슈 백로그 처리
 
-이 페이지에서 다루는 내용:
-
-* [자율 워크플로우 접근 방식 비교](#compare-ways-to-keep-a-session-running): `/loop`, Stop hook, 자동 모드
-* [목표 설정](#set-a-goal) 및 [효과적인 조건 작성](#write-an-effective-condition)
-* [상태 확인](#check-status), [조기 지우기](#clear-a-goal), [비대화형으로 실행](#run-non-interactively)
-* [평가 작동 방식](#how-evaluation-works) 및 [요구 사항](#requirements) 확인
-
 <h2 id="compare-ways-to-keep-a-session-running">
   세션을 계속 실행하는 방법 비교
 </h2>

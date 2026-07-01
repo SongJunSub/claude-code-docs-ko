@@ -358,21 +358,21 @@ SDK는 모든 기본 타입(object, array, string, number, boolean, null), `enum
   오류 처리
 </h2>
 
-구조화된 출력 생성은 에이전트가 스키마와 일치하는 유효한 JSON을 생성할 수 없을 때 실패할 수 있습니다. 이는 일반적으로 스키마가 작업에 너무 복잡하거나, 작업 자체가 모호하거나, 에이전트가 검증 오류를 수정하려고 시도하는 동안 재시도 제한에 도달할 때 발생합니다.
+구조화된 출력 생성은 에이전트가 스키마와 일치하는 유효한 JSON을 생성할 수 없을 때 실패할 수 있습니다. 이는 일반적으로 스키마가 작업에 너무 복잡하거나, 작업 자체가 모호하거나, 에이전트가 검증 오류를 수정하려고 시도하는 동안 재시도 제한에 도달할 때 발생합니다. 또한 검증 실패 없이도 발생할 수 있습니다: [모델 폴백](/ko/model-config#automatic-model-fallback)은 이미 완료된 출력을 스트림 중간에 취소할 수 있으며, 재시도가 이를 대체하지 않으면 실행이 동일한 오류로 종료됩니다. 디버깅하기 전에 결과 메시지의 `errors` 필드를 확인하여 두 가지 원인을 구분하십시오.
 
 오류가 발생하면 결과 메시지에 무엇이 잘못되었는지 나타내는 `subtype`이 있습니다:
 
-| Subtype                               | 의미                             |
-| ------------------------------------- | ------------------------------ |
-| `success`                             | 출력이 성공적으로 생성되고 검증됨             |
-| `error_max_structured_output_retries` | 에이전트가 여러 시도 후 유효한 출력을 생성할 수 없음 |
+| Subtype                               | 의미                                                    |
+| ------------------------------------- | ----------------------------------------------------- |
+| `success`                             | 출력이 성공적으로 생성되고 검증됨                                    |
+| `error_max_structured_output_retries` | 여러 시도 후 유효한 출력이 남지 않음(검증 실패 또는 성공적인 재시도가 없는 모델 폴백 취소) |
 
 아래 예제는 `subtype` 필드를 확인하여 출력이 성공적으로 생성되었는지 또는 실패를 처리해야 하는지 결정합니다:
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
   for await (const msg of query({
-    prompt: "문서에서 연락처 정보를 추출하세요",
+    prompt: "Extract contact info from the document",
     options: {
       outputFormat: {
         type: "json_schema",
@@ -394,7 +394,7 @@ SDK는 모든 기본 타입(object, array, string, number, boolean, null), `enum
 
   ```python Python theme={null}
   async for message in query(
-      prompt="문서에서 연락처 정보를 추출하세요",
+      prompt="Extract contact info from the document",
       options=ClaudeAgentOptions(
           output_format={"type": "json_schema", "schema": contact_schema}
       ),
@@ -411,9 +411,9 @@ SDK는 모든 기본 타입(object, array, string, number, boolean, null), `enum
 
 **오류 방지 팁:**
 
-* **스키마를 집중적으로 유지하세요.** 많은 필수 필드가 있는 깊게 중첩된 스키마는 만족하기 어렵습니다. 간단하게 시작하고 필요에 따라 복잡성을 추가하세요.
-* **스키마를 작업과 일치시키세요.** 작업에 스키마가 요구하는 모든 정보가 없을 수 있으면 해당 필드를 선택적으로 만드세요.
-* **명확한 프롬프트를 사용하세요.** 모호한 프롬프트는 에이전트가 생성할 출력을 알기 어렵게 합니다.
+* **스키마를 집중적으로 유지하십시오.** 많은 필수 필드가 있는 깊게 중첩된 스키마는 만족하기 어렵습니다. 간단하게 시작하고 필요에 따라 복잡성을 추가하십시오.
+* **스키마를 작업과 일치시키십시오.** 작업에 스키마가 요구하는 모든 정보가 없을 수 있으면 해당 필드를 선택적으로 만드십시오.
+* **명확한 프롬프트를 사용하십시오.** 모호한 프롬프트는 에이전트가 생성할 출력을 알기 어렵게 합니다.
 
 <h2 id="related-resources">
   관련 리소스

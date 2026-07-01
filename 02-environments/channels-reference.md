@@ -116,7 +116,7 @@
 
     파일은 순서대로 세 가지를 수행합니다:
 
-    * **서버 구성**: 기능에 `claude/channel`이 있는 MCP 서버를 생성합니다. 이것이 Claude Code에 이것이 채널임을 알려줍니다. [`instructions`](#server-options) 문자열은 Claude의 시스템 프롬프트로 이동합니다: Claude에 예상할 이벤트, 회신 여부, 회신해야 하는 경우 사용할 도구 및 전달할 속성(예: `chat_id`)을 알려줍니다.
+    * **서버 구성**: 기능에 `claude/channel`이 있는 MCP 서버를 생성합니다. 이것이 Claude Code에 이것이 채널임을 알려줍니다. [`instructions`](#server-options) 문자열은 Claude의 시스템 프롬프트로 이동합니다: Claude에 예상할 이벤트, 회신 여부, 회신해야 하는 경우 회신을 라우팅하는 방법을 알려줍니다.
     * **Stdio 연결**: stdin/stdout을 통해 Claude Code에 연결합니다. 이는 모든 [MCP 서버](https://modelcontextprotocol.io/docs/concepts/transports#standard-io)에 표준입니다: Claude Code가 이를 서브프로세스로 생성합니다.
     * **HTTP 리스너**: 포트 8788에서 로컬 웹 서버를 시작합니다. 모든 POST 본문은 `mcp.notification()`을 통해 채널 이벤트로 Claude로 전달됩니다. `content`는 이벤트 본문이 되고 각 `meta` 항목은 `<channel>` 태그의 속성이 됩니다. 리스너는 `mcp` 인스턴스에 액세스해야 하므로 동일한 프로세스에서 실행됩니다. 더 큰 프로젝트의 경우 별도의 모듈로 분할할 수 있습니다.
   </Step>
@@ -142,7 +142,11 @@
     claude --dangerously-load-development-channels server:webhook
     ```
 
+    이 프로젝트에서 처음으로 세션을 시작할 때 Claude Code는 `.mcp.json`의 새 서버를 사용하기 전에 동의를 요청합니다. 대화 상자는 "이 프로젝트에서 새 MCP 서버를 찾음: webhook"을 보고합니다. **이 MCP 서버 사용**을 선택하여 계속합니다.
+
     Claude Code가 시작되면 MCP 구성을 읽고 `webhook.ts`를 서브프로세스로 생성하며 구성한 포트(이 예제에서는 8788)에서 HTTP 리스너가 자동으로 시작됩니다. 서버를 직접 실행할 필요가 없습니다.
+
+    시작 배너 아래의 흐린 공지는 채널이 등록되었음을 확인합니다: `Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`.
 
     "조직 정책에 의해 차단됨"이 표시되면 조직 관리자가 먼저 [채널을 활성화](/ko/channels#enterprise-controls)해야 합니다.
 
@@ -753,13 +757,13 @@ curl -N localhost:8788/events
 curl -d "list the files in this directory" -H "X-Sender: dev" localhost:8788
 ```
 
-로컬 권한 대화가 Claude Code 터미널에서 열립니다. 잠시 후 프롬프트가 `/events` 스트림에 나타나며 5자 ID를 포함합니다. 원격 측에서 승인합니다:
+파일 나열은 읽기 전용이므로 Claude는 승인 없이 실행합니다. 권한 대화는 Claude가 `reply` 도구를 호출하여 답변을 다시 보낼 때 열립니다. 로컬 대화가 Claude Code 터미널에서 열립니다. 잠시 후 프롬프트가 `/events` 스트림에 나타나며 5자 ID를 포함합니다. 원격 측에서 승인합니다:
 
 ```bash theme={null}
 curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 ```
 
-로컬 대화가 닫히고 도구가 실행됩니다. Claude의 회신은 `reply` 도구를 통해 돌아오고 스트림에도 도착합니다.
+로컬 대화가 닫히고 `reply` 도구가 실행되며 Claude의 회신이 스트림에 도착합니다.
 
 이 파일의 3개의 채널 특정 부분:
 
@@ -773,7 +777,9 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 
 채널을 설치 가능하고 공유 가능하게 하려면 [플러그인](/ko/plugins)으로 래핑하고 [마켓플레이스](/ko/plugin-marketplaces)에 게시합니다. 사용자는 `/plugin install`로 설치한 다음 `--channels plugin:<name>@<marketplace>`로 세션별로 활성화합니다.
 
-자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 공식 마켓플레이스에 추가되려면 [공식 마켓플레이스에 제출](/ko/plugins#submit-your-plugin-to-the-official-marketplace)합니다. 채널 플러그인은 승인되기 전에 보안 검토를 거칩니다. 팀 및 엔터프라이즈 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
+자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 기본 허용 목록은 `claude-plugins-official`의 채널 플러그인이며, Anthropic이 재량에 따라 관리합니다. [인앱 제출 양식](/ko/plugins#submit-your-plugin-to-the-community-marketplace)은 플러그인을 커뮤니티 마켓플레이스에 추가하며, 이는 채널 허용 목록에 없습니다.
+
+Anthropic 파트너 담당자와 함께 작업 중인 경우 공식 마켓플레이스 목록을 조정하기 위해 연락합니다. Team 및 Enterprise 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
 
 <h2 id="see-also">
   참고 항목

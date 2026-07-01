@@ -217,7 +217,9 @@ Task 도구는 단일 `TodoWrite` 호출을 각 새 항목에 대한 `TaskCreate
 | 항목 형태: `{ content, status, activeForm }` | `TaskCreate` 입력: `{ subject, description, activeForm?, metadata? }`. `TaskUpdate` 입력: `{ taskId, status?, subject?, description?, activeForm?, addBlocks?, addBlockedBy?, owner?, metadata? }`. `status`는 `"pending"`, `"in_progress"`, 또는 `"completed"`이며, 삭제하려면 `status: "deleted"`를 설정 |
 | `block.input.todos`를 직접 렌더링              | 호출 전체에서 항목을 누적하거나, `TaskList` 도구 결과에서 스냅샷을 읽음                                                                                                                                                                                                                                             |
 
-할당된 작업 ID는 `TaskCreate` 입력에 없습니다. 일치하는 `tool_result`에서 `{ task: { id, subject } }`로 반환되므로, 맵을 키로 지정하기 위해 결과 블록에서 캡처합니다. 다음 예제는 [할일 변경 모니터링](#monitoring-todo-changes) 루프에 대한 최소한의 변경을 보여줍니다. 전체 목록을 렌더링하려면 스트림에서 `TaskList` 도구 결과를 감시하거나 `TaskCreate` 결과와 `TaskUpdate` 입력을 맵으로 누적합니다:
+할당된 작업 ID는 `TaskCreate` 입력에 없습니다. 일치하는 `tool_result`에서 `{ task: { id, subject } }`로 반환되므로, 맵을 키로 지정하기 위해 결과 블록에서 캡처합니다. 다음 예제는 [할일 변경 모니터링](#monitoring-todo-changes) 루프에 대한 최소한의 변경을 보여줍니다. 전체 목록을 렌더링하려면 스트림에서 `TaskList` 도구 결과를 감시하거나 `TaskCreate` 결과와 `TaskUpdate` 입력을 맵으로 누적합니다.
+
+스트리밍된 `tool_use` 입력은 모델이 내보낸 원본 형태입니다. Claude Code는 실행 전에 일부 거의 올바른 키 이름을 수정하여 `id` 또는 `task_id`를 `taskId`로, `active_form`을 `activeForm`으로 매핑하지만, 이 수정은 스트림에 반영되지 않습니다. 아래 샘플처럼 `TaskUpdate` 입력 필드를 방어적으로 읽으십시오. 정규 이름이 항상 존재한다고 가정하지 마십시오.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
@@ -233,8 +235,14 @@ Task 도구는 단일 `TodoWrite` 호출을 각 새 항목에 대한 `TaskCreate
         const input = block.input as { subject: string };
         console.log(`+ ${input.subject}`);
       } else if (block.name === "TaskUpdate") {
-        const input = block.input as { taskId: string; status?: string };
-        if (input.status) console.log(`  ${input.taskId} -> ${input.status}`);
+        const input = block.input as {
+          taskId?: string;
+          id?: string;
+          task_id?: string;
+          status?: string;
+        };
+        const taskId = input.taskId ?? input.id ?? input.task_id;
+        if (taskId && input.status) console.log(`  ${taskId} -> ${input.status}`);
       }
     }
   }
@@ -254,7 +262,13 @@ Task 도구는 단일 `TodoWrite` 호출을 각 새 항목에 대한 `TaskCreate
           if block.name == "TaskCreate":
               print(f"+ {block.input['subject']}")
           elif block.name == "TaskUpdate" and block.input.get("status"):
-              print(f"  {block.input['taskId']} -> {block.input['status']}")
+              task_id = (
+                  block.input.get("taskId")
+                  or block.input.get("id")
+                  or block.input.get("task_id")
+              )
+              if task_id:
+                  print(f"  {task_id} -> {block.input['status']}")
   ```
 </CodeGroup>
 

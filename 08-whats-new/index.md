@@ -8,6 +8,38 @@
 
 주간 개발자 다이제스트는 업무 방식을 바꿀 가능성이 가장 높은 기능들을 강조합니다. 각 항목에는 실행 가능한 코드, 짧은 데모, 그리고 전체 문서로의 링크가 포함됩니다. 모든 버그 수정 및 사소한 개선 사항은 [changelog](/ko/changelog)를 참조하십시오.
 
+<Update label="Week 26" description="2026년 6월 22–26일" tags={["v2.1.185–v2.1.193"]}>
+  **`claude mcp login`**: 대화형 `/mcp` 메뉴 대신 셸에서 구성된 MCP 서버를 인증하고, 나중에 `claude mcp logout`으로 저장된 자격 증명을 지웁니다.
+
+  이번 주의 다른 기능들: **shell mode는 명령 출력에 응답합니다** (`! npm test`는 두 번째 프롬프트 없이 설명을 받습니다); \*\*`/rewind`\*\*는 `/clear`가 실행되기 전의 대화를 재개할 수 있습니다; 그리고 **background subagents**는 이제 자동 거부 대신 주 세션에서 권한 프롬프트를 표시합니다.
+
+  [Week 26 다이제스트 읽기 →](/ko/whats-new/2026-w26)
+</Update>
+
+<Update label="Week 25" description="2026년 6월 15–19일" tags={["v2.1.178–v2.1.183"]}>
+  **Artifacts**: 세션의 출력을 claude.ai의 라이브 공유 가능한 페이지로 변환하여 세션이 작업할 때 제자리에서 업데이트되며, 현재 Team 및 Enterprise 플랜에서 베타 버전으로 제공됩니다.
+
+  이번 주의 다른 기능들: **deny 및 ask 규칙은 도구 매개변수와 일치합니다** `Tool(param:value)` 형식으로, 예를 들어 `Agent(model:opus)`; \*\*`/config key=value`\*\*는 프롬프트에서, `-p` 모드에서, 그리고 Remote Control에서 모든 설정을 지정합니다; 그리고 **auto mode는 로컬 작업을 버리도록 요청하지 않았을 때 파괴적인 git 명령을 차단합니다**.
+
+  [Week 25 다이제스트 읽기 →](/ko/whats-new/2026-w25)
+</Update>
+
+<Update label="Week 24" description="2026년 6월 8–12일" tags={["v2.1.166–v2.1.176"]}>
+  **`/cd`**: 프롬프트 캐시를 다시 구축하지 않고 대화 중간에 현재 세션을 새로운 작업 디렉토리로 이동합니다.
+
+  이번 주의 다른 기능들: **sub-agents는 자신의 sub-agents를 생성할 수 있습니다** (백그라운드 체인은 5단계 깊이로 제한됨); \*\*`--safe-mode`\*\*는 문제 해결을 위해 모든 사용자 정의를 비활성화한 상태로 Claude Code를 시작합니다; 그리고 \*\*`fallbackModel`\*\*은 순서대로 시도되는 최대 3개의 폴백 모델을 구성합니다.
+
+  [Week 24 다이제스트 읽기 →](/ko/whats-new/2026-w24)
+</Update>
+
+<Update label="Week 23" description="2026년 6월 1–5일" tags={["v2.1.158–v2.1.165"]}>
+  **Bedrock, Vertex, 그리고 Foundry의 Auto mode**: auto mode는 이제 Opus 4.7 및 Opus 4.8에 대해 타사 제공자에서 사용 가능하며, 권한 프롬프트를 백그라운드 안전 검사로 대체합니다.
+
+  이번 주의 다른 기능들: **더 안전한 자동 편집**은 `acceptEdits` 모드에서 코드를 실행할 수 있는 파일을 작성하기 전에 프롬프트를 표시합니다; \*\*`/plugin list`\*\*는 설치된 플러그인을 인라인으로 출력합니다; 그리고 **version requirements**는 관리되는 배포에서 승인된 Claude Code 버전 범위를 요구할 수 있습니다.
+
+  [Week 23 다이제스트 읽기 →](/ko/whats-new/2026-w23)
+</Update>
+
 <Update label="Week 22" description="2026년 5월 25–29일" tags={["v2.1.150–v2.1.157"]}>
   **Claude Opus 4.8**: Max, Team Premium, Enterprise 종량제, 그리고 Anthropic API 계정의 새로운 기본 모델로, 기본적으로 높은 노력 수준을 제공하며 가장 어려운 작업을 위해 `/effort xhigh`를 지원합니다.
 

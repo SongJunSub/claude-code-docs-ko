@@ -51,6 +51,8 @@ To install Claude Code, use one of the following methods:
 
     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
 
+    If the install command fails with `syntax error near unexpected token '<'`, a `403`, or another curl error, see [Troubleshoot installation](/en/troubleshoot-install#find-your-error) to match the error to a fix and for alternative install methods.
+
     [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
 
     <Info>
@@ -104,6 +106,7 @@ Claude 구독 또는 Console 계정의 경우 프롬프트를 따라 브라우�
 * [Claude Pro, Max, Team 또는 Enterprise](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_login) (권장)
 * [Claude Console](https://console.anthropic.com/) (선불 크레딧이 있는 API 액세스). 처음 로그인할 때 비용 추적을 위해 Console에서 "Claude Code" 워크스페이스가 자동으로 생성됩니다.
 * [Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry](/ko/third-party-integrations) (엔터프라이즈 클라우드 제공자)
+* 조직에서 운영하는 자체 호스팅 [Claude 앱 게이트웨이](/ko/claude-apps-gateway): 관리자가 게이트웨이 URL을 미리 구성하고, `/login`을 입력하면 **Cloud gateway** 화면에서 직접 열려 기업 SSO로 로그인할 수 있습니다.
 
 로그인하면 자격 증명이 저장되고 다시 로그인할 필요가 없습니다.
 
@@ -118,7 +121,7 @@ cd /path/to/your/project
 claude
 ```
 
-세션 정보, 최근 대화 및 최신 업데이트가 포함된 Claude Code 환영 화면이 표시됩니다. 사용 가능한 명령을 보려면 `/help`를 입력하거나 이전 대화를 계속하려면 `/resume`을 입력하십시오.
+버전, 현재 모델 및 작업 디렉토리가 표시된 Claude Code 프롬프트가 나타납니다. 사용 가능한 명령을 보려면 `/help`를 입력하거나 이전 대화를 계속하려면 `/resume`을 입력하십시오.
 
 <Tip>
   로그인(단계 2) 후 자격 증명이 시스템에 저장됩니다. [자격 증명 관리](/ko/authentication#credential-management)에서 자세히 알아보십시오.
@@ -278,7 +281,9 @@ Claude와 함께 작업하는 여러 가지 방법이 있습니다:
   필수 명령
 </h2>
 
-일상적인 사용을 위한 가장 중요한 명령은 다음과 같습니다:
+일상적인 사용을 위한 가장 중요한 명령은 다음과 같습니다. 셸 명령은 Claude Code를 시작하거나 재개하기 위해 터미널에서 실행됩니다. 세션 명령은 Claude Code가 시작된 후 내부에서 실행됩니다.
+
+**셸 명령**
 
 | 명령                  | 기능                    | 예시                                  |
 | ------------------- | --------------------- | ----------------------------------- |
@@ -287,11 +292,16 @@ Claude와 함께 작업하는 여러 가지 방법이 있습니다:
 | `claude -p "query"` | 일회성 쿼리 실행 후 종료        | `claude -p "explain this function"` |
 | `claude -c`         | 현재 디렉토리에서 가장 최근 대화 계속 | `claude -c`                         |
 | `claude -r`         | 이전 대화 재개              | `claude -r`                         |
-| `/clear`            | 대화 기록 지우기             | `/clear`                            |
-| `/help`             | 사용 가능한 명령 표시          | `/help`                             |
-| `exit` 또는 Ctrl+D    | Claude Code 종료        | `exit`                              |
 
-전체 명령 목록은 [CLI 참조](/ko/cli-reference)를 참조하십시오.
+**세션 명령**
+
+| 명령                | 기능             | 예시       |
+| ----------------- | -------------- | -------- |
+| `/clear`          | 대화 기록 지우기      | `/clear` |
+| `/help`           | 사용 가능한 명령 표시   | `/help`  |
+| `/exit` 또는 Ctrl+D | Claude Code 종료 | `/exit`  |
+
+전체 셸 명령 목록은 [CLI 참조](/ko/cli-reference)를 참조하고 전체 세션 명령 목록은 [명령 참조](/ko/commands)를 참조하십시오.
 
 <h2 id="pro-tips-for-beginners">
   초보자를 위한 팁
@@ -336,11 +346,11 @@ Claude와 함께 작업하는 여러 가지 방법이 있습니다:
   </Accordion>
 </AccordionGroup>
 
-<h2 id="what-s-next">
+<h2 id="what’s-next">
   다음 단계
 </h2>
 
-기본 사항을 배웠으므로 더 고급 기능을 살펴보십시오:
+이제 기본 사항을 배웠으므로 더 고급 기능을 살펴보십시오:
 
 <CardGroup cols={2}>
   <Card title="Claude Code 작동 방식" icon="microchip" href="/ko/how-claude-code-works">

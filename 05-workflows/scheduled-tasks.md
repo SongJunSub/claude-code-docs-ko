@@ -48,7 +48,12 @@ Claude Code offers three ways to schedule recurring or one-off work:
 | 프롬프트만          | `/loop check the deploy`    | 프롬프트가 각 반복에서 [Claude가 선택한 간격](#let-claude-choose-the-interval)으로 실행됩니다                |
 | 간격만 또는 아무것도 없음 | `/loop`                     | [내장 유지보수 프롬프트](#run-the-built-in-maintenance-prompt)가 실행되거나, 존재하는 경우 `loop.md`가 실행됩니다 |
 
-또한 다른 명령어를 프롬프트로 전달할 수 있습니다. 예를 들어 `/loop 20m /review-pr 1234`는 각 반복에서 저장된 스킬이나 명령어를 다시 실행합니다.
+또한 스킬을 프롬프트로 전달할 수 있습니다. 예를 들어 `/loop 20m /review-pr 1234`는 각 반복에서 해당 스킬을 다시 실행합니다. {/* min-version: 2.1.196 */}v2.1.196부터 스케줄된 실행은 Claude가 [자체적으로 호출할 수 있도록 허용된](/ko/skills#control-who-invokes-a-skill) 스킬만 실행합니다. 다음은 Claude에 일반 텍스트로 전달되며 실행되지 않습니다.
+
+* `/permissions`, `/model`, `/clear`와 같은 내장 명령어
+* [`disable-model-invocation: true`](/ko/skills#frontmatter-reference)로 표시된 스킬
+* [`skillOverrides`](/ko/skills#override-skill-visibility-from-settings) 설정이나 `Skill` [거부 규칙](/ko/skills#restrict-claude’s-skill-access)으로 Claude에서 제외된 스킬
+* [MCP 프롬프트](/ko/mcp#use-mcp-prompts-as-commands) (예: `/mcp__github__list_prs`); MCP 서버가 노출하는 스킬은 여전히 실행됩니다
 
 <h3 id="run-on-a-fixed-interval">
   고정 간격으로 실행하기
@@ -194,7 +199,7 @@ cancel the deploy check job
   지터
 </h3>
 
-모든 세션이 동일한 벽시계 시간에 API에 도달하는 것을 방지하기 위해 스케줄러는 실행 시간에 결정론적 오프셋을 추가합니다:
+스케줄러는 모든 세션이 동일한 벽시계 시간에 API에 도달하는 것을 방지하기 위해 실행 시간에 결정론적 오프셋을 추가합니다:
 
 * 반복 작업은 스케줄된 시간 이후 최대 30분 후에 실행되거나(또는 시간별보다 더 자주 실행되는 작업의 경우 간격의 최대 절반), 최대 30분으로 제한됩니다. `:00`에 스케줄된 시간별 작업은 `:30`까지 언제든지 실행될 수 있습니다.
 * 시간의 맨 위 또는 맨 아래에 스케줄된 일회성 작업은 최대 90초 일찍 실행됩니다.
@@ -238,7 +243,7 @@ cancel the deploy check job
 
 세션 범위 스케줄링에는 고유한 제약이 있습니다.
 
-* 작업은 Claude Code가 실행 중이고 유휴 상태일 때만 실행됩니다. 터미널을 닫거나 세션을 종료하면 작업 실행이 중지됩니다.
+* 작업은 Claude Code가 실행 중이고 유휴 상태일 때만 실행됩니다. 터미널을 닫거나 세션을 종료하면 작업 실행이 중지됩니다. [세션을 백그라운드로 전환](/ko/agent-view#from-inside-a-session)하면 `/loop` 작업이 백그라운드 세션으로 이동되어 터미널 없이 계속 실행됩니다.
 * 놓친 실행에 대한 추적 없음. 작업의 스케줄된 시간이 Claude가 오래 실행되는 요청에 바쁠 때 지나가면 Claude가 유휴 상태가 될 때 한 번 실행되며, 놓친 각 간격마다 한 번씩 실행되지 않습니다.
 * 새로운 대화를 시작하면 모든 세션 범위 작업이 지워집니다. `claude --resume` 또는 `claude --continue`로 재개하면 만료되지 않은 작업이 복원됩니다. 생성 후 7일 이내의 반복 작업, 스케줄된 시간이 아직 지나지 않은 일회성 작업입니다. 백그라운드 Bash 및 모니터 작업은 재개 시 복원되지 않습니다.
 

@@ -101,6 +101,7 @@
     parent_tool_use_id: string | null;
     uuid: UUID;
     session_id: string;
+    ttft_ms?: number; // Time to first token in ms, present only on message_start events
   };
   ```
 </CodeGroup>

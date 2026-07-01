@@ -36,7 +36,7 @@
 * **설명:** 도구가 수행하는 작업입니다. Claude는 이를 읽고 도구를 호출할 시기를 결정합니다.
 * **입력 스키마:** Claude가 제공해야 하는 인수입니다. TypeScript에서는 항상 [Zod 스키마](https://zod.dev/)이며, 핸들러의 `args`는 자동으로 입력됩니다. Python에서는 `{"latitude": float}`와 같이 이름을 유형에 매핑하는 딕셔너리이며, SDK가 JSON Schema로 변환합니다. Python 데코레이터는 열거형, 범위, 선택적 필드 또는 중첩된 객체가 필요할 때 전체 [JSON Schema](https://json-schema.org/understanding-json-schema/about) 딕셔너리도 허용합니다.
 * **핸들러:** Claude가 도구를 호출할 때 실행되는 비동기 함수입니다. 검증된 인수를 받고 다음을 포함하는 객체를 반환해야 합니다:
-  * `content` (필수): 각각 `"text"`, `"image"` 또는 `"resource"`의 `type`을 가진 결과 블록의 배열입니다. 비텍스트 블록은 [이미지 및 리소스 반환](#return-images-and-resources)을 참조하세요.
+  * `content` (필수): 각각 `"text"`, `"image"`, `"audio"`, `"resource"` 또는 `"resource_link"`의 `type`을 가진 결과 블록의 배열입니다. 비텍스트 블록은 [이미지 및 리소스 반환](#return-images-and-resources)을 참조하세요.
   * `structuredContent` (선택사항): 머신 판독 가능한 데이터로 결과를 보유하는 JSON 객체이며, `content`와 함께 반환됩니다. [구조화된 데이터 반환](#return-structured-data)을 참조하세요.
   * `isError` (선택사항): Claude가 반응할 수 있도록 도구 실패를 신호하려면 `true`로 설정합니다. [오류 처리](#handle-errors)를 참조하세요.
 
@@ -363,7 +363,7 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
 | 핸들러가 포착되지 않은 예외를 발생시킵니다                                                 | 에이전트 루프가 중지됩니다. Claude는 오류를 보지 못하고 `query` 호출이 실패합니다.                     |
 | 핸들러가 오류를 포착하고 `isError: true` (TS) / `"is_error": True` (Python)를 반환합니다 | 에이전트 루프가 계속됩니다. Claude는 오류를 데이터로 보고 재시도하거나, 다른 도구를 시도하거나, 실패를 설명할 수 있습니다. |
 
-아래 예제는 핸들러 내에서 두 가지 종류의 실패를 포착합니다. 0이 아닌 HTTP 상태는 응답에서 포착되어 오류 결과로 반환됩니다. 네트워크 오류 또는 잘못된 JSON은 주변 `try/except` (Python) 또는 `try/catch` (TypeScript)로 포착되어 오류 결과로도 반환됩니다. 두 경우 모두 핸들러는 정상적으로 반환되고 에이전트 루프가 계속됩니다.
+아래 예제는 핸들러 내에서 두 가지 종류의 실패를 포착합니다. 200이 아닌 HTTP 상태는 응답에서 포착되어 오류 결과로 반환됩니다. 네트워크 오류 또는 잘못된 JSON은 주변 `try/except` (Python) 또는 `try/catch` (TypeScript)로 포착되어 오류 결과로도 반환됩니다. 두 경우 모두 핸들러는 정상적으로 반환되고 에이전트 루프가 계속됩니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -375,7 +375,7 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
   @tool(
       "fetch_data",
       "Fetch data from an API",
-      {"endpoint": str},  # 간단한 스키마
+      {"endpoint": str},  # Simple schema
   )
   async def fetch_data(args: dict[str, Any]) -> dict[str, Any]:
       try:
@@ -461,7 +461,7 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
   이미지 및 리소스 반환
 </h2>
 
-도구 결과의 `content` 배열은 `text`, `image` 및 `resource` 블록을 허용합니다. 동일한 응답에서 이들을 혼합할 수 있습니다.
+도구 결과의 `content` 배열은 `text`, `image`, `audio`, `resource` 및 `resource_link` 블록을 허용합니다. 동일한 응답에서 이들을 혼합할 수 있습니다. 오디오 블록은 디스크에 저장되며 Claude는 저장된 파일 경로가 포함된 텍스트 블록을 받습니다. 리소스 링크 블록은 링크의 이름, URI 및 설명을 포함하는 텍스트 블록으로 변환됩니다.
 
 <h3 id="images">
   이미지

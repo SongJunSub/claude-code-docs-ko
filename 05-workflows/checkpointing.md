@@ -47,6 +47,12 @@ Rewind 메뉴는 세션 중에 보낸 각 프롬프트를 나열합니다. 작�
 
 여기까지 요약을 선택하면 대화의 끝에 남겨지며 입력 필드는 비어 있습니다.
 
+<h4 id="rewind-past-a-cleared-conversation">
+  이전 세션의 지워진 대화로 되돌리기
+</h4>
+
+동일한 Claude Code 프로세스에서 이전에 `/clear`를 실행한 경우 rewind 메뉴는 목록 맨 위에 `/resume <session-id> (이전 세션)`이라는 레이블이 지정된 추가 항목을 표시합니다. 이를 선택하여 `/clear`가 실행되기 전에 활성화되었던 대화를 재개합니다. 이 항목은 Claude Code를 종료하거나 다른 세션을 재개할 때까지 사용 가능하며 Claude Code v2.1.191 이상이 필요합니다. 이전 버전에서는 `/resume`을 실행하고 목록에서 이전 세션을 선택합니다.
+
 <h4 id="restore-vs-summarize">
   복원 vs. 요약
 </h4>

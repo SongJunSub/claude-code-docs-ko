@@ -6,10 +6,6 @@
 
 > Claude Code를 라이브러리로 사용하여 프로덕션 AI 에이전트 구축하기
 
-<Note>
-  Starting June 15, 2026, Agent SDK and `claude -p` usage on subscription plans will draw from a new monthly Agent SDK credit, separate from your interactive usage limits. See [Use the Claude Agent SDK with your Claude plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) for details.
-</Note>
-
 자율적으로 파일을 읽고, 명령을 실행하고, 웹을 검색하고, 코드를 편집하는 등의 작업을 수행하는 AI 에이전트를 구축하십시오. Agent SDK는 Claude Code를 강화하는 동일한 도구, 에이전트 루프 및 컨텍스트 관리를 Python 및 TypeScript로 프로그래밍할 수 있도록 제공합니다.
 
 <CodeGroup>

@@ -22,7 +22,9 @@ Claude Code는 로컬 개발자 구성보다 우선하는 관리 설정을 통�
 | [사용량 가시성 설정](#set-up-usage-visibility)                   | 지출 및 채택을 추적하는 방식             | [Analytics](/ko/analytics), [Monitoring](/ko/monitoring-usage), [Costs](/ko/costs)                                                       |
 | [데이터 처리 검토](#review-data-handling)                       | 데이터 보존 및 규정 준수 태세            | [Data usage](/ko/data-usage), [Security](/ko/security)                                                                                   |
 
-## API 제공자 선택
+<h2 id="choose-your-api-provider">
+  API 제공자 선택
+</h2>
 
 Claude Code는 여러 API 제공자 중 하나를 통해 Claude에 연결됩니다. 선택에 따라 청구, 인증, 상속하는 규정 준수 태세 및 개발자가 사용할 수 있는 Claude Code 기능이 결정됩니다.
 
@@ -34,69 +36,81 @@ Claude Code는 여러 API 제공자 중 하나를 통해 Claude에 연결됩니�
 | Google Vertex AI              | 기존 GCP 규정 준수 제어 및 청구를 상속하려는 경우                                            |
 | Microsoft Foundry             | 기존 Azure 규정 준수 제어 및 청구를 상속하려는 경우                                          |
 
-일부 Claude Code 기능에는 Claude.ai 계정이 필요합니다. [Claude Code on the web](/ko/claude-code-on-the-web), [Routines](/ko/routines), [Code Review](/ko/code-review), [Remote Control](/ko/remote-control) 및 [Chrome extension](/ko/chrome)은 Console API 키 또는 클라우드 제공자 자격증명만으로는 사용할 수 없습니다. Bedrock, Vertex 또는 Foundry를 통해 배포하는 경우 개발자가 Claude for Teams 또는 Enterprise 시트도 필요한지 계획하세요. 각 기능 페이지에는 해당 플랜 요구사항이 나열되어 있습니다.
+일부 Claude Code 기능에는 claude.ai 계정이 필요합니다. [Claude Code on the web](/ko/claude-code-on-the-web), [Routines](/ko/routines), [Code Review](/ko/code-review), [Remote Control](/ko/remote-control) 및 [Chrome extension](/ko/chrome)은 Console API 키 또는 클라우드 제공자 자격증명만으로는 사용할 수 없습니다. Bedrock, Vertex 또는 Foundry를 통해 배포하는 경우 개발자가 Claude for Teams 또는 Enterprise 시트도 필요한지 계획하세요. 각 기능 페이지에는 해당 플랜 요구사항이 나열되어 있습니다.
 
 인증, 지역 및 기능 패리티를 다루는 전체 제공자 비교는 [enterprise deployment overview](/ko/third-party-integrations)를 참조하세요. 각 제공자의 인증 설정은 [Authentication](/ko/authentication)에 있습니다.
 
 [Network configuration](/ko/network-config)의 프록시 및 방화벽 요구사항은 제공자와 관계없이 적용됩니다. 여러 제공자 앞에 단일 엔드포인트를 원하거나 중앙 집중식 요청 로깅을 원하는 경우 [LLM gateway](/ko/llm-gateway)를 참조하세요.
 
-## 설정이 기기에 도달하는 방식 결정
+<h2 id="decide-how-settings-reach-devices">
+  설정이 기기에 도달하는 방식 결정
+</h2>
 
-관리 설정은 로컬 개발자 구성보다 우선하는 정책을 정의합니다. Claude Code는 네 가지 위치에서 이를 찾으며 주어진 기기에서 찾은 첫 번째 위치를 사용합니다.
+관리 설정은 로컬 개발자 구성보다 우선하는 정책을 정의합니다. Claude Code는 아래의 네 가지 소스를 우선순위 순서대로 확인하고 비어 있지 않은 구성을 반환하는 첫 번째 소스를 적용합니다. 단, 한 가지 예외가 있습니다. 샌드박스 허용 목록 잠금과 같은 [교차 소스 잠금 키](/ko/settings#settings-precedence)의 작은 집합은 관리자 제어 소스가 설정할 때 존중됩니다.
 
 | 메커니즘                    | 전달                                                                                                                                                                                                    | 우선순위 | 플랫폼            |
 | :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- | :------------- |
-| Server-managed          | Claude.ai 관리자 콘솔                                                                                                                                                                                      | 최고   | 모두             |
+| Server-managed          | claude.ai 관리자 콘솔 또는 게이트웨이 로그인을 위한 자체 호스팅 [Claude apps gateway](/ko/claude-apps-gateway)                                                                                                               | 최고   | 모두             |
 | plist / registry policy | macOS: `com.anthropic.claudecode` plist<br />Windows: `HKLM\SOFTWARE\Policies\ClaudeCode`                                                                                                             | 높음   | macOS, Windows |
 | File-based managed      | macOS: `/Library/Application Support/ClaudeCode/managed-settings.json`<br />Linux and WSL: `/etc/claude-code/managed-settings.json`<br />Windows: `C:\Program Files\ClaudeCode\managed-settings.json` | 중간   | 모두             |
 | Windows user registry   | `HKCU\SOFTWARE\Policies\ClaudeCode`                                                                                                                                                                   | 최저   | Windows만       |
 
-Server-managed 설정은 인증 시 기기에 도달하고 활성 세션 중에 매시간 새로 고쳐지며 엔드포인트 인프라가 필요하지 않습니다. Claude for Teams 또는 Enterprise 플랜이 필요하므로 다른 제공자의 배포는 대신 파일 기반 또는 OS 수준 메커니즘 중 하나가 필요합니다.
+구성된 [`policyHelper`](/ko/settings#compute-managed-settings-with-a-policy-helper)는 네 가지 소스 모두를 선점합니다. 해당 출력이 실행을 위한 유일한 관리 구성이 됩니다. [설정 우선순위](/ko/settings#settings-precedence)를 참조하세요.
 
-조직이 제공자를 혼합하는 경우 Claude.ai 사용자를 위해 [server-managed settings](/ko/server-managed-settings)를 구성하고 다른 사용자도 관리 정책을 받을 수 있도록 [file-based or plist/registry fallback](/ko/settings#settings-files)을 구성하세요.
+Server-managed 설정은 인증 시 기기에 도달하고 활성 세션 중에 매시간 새로 고쳐지며 엔드포인트 인프라가 필요하지 않습니다. claude.ai 관리자 콘솔을 통한 전달에는 Claude for Teams 또는 Enterprise 플랜이 필요합니다. Bedrock, Vertex AI 또는 Foundry의 배포는 [Claude apps gateway](/ko/claude-apps-gateway)를 실행하여 동일한 원격 전달을 받을 수 있거나, 대신 파일 기반 또는 OS 수준 메커니즘 중 하나를 사용할 수 있습니다.
+
+조직이 제공자를 혼합하는 경우 claude.ai 사용자를 위해 [server-managed settings](/ko/server-managed-settings)를 구성하고 다른 사용자도 관리 정책을 받을 수 있도록 [file-based or plist/registry fallback](/ko/settings#settings-files)을 구성하세요.
 
 plist 및 HKLM 레지스트리 위치는 모든 제공자와 함께 작동하며 관리자 권한이 필요하므로 변조에 저항합니다. HKCU의 Windows 사용자 레지스트리는 상승 권한 없이 쓸 수 있으므로 시행 채널이 아닌 편의 기본값으로 취급하세요.
 
 기본적으로 WSL은 `/etc/claude-code`의 Linux 파일 경로만 읽습니다. Windows 레지스트리 및 `C:\Program Files\ClaudeCode` 정책을 같은 머신의 WSL로 확장하려면 관리자 전용 Windows 소스 중 하나에서 [`wslInheritsWindowsSettings: true`](/ko/settings#available-settings)를 설정하세요.
 
-선택한 메커니즘이 무엇이든 관리 값은 사용자 및 프로젝트 설정보다 우선합니다. `permissions.allow` 및 `permissions.deny`와 같은 배열 설정은 모든 소스의 항목을 병합하므로 개발자는 관리 목록을 확장할 수 있지만 제거할 수는 없습니다.
+선택한 메커니즘이 무엇이든 관리 값은 사용자 및 프로젝트 설정보다 우선합니다. `permissions.allow` 및 `permissions.deny`와 같은 배열 설정은 모든 소스의 항목을 병합하므로 개발자는 관리 목록을 확장할 수 있지만 제거할 수는 없습니다. [두 가지 예외](/ko/settings#settings-precedence)가 있습니다. `fallbackModel` 및 `availableModels`의 경우 관리 값은 하위 계층을 병합하지 않고 대체합니다.
 
 [Server-managed settings](/ko/server-managed-settings) 및 [Settings files and precedence](/ko/settings#settings-files)를 참조하세요.
 
-## 시행할 항목 결정
+<h2 id="decide-what-to-enforce">
+  시행할 항목 결정
+</h2>
 
 관리 설정은 도구, 샌드박스 실행, MCP 서버 및 플러그인 소스 제한, 실행되는 hooks 제어를 잠글 수 있습니다. 각 행은 이를 구동하는 설정 키가 있는 제어 표면입니다.
 
-| 제어                                                                                     | 기능                                                                            | 주요 설정                                                                                               |
-| :------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
-| [Permission rules](/ko/permissions)                                                    | 특정 도구 및 명령 허용, 요청 또는 거부                                                       | `permissions.allow`, `permissions.deny`                                                             |
-| [Permission lockdown](/ko/permissions#managed-only-settings)                           | 관리 권한 규칙만 적용; `--dangerously-skip-permissions` 비활성화                           | `allowManagedPermissionRulesOnly`, `permissions.disableBypassPermissionsMode`                       |
-| [Sandboxing](/ko/sandboxing)                                                           | 도메인 허용 목록이 있는 OS 수준 파일 시스템 및 네트워크 격리                                          | `sandbox.enabled`, `sandbox.network.allowedDomains`                                                 |
-| [Managed policy CLAUDE.md](/ko/memory#deploy-organization-wide-claude-md)              | 모든 세션에서 로드되는 조직 전체 지침, 제외할 수 없음                                               | 관리 정책 경로의 파일                                                                                        |
-| [MCP server control](/ko/managed-mcp)                                                  | 사용자가 추가하거나 연결할 수 있는 MCP 서버 제한, 또는 고정된 집합 배포                                   | `allowedMcpServers`, `deniedMcpServers`, `allowManagedMcpServersOnly`, 또는 배포된 `managed-mcp.json` 파일 |
-| [Plugin marketplace control](/ko/plugin-marketplaces#managed-marketplace-restrictions) | 사용자가 추가하고 설치할 수 있는 마켓플레이스 소스 제한                                               | `strictKnownMarketplaces`, `blockedMarketplaces`                                                    |
-| [Customization lockdown](/ko/settings#strictpluginonlycustomization)                   | skills, agents, hooks 및 MCP 서버를 사용자 및 프로젝트 소스에서 차단하여 플러그인 또는 관리 설정에서만 제공되도록 함 | `strictPluginOnlyCustomization`                                                                     |
-| [Hook restrictions](/ko/settings#hook-configuration)                                   | 관리 hooks만 로드; HTTP hook URL 제한                                                | `allowManagedHooksOnly`, `allowedHttpHookUrls`                                                      |
-| [Disable agent view](/ko/agent-view#how-background-sessions-are-hosted)                | `claude agents`, `--bg`, `/background` 및 온디맨드 감독자 비활성화                        | `disableAgentView`                                                                                  |
-| [Version floor](/ko/settings)                                                          | 자동 업데이트가 조직 전체 최소값 아래로 설치되는 것을 방지                                             | `minimumVersion`                                                                                    |
+| 제어                                                                                     | 기능                                                                                                                                                                                       | 주요 설정                                                                                               |
+| :------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| [Permission rules](/ko/permissions)                                                    | 특정 도구 및 명령 허용, 요청 또는 거부                                                                                                                                                                  | `permissions.allow`, `permissions.deny`                                                             |
+| [Permission lockdown](/ko/permissions#managed-only-settings)                           | 관리 권한 규칙만 적용; `--dangerously-skip-permissions` 비활성화                                                                                                                                      | `allowManagedPermissionRulesOnly`, `permissions.disableBypassPermissionsMode`                       |
+| [Sandboxing](/ko/sandboxing)                                                           | 도메인 허용 목록이 있는 OS 수준 파일 시스템 및 네트워크 격리                                                                                                                                                     | `sandbox.enabled`, `sandbox.network.allowedDomains`                                                 |
+| [Managed policy CLAUDE.md](/ko/memory#deploy-organization-wide-claude-md)              | 모든 세션에서 로드되는 조직 전체 지침, 제외할 수 없음                                                                                                                                                          | 관리 정책 경로의 파일                                                                                        |
+| [MCP server control](/ko/managed-mcp)                                                  | 사용자가 추가하거나 연결할 수 있는 MCP 서버 제한, 또는 고정된 집합 배포                                                                                                                                              | `allowedMcpServers`, `deniedMcpServers`, `allowManagedMcpServersOnly`, 또는 배포된 `managed-mcp.json` 파일 |
+| [Plugin marketplace control](/ko/plugin-marketplaces#managed-marketplace-restrictions) | 사용자가 추가하고 설치할 수 있는 마켓플레이스 소스 제한, 단일 실행을 위해 플러그인, 에이전트 및 MCP 서버를 사이드로드하는 CLI 플래그 거부                                                                                                       | `strictKnownMarketplaces`, `blockedMarketplaces`, `disableSideloadFlags`                            |
+| [Customization lockdown](/ko/settings#strictpluginonlycustomization)                   | skills, agents, hooks 및 MCP 서버를 사용자 및 프로젝트 소스에서 차단하여 플러그인 또는 관리 설정에서만 제공되도록 함                                                                                                            | `strictPluginOnlyCustomization`                                                                     |
+| [Hook restrictions](/ko/settings#hook-configuration)                                   | 관리 hooks만 로드; HTTP hook URL 제한                                                                                                                                                           | `allowManagedHooksOnly`, `allowedHttpHookUrls`                                                      |
+| [Disable agent view](/ko/agent-view#how-background-sessions-are-hosted)                | `claude agents`, `--bg`, `/background` 및 온디맨드 감독자 비활성화                                                                                                                                   | `disableAgentView`                                                                                  |
+| [Model restrictions](/ko/model-config#restrict-model-selection)                        | `availableModels`는 선택기에 나타나는 모델을 필터링합니다. `enforceAvailableModels`를 추가하면 자동 선택된 기본 모델도 제한합니다. 이 설정이 CLI, 웹 및 IDE에 어떻게 도달하는지는 [surface coverage](/ko/model-config#surface-coverage)를 참조하세요 | `availableModels`, `enforceAvailableModels`                                                         |
+| [Version floor](/ko/settings)                                                          | 자동 업데이트가 조직 전체 최소값 아래로 설치되는 것을 방지                                                                                                                                                        | `minimumVersion`                                                                                    |
+| [Required version range](/ko/settings)                                                 | 실행 중인 버전이 조직 승인 범위를 벗어날 때 시작을 거부합니다. 다운그레이드만 차단하는 `minimumVersion`보다 더 강력합니다                                                                                                             | `requiredMinimumVersion`, `requiredMaximumVersion`                                                  |
 
 권한 규칙 및 샌드박싱은 다양한 계층을 다룹니다. WebFetch를 거부하면 Claude의 fetch 도구가 차단되지만 Bash가 허용되면 `curl` 및 `wget`은 여전히 모든 URL에 도달할 수 있습니다. 샌드박싱은 OS 수준에서 시행되는 네트워크 도메인 허용 목록으로 그 격차를 닫습니다.
 
 이러한 제어가 방어하는 위협 모델은 [Security](/ko/security)를 참조하세요.
 
-## 사용량 가시성 설정
+<h2 id="set-up-usage-visibility">
+  사용량 가시성 설정
+</h2>
 
 필요한 보고 내용에 따라 모니터링을 선택하세요.
 
-| 기능                  | 제공 항목                           | 가용성        | 시작 위치                                    |
-| :------------------ | :------------------------------ | :--------- | :--------------------------------------- |
-| Usage monitoring    | 세션, 도구 및 토큰의 OpenTelemetry 내보내기 | 모든 제공자     | [Monitoring usage](/ko/monitoring-usage) |
-| Analytics dashboard | 사용자별 메트릭, 기여도 추적, 리더보드          | Anthropic만 | [Analytics](/ko/analytics)               |
-| Cost tracking       | 지출 제한, 속도 제한 및 사용량 속성           | Anthropic만 | [Costs](/ko/costs)                       |
+| 기능                  | 제공 항목                           | 가용성                                                                                                                                    | 시작 위치                                    |
+| :------------------ | :------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------- |
+| Usage monitoring    | 세션, 도구 및 토큰의 OpenTelemetry 내보내기 | 모든 제공자                                                                                                                                 | [Monitoring usage](/ko/monitoring-usage) |
+| Analytics dashboard | 사용자별 메트릭, 기여도 추적, 리더보드          | Anthropic만                                                                                                                             | [Analytics](/ko/analytics)               |
+| Cost tracking       | 지출 제한, 속도 제한 및 사용량 속성           | Anthropic; 타사 클라우드의 경우, [Claude apps gateway](/ko/claude-apps-gateway)가 사용자별 속성 및 [지출 제한](/ko/claude-apps-gateway-spend-limits)을 제공합니다 | [Costs](/ko/costs)                       |
 
 클라우드 제공자는 AWS Cost Explorer, GCP Billing 또는 Azure Cost Management를 통해 지출을 노출합니다. Claude for Teams 및 Enterprise 플랜에는 [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code)의 사용량 대시보드가 포함됩니다.
 
-## 데이터 처리 검토
+<h2 id="review-data-handling">
+  데이터 처리 검토
+</h2>
 
 Team, Enterprise, Claude API 및 클라우드 제공자 플랜에서 Anthropic은 코드 또는 프롬프트에 대해 모델을 학습하지 않습니다. API 제공자가 보존 및 규정 준수 태세를 결정합니다.
 
@@ -106,11 +120,13 @@ Team, Enterprise, Claude API 및 클라우드 제공자 플랜에서 Anthropic�
 | Zero Data Retention (ZDR) | 요청 완료 후 저장되지 않음. Claude for Enterprise에서 사용 가능 | [Zero data retention](/ko/zero-data-retention) |
 | Security architecture     | 네트워크 모델, 암호화, 인증, 감사 추적                        | [Security](/ko/security)                       |
 
-요청 수준 감사 로깅이 필요하거나 데이터 민감도별로 트래픽을 라우팅하려면 개발자와 제공자 사이에 [LLM gateway](/ko/llm-gateway)를 배치하세요. 규제 요구사항 및 인증은 [Legal and compliance](/ko/legal-and-compliance)를 참조하세요.
+요청 수준 감사 로깅이 필요하거나 데이터 민감도별로 트래픽을 라우팅하려면 개발자와 제공자 사이에 게이트웨이를 배치하세요. 자체 호스팅된 [Claude apps gateway](/ko/claude-apps-gateway)는 IdP 신원을 포함한 요청별 감사 로그를 기록하거나 다른 [LLM gateway](/ko/llm-gateway)를 사용하세요. 규제 요구사항 및 인증은 [Legal and compliance](/ko/legal-and-compliance)를 참조하세요.
 
-## 확인 및 온보딩
+<h2 id="verify-and-onboard">
+  확인 및 온보딩
+</h2>
 
-관리 설정을 구성한 후 개발자가 Claude Code 내에서 `/status`를 실행하도록 하세요. 출력에는 `Enterprise managed settings`로 시작하는 줄이 포함되며 그 뒤에 괄호 안의 소스가 `(remote)`, `(plist)`, `(HKLM)`, `(HKCU)` 또는 `(file)` 중 하나입니다. [활성 설정 확인](/ko/settings#verify-active-settings)을 참조하세요.
+관리 설정을 구성한 후 개발자가 Claude Code 내에서 `/status`를 실행하도록 하세요. **Status** 탭에서 `Setting sources` 줄은 `Enterprise managed settings` 다음에 괄호 안의 소스를 표시하며, 이는 `(remote)`, `(plist)`, `(HKLM)`, `(HKCU)` 또는 `(file)` 중 하나입니다. [활성 설정 확인](/ko/settings#verify-active-settings)을 참조하세요.
 
 개발자가 시작하는 데 도움이 되도록 다음 리소스를 공유하세요:
 
@@ -126,7 +142,9 @@ Team, Enterprise, Claude API 및 클라우드 제공자 플랜에서 Anthropic�
 
 개발자가 "You haven't been added to your organization yet"을 보면 해당 시트에 Claude Code 액세스가 포함되지 않으며 관리자 콘솔에서 업데이트해야 합니다.
 
-## 다음 단계
+<h2 id="next-steps">
+  다음 단계
+</h2>
 
 제공자 및 전달 메커니즘을 선택한 후 자세한 구성으로 이동하세요:
 

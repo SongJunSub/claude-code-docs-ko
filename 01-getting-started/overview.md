@@ -42,6 +42,8 @@ Claude Code는 기능을 구축하고, 버그를 수정하고, 개발 작업을 
 
         If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
 
+        If the install command fails with `syntax error near unexpected token '<'`, a `403`, or another curl error, see [Troubleshoot installation](/en/troubleshoot-install#find-your-error) to match the error to a fix and for alternative install methods.
+
         [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
 
         <Info>
@@ -124,7 +126,7 @@ Claude Code는 기능을 구축하고, 버그를 수정하고, 개발 작업을 
   <Tab title="JetBrains">
     IntelliJ IDEA, PyCharm, WebStorm 및 기타 JetBrains IDE용 플러그인으로 대화형 diff 보기 및 선택 컨텍스트 공유 기능이 있습니다.
 
-    JetBrains Marketplace에서 [Claude Code 플러그인](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-)을 설치하고 IDE를 다시 시작합니다.
+    JetBrains Marketplace에서 [Claude Code 플러그인](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-)을 설치하고 IDE를 다시 시작합니다. 플러그인에는 별도로 설치되는 Claude Code CLI가 필요합니다. [JetBrains 설정 단계](/ko/jetbrains#installation)를 참조하세요.
 
     [JetBrains 시작하기 →](/ko/jetbrains)
   </Tab>
@@ -209,7 +211,7 @@ Claude Code를 사용할 수 있는 몇 가지 방법은 다음과 같습니다:
 
     * 책상에서 떠나 [원격 제어](/ko/remote-control)를 사용하여 휴대폰이나 모든 브라우저에서 계속 작업합니다
     * [Dispatch](/ko/desktop#sessions-from-dispatch)에 휴대폰에서 작업을 메시지로 보내고 생성되는 데스크톱 세션을 엽니다
-    * [웹](/ko/claude-code-on-the-web) 또는 [iOS 앱](https://apps.apple.com/app/claude-by-anthropic/id6473753684)에서 오래 실행되는 작업을 시작한 다음 `claude --teleport`를 사용하여 터미널로 가져옵니다
+    * [웹](/ko/claude-code-on-the-web) 또는 [iOS 앱](https://apps.apple.com/app/claude-by-anthropic/id6473753684)에서 오래 실행되는 작업을 시작한 다음 `claude --teleport`를 사용하여 터미널로 가져옵니다. Teleport는 claude.ai 구독이 필요합니다.
     * 터미널 세션을 [데스크톱 앱](/ko/desktop)으로 `/desktop`을 사용하여 시각적 diff 검토를 위해 전달합니다
     * 팀 채팅에서 작업을 라우팅합니다: [Slack](/ko/slack)에서 `@Claude`를 언급하고 버그 보고서를 포함하면 풀 요청을 다시 받습니다
   </Accordion>

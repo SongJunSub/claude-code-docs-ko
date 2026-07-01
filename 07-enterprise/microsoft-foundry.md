@@ -6,6 +6,78 @@
 
 > 설정, 구성 및 문제 해결을 포함하여 Microsoft Foundry를 통해 Claude Code를 구성하는 방법을 알아봅니다.
 
+export const ContactSalesCard = ({surface}) => {
+  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
+  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>;
+  const STYLES = `
+.cc-cs {
+  --cs-slate: #141413;
+  --cs-clay: #d97757;
+  --cs-clay-deep: #c6613f;
+  --cs-gray-000: #ffffff;
+  --cs-gray-700: #3d3d3a;
+  --cs-border-default: rgba(31, 30, 29, 0.15);
+  font-family: inherit;
+}
+.dark .cc-cs {
+  --cs-slate: #f0eee6;
+  --cs-gray-000: #262624;
+  --cs-gray-700: #bfbdb4;
+  --cs-border-default: rgba(240, 238, 230, 0.14);
+}
+.cc-cs-card {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 14px 16px; margin: 0;
+  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; flex-wrap: wrap;
+}
+.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
+.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
+.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.cc-cs-btn-clay {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cs-clay-deep); color: #fff; border: none;
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+  transition: background-color 0.15s; white-space: nowrap;
+}
+.cc-cs-btn-clay:hover { background: var(--cs-clay); }
+.cc-cs-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; color: var(--cs-gray-700);
+  border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+}
+.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
+.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
+@media (max-width: 720px) {
+  .cc-cs-actions { width: 100%; }
+}
+`;
+  return <div className="cc-cs not-prose">
+      <style>{STYLES}</style>
+      <div className="cc-cs-card">
+        <div className="cc-cs-text">
+          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
+        </div>
+        <div className="cc-cs-actions">
+          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
+            View plans
+          </a>
+          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
+            Contact sales {iconArrowRight()}
+          </a>
+        </div>
+      </div>
+    </div>;
+};
+
+<ContactSalesCard surface="foundry" />
+
 <h2 id="prerequisites">
   필수 조건
 </h2>
@@ -17,7 +89,7 @@ Microsoft Foundry로 Claude Code를 구성하기 전에 다음을 확인하세�
 * Azure CLI 설치 및 구성(선택 사항 - 자격 증명을 얻을 다른 메커니즘이 없는 경우에만 필요)
 
 <Note>
-  Claude Code를 여러 사용자에게 배포하는 경우 Anthropic이 새 모델을 출시할 때 중단을 방지하기 위해 [모델 버전을 고정](#4-pin-model-versions)하세요.
+  Claude Code를 여러 사용자에게 배포하는 경우 [모델 버전을 고정](#4-pin-model-versions)하기 전에 롤아웃하세요.
 </Note>
 
 <h2 id="setup">
@@ -90,7 +162,7 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 </h3>
 
 <Warning>
-  모든 배포에 대해 특정 모델 버전을 고정합니다. 고정하지 않고 모델 별칭(`sonnet`, `opus`, `haiku`)을 사용하면 Claude Code가 Foundry 계정에서 사용할 수 없는 최신 모델 버전을 사용하려고 시도하여 Anthropic이 업데이트를 출시할 때 기존 사용자가 중단될 수 있습니다. Azure 배포를 만들 때 "최신으로 자동 업데이트" 대신 특정 모델 버전을 선택합니다.
+  모든 배포에 대해 특정 모델 버전을 고정합니다. 고정하지 않으면 `sonnet` 및 `opus`와 같은 모델 별칭이 Claude Code의 Foundry용 기본 제공 기본값으로 확인되며, 이는 최신 릴리스보다 뒤떨어질 수 있고 계정에서 아직 사용할 수 없을 수 있습니다. Foundry는 시작 모델 확인이 없으므로 기본값을 사용할 수 없을 때 요청이 실패합니다. Azure 배포를 만들 때 "최신으로 자동 업데이트" 대신 특정 모델 버전을 선택합니다.
 </Warning>
 
 모델 변수를 1단계에서 만든 배포 이름과 일치하도록 설정합니다.
@@ -99,11 +171,11 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 
 ```bash theme={null}
 export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-8'
-export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-4-6'
+export ANTHROPIC_DEFAULT_SONNET_MODEL='claude-sonnet-5'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5'
 ```
 
-백그라운드 작업(예: 세션 제목 생성)은 일반적으로 Haiku 클래스 모델인 소형/빠른 모델을 사용합니다. Foundry에서 Claude Code는 모든 계정이 Haiku 배포를 가지고 있지 않기 때문에 기본 모델로 기본 설정됩니다. 백그라운드 작업에 Haiku를 사용하려면 위에 표시된 대로 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 계정에서 사용 가능한 Haiku 배포로 설정합니다.
+세션 제목 생성과 같은 백그라운드 작업은 일반적으로 Haiku 클래스 모델인 소형/빠른 모델을 사용합니다. Foundry에서 Claude Code는 모든 계정이 Haiku 배포를 가지고 있지 않기 때문에 기본 모델로 기본 설정됩니다. 백그라운드 작업에 Haiku를 사용하려면 위에 표시된 대로 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 계정에서 사용 가능한 Haiku 배포로 설정합니다.
 
 현재 및 레거시 모델 ID는 [모델 개요](https://platform.claude.com/docs/en/about-claude/models/overview)를 참조하세요. 전체 환경 변수 목록은 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하세요.
 

@@ -8,12 +8,7 @@
 
 [개발 컨테이너](https://containers.dev/)(또는 dev container)를 사용하면 팀의 모든 엔지니어가 실행할 수 있는 동일하고 격리된 환경을 정의할 수 있습니다. Claude Code가 해당 컨테이너에 설치되면 Claude가 실행하는 명령은 호스트 머신이 아닌 컨테이너 내에서 실행되며, 프로젝트 파일에 대한 편집 사항은 작업할 때 로컬 저장소에 나타납니다.
 
-이 페이지는 [개발 컨테이너에 Claude Code 설치](#add-claude-code-to-your-dev-container)와 다음 구성 항목을 다룹니다. 각 항목은 독립적이므로 설정해야 할 항목으로 이동하세요:
-
-* [재구축 시 인증 및 설정 유지](#persist-authentication-and-settings-across-rebuilds)
-* [조직 정책 적용](#enforce-organization-policy)
-* [네트워크 송신 제한](#restrict-network-egress)
-* [권한 프롬프트 없이 실행](#run-without-permission-prompts)
+이 페이지는 [개발 컨테이너에 Claude Code 추가](#add-claude-code-to-your-dev-container)를 다룬 후, 자체 포함된 구성 항목 집합을 제공합니다: 재구축 시 인증 유지, 조직 정책 적용, 네트워크 송신 제한, 권한 프롬프트 없이 실행. 설정과 일치하는 항목을 읽으세요.
 
 <Warning>
   개발 컨테이너가 상당한 보호를 제공하지만, 모든 공격에 완전히 면역인 시스템은 없습니다.

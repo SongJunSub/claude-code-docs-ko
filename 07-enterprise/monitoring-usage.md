@@ -93,6 +93,7 @@ Claude Code는 `OTEL_*` 환경 변수를 Bash 도구, 훅, MCP 서버 및 언어
 | `OTEL_METRIC_EXPORT_INTERVAL`                       | 내보내기 간격 (밀리초 단위, 기본값: 60000)                                                                                                                                                                                                                   | `5000`, `60000`                                                             |
 | `OTEL_LOGS_EXPORT_INTERVAL`                         | 로그 내보내기 간격 (밀리초 단위, 기본값: 5000)                                                                                                                                                                                                                 | `1000`, `10000`                                                             |
 | `OTEL_LOG_USER_PROMPTS`                             | 사용자 프롬프트 콘텐츠 로깅 활성화 (기본값: 비활성화)                                                                                                                                                                                                                | `1`로 활성화                                                                    |
+| `OTEL_LOG_ASSISTANT_RESPONSES`                      | `assistant_response` 이벤트에서 어시스턴트 응답 텍스트 로깅 활성화 (기본값: 비활성화). 설정되지 않으면 `OTEL_LOG_USER_PROMPTS`의 값으로 폴백됩니다. {/* min-version: 2.1.193 */}Claude Code v2.1.193 이상 필요                                                                                | `1`로 활성화, `0`으로 수정된 상태 유지                                                   |
 | `OTEL_LOG_TOOL_DETAILS`                             | 도구 이벤트 및 추적 스팬 속성에서 도구 매개변수 및 입력 인수 로깅 활성화: Bash 명령, MCP 서버 및 도구 이름, 스킬 이름 및 도구 입력. 또한 `user_prompt` 이벤트에서 사용자 정의, 플러그인 및 MCP 명령 이름을 활성화합니다 (기본값: 비활성화)                                                                                        | `1`로 활성화                                                                    |
 | `OTEL_LOG_TOOL_CONTENT`                             | 스팬 이벤트에서 도구 입력 및 출력 콘텐츠 로깅 활성화 (기본값: 비활성화). [추적](#traces-beta)이 필요합니다. 콘텐츠는 60KB에서 잘립니다                                                                                                                                                        | `1`로 활성화                                                                    |
 | `OTEL_LOG_RAW_API_BODIES`                           | 전체 Anthropic Messages API 요청 및 응답 JSON을 `api_request_body` / `api_response_body` 로그 이벤트로 내보냅니다 (기본값: 비활성화). 본문에는 전체 대화 기록이 포함됩니다. 이를 활성화하면 `OTEL_LOG_USER_PROMPTS`, `OTEL_LOG_TOOL_DETAILS` 및 `OTEL_LOG_TOOL_CONTENT`가 공개할 모든 것에 동의하는 것을 의미합니다 | `1`로 60KB에서 잘린 인라인 본문, 또는 `file:<dir>`로 디스크의 잘리지 않은 본문과 이벤트의 `body_ref` 포인터 |
@@ -220,17 +221,19 @@ Agent SDK 및 `claude -p` 세션에서 `TRACEPARENT`가 환경에 설정되면 `
 
 **`claude_code.tool`**
 
-| 속성                | 설명                                             | 게이트 대상                  |
-| ----------------- | ---------------------------------------------- | ----------------------- |
-| `tool_name`       | 도구 이름                                          |                         |
-| `duration_ms`     | 권한 대기 및 실행을 포함한 벽시계 지속 시간                      |                         |
-| `result_tokens`   | 도구 결과의 대략적인 토큰 크기                              |                         |
-| `agent_id`        | 도구를 실행한 하위 에이전트 또는 팀원의 식별자. 주 세션에는 없음          |                         |
-| `parent_agent_id` | 이 에이전트를 생성한 에이전트의 식별자. 주 세션 및 직접 생성된 에이전트에는 없음 |                         |
-| `file_path`       | Read, Edit 및 Write 도구의 대상 파일 경로                | `OTEL_LOG_TOOL_DETAILS` |
-| `full_command`    | Bash 도구의 명령 문자열                                | `OTEL_LOG_TOOL_DETAILS` |
-| `skill_name`      | Skill 도구의 스킬 이름                                | `OTEL_LOG_TOOL_DETAILS` |
-| `subagent_type`   | Agent 도구 또는 레거시 Task 도구의 하위 에이전트 유형            | `OTEL_LOG_TOOL_DETAILS` |
+| 속성                    | 설명                                                                                                                                                                                 | 게이트 대상                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `tool_name`           | 도구 이름                                                                                                                                                                              |                         |
+| `duration_ms`         | 권한 대기 및 실행을 포함한 벽시계 지속 시간                                                                                                                                                          |                         |
+| `result_tokens`       | 도구 결과의 대략적인 토큰 크기                                                                                                                                                                  |                         |
+| `agent_id`            | 도구를 실행한 하위 에이전트 또는 팀원의 식별자. 주 세션에는 없음                                                                                                                                              |                         |
+| `parent_agent_id`     | 이 에이전트를 생성한 에이전트의 식별자. 주 세션 및 직접 생성된 에이전트에는 없음                                                                                                                                     |                         |
+| `tool_use_id`         | 이 호출에 대한 모델의 `tool_use` 블록 ID. [tool\_result](#tool-result-event) 및 [tool\_decision](#tool-decision-event) 이벤트의 `tool_use_id`와 훅 페이로드의 `tool_use_id`와 일치하므로 스팬을 해당 레코드에 조인할 수 있습니다 |                         |
+| `gen_ai.tool.call.id` | `tool_use_id`와 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                                                                                                  |                         |
+| `file_path`           | Read, Edit 및 Write 도구의 대상 파일 경로                                                                                                                                                    | `OTEL_LOG_TOOL_DETAILS` |
+| `full_command`        | Bash 도구의 명령 문자열                                                                                                                                                                    | `OTEL_LOG_TOOL_DETAILS` |
+| `skill_name`          | Skill 도구의 스킬 이름                                                                                                                                                                    | `OTEL_LOG_TOOL_DETAILS` |
+| `subagent_type`       | Agent 도구 또는 레거시 Task 도구의 하위 에이전트 유형                                                                                                                                                | `OTEL_LOG_TOOL_DETAILS` |
 
 `OTEL_LOG_TOOL_CONTENT=1`일 때 이 스팬은 속성에 도구의 입력 및 출력 본문을 포함하는 `tool.output` 스팬 이벤트도 기록합니다 (속성당 60KB에서 잘림).
 
@@ -244,11 +247,13 @@ Agent SDK 및 `claude -p` 세션에서 `TRACEPARENT`가 환경에 설정되면 `
 
 **`claude_code.tool.execution`**
 
-| 속성            | 설명                                                                                   | 게이트 대상                  |
-| ------------- | ------------------------------------------------------------------------------------ | ----------------------- |
-| `duration_ms` | 도구 본문 실행 시간                                                                          |                         |
-| `success`     | `true` 또는 `false`                                                                    |                         |
-| `error`       | 실행이 실패했을 때 오류 범주 문자열 (예: `Error:ENOENT` 또는 `ShellError`). 게이트가 설정되면 전체 오류 메시지를 포함합니다 | `OTEL_LOG_TOOL_DETAILS` |
+| 속성                    | 설명                                                                                   | 게이트 대상                  |
+| --------------------- | ------------------------------------------------------------------------------------ | ----------------------- |
+| `duration_ms`         | 도구 본문 실행 시간                                                                          |                         |
+| `tool_use_id`         | 부모 `claude_code.tool` 스팬과 동일한 값                                                      |                         |
+| `gen_ai.tool.call.id` | `tool_use_id`와 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                    |                         |
+| `success`             | `true` 또는 `false`                                                                    |                         |
+| `error`               | 실행이 실패했을 때 오류 범주 문자열 (예: `Error:ENOENT` 또는 `ShellError`). 게이트가 설정되면 전체 오류 메시지를 포함합니다 | `OTEL_LOG_TOOL_DETAILS` |
 
 **`claude_code.hook`**
 
@@ -337,8 +342,6 @@ Claude Code는 이러한 값을 모든 메트릭 데이터포인트 및 이벤�
 각 사용자 정의 키는 모든 메트릭 시리즈의 레이블이 되므로 높은 카디널리티 값은 메트릭 백엔드의 저장소 비용을 증가시킵니다. 사용자 정의 속성을 리소스 블록에만 보내고 데이터포인트 레이블에서 생략하려면 `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES=false`를 설정합니다. [메트릭 카디널리티 제어](#metrics-cardinality-control)를 참조합니다.
 
 <Warning>
-  **OTEL\_RESOURCE\_ATTRIBUTES에 대한 중요한 형식 요구 사항:**
-
   `OTEL_RESOURCE_ATTRIBUTES` 환경 변수는 쉼표로 구분된 key=value 쌍을 사용하며 엄격한 형식 요구 사항이 있습니다:
 
   * **공백 허용 안 함**: 값에 공백이 포함될 수 없습니다. 예를 들어 `user.organizationName=My Company`는 유효하지 않습니다
@@ -346,21 +349,20 @@ Claude Code는 이러한 값을 모든 메트릭 데이터포인트 및 이벤�
   * **허용된 문자**: 제어 문자, 공백, 큰따옴표, 쉼표, 세미콜론 및 백슬래시를 제외한 US-ASCII 문자만 허용됩니다
   * **특수 문자**: 허용된 범위 외의 문자는 퍼센트 인코딩되어야 합니다
 
-  **예:**
+  공백이 필요한 값의 경우 언더스코어 또는 camelCase를 대신 사용합니다. 다음 예제는 각 형식으로 `org.name`을 설정합니다:
 
   ```bash theme={null}
-  # ❌ 유효하지 않음 - 공백 포함
-  export OTEL_RESOURCE_ATTRIBUTES="org.name=John's Organization"
-
-  # ✅ 유효함 - 대신 언더스코어 또는 camelCase 사용
   export OTEL_RESOURCE_ATTRIBUTES="org.name=Johns_Organization"
   export OTEL_RESOURCE_ATTRIBUTES="org.name=JohnsOrganization"
+  ```
 
-  # ✅ 유효함 - 필요한 경우 특수 문자를 퍼센트 인코딩
+  제외된 문자뿐만 아니라 모든 문자를 퍼센트 인코딩할 수 있습니다. 이 예제는 공백과 아포스트로피를 모두 인코딩합니다:
+
+  ```bash theme={null}
   export OTEL_RESOURCE_ATTRIBUTES="org.name=John%27s%20Organization"
   ```
 
-  참고: 값을 따옴표로 감싸도 공백이 이스케이프되지 않습니다. 예를 들어 `org.name="My Company"`는 `My Company`가 아닌 리터럴 값 `"My Company"` (따옴표 포함)를 생성합니다.
+  값을 따옴표로 감싸도 공백이 이스케이프되지 않습니다. 예를 들어 `org.name="My Company"`는 `My Company`가 아닌 리터럴 값 `"My Company"` (따옴표 포함)를 생성합니다.
 </Warning>
 
 <h3 id="example-configurations">
@@ -422,18 +424,20 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 
 모든 메트릭 및 이벤트는 다음 표준 속성을 공유합니다:
 
-| 속성                            | 설명                                                                                                 | 제어 대상                                                  |
-| ----------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `session.id`                  | 고유 세션 식별자                                                                                          | `OTEL_METRICS_INCLUDE_SESSION_ID` (기본값: true)          |
-| `app.version`                 | 현재 Claude Code 버전                                                                                  | `OTEL_METRICS_INCLUDE_VERSION` (기본값: false)            |
-| `app.entrypoint`              | 세션이 시작된 방식 (예: `cli`, `sdk-cli`, `sdk-ts`, `sdk-py` 또는 `claude-vscode`)                            | `OTEL_METRICS_INCLUDE_ENTRYPOINT` (기본값: false)         |
-| `organization.id`             | 조직 UUID (인증된 경우)                                                                                   | 사용 가능할 때 항상 포함됨                                        |
-| `user.account_uuid`           | 계정 UUID (인증된 경우)                                                                                   | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (기본값: true)        |
-| `user.account_id`             | Anthropic 관리 API와 일치하는 태그 형식의 계정 ID (인증된 경우) (예: `user_01BWBeN28...`)                              | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (기본값: true)        |
-| `user.id`                     | 익명 장치/설치 식별자 (Claude Code 설치당 생성됨)                                                                 | 항상 포함됨                                                 |
-| `user.email`                  | 사용자 이메일 주소 (OAuth를 통해 인증된 경우)                                                                      | 사용 가능할 때 항상 포함됨                                        |
-| `terminal.type`               | 터미널 유형 (예: `iTerm.app`, `vscode`, `cursor` 또는 `tmux`)                                              | 감지될 때 항상 포함됨                                           |
-| `OTEL_RESOURCE_ATTRIBUTES`의 키 | 설정한 사용자 정의 속성, 예: `department` 또는 `team.id`. [다중 팀 조직 지원](#multi-team-organization-support)을 참조하세요 | `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` (기본값: true) |
+| 속성                            | 설명                                                                                                                            | 제어 대상                                                  |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `session.id`                  | 고유 세션 식별자                                                                                                                     | `OTEL_METRICS_INCLUDE_SESSION_ID` (기본값: true)          |
+| `app.version`                 | 현재 Claude Code 버전                                                                                                             | `OTEL_METRICS_INCLUDE_VERSION` (기본값: false)            |
+| `app.entrypoint`              | 세션이 시작된 방식, 예: `cli`, `sdk-cli`, `sdk-ts`, `sdk-py` 또는 `claude-vscode`                                                        | `OTEL_METRICS_INCLUDE_ENTRYPOINT` (기본값: false)         |
+| `organization.id`             | 조직 UUID (인증된 경우)                                                                                                              | 사용 가능할 때 항상 포함됨                                        |
+| `user.account_uuid`           | 계정 UUID (인증된 경우)                                                                                                              | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (기본값: true)        |
+| `user.account_id`             | Anthropic 관리 API와 일치하는 태그 형식의 계정 ID (인증된 경우), 예: `user_01BWBeN28...`                                                          | `OTEL_METRICS_INCLUDE_ACCOUNT_UUID` (기본값: true)        |
+| `user.id`                     | 첫 실행 시 생성되고 `~/.claude.json`에 유지되는 무작위 익명 식별자입니다. 개인 정보를 포함하지 않으며 Claude 계정에서 파생되지 않습니다. 파일을 삭제하면 다음 실행 시 새로운 관련 없는 값이 생성됩니다. | 항상 포함됨                                                 |
+| `user.email`                  | 사용자 이메일 주소 (OAuth를 통해 인증된 경우)                                                                                                 | 사용 가능할 때 항상 포함됨                                        |
+| `terminal.type`               | 터미널 유형, 예: `iTerm.app`, `vscode`, `cursor` 또는 `tmux`                                                                          | 감지될 때 항상 포함됨                                           |
+| `OTEL_RESOURCE_ATTRIBUTES`의 키 | 설정한 사용자 정의 속성, 예: `department` 또는 `team.id`. [다중 팀 조직 지원](#multi-team-organization-support)을 참조하세요                            | `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` (기본값: true) |
+
+Claude Code가 [Claude 앱 게이트웨이](/ko/claude-apps-gateway)에 로그인되어 있으면 CLI는 게이트웨이 세션의 인증된 ID로 내보내기를 스탬프합니다: `user.id`는 익명 설치 식별자가 아닌 IdP 주체이고, `user.email`은 로그인한 이메일이며, `user.groups`는 쉼표로 구분된 문자열로 IdP 그룹 멤버십을 전달합니다. 각 내보내기는 또한 `identity.source: gateway-oidc`를 전달합니다. 게이트웨이 ID는 마지막에 적용되므로 `OTEL_RESOURCE_ATTRIBUTES`를 통해 설정된 `user.*` 및 `identity.*` 키는 게이트웨이 세션에서 무시됩니다.
 
 이벤트는 추가로 다음 속성을 포함합니다. 이들은 무한 카디널리티를 야기할 수 있으므로 메트릭에 절대 첨부되지 않습니다:
 
@@ -472,7 +476,7 @@ Claude Code는 다음 메트릭을 내보냅니다:
 **속성**:
 
 * 모든 [표준 속성](#standard-attributes)
-* `start_type`: 세션이 시작된 방식. `"fresh"`, `"resume"` 또는 `"continue"` 중 하나
+* `start_type`: 세션이 시작된 방식. `"fresh"`, `"resume"`, `"continue"` 또는 `"agents_view"` 중 하나입니다. `"agents_view"` 값은 `claude agents` 대시보드 프로세스 (대화형 세션이 아닌 사용자가 시작한 로컬 UI)를 식별합니다. 대시보드에서 UI 프로세스 시작을 대화형 세션과 분리하려면 이 값으로 필터링합니다.
 
 <h4 id="lines-of-code-counter">
   코드 라인 카운터
@@ -484,6 +488,7 @@ Claude Code는 다음 메트릭을 내보냅니다:
 
 * 모든 [표준 속성](#standard-attributes)
 * `type`: (`"added"`, `"removed"`)
+* `model`: 변경을 수행한 모델의 모델 식별자 (예: "claude-sonnet-5")
 
 <h4 id="pull-request-counter">
   풀 요청 카운터
@@ -514,7 +519,7 @@ Claude Code를 통해 git 커밋을 생성할 때 증가합니다.
 **속성**:
 
 * 모든 [표준 속성](#standard-attributes)
-* `model`: 모델 식별자 (예: "claude-sonnet-4-6")
+* `model`: 모델 식별자 (예: "claude-sonnet-5")
 * `query_source`: 요청을 발급한 하위 시스템의 범주. `"main"`, `"subagent"` 또는 `"auxiliary"` 중 하나
 * `speed`: 요청이 빠른 모드를 사용했을 때 `"fast"`. 그 외에는 없음
 * `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level): `"low"`, `"medium"`, `"high"`, `"xhigh"` 또는 `"max"`. 모델이 노력을 지원하지 않을 때는 없음
@@ -535,7 +540,7 @@ Claude Code를 통해 git 커밋을 생성할 때 증가합니다.
 
 * 모든 [표준 속성](#standard-attributes)
 * `type`: (`"input"`, `"output"`, `"cacheRead"`, `"cacheCreation"`)
-* `model`: 모델 식별자 (예: "claude-sonnet-4-6")
+* `model`: 모델 식별자 (예: "claude-sonnet-5")
 * `query_source`: 요청을 발급한 하위 시스템의 범주. `"main"`, `"subagent"` 또는 `"auxiliary"` 중 하나
 * `speed`: 요청이 빠른 모드를 사용했을 때 `"fast"`. 그 외에는 없음
 * `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level). [비용 카운터](#cost-counter)의 세부 정보를 참조하세요.
@@ -553,7 +558,7 @@ Claude Code를 통해 git 커밋을 생성할 때 증가합니다.
 * `tool_name`: 도구 이름 (`"Edit"`, `"Write"`, `"NotebookEdit"`)
 * `decision`: 사용자 결정 (`"accept"`, `"reject"`)
 * `source`: 결정 출처. `"config"`, `"hook"`, `"user_permanent"`, `"user_temporary"`, `"user_abort"` 또는 `"user_reject"` 중 하나. [도구 결정 이벤트](#tool-decision-event)를 참조하여 각 값의 의미를 확인하세요.
-* `language`: 편집된 파일의 프로그래밍 언어 (예: `"TypeScript"`, `"Python"`, `"JavaScript"` 또는 `"Markdown"`). 인식되지 않는 파일 확장자의 경우 `"unknown"`을 반환합니다.
+* `language`: 편집된 파일의 프로그래밍 언어, 예: `"TypeScript"`, `"Python"`, `"JavaScript"` 또는 `"Markdown"`. 인식되지 않는 파일 확장자의 경우 `"unknown"`을 반환합니다.
 
 <h4 id="active-time-counter">
   활성 시간 카운터
@@ -603,9 +608,29 @@ Claude Code는 OpenTelemetry 로그/이벤트를 통해 다음 이벤트를 내�
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
 * `prompt_length`: 프롬프트의 길이
-* `prompt`: 프롬프트 콘텐츠 (기본적으로 수정됨, `OTEL_LOG_USER_PROMPTS=1`로 활성화)
+* `prompt`: 프롬프트 콘텐츠. 기본적으로 수정됨. `OTEL_LOG_USER_PROMPTS=1`로 설정하여 포함
 * `command_name`: 프롬프트가 명령을 호출할 때 명령 이름. `compact` 또는 `debug`와 같은 기본 제공 및 번들 명령 이름은 그대로 내보내집니다. `reset`과 같은 별칭은 정규 이름이 아닌 입력한 대로 내보냅니다. 사용자 정의, 플러그인 및 MCP 명령 이름은 `OTEL_LOG_TOOL_DETAILS=1`이 설정되지 않으면 `custom` 또는 `mcp`로 축소됩니다
 * `command_source`: 명령이 있을 때 명령의 출처: `builtin`, `custom` 또는 `mcp`. 플러그인 제공 명령은 `custom`으로 보고합니다
+
+<h4 id="assistant-response-event">
+  어시스턴트 응답 이벤트
+</h4>
+
+각 API 요청이 모델의 텍스트 콘텐츠를 반환한 후 기록됩니다. 응답의 텍스트 블록만 포함됩니다. 사고 블록 및 도구 사용 블록은 제외됩니다. {/* min-version: 2.1.193 */}Claude Code v2.1.193 이상 필요.
+
+**이벤트 이름**: `claude_code.assistant_response`
+
+**속성**:
+
+* 모든 [표준 속성](#standard-attributes)
+* `event.name`: `"assistant_response"`
+* `event.timestamp`: ISO 8601 타임스탬프
+* `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
+* `response_length`: 응답 텍스트의 길이 (문자)
+* `response`: 응답 텍스트 (60KB에서 잘림). 기본적으로 `<REDACTED>`로 수정됨. `OTEL_LOG_ASSISTANT_RESPONSES=1`로 설정하여 포함. `OTEL_LOG_ASSISTANT_RESPONSES`가 설정되지 않으면 `OTEL_LOG_USER_PROMPTS`가 대신 제어하므로 프롬프트 로깅이 켜져 있는 동안 응답을 수정된 상태로 유지하려면 `OTEL_LOG_ASSISTANT_RESPONSES=0`으로 설정합니다
+* `model`: 모델 식별자 (예: "claude-sonnet-4-6")
+* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID. API가 반환할 때만 표시됩니다
+* `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름
 
 <h4 id="tool-result-event">
   도구 결과 이벤트
@@ -625,7 +650,7 @@ Claude Code는 OpenTelemetry 로그/이벤트를 통해 다음 이벤트를 내�
 * `tool_use_id`: 이 도구 호출의 고유 식별자. 훅에 전달된 `tool_use_id`와 일치하여 OTel 이벤트와 훅 캡처 데이터 간의 상관관계를 허용합니다.
 * `success`: `"true"` 또는 `"false"`
 * `duration_ms`: 실행 시간 (밀리초)
-* `error_type`: 도구가 실패했을 때 오류 범주 문자열 (예: `"Error:ENOENT"` 또는 `"ShellError"`)
+* `error_type`: 도구가 실패했을 때 오류 범주 문자열, 예: `"Error:ENOENT"` 또는 `"ShellError"`
 * `error` (`OTEL_LOG_TOOL_DETAILS=1`일 때): 도구가 실패했을 때 전체 오류 메시지
 * `decision_type`: 항상 `"accept"`입니다. 이 이벤트는 도구가 실행된 후에만 내보내집니다 (거부된 호출은 도구 결과를 생성하지 않음)
 * `decision_source`: 권한 결정이 나온 위치. `"config"`, `"hook"`, `"user_permanent"` 또는 `"user_temporary"` 중 하나. [도구 결정 이벤트](#tool-decision-event)를 참조하여 각 값의 의미를 확인하세요. 거부 전용 출처인 `"user_abort"` 및 `"user_reject"`는 이 이벤트에 나타나지 않습니다.
@@ -654,16 +679,16 @@ Claude에 대한 각 API 요청에 대해 기록됩니다.
 * `event.name`: `"api_request"`
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
-* `model`: 사용된 모델 (예: "claude-sonnet-4-6")
+* `model`: 사용된 모델 (예: "claude-sonnet-5")
 * `cost_usd`: USD 단위의 예상 비용
 * `duration_ms`: 요청 지속 시간 (밀리초)
 * `input_tokens`: 입력 토큰 수
 * `output_tokens`: 출력 토큰 수
 * `cache_read_tokens`: 캐시에서 읽은 토큰 수
 * `cache_creation_tokens`: 캐시 생성에 사용된 토큰 수
-* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID (예: `"req_011..."`). API가 반환할 때만 표시됩니다.
+* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID, 예: `"req_011..."`. API가 반환할 때만 표시됩니다.
 * `speed`: 빠른 모드가 활성화되었는지 여부를 나타내는 `"fast"` 또는 `"normal"`
-* `query_source`: 요청을 발급한 하위 시스템 (예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름)
+* `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름
 * `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level): `"low"`, `"medium"`, `"high"`, `"xhigh"` 또는 `"max"`. 모델이 노력을 지원하지 않을 때는 없음
 * `agent.name`, `skill.name`, `plugin.name`, `marketplace.name`, `mcp_server.name`, `mcp_tool.name`: 요청에 대한 스킬, 플러그인, 에이전트 및 MCP 속성. [비용 카운터](#cost-counter)의 정의 및 수정 동작을 참조하세요.
 
@@ -681,15 +706,41 @@ Claude에 대한 API 요청이 실패할 때 기록됩니다.
 * `event.name`: `"api_error"`
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
-* `model`: 사용된 모델 (예: "claude-sonnet-4-6")
+* `model`: 사용된 모델 (예: "claude-sonnet-5")
 * `error`: 오류 메시지
 * `status_code`: HTTP 상태 코드 (숫자). HTTP가 아닌 오류 (예: 연결 실패)의 경우 없음
 * `duration_ms`: 요청 지속 시간 (밀리초)
 * `attempt`: 초기 요청을 포함한 총 시도 횟수 (`1`은 재시도가 발생하지 않았음을 의미)
-* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID (예: `"req_011..."`). API가 반환할 때만 표시됩니다.
+* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID, 예: `"req_011..."`. API가 반환할 때만 표시됩니다.
 * `speed`: 빠른 모드가 활성화되었는지 여부를 나타내는 `"fast"` 또는 `"normal"`
-* `query_source`: 요청을 발급한 하위 시스템 (예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름)
+* `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름
 * `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level). 모델이 노력을 지원하지 않을 때는 없음
+* `agent.name`, `skill.name`, `plugin.name`, `marketplace.name`, `mcp_server.name`, `mcp_tool.name`: 요청에 대한 스킬, 플러그인, 에이전트 및 MCP 속성. [비용 카운터](#cost-counter)의 정의 및 수정 동작을 참조하세요.
+
+<h4 id="api-refusal-event">
+  API 거부 이벤트
+</h4>
+
+API 요청이 `stop_reason: "refusal"`을 반환할 때 기록됩니다. 거부는 HTTP 오류가 아닌 성공적인 응답 스트림에 도착하므로 `api_error` 이벤트는 이에 대해 발생하지 않습니다. 이 이벤트를 사용하면 거부 빈도를 추적하고 거부를 `api_request` 및 `api_error`와 동일한 속성으로 그룹화할 수 있습니다.
+
+**이벤트 이름**: `claude_code.api_refusal`
+
+**속성**:
+
+* 모든 [표준 속성](#standard-attributes)
+* `event.name`: `"api_refusal"`
+* `event.timestamp`: ISO 8601 타임스탬프
+* `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
+* `model`: 요청의 모델 식별자
+* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID, 예: `"req_011..."`. API가 반환할 때만 표시됩니다.
+* `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름. [`api_request`](#api-request-event)의 정의를 참조하세요.
+* `speed`: [빠른 모드](/ko/fast-mode)가 활성화되었을 때 `"fast"`, 또는 `"normal"`
+* `attempt`: 재시도 시도 번호. 첫 번째 시도는 `1`입니다.
+* `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level). 모델이 노력을 지원하지 않을 때는 없음
+* `server_fallback_hop`: API의 서버 측 모델 폴백이 이미 이 거부를 다른 모델에서 재시도했으므로 사용자가 이 특정 거부를 보지 못했을 때 `true`. 요청이 거부로 끝났을 때 `false`. 단일 턴은 나중에 `false` 최종 이벤트가 있는 `true` 홉 이벤트를 모두 내보낼 수 있습니다.
+* `has_category`: API 응답이 `"cyber"`, `"bio"`, `"frontier_llm"` 또는 `"reasoning_extraction"`의 `stop_details.category`를 전달했을 때 `true`. 응답이 카테고리를 전달하지 않았거나 해당 집합 외부의 값을 전달했을 때 `false`. `server_fallback_hop`이 `true`일 때는 없음 (홉 블록은 `stop_details`를 전달하지 않음).
+* `has_explanation`: API 응답이 `stop_details.explanation`을 전달했을 때 `true`, 그 외에는 `false`. `server_fallback_hop`이 `true`일 때는 없음.
+* `category`: API 응답의 `stop_details.category` 값. `"cyber"`, `"bio"`, `"frontier_llm"` 또는 `"reasoning_extraction"` 중 하나. `OTEL_LOG_TOOL_DETAILS=1`이 설정되어 있고 `has_category`가 `true`일 때만 표시됩니다.
 * `agent.name`, `skill.name`, `plugin.name`, `marketplace.name`, `mcp_server.name`, `mcp_tool.name`: 요청에 대한 스킬, 플러그인, 에이전트 및 MCP 속성. [비용 카운터](#cost-counter)의 정의 및 수정 동작을 참조하세요.
 
 <h4 id="api-request-body-event">
@@ -733,7 +784,7 @@ Claude에 대한 API 요청이 실패할 때 기록됩니다.
 * `body_truncated`: 인라인 잘림이 발생했을 때 `"true"`. 파일 모드 및 잘림이 발생하지 않았을 때는 없음
 * `model`: 모델 식별자
 * `query_source`: 요청을 발급한 하위 시스템
-* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID (예: `"req_011..."`). API가 반환할 때만 표시됩니다.
+* `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID, 예: `"req_011..."`. API가 반환할 때만 표시됩니다.
 
 <h4 id="tool-decision-event">
   도구 결정 이벤트
@@ -780,7 +831,7 @@ Claude에 대한 API 요청이 실패할 때 기록됩니다.
 * `event.name`: `"permission_mode_changed"`
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
-* `from_mode`: 이전 권한 모드 (예: `"default"`, `"plan"`, `"acceptEdits"`, `"auto"` 또는 `"bypassPermissions"`)
+* `from_mode`: 이전 권한 모드, 예: `"default"`, `"plan"`, `"acceptEdits"`, `"auto"` 또는 `"bypassPermissions"`
 * `to_mode`: 새 권한 모드
 * `trigger`: 변경을 야기한 것. `"shift_tab"`, `"exit_plan_mode"`, `"auto_gate_denied"` 또는 `"auto_opt_in"` 중 하나. SDK 또는 브리지에서 전환이 시작될 때는 없음
 
@@ -800,7 +851,7 @@ Claude에 대한 API 요청이 실패할 때 기록됩니다.
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
 * `action`: `"login"` 또는 `"logout"`
 * `success`: `"true"` 또는 `"false"`
-* `auth_method`: 인증 방법 (예: `"oauth"`)
+* `auth_method`: 인증 방법, 예: `"oauth"`
 * `error_category`: 작업이 실패했을 때 범주별 오류 종류. 원본 오류 메시지는 포함되지 않습니다
 * `status_code`: 작업이 HTTP 오류로 실패했을 때 HTTP 상태 코드 (문자열)
 
@@ -819,10 +870,13 @@ MCP 서버가 연결, 연결 해제 또는 연결 실패할 때 기록됩니다.
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
 * `status`: `"connected"`, `"failed"` 또는 `"disconnected"`
-* `transport_type`: 서버 전송 (예: `"stdio"`, `"sse"` 또는 `"http"`)
-* `server_scope`: 서버가 구성된 범위 (예: `"user"`, `"project"` 또는 `"local"`)
+* `transport_type`: 서버 전송, 예: `"stdio"`, `"sse"` 또는 `"http"`
+* `server_scope`: 서버가 구성된 범위, 예: `"user"`, `"project"` 또는 `"local"`
 * `duration_ms`: 연결 시도 지속 시간 (밀리초)
 * `error_code`: 연결이 실패했을 때 오류 코드
+* `is_plugin`: 서버가 플러그인에서 제공될 때 `true`, 그 외에는 `false`
+* `plugin_id_hash` (`is_plugin`이 `true`일 때): 플러그인 이름 및 마켓플레이스의 안정적인 해시 (이름을 노출하지 않고 플러그인별로 이벤트를 그룹화하기 위함)
+* `plugin.name` (`is_plugin`이 `true`일 때): 서버를 제공하는 플러그인의 이름. 타사 플러그인의 경우 `OTEL_LOG_TOOL_DETAILS=1`이 아니면 리터럴 문자열 `"third-party"`입니다. 공식 Anthropic 소스의 플러그인은 항상 이름으로 식별됩니다. `plugin_id_hash` 및 `plugin.name` 속성은 자신의 모니터링 백엔드로 흐르며 Anthropic으로 전송되지 않습니다
 * `server_name` (`OTEL_LOG_TOOL_DETAILS=1`일 때): 구성된 서버 이름
 * `error` (`OTEL_LOG_TOOL_DETAILS=1`일 때): 연결이 실패했을 때 전체 오류 메시지
 
@@ -840,8 +894,8 @@ Claude Code가 예상치 못한 내부 오류를 포착할 때 기록됩니다. 
 * `event.name`: `"internal_error"`
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
-* `error_name`: 오류 클래스 이름 (예: `"TypeError"` 또는 `"SyntaxError"`)
-* `error_code`: 오류에 있을 때 Node.js errno 코드 (예: `"ENOENT"`)
+* `error_name`: 오류 클래스 이름, 예: `"TypeError"` 또는 `"SyntaxError"`
+* `error_code`: 오류에 있을 때 Node.js errno 코드, 예: `"ENOENT"`
 
 <h4 id="plugin-installed-event">
   플러그인 설치됨 이벤트
@@ -885,9 +939,11 @@ Claude Code가 예상치 못한 내부 오류를 포착할 때 기록됩니다. 
 * `plugin_id_hash`: 플러그인 이름 및 마켓플레이스의 결정론적 해시 (구성된 내보내기로만 전송됨). 플릿 전체에서 로드된 서로 다른 타사 플러그인 수를 세는 것을 허용합니다 (이름 기록 없이)
 * `has_hooks`: 플러그인이 훅을 제공하는지 여부
 * `has_mcp`: 플러그인이 MCP 서버를 제공하는지 여부
+* `host_owned_mcp`: SDK 호스트가 이 플러그인의 MCP 연결을 관리하고 Claude Code가 플러그인의 MCP 서버 구성 읽기를 건너뛸 때 `true`, 그 외에는 `false`. {/* min-version: 2.1.172 */}Claude Code v2.1.172 이상 필요
 * `skill_path_count`: 플러그인이 선언하는 스킬 디렉토리 수
 * `command_path_count`: 플러그인이 선언하는 명령 디렉토리 수
 * `agent_path_count`: 플러그인이 선언하는 에이전트 디렉토리 수
+* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. 안전 모드에서 이 이벤트는 구성된 인벤토리만 보고합니다. 플러그인의 명령, 스킬, 훅 및 MCP 서버는 로드되지 않습니다. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 
 <h4 id="skill-activated-event">
   스킬 활성화됨 이벤트
@@ -906,6 +962,7 @@ Claude Code가 예상치 못한 내부 오류를 포착할 때 기록됩니다. 
 * `skill.name`: 스킬의 이름. 사용자 정의 및 타사 플러그인 스킬의 경우 `OTEL_LOG_TOOL_DETAILS=1`이 아니면 값은 자리 표시자 `"custom_skill"`입니다
 * `invocation_trigger`: 스킬이 트리거된 방식 (`"user-slash"`, `"claude-proactive"` 또는 `"nested-skill"`)
 * `skill.source`: 스킬이 로드된 위치 (예: `"bundled"`, `"userSettings"`, `"projectSettings"`, `"plugin"`)
+* `skill.kind`: 스킬이 워크플로우 스킬일 때 `"workflow"`. 그 외에는 없음
 * `plugin.name` (`OTEL_LOG_TOOL_DETAILS=1`이거나 플러그인이 공식 마켓플레이스에서 온 경우): 스킬이 플러그인에서 제공될 때 소유 플러그인의 이름
 * `marketplace.name` (`OTEL_LOG_TOOL_DETAILS=1`이거나 플러그인이 공식 마켓플레이스에서 온 경우): 스킬이 플러그인에서 제공될 때 소유 플러그인이 설치된 마켓플레이스
 
@@ -961,9 +1018,10 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `event.name`: `"hook_registered"`
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
-* `hook_event`: 훅 이벤트 유형 (예: `"PreToolUse"` 또는 `"PostToolUse"`)
+* `hook_event`: 훅 이벤트 유형, 예: `"PreToolUse"` 또는 `"PostToolUse"`
 * `hook_type`: 훅 구현 유형: `"command"`, `"prompt"`, `"mcp_tool"`, `"http"` 또는 `"agent"`
 * `hook_source`: 훅이 정의된 위치: `"userSettings"`, `"projectSettings"`, `"localSettings"`, `"flagSettings"`, `"policySettings"` 또는 `"pluginHook"`
+* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 * `hook_matcher` (`OTEL_LOG_TOOL_DETAILS=1`일 때): 설정된 경우 훅 구성의 매처 문자열
 * `plugin.name` (`hook_source`가 `"pluginHook"`일 때): 기여하는 플러그인의 이름. 공식 마켓플레이스 및 기본 제공 번들 외부의 플러그인의 경우 `OTEL_LOG_TOOL_DETAILS=1`이 아니면 값은 `"third-party"`입니다
 * `plugin_id_hash` (`hook_source`가 `"pluginHook"`일 때): 플러그인 이름 및 마켓플레이스의 결정론적 해시 (구성된 내보내기로만 전송됨). 이름을 기록하지 않고 기여하는 서로 다른 플러그인을 세는 것을 허용합니다
@@ -982,11 +1040,12 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `event.name`: `"hook_execution_start"`
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
-* `hook_event`: 훅 이벤트 유형 (예: `"PreToolUse"` 또는 `"PostToolUse"`)
-* `hook_name`: 매처를 포함한 전체 훅 이름 (예: `"PreToolUse:Write"`)
+* `hook_event`: 훅 이벤트 유형, 예: `"PreToolUse"` 또는 `"PostToolUse"`
+* `hook_name`: 매처를 포함한 전체 훅 이름, 예: `"PreToolUse:Write"`
 * `num_hooks`: 일치하는 훅 명령 수
 * `managed_only`: 관리 정책 훅만 허용될 때 `"true"`
 * `hook_source`: `"policySettings"` 또는 `"merged"`
+* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 * `hook_definitions`: JSON 직렬화된 훅 구성. 상세 베타 추적과 `OTEL_LOG_TOOL_DETAILS=1`이 모두 활성화되어 있을 때만 포함됨
 
 <h4 id="hook-execution-complete-event">
@@ -1013,6 +1072,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `total_duration_ms`: 모든 일치하는 훅의 벽시계 지속 시간
 * `managed_only`: 관리 정책 훅만 허용될 때 `"true"`
 * `hook_source`: `"policySettings"` 또는 `"merged"`
+* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 * `hook_definitions`: JSON 직렬화된 훅 구성. 상세 베타 추적과 `OTEL_LOG_TOOL_DETAILS=1`이 모두 활성화되어 있을 때만 포함됨
 
 <h4 id="hook-plugin-metrics-event">
@@ -1069,7 +1129,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `event.name`: `"feedback_survey"`
 * `event.timestamp`: ISO 8601 타임스탬프
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
-* `event_type`: 설문 수명 주기 이벤트 (예: `"appeared"`, `"responded"` 또는 `"transcript_prompt_appeared"`)
+* `event_type`: 설문 수명 주기 이벤트, 예: `"appeared"`, `"responded"` 또는 `"transcript_prompt_appeared"`
 * `appearance_id`: 하나의 설문 인스턴스에 대해 내보내진 이벤트를 연결하는 고유 ID
 * `survey_type`: 이벤트를 생성한 설문. `"session"`은 "Claude가 어떻게 하고 있나요?" 평가 프롬프트입니다
 * `response`: `responded` 이벤트에서 사용자의 선택
@@ -1089,7 +1149,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `claude_code.token.usage`                                     | `type` (입력/출력), 사용자, 팀, 모델, `skill.name`, `plugin.name` 또는 `agent.name`별로 분류 |
 | `claude_code.session.count`                                   | 시간 경과에 따른 채택 및 참여 추적                                                         |
-| `claude_code.lines_of_code.count`                             | 코드 추가/제거를 추적하여 생산성 측정                                                        |
+| `claude_code.lines_of_code.count`                             | 코드 추가 및 제거를 추적하여 생산성 측정, 모델별로 분류                                             |
 | `claude_code.commit.count` & `claude_code.pull_request.count` | 개발 워크플로우에 미치는 영향 이해                                                          |
 
 <h3 id="cost-monitoring">
@@ -1103,20 +1163,20 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `skill.name`, `plugin.name` 및 `agent.name` 속성을 통해 특정 스킬, 플러그인 또는 서브에이전트 유형에 지출 귀속
 
 <Note>
-  비용 메트릭은 근사값입니다. 공식 청구 데이터는 API 제공자 (Claude Console, Amazon Bedrock 또는 Google Cloud Vertex)를 참조하세요.
+  비용 메트릭은 근사값입니다. 공식 청구 데이터는 API 제공자(Claude Console, Amazon Bedrock 또는 Google Cloud Vertex)를 참조하세요.
 </Note>
 
 <h3 id="alerting-and-segmentation">
   경고 및 세분화
 </h3>
 
-고려할 일반적인 경고:
+일반적인 경고 고려 사항:
 
 * 비용 급증
 * 비정상적인 토큰 소비
 * 특정 사용자의 높은 세션 볼륨
 
-모든 메트릭은 `user.account_uuid`, `user.account_id`, `organization.id`, `session.id`, `model` 및 `app.version`으로 세분화할 수 있습니다.
+모든 메트릭은 [표준 속성](#standard-attributes)으로 세분화할 수 있습니다. `model` 속성은 `claude_code.token.usage`, `claude_code.cost.usage`에서 사용 가능하며, v2.1.172부터 `claude_code.lines_of_code.count`에서도 사용 가능합니다. 커밋의 모델별 분류는 한 세션이 여러 모델에 걸쳐 있을 수 있으므로 `session.id`에서 토큰 또는 비용 메트릭에 대해 조인하여만 근사할 수 있습니다. 토큰 또는 비용 측면을 `query_source`가 `"main"`인 행으로 필터링하여 보조 및 서브에이전트 요청이 세션의 커밋을 해당 요청을 수행하지 않은 모델에 귀속시키지 않도록 합니다.
 
 <h3 id="detect-retry-exhaustion">
   재시도 소진 감지
@@ -1124,7 +1184,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 
 Claude Code는 실패한 API 요청을 내부적으로 재시도하고 포기한 후에만 단일 `claude_code.api_error` 이벤트를 내보내므로 이벤트 자체가 해당 요청의 최종 신호입니다. 중간 재시도 시도는 별도의 이벤트로 기록되지 않습니다.
 
-이벤트의 `attempt` 속성은 총 시도 횟수를 기록합니다. `CLAUDE_CODE_MAX_RETRIES` (기본값 `10`)보다 큰 값은 요청이 일시적 오류에 대한 모든 재시도를 소진했음을 나타냅니다. 더 낮은 값은 `400` 응답과 같은 재시도 불가능한 오류를 나타냅니다.
+이벤트의 `attempt` 속성은 총 시도 횟수를 기록합니다. `CLAUDE_CODE_MAX_RETRIES`는 기본값이 10이고 최대 15입니다. 요청이 일시적 오류에 대한 모든 재시도를 소진하면 `attempt`는 해당 유효 제한보다 하나 많습니다: 기본값으로는 11이고 16을 초과하지 않습니다. 더 낮은 값은 `400` 응답과 같은 재시도 불가능한 오류를 나타냅니다.
 
 복구된 세션과 정체된 세션을 구분하려면 `session.id`로 이벤트를 그룹화하고 오류 후 나중에 `api_request` 이벤트가 존재하는지 확인합니다.
 
@@ -1153,11 +1213,11 @@ OpenTelemetry 이벤트는 Claude Code 활동의 감사 데이터 소스입니�
   속성 작업을 사용자에게 연결
 </h3>
 
-각 이벤트의 [표준 속성](#standard-attributes)에는 인증된 사용자의 ID가 포함됩니다: Claude 계정으로 로그인할 때 `user.email`, `user.account_uuid`, `user.account_id` 및 `organization.id`, 그리고 설치 범위 `user.id` 및 세션별 `session.id`.
+각 이벤트의 [표준 속성](#standard-attributes)에는 인증된 사용자의 ID가 포함됩니다: Claude 계정으로 로그인할 때 `user.email`, `user.account_uuid`, `user.account_id` 및 `organization.id`, 그리고 설치 범위 `user.id` 및 세션별 `session.id`. `user.id`는 설치 범위 식별자이며, [Claude 앱 게이트웨이](/ko/claude-apps-gateway) 세션에서는 게이트웨이 발급 토큰의 IdP 주체입니다.
 
-MCP 도구 호출, Bash 명령 및 파일 편집은 따라서 세션을 시작한 개발자에게 귀속됩니다. Claude Code는 별도의 서비스 계정으로 작동하지 않습니다. 각 이벤트에 기록된 ID는 개발자 자신의 Claude 계정입니다.
+MCP 도구 호출, Bash 명령 및 파일 편집은 따라서 세션을 시작한 개발자에게 귀속됩니다. Claude Code는 별도의 서비스 계정으로 작동하지 않습니다. 각 이벤트에 기록된 ID는 개발자 자신의 Claude 계정이거나 [Claude 앱 게이트웨이](/ko/claude-apps-gateway) 세션의 개발자 IdP 신원입니다.
 
-Claude Code가 직접 API 키로 인증하거나 Bedrock, Vertex AI 또는 Microsoft Foundry에 대해 인증할 때 세션에 Claude 계정이 없으며 `user.id` 및 `session.id`만 채워집니다. 이러한 배포에서는 `OTEL_RESOURCE_ATTRIBUTES`를 사용하여 사용자 ID를 직접 첨부하고, [관리 설정](#administrator-configuration) 파일 또는 시작 래퍼를 통해 사용자별로 설정합니다:
+Claude Code가 직접 API 키로 인증하거나 Bedrock, Vertex AI 또는 Microsoft Foundry에 대해 인증할 때 세션에 Claude 계정이 없으며 `user.id` 및 `session.id`만 채워집니다. 이러한 배포에서는 `OTEL_RESOURCE_ATTRIBUTES`를 사용하여 사용자 ID를 직접 첨부하고, [관리 설정](#administrator-configuration) 파일 또는 시작 래퍼를 통해 사용자별로 설정합니다. Claude 앱 게이트웨이 세션은 이 중 어느 것도 필요하지 않습니다: CLI는 [표준 속성](#standard-attributes)에 설명된 대로 IdP 신원을 자동으로 스탬프합니다.
 
 ```bash theme={null}
 export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_id=S-1-5-21-..."
@@ -1179,7 +1239,7 @@ export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_i
 
 * `tool_result`: `tool_name` 및 `mcp_server_scope`를 유지하고, `mcp_server_name`, `mcp_tool_name` 및 인수를 생략합니다
 * `tool_decision`: `tool_name`을 유지하고, `tool_parameters`를 생략합니다
-* `mcp_server_connection`: `server_name` 및 오류 메시지를 생략합니다
+* `mcp_server_connection`: `server_name` 및 오류 메시지를 생략하지만, `is_plugin`, `plugin_id_hash` 및 `plugin.name`을 유지하며, Anthropic이 아닌 플러그인 이름은 리터럴 `"third-party"`로 수정되므로 플러그인 제공 서버는 상세 로깅 없이도 구별 가능합니다
 
 <h3 id="map-security-questions-to-events">
   보안 질문을 이벤트에 매핑
@@ -1193,7 +1253,7 @@ export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_i
 | 권한 모드 에스컬레이션            | `permission_mode_changed`                                                   | `from_mode`, `to_mode`, `trigger`                            |
 | 정책 훅이 작업을 차단함           | `hook_execution_complete`                                                   | `hook_event`, `num_blocking`                                 |
 | 로그인, 로그아웃 및 인증 실패       | `auth`                                                                      | `action`, `success`, `error_category`                        |
-| MCP 서버 연결 또는 실패         | `mcp_server_connection`                                                     | `status`, `server_name`, `error_code`                        |
+| MCP 서버 연결 또는 실패         | `mcp_server_connection`                                                     | `status`, `server_name`, `is_plugin`, `error_code`           |
 | 플러그인 설치 및 출처            | `plugin_installed`                                                          | `plugin.name`, `marketplace.name`, `marketplace.is_official` |
 | 실행된 명령 및 터치된 파일         | `tool_result` (실행됨) 또는 `tool_decision` (거부됨) (`OTEL_LOG_TOOL_DETAILS=1` 포함) | `tool_parameters`; `tool_input` (`tool_result`만 해당)          |
 
@@ -1230,7 +1290,7 @@ Claude Code는 원본 이벤트 스트림만 내보냅니다. 이상 감지, 기
 
 * **시계열 데이터베이스 (예: Prometheus)**: 비율 계산, 집계된 메트릭
 * **컬럼형 저장소 (예: ClickHouse)**: 복잡한 쿼리, 고유 사용자 분석
-* **완전한 기능의 관찰성 플랫폼 (예: Honeycomb, Datadog)**: 고급 쿼리, 시각화, 경고
+* **완전한 기능의 관찰성 플랫폼 (예: Honeycomb, Datadog, Grafana Cloud)**: 고급 쿼리, 시각화, 경고
 
 <h3 id="for-events/logs">
   이벤트/로그의 경우
@@ -1238,7 +1298,7 @@ Claude Code는 원본 이벤트 스트림만 내보냅니다. 이상 감지, 기
 
 * **로그 집계 시스템 (예: Elasticsearch, Loki)**: 전체 텍스트 검색, 로그 분석
 * **컬럼형 저장소 (예: ClickHouse)**: 구조화된 이벤트 분석
-* **완전한 기능의 관찰성 플랫폼 (예: Honeycomb, Datadog)**: 메트릭과 이벤트 간의 상관 관계
+* **완전한 기능의 관찰성 플랫폼 (예: Honeycomb, Datadog, Grafana Cloud)**: 메트릭과 이벤트 간의 상관 관계
 
 <h3 id="for-traces">
   추적의 경우
@@ -1247,7 +1307,7 @@ Claude Code는 원본 이벤트 스트림만 내보냅니다. 이상 감지, 기
 분산 추적 저장소 및 스팬 상관 관계를 지원하는 백엔드를 선택합니다:
 
 * **분산 추적 시스템 (예: Jaeger, Zipkin, Grafana Tempo)**: 스팬 시각화, 요청 워터폴, 지연 시간 분석
-* **완전한 기능의 관찰성 플랫폼 (예: Honeycomb, Datadog)**: 추적 검색 및 메트릭과 로그와의 상관 관계
+* **완전한 기능의 관찰성 플랫폼 (예: Honeycomb, Datadog, Grafana Cloud)**: 추적 검색 및 메트릭과 로그와의 상관 관계
 
 일일/주간/월간 활성 사용자 (DAU/WAU/MAU) 메트릭이 필요한 조직의 경우 효율적인 고유 값 쿼리를 지원하는 백엔드를 고려하세요.
 
@@ -1269,7 +1329,7 @@ Claude Code는 원본 이벤트 스트림만 내보냅니다. 이상 감지, 기
   ROI 측정 리소스
 </h2>
 
-원격 측정 설정, 비용 분석, 생산성 메트릭 및 자동화된 보고를 포함하여 Claude Code의 투자 수익률 측정에 대한 포괄적인 가이드는 [Claude Code ROI 측정 가이드](https://github.com/anthropics/claude-code-monitoring-guide)를 참조하세요. 이 저장소는 즉시 사용 가능한 Docker Compose 구성, Prometheus 및 OpenTelemetry 설정, Linear와 같은 도구와 통합된 생산성 보고서 생성 템플릿을 제공합니다.
+Claude Code의 투자 수익률 측정에 대한 포괄적인 가이드(원격 측정 설정, 비용 분석, 생산성 메트릭 및 자동화된 보고 포함)는 [Claude Code ROI 측정 가이드](https://github.com/anthropics/claude-code-monitoring-guide)를 참조하세요. 이 저장소는 즉시 사용 가능한 Docker Compose 구성, Prometheus 및 OpenTelemetry 설정, Linear와 같은 도구와 통합된 생산성 보고서 생성 템플릿을 제공합니다.
 
 <h2 id="security-and-privacy">
   보안 및 개인 정보 보호
@@ -1279,6 +1339,7 @@ Claude Code는 원본 이벤트 스트림만 내보냅니다. 이상 감지, 기
 * 원본 파일 콘텐츠 및 코드 스니펫은 메트릭 또는 이벤트에 포함되지 않습니다. 추적 스팬은 별도의 데이터 경로입니다: 아래의 `OTEL_LOG_TOOL_CONTENT` 항목을 참조하세요
 * OAuth를 통해 인증된 경우 `user.email`이 원격 측정 속성에 포함됩니다. 조직에서 이것이 우려 사항인 경우 원격 측정 백엔드와 함께 작업하여 이 필드를 필터링하거나 수정하세요
 * 사용자 프롬프트 콘텐츠는 기본적으로 수집되지 않습니다. 프롬프트 길이만 기록됩니다. 프롬프트 콘텐츠를 포함하려면 `OTEL_LOG_USER_PROMPTS=1`을 설정하세요
+* 어시스턴트 응답 텍스트는 기본적으로 수집되지 않습니다. 응답 길이만 기록됩니다. 응답 텍스트를 포함하려면 `OTEL_LOG_ASSISTANT_RESPONSES=1`을 설정하세요. Claude Code의 모든 OpenTelemetry 데이터와 마찬가지로 응답 텍스트는 구성한 OTel 엔드포인트로만 전송되며 Anthropic으로는 전송되지 않습니다. 이 변수가 설정되지 않으면 `OTEL_LOG_USER_PROMPTS`가 폴백으로 사용되므로 프롬프트 콘텐츠는 원하지만 응답 콘텐츠는 원하지 않는 경우 `OTEL_LOG_ASSISTANT_RESPONSES=0`을 설정하세요
 * 도구 입력 인수 및 매개변수는 기본적으로 기록되지 않습니다. 이를 포함하려면 `OTEL_LOG_TOOL_DETAILS=1`을 설정하세요. 이 데이터는 구성한 OTEL 엔드포인트로만 전송되며 Anthropic으로는 전송되지 않습니다. 인수에는 여전히 민감한 값이 포함될 수 있으므로 필요에 따라 이러한 속성을 필터링하거나 수정하도록 원격 측정 백엔드를 구성하세요. 활성화되면:
   * `tool_result` 및 `tool_decision` 이벤트는 Bash 명령, MCP 서버 및 도구 이름, 스킬 이름이 포함된 `tool_parameters` 속성을 포함합니다. `full_command`와 같은 필드는 잘리지 않은 상태로 내보내집니다
   * `tool_result` 이벤트는 추가로 파일 경로, URL, 검색 패턴 및 기타 인수가 포함된 `tool_input` 속성을 포함합니다. 512자를 초과하는 개별 값은 잘리고 전체는 약 4K 문자로 제한됩니다

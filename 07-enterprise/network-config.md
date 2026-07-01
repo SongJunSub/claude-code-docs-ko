@@ -63,7 +63,7 @@ export HTTPS_PROXY=http://username:password@proxy.example.com:8080
   CA 인증서 저장소
 </h2>
 
-기본적으로 Claude Code는 번들로 제공되는 Mozilla CA 인증서와 운영 체제의 인증서 저장소를 모두 신뢰합니다. CrowdStrike Falcon 및 Zscaler와 같은 엔터프라이즈 TLS 검사 프록시는 루트 인증서가 OS 신뢰 저장소에 설치되어 있으면 추가 구성 없이 작동합니다.
+기본적으로 Claude Code는 번들로 제공되는 Mozilla CA 인증서와 운영 체제의 인증서 저장소를 모두 신뢰합니다. OS 저장소를 읽으려면 `tls.getCACertificates`가 있는 런타임이 필요합니다. 네이티브 설치 프로그램은 항상 이를 포함하고 있으며, npm 설치는 Node 22.15 이상이 필요합니다. 이전 Node 버전에서는 번들로 제공되는 세트와 `NODE_EXTRA_CA_CERTS`만 적용됩니다. CrowdStrike Falcon 및 Zscaler와 같은 엔터프라이즈 TLS 검사 프록시는 루트 인증서가 OS 신뢰 저장소에 설치되어 있고 런타임이 이를 읽을 수 있을 때 추가 구성 없이 작동합니다.
 
 `CLAUDE_CODE_CERT_STORE`는 쉼표로 구분된 소스 목록을 허용합니다. 인식되는 값은 Claude Code와 함께 제공되는 Mozilla CA 세트의 경우 `bundled`, 운영 체제 신뢰 저장소의 경우 `system`입니다. 기본값은 `bundled,system`입니다.
 
@@ -116,21 +116,22 @@ export CLAUDE_CODE_CLIENT_KEY_PASSPHRASE="your-passphrase"
 
 Claude Code는 다음 URL에 대한 액세스가 필요합니다. 특히 컨테이너화되거나 제한된 네트워크 환경에서 프록시 구성 및 방화벽 규칙에 이러한 URL을 허용 목록에 추가하십시오.
 
-| URL                            | 필요한 용도                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------- |
-| `api.anthropic.com`            | Claude API 요청                                                                         |
-| `claude.ai`                    | claude.ai 계정 인증                                                                       |
-| `platform.claude.com`          | Anthropic Console 계정 인증                                                               |
-| `downloads.claude.ai`          | 플러그인 실행 파일 다운로드; 네이티브 설치 관리자 및 네이티브 자동 업데이터                                           |
-| `storage.googleapis.com`       | {/* max-version: 2.1.115 */}2.1.116 이전 버전의 네이티브 설치 관리자 및 네이티브 자동 업데이터                 |
-| `bridge.claudeusercontent.com` | [Chrome의 Claude](/ko/chrome) 확장 프로그램 WebSocket 브리지                                    |
-| `raw.githubusercontent.com`    | [`/release-notes`](/ko/commands)에 대한 변경 로그 피드 및 업데이트 후 표시되는 릴리스 노트; 플러그인 마켓플레이스 설치 횟수 |
+| URL                            | 필요한 용도                                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `api.anthropic.com`            | Claude API 요청                                                                                                |
+| `claude.ai`                    | claude.ai 계정 인증                                                                                              |
+| `platform.claude.com`          | Anthropic Console 계정 인증                                                                                      |
+| `downloads.claude.ai`          | 플러그인 실행 파일 다운로드; 네이티브 설치 관리자 및 네이티브 자동 업데이터                                                                  |
+| `storage.googleapis.com`       | {/* max-version: 2.1.115 */}2.1.116 이전 버전의 네이티브 설치 관리자 및 네이티브 자동 업데이터                                        |
+| `bridge.claudeusercontent.com` | [Chrome의 Claude](/ko/chrome) 확장 프로그램 WebSocket 브리지                                                           |
+| `*.claudeusercontent.com`      | claude.ai에서 [아티팩트](/ko/artifacts) 보기. 뷰어는 이 원본의 샌드박스 서브도메인에서 각 아티팩트의 콘텐츠를 로드합니다. CLI 자체가 아닌 뷰어의 브라우저에서 필요합니다 |
+| `raw.githubusercontent.com`    | [`/release-notes`](/ko/commands)에 대한 변경 로그 피드 및 업데이트 후 표시되는 릴리스 노트; 플러그인 마켓플레이스 설치 횟수                        |
 
 npm을 통해 Claude Code를 설치하거나 자신의 바이너리 배포를 관리하는 경우 최종 사용자는 `downloads.claude.ai` 또는 `storage.googleapis.com`에 대한 액세스가 필요하지 않을 수 있습니다.
 
 Claude Code는 기본적으로 선택적 운영 원격 분석을 전송하며, 환경 변수를 사용하여 이를 비활성화할 수 있습니다. 허용 목록을 최종 확정하기 전에 원격 분석을 비활성화하는 방법은 [원격 분석 서비스](/ko/data-usage#telemetry-services)를 참조하십시오.
 
-[Amazon Bedrock](/ko/amazon-bedrock), [Google Vertex AI](/ko/google-vertex-ai) 또는 [Microsoft Foundry](/ko/microsoft-foundry)를 사용할 때 모델 트래픽 및 인증은 `api.anthropic.com`, `claude.ai` 또는 `platform.claude.com` 대신 공급자로 이동합니다. WebFetch 도구는 [설정](/ko/settings)에서 `skipWebFetchPreflight: true`를 설정하지 않는 한 [도메인 안전 검사](/ko/data-usage#webfetch-domain-safety-check)를 위해 여전히 `api.anthropic.com`을 호출합니다.
+[Amazon Bedrock](/ko/amazon-bedrock), [Google Vertex AI](/ko/google-vertex-ai), [Microsoft Foundry](/ko/microsoft-foundry) 또는 로그인한 [Claude 앱 게이트웨이](/ko/claude-apps-gateway) 세션을 사용할 때 모델 트래픽 및 인증은 `api.anthropic.com`, `claude.ai` 또는 `platform.claude.com` 대신 공급자 또는 게이트웨이로 이동합니다. WebFetch 도구는 [설정](/ko/settings)에서 `skipWebFetchPreflight: true`를 설정하지 않는 한 [도메인 안전 검사](/ko/data-usage#webfetch-domain-safety-check)를 위해 여전히 `api.anthropic.com`을 호출합니다.
 
 [웹의 Claude Code](/ko/claude-code-on-the-web) 및 [Code Review](/ko/code-review)는 Anthropic 관리 인프라에서 리포지토리에 연결합니다. GitHub Enterprise Cloud 조직이 IP 주소로 액세스를 제한하는 경우 [설치된 GitHub Apps에 대한 IP 허용 목록 상속 활성화](https://docs.github.com/en/enterprise-cloud@latest/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/managing-allowed-ip-addresses-for-your-organization#allowing-access-by-github-apps)를 수행하십시오. Claude GitHub App은 IP 범위를 등록하므로 이 설정을 활성화하면 수동 구성 없이 액세스할 수 있습니다. 대신 [범위를 허용 목록에 수동으로 추가](https://docs.github.com/en/enterprise-cloud@latest/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/managing-allowed-ip-addresses-for-your-organization#adding-an-allowed-ip-address)하거나 다른 방화벽을 구성하려면 [Anthropic API IP 주소](https://platform.claude.com/docs/en/api/ip-addresses)를 참조하십시오.
 

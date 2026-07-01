@@ -260,9 +260,9 @@ patterns:
 
 검토 계층이 대화에서 메시지 없이 건너뛰는 일반적인 이유:
 
-* 디렉터리가 git 저장소가 아닙니다: 턴 끝 및 커밋 검토는 git 상태가 필요하고 저장소 외부에서 건너뜁니다.
-* 세션에 Anthropic 인증이 없습니다: 모델 지원 검토는 건너뛰고 편집당 패턴 확인만 실행됩니다.
-* `security-patterns.yaml` 파일이 있지만 PyYAML을 가져올 수 없습니다: 파일이 무시됩니다. 대신 `security-patterns.json`을 사용합니다.
+* 디렉터리가 git 저장소가 아닙니다: 턴 끝 및 커밋 검토는 git 상태가 필요하고 저장소 외부에서 건너뜁니다
+* 세션에 Anthropic 인증이 없습니다: 모델 지원 검토는 건너뛰고 편집당 패턴 확인만 실행됩니다
+* `security-patterns.yaml` 파일이 있지만 PyYAML을 가져올 수 없습니다: 파일이 무시됩니다. 대신 `security-patterns.json`을 사용하십시오
 
 <h2 id="related-resources">
   관련 리소스

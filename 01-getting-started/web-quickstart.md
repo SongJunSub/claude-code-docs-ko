@@ -129,7 +129,7 @@ GitHub가 연결되고 환경이 생성되면, 작업을 제출할 준비가 되
   </Step>
 
   <Step title="권한 모드 선택">
-    입력 옆의 모드 드롭다운은 기본값으로 **편집 자동 수락**이며, Claude는 승인을 기다리지 않고 변경 사항을 만들고 브랜치를 푸시합니다. Claude가 접근 방식을 제안하고 파일을 편집하기 전에 승인을 기다리도록 하려면 **Plan mode**로 전환합니다. 클라우드 세션은 Ask 권한, Auto 모드 또는 Bypass 권한을 제공하지 않습니다. 전체 목록은 [권한 모드](/ko/permission-modes)를 참조합니다.
+    입력 옆의 모드 드롭다운은 기본값으로 **편집 자동 수락**이며, Claude는 승인을 기다리지 않고 변경 사항을 만들고 브랜치를 푸시합니다. Claude가 접근 방식을 제안하고 파일을 편집하기 전에 승인을 기다리도록 하려면 **Plan Mode**로 전환합니다. 클라우드 세션은 Ask 권한 또는 Bypass 권한을 제공하지 않습니다. 전체 목록은 [권한 모드](/ko/permission-modes)를 참조합니다.
   </Step>
 
   <Step title="작업 설명 및 제출">
@@ -208,13 +208,13 @@ Claude가 완료되면, 변경 사항을 검토하고, 특정 줄에 피드백�
 
 Enterprise 조직은 관리자가 웹에서 Claude Code를 활성화해야 할 수 있습니다. Anthropic 계정 팀에 문의합니다.
 
-<h3 id="/web-setup-returns-unknown-command">
-  `/web-setup`이 "Unknown command" 반환
+<h3 id="/web-setup-shows-no-commands-match-or-unknown-command">
+  `/web-setup`이 "No commands match" 또는 "Unknown command"를 표시함
 </h3>
 
 `/web-setup`은 셸이 아닌 Claude Code CLI 내부에서 실행됩니다. 먼저 `claude`를 시작한 다음, 프롬프트에서 `/web-setup`을 입력합니다.
 
-Claude Code 내부에 입력했는데도 오류가 표시되면, CLI가 v2.1.80보다 오래되었거나 API 키 또는 타사 공급자 대신 claude.ai 구독으로 인증되었습니다. `claude update`를 실행한 다음, `/login`을 실행하여 claude.ai 계정으로 로그인합니다.
+Claude Code 내부에 입력했는데 명령 메뉴에 `No commands match "/web-setup"`이 표시되거나 제출하면 `Unknown command: /web-setup`이 반환되면, 요구 사항이 충족되지 않아 명령이 숨겨져 있습니다. 원인은 보통 CLI가 v2.1.80보다 오래되었거나 API 키 또는 타사 공급자 대신 claude.ai 구독으로 인증되었기 때문입니다. `claude update`를 실행한 다음, `/login`을 실행하여 claude.ai 계정으로 로그인합니다.
 
 <h3 id="could-not-create-a-cloud-environment-or-no-cloud-environment-available-when-using-remote-or-ultraplan">
   `--remote` 또는 ultraplan 사용 시 "클라우드 환경을 생성할 수 없음" 또는 "사용 가능한 클라우드 환경 없음"

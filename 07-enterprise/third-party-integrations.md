@@ -6,7 +6,79 @@
 
 > Claude Code가 다양한 타사 서비스 및 인프라와 통합되어 엔터프라이즈 배포 요구사항을 충족하는 방법을 알아봅니다.
 
+export const ContactSalesCard = ({surface}) => {
+  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
+  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>;
+  const STYLES = `
+.cc-cs {
+  --cs-slate: #141413;
+  --cs-clay: #d97757;
+  --cs-clay-deep: #c6613f;
+  --cs-gray-000: #ffffff;
+  --cs-gray-700: #3d3d3a;
+  --cs-border-default: rgba(31, 30, 29, 0.15);
+  font-family: inherit;
+}
+.dark .cc-cs {
+  --cs-slate: #f0eee6;
+  --cs-gray-000: #262624;
+  --cs-gray-700: #bfbdb4;
+  --cs-border-default: rgba(240, 238, 230, 0.14);
+}
+.cc-cs-card {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 14px 16px; margin: 0;
+  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; flex-wrap: wrap;
+}
+.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
+.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
+.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.cc-cs-btn-clay {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cs-clay-deep); color: #fff; border: none;
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+  transition: background-color 0.15s; white-space: nowrap;
+}
+.cc-cs-btn-clay:hover { background: var(--cs-clay); }
+.cc-cs-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; color: var(--cs-gray-700);
+  border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+}
+.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
+.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
+@media (max-width: 720px) {
+  .cc-cs-actions { width: 100%; }
+}
+`;
+  return <div className="cc-cs not-prose">
+      <style>{STYLES}</style>
+      <div className="cc-cs-card">
+        <div className="cc-cs-text">
+          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
+        </div>
+        <div className="cc-cs-actions">
+          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
+            View plans
+          </a>
+          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
+            Contact sales {iconArrowRight()}
+          </a>
+        </div>
+      </div>
+    </div>;
+};
+
 조직은 Anthropic을 통해 직접 또는 클라우드 제공자를 통해 Claude Code를 배포할 수 있습니다. 이 페이지는 올바른 구성을 선택하는 데 도움을 줍니다.
+
+<ContactSalesCard surface="third_party_overview" />
 
 <h2 id="compare-deployment-options">
   배포 옵션 비교
@@ -118,10 +190,13 @@
   </tbody>
 </table>
 
+각 옵션에서 사용 가능한 기능에 대한 기능별 분석은 [기능 가용성](/ko/feature-availability)을 참조하십시오.
+
 배포 옵션을 선택하여 설정 지침을 확인하십시오:
 
 * [Claude for Teams 또는 Enterprise](/ko/authentication#claude-for-teams-or-enterprise)
 * [Anthropic Console](/ko/authentication#claude-console-authentication)
+* [Claude 앱 게이트웨이](/ko/claude-apps-gateway), Amazon Bedrock, Google Vertex AI, Microsoft Foundry 또는 Anthropic API 앞에 IdP 로그인을 추가하는 자체 호스팅 게이트웨이
 * [Amazon Bedrock](/ko/amazon-bedrock)
 * [Claude Platform on AWS](/ko/claude-platform-on-aws)
 * [Google Vertex AI](/ko/google-vertex-ai)
@@ -134,7 +209,7 @@
 대부분의 조직은 추가 구성 없이 클라우드 제공자를 직접 사용할 수 있습니다. 그러나 조직에 특정 네트워크 또는 관리 요구사항이 있는 경우 회사 프록시 또는 LLM 게이트웨이를 구성해야 할 수 있습니다. 이는 함께 사용할 수 있는 다양한 구성입니다:
 
 * **회사 프록시**: HTTP/HTTPS 프록시를 통해 트래픽을 라우팅합니다. 조직에서 보안 모니터링, 규정 준수 또는 네트워크 정책 적용을 위해 모든 아웃바운드 트래픽이 프록시 서버를 통과해야 하는 경우 이를 사용하십시오. `HTTPS_PROXY` 또는 `HTTP_PROXY` 환경 변수로 구성합니다. [엔터프라이즈 네트워크 구성](/ko/network-config)에서 자세히 알아봅니다.
-* **LLM 게이트웨이**: Claude Code와 클라우드 제공자 사이에 위치하여 인증 및 라우팅을 처리하는 서비스입니다. 팀 전체에서 중앙 집중식 사용량 추적, 사용자 정의 속도 제한 또는 예산, 또는 중앙 집중식 인증 관리가 필요한 경우 이를 사용하십시오. `ANTHROPIC_BASE_URL`, `ANTHROPIC_BEDROCK_BASE_URL`, `ANTHROPIC_AWS_BASE_URL`, 또는 `ANTHROPIC_VERTEX_BASE_URL` 환경 변수로 구성합니다. [LLM 게이트웨이 구성](/ko/llm-gateway)에서 자세히 알아봅니다.
+* **LLM 게이트웨이**: Claude Code와 클라우드 제공자 사이에 위치하여 인증 및 라우팅을 처리하는 서비스입니다. 팀 전체에서 중앙 집중식 사용량 추적, 사용자 정의 속도 제한 또는 예산, 또는 중앙 집중식 인증 관리가 필요한 경우 이를 사용하십시오. `ANTHROPIC_BASE_URL`, `ANTHROPIC_BEDROCK_BASE_URL`, `ANTHROPIC_AWS_BASE_URL`, 또는 `ANTHROPIC_VERTEX_BASE_URL` 환경 변수로 구성합니다. [LLM 게이트웨이](/ko/llm-gateway)에서 자세히 알아봅니다.
 
 다음 예제는 셸 또는 셸 프로필(`.bashrc`, `.zshrc`)에서 설정할 환경 변수를 보여줍니다. 다른 구성 방법은 [설정](/ko/settings)을 참조하십시오.
 
@@ -198,7 +273,7 @@
 
     # LLM 게이트웨이 구성
     export ANTHROPIC_FOUNDRY_BASE_URL='https://your-llm-gateway.com'
-    export CLAUDE_CODE_SKIP_FOUNDRY_AUTH=1  # 게이트웨이가 Azure 인증을 처리하는 경우
+    export ANTHROPIC_FOUNDRY_API_KEY=your-gateway-key  # x-api-key로 전송됨
     ```
   </Tab>
 </Tabs>
@@ -232,6 +307,8 @@
     # LLM 게이트웨이 구성
     export ANTHROPIC_VERTEX_BASE_URL='https://your-llm-gateway.com/vertex'
     export CLAUDE_CODE_SKIP_VERTEX_AUTH=1  # 게이트웨이가 GCP 인증을 처리하는 경우
+    export ANTHROPIC_VERTEX_PROJECT_ID=your-gcp-project-id
+    export CLOUD_ML_REGION=us-east5
     ```
   </Tab>
 </Tabs>
@@ -271,7 +348,7 @@ Claude Code가 코드베이스를 이해할 수 있도록 문서에 투자할 �
   클라우드 제공자를 위한 모델 버전 고정
 </h3>
 
-[Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai), [Foundry](/ko/microsoft-foundry) 또는 [Claude Platform on AWS](/ko/claude-platform-on-aws)를 통해 배포하는 경우 `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL` 및 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 사용하여 특정 모델 버전을 고정합니다. 고정하지 않으면 모델 별칭이 최신 버전으로 확인되어 Anthropic이 아직 계정에서 활성화되지 않은 새 모델을 출시할 때 사용자가 손상될 수 있습니다. 각 제공자가 최신 버전을 사용할 수 없을 때 수행하는 작업에 대해서는 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
+[Bedrock](/ko/amazon-bedrock), [Vertex AI](/ko/google-vertex-ai), [Foundry](/ko/microsoft-foundry) 또는 [Claude Platform on AWS](/ko/claude-platform-on-aws)를 통해 배포하는 경우 `ANTHROPIC_DEFAULT_FABLE_MODEL`, `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL` 및 `ANTHROPIC_DEFAULT_HAIKU_MODEL`을 사용하여 특정 모델 버전을 고정합니다. 고정하지 않으면 모델 별칭이 Claude Code의 해당 제공자에 대한 기본 제공 기본값으로 확인되며, 이는 최신 릴리스보다 뒤떨어질 수 있고 계정에서 아직 활성화되지 않았을 수 있습니다. 고정하면 사용자가 새 모델로 이동하는 시기를 제어할 수 있습니다. 각 제공자가 기본값을 사용할 수 없을 때 수행하는 작업에 대해서는 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
 
 <h3 id="configure-security-policies">
   보안 정책 구성

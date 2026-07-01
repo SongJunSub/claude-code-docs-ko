@@ -2,242 +2,63 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# LLM gateway 구성
+# 다른 LLM gateway
 
-> Claude Code를 LLM gateway 솔루션과 함께 작동하도록 구성하는 방법을 알아봅니다. Gateway 요구사항, 인증 구성, 모델 선택 및 공급자별 엔드포인트 설정을 다룹니다.
+> 조직이 이미 실행 중인 LLM gateway를 통해 Claude Code를 라우팅합니다. Claude Code를 gateway에 연결하고, 조직을 위해 gateway를 배포하고, Claude Code가 gateway에 전송하는 내용을 다룹니다.
 
-LLM gateway는 Claude Code와 모델 공급자 간의 중앙 집중식 프록시 계층을 제공하며, 종종 다음을 제공합니다:
-
-* **중앙 집중식 인증** - API 키 관리를 위한 단일 지점
-* **사용량 추적** - 팀 및 프로젝트 전체의 사용량 모니터링
-* **비용 제어** - 예산 및 속도 제한 구현
-* **감사 로깅** - 규정 준수를 위한 모든 모델 상호작용 추적
-* **모델 라우팅** - 코드 변경 없이 공급자 간 전환
-
-<h2 id="gateway-requirements">
-  Gateway 요구사항
-</h2>
-
-LLM gateway가 Claude Code와 함께 작동하려면 다음 요구사항을 충족해야 합니다:
-
-**API 형식**
-
-Gateway는 클라이언트에 다음 API 형식 중 최소 하나를 노출해야 합니다:
-
-1. **Anthropic Messages**: `/v1/messages`, `/v1/messages/count_tokens`
-   * 요청 헤더를 전달해야 함: `anthropic-beta`, `anthropic-version`
-
-2. **Bedrock InvokeModel**: `/invoke`, `/invoke-with-response-stream`
-   * 요청 본문 필드를 보존해야 함: `anthropic_beta`, `anthropic_version`
-
-3. **Vertex rawPredict**: `:rawPredict`, `:streamRawPredict`, `/count-tokens:rawPredict`
-   * 요청 헤더를 전달해야 함: `anthropic-beta`, `anthropic-version`
-
-헤더를 전달하지 않거나 본문 필드를 보존하지 않으면 기능이 감소하거나 Claude Code 기능을 사용할 수 없을 수 있습니다.
+이 섹션에서는 [Claude 앱 gateway](/ko/claude-apps-gateway) 대신 조직이 이미 실행 중인 gateway 제품을 사용하는 것을 다룹니다. gateway가 무엇인지, Claude Code와 공급자 간에 어떻게 위치하는지, Claude 앱 gateway와 다른 제품 중에서 선택하는 방법에 대해서는 [gateway 개요](/ko/gateways)를 참조하세요.
 
 <Note>
-  Claude Code는 API 형식을 기반으로 활성화할 기능을 결정합니다. Bedrock 또는 Vertex와 함께 Anthropic Messages 형식을 사용할 때 환경 변수 `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`을 설정해야 할 수 있습니다.
+  * 기존 gateway에 연결하는 개발자인 경우: [Claude Code를 gateway에 연결](/ko/llm-gateway-connect)
+  * 조직을 위해 gateway를 배포하는 관리자인 경우: [gateway를 배포 및 배포](/ko/llm-gateway-rollout)
+  * gateway 제품을 구성하는 경우: [gateway 프로토콜 참조](/ko/llm-gateway-protocol)
 </Note>
 
-**요청 헤더**
+[지원되는 API 형식](/ko/llm-gateway-protocol#api-formats)을 노출하는 모든 gateway가 작동합니다. Anthropic은 제3자 gateway 제품을 보증, 유지 관리 또는 감사하지 않으며, 모든 gateway를 통해 Claude Code를 비Claude 모델로 라우팅하는 것을 지원하지 않습니다. gateway를 자체 문서에 따라 배포한 다음 아래의 [배포 단계](#roll-out-a-gateway)로 Claude Code 측의 배포를 완료합니다.
 
-Claude Code는 모든 API 요청에 다음 헤더를 포함합니다:
-
-| 헤더                              | 설명                                                                                                                                            |
-| :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| `X-Claude-Code-Session-Id`      | 현재 Claude Code 세션의 고유 식별자입니다. 프록시는 이를 사용하여 요청 본문을 구문 분석하지 않고 단일 세션의 모든 API 요청을 집계할 수 있습니다.                                                    |
-| `X-Claude-Code-Agent-Id`        | 요청을 발급한 서브에이전트 또는 팀원의 식별자입니다. 프록시는 이를 사용하여 요청 본문을 구문 분석하지 않고 세션 내 개별 병렬 서브에이전트에 API 비용을 할당할 수 있습니다. 프로세스 내 서브에이전트 또는 팀원이 발급한 요청에만 표시됩니다.      |
-| `X-Claude-Code-Parent-Agent-Id` | 요청을 하는 에이전트를 생성한 에이전트의 식별자입니다. 프록시에서 중첩된 에이전트 전체에 API 비용을 할당하려면 `X-Claude-Code-Agent-Id`와 함께 이를 사용합니다. 요청하는 에이전트가 다른 에이전트에 의해 생성된 경우에만 표시됩니다. |
-
-두 에이전트 ID 헤더는 지속적인 사용자 또는 디바이스 ID가 아닌 생성당 임시 식별자입니다.
-
-Claude Code는 또한 클라이언트 버전과 대화에서 파생된 지문을 포함하는 짧은 속성 블록을 시스템 프롬프트 앞에 추가합니다. Anthropic API는 처리 전에 이 블록을 제거하므로 자사 프롬프트 캐싱에 영향을 주지 않습니다. Gateway가 전체 요청 본문을 기반으로 키가 지정된 자체 프롬프트 캐시를 구현하는 경우 [`CLAUDE_CODE_ATTRIBUTION_HEADER=0`](/ko/env-vars)을 설정하여 이를 생략합니다.
-
-<h2 id="configuration">
-  구성
+<h2 id="what-a-gateway-provides">
+  gateway가 제공하는 것
 </h2>
 
-<h3 id="model-selection">
-  모델 선택
-</h3>
+gateway는 조직이 다음을 관리할 수 있는 한 곳을 제공합니다:
 
-기본적으로 Claude Code는 선택한 API 형식에 대해 표준 모델 이름을 사용합니다.
+* **자격 증명**: 공급자 키는 서버 측에 유지되고, 개발자는 gateway 자격 증명을 대신 보유합니다
+* **사용량 추적**: 요청을 처리하는 공급자와 관계없이 개발자 또는 팀별로 사용량을 속성화합니다
+* **비용 제어**: 한 곳에서 예산 및 속도 제한을 적용합니다
+* **감사 로깅**: 규정 준수를 위해 모든 모델 요청을 기록합니다
+* **공급자 전환**: 개발자 머신을 건드리지 않고 gateway 구성에서 공급자를 변경합니다
 
-`ANTHROPIC_BASE_URL`이 Anthropic Messages 형식을 노출하는 게이트웨이를 가리킬 때, Claude Code는 시작 시 게이트웨이의 `/v1/models` 엔드포인트를 쿼리하고 반환된 모델을 `/model` 선택기에 추가할 수 있습니다. `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`을 설정하여 이를 활성화합니다. 발견은 기본적으로 꺼져 있으므로 공유 API 키로 지원되는 게이트웨이가 키가 액세스할 수 있는 모든 모델을 모든 사용자에게 노출하지 않습니다. 발견된 각 항목은 "From gateway"로 레이블이 지정되며, 응답에서 제공될 때 `display_name` 필드를 사용합니다. 이는 Claude Code v2.1.129 이상이 필요합니다.
+이 중 공급자 전환을 제외한 모든 것은 업스트림이 Anthropic의 API이든 [클라우드 공급자](/ko/third-party-integrations)이든 적용됩니다. 개발자 머신을 재구성하지 않고도 공급자 전환이 가능하려면 gateway가 업스트림과 관계없이 단일 [Anthropic 형식 엔드포인트](/ko/llm-gateway-protocol#api-formats)를 노출해야 합니다. 공급자 자체 형식을 노출하는 gateway는 클라이언트 구성을 해당 공급자에 연결합니다.
 
-발견은 Anthropic Messages 형식에만 적용됩니다. Bedrock 또는 Vertex 통과 엔드포인트에서는 실행되지 않으며, `ANTHROPIC_BASE_URL`이 설정되지 않았거나 `api.anthropic.com`을 가리킬 때도 실행되지 않습니다.
+트레이드오프는 gateway가 조직이 운영하는 인프라가 된다는 것입니다. Claude Code는 각 릴리스마다 기능을 추가하고, gateway가 이를 전달하지 않으면 해당 기능이 손상되므로, gateway 제품은 Claude Code가 진화함에 따라 최신 상태로 유지되어야 합니다. [gateway 프로토콜 참조](/ko/llm-gateway-protocol)는 전달할 내용을 다룹니다.
 
-발견 요청은 추론 요청과 동일한 방식으로 인증됩니다. 인증 토큰이 설정되지 않았을 때 `ANTHROPIC_AUTH_TOKEN`을 베어러 토큰으로 또는 `ANTHROPIC_API_KEY`를 `x-api-key` 헤더로 보내며, `ANTHROPIC_CUSTOM_HEADERS`의 모든 헤더와 함께 보냅니다. ID가 `claude` 또는 `anthropic`으로 시작하는 모델만 선택기에 추가됩니다. 결과는 `~/.claude/cache/gateway-models.json`에 캐시되며 각 시작 시 새로고침됩니다. 요청이 실패하거나 게이트웨이가 `/v1/models`을 구현하지 않으면, 선택기는 이전 시작의 캐시된 목록 또는 기본 제공 모델 목록으로 폴백됩니다.
-
-게이트웨이가 발견 필터와 일치하지 않는 모델 이름을 사용하는 경우, [모델 구성](/ko/model-config)에 문서화된 환경 변수를 사용하여 수동으로 추가합니다.
-
-<h2 id="litellm-configuration">
-  LiteLLM 구성
+<h2 id="roll-out-a-gateway">
+  gateway 배포
 </h2>
 
-<Warning>
-  LiteLLM PyPI 버전 1.82.7 및 1.82.8은 자격 증명 탈취 악성코드로 손상되었습니다. 이 버전들을 설치하지 마십시오. 이미 설치한 경우:
+조직에 LLM gateway를 배포할 준비가 되면, 선택한 gateway 제품이 무엇이든 순서는 동일합니다:
 
-  * 패키지 제거
-  * 영향을 받은 시스템의 모든 자격 증명 회전
-  * [BerriAI/litellm#24518](https://github.com/BerriAI/litellm/issues/24518)의 복구 단계 따르기
+1. gateway를 배포하고 공급자 자격 증명을 제공하여 전달하는 요청을 인증할 수 있도록 합니다.
+2. 각 개발자에게 gateway 자격 증명을 발급하여 사용량이 개발자에게 속성화되고 오프보딩이 하나의 자격 증명을 취소하도록 합니다.
+3. [관리되는 설정 파일](/ko/settings#settings-files) 및 비밀 도구를 통해 구성을 배포하여 모든 머신이 기본 URL과 자격 증명을 받도록 합니다. 둘 다 배포되면 개발자는 아무것도 구성하지 않습니다. 설정 배포가 없으면 개발자는 [연결 페이지](/ko/llm-gateway-connect)를 따라 변수를 직접 설정합니다.
+4. 각 개발자가 [Claude Code에서 구성을 확인](/ko/llm-gateway-connect#check-for-an-existing-configuration)하도록 하여 배포 문제가 gateway에 의존하기 전에 표면화되도록 합니다.
 
-  LiteLLM은 제3자 프록시 서비스입니다. Anthropic은 LiteLLM의 보안 또는 기능을 보증, 유지 관리 또는 감사하지 않습니다. 이 가이드는 정보 제공 목적으로 제공되며 오래될 수 있습니다. 자신의 판단에 따라 사용하십시오.
-</Warning>
+[조직을 위해 LLM gateway 배포](/ko/llm-gateway-rollout)는 각 단계를 안내하고 각 단계에서 배포할 구성 파일을 보여줍니다. gateway는 조직 설정의 한 부분입니다. 정책 적용, 사용량 가시성 및 데이터 처리 결정의 경우 [조직을 위해 Claude Code 설정](/ko/admin-setup)을 참조하세요.
 
-<h3 id="prerequisites">
-  필수 조건
-</h3>
-
-* 최신 버전으로 업데이트된 Claude Code
-* 배포되고 액세스 가능한 LiteLLM Proxy Server
-* 선택한 공급자를 통한 Claude 모델 액세스
-
-<h3 id="basic-litellm-setup">
-  기본 LiteLLM 설정
-</h3>
-
-**Claude Code 구성**:
-
-<h4 id="authentication-methods">
-  인증 방법
-</h4>
-
-<h5 id="static-api-key">
-  정적 API 키
-</h5>
-
-고정 API 키를 사용한 가장 간단한 방법:
-
-```bash theme={null}
-# 환경에서 설정
-export ANTHROPIC_AUTH_TOKEN=sk-litellm-static-key
-
-# 또는 Claude Code 설정에서
-{
-  "env": {
-    "ANTHROPIC_AUTH_TOKEN": "sk-litellm-static-key"
-  }
-}
-```
-
-이 값은 `Authorization` 헤더로 전송됩니다.
-
-<h5 id="dynamic-api-key-with-helper">
-  헬퍼를 사용한 동적 API 키
-</h5>
-
-회전하는 키 또는 사용자별 인증의 경우:
-
-1. API 키 헬퍼 스크립트를 만듭니다:
-
-```bash theme={null}
-#!/bin/bash
-# ~/bin/get-litellm-key.sh
-
-# 예: 자격 증명 모음에서 키 가져오기
-vault kv get -field=api_key secret/litellm/claude-code
-
-# 예: JWT 토큰 생성
-jwt encode \
-  --secret="${JWT_SECRET}" \
-  --exp="+1h" \
-  '{"user":"'${USER}'","team":"engineering"}'
-```
-
-2. 헬퍼를 사용하도록 Claude Code 설정을 구성합니다:
-
-```json theme={null}
-{
-  "apiKeyHelper": "~/bin/get-litellm-key.sh"
-}
-```
-
-3. 토큰 새로고침 간격을 설정합니다:
-
-```bash theme={null}
-# 1시간마다 새로고침 (3600000 ms)
-export CLAUDE_CODE_API_KEY_HELPER_TTL_MS=3600000
-```
-
-이 값은 `Authorization` 및 `X-Api-Key` 헤더로 전송됩니다. `apiKeyHelper`는 `ANTHROPIC_AUTH_TOKEN` 또는 `ANTHROPIC_API_KEY`보다 우선순위가 낮습니다.
-
-<h4 id="unified-endpoint-recommended">
-  통합 엔드포인트 (권장)
-</h4>
-
-LiteLLM의 [Anthropic 형식 엔드포인트](https://docs.litellm.ai/docs/anthropic_unified) 사용:
-
-```bash theme={null}
-export ANTHROPIC_BASE_URL=https://litellm-server:4000
-```
-
-**통합 엔드포인트의 통과 엔드포인트 대비 이점:**
-
-* 로드 밸런싱
-* 폴백
-* 비용 추적 및 최종 사용자 추적에 대한 일관된 지원
-
-<h4 id="provider-specific-pass-through-endpoints-alternative">
-  공급자별 통과 엔드포인트 (대안)
-</h4>
-
-<h5 id="claude-api-through-litellm">
-  LiteLLM을 통한 Claude API
-</h5>
-
-[통과 엔드포인트](https://docs.litellm.ai/docs/pass_through/anthropic_completion) 사용:
-
-```bash theme={null}
-export ANTHROPIC_BASE_URL=https://litellm-server:4000/anthropic
-```
-
-<h5 id="amazon-bedrock-through-litellm">
-  LiteLLM을 통한 Amazon Bedrock
-</h5>
-
-[통과 엔드포인트](https://docs.litellm.ai/docs/pass_through/bedrock) 사용:
-
-```bash theme={null}
-export ANTHROPIC_BEDROCK_BASE_URL=https://litellm-server:4000/bedrock
-export CLAUDE_CODE_SKIP_BEDROCK_AUTH=1
-export CLAUDE_CODE_USE_BEDROCK=1
-```
-
-<h5 id="google-vertex-ai-through-litellm">
-  LiteLLM을 통한 Google Vertex AI
-</h5>
-
-[통과 엔드포인트](https://docs.litellm.ai/docs/pass_through/vertex_ai) 사용:
-
-```bash theme={null}
-export ANTHROPIC_VERTEX_BASE_URL=https://litellm-server:4000/vertex_ai/v1
-export ANTHROPIC_VERTEX_PROJECT_ID=your-gcp-project-id
-export CLAUDE_CODE_SKIP_VERTEX_AUTH=1
-export CLAUDE_CODE_USE_VERTEX=1
-export CLOUD_ML_REGION=us-east5
-```
-
-<h5 id="claude-platform-on-aws-through-a-gateway">
-  AWS를 통한 Claude Platform 게이트웨이
-</h5>
-
-[Claude Platform on AWS](/ko/claude-platform-on-aws) 엔드포인트로 전달하는 게이트웨이로 라우팅:
-
-```bash theme={null}
-export ANTHROPIC_AWS_BASE_URL=https://litellm-server:4000/anthropic-aws
-export ANTHROPIC_AWS_WORKSPACE_ID=wrkspc_01ABCDEFGHIJKLMN
-export CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH=1
-export CLAUDE_CODE_USE_ANTHROPIC_AWS=1
-```
-
-더 자세한 정보는 [LiteLLM 문서](https://docs.litellm.ai/)를 참조하십시오.
-
-<h2 id="additional-resources">
-  추가 리소스
+<h2 id="subscriptions-and-gateways">
+  구독 및 gateway
 </h2>
 
-* [LiteLLM 문서](https://docs.litellm.ai/)
-* [Claude Code 설정](/ko/settings)
-* [엔터프라이즈 네트워크 구성](/ko/network-config)
-* [제3자 통합 개요](/ko/third-party-integrations)
+[gateway 자격 증명 변수](/ko/llm-gateway-connect#set-the-credential-variable) 또는 `apiKeyHelper`가 활성화되어 있는 동안 개발자의 claude.ai 구독은 사용되지 않습니다: 자격 증명이 해당 세션에 대한 구독 로그인을 대체하고, 구독의 사용량 제한이 적용되지 않습니다. 해당 트래픽은 gateway가 전달하는 자격 증명의 소유자(예: 조직의 Anthropic Console 계정 또는 gateway가 그곳으로 라우팅할 때 Bedrock, Agent Platform 또는 Foundry 계정)에게 토큰당 청구됩니다.
+
+[`ANTHROPIC_BASE_URL`](/ko/llm-gateway-connect#set-the-base-url-and-credential)은 Claude Code를 gateway로 가리키는 변수입니다. gateway 자격 증명 없이 해당 변수만 설정하면 구독을 대체하지 않습니다. 요청은 여전히 gateway를 통해 라우팅되지만 저장된 claude.ai 로그인이 활성 자격 증명으로 유지되므로 해당 사용량 제한 및 청구가 적용됩니다. 이 트래픽을 Anthropic에 전달하는 gateway는 `anthropic-beta`에서 OAuth 기능을 전달해야 합니다. [요청 헤더 참조](/ko/llm-gateway-protocol#request-headers)를 참조하세요.
+
+<h2 id="related-pages">
+  관련 페이지
+</h2>
+
+* [Gateway 개요](/ko/gateways): gateway가 작동하는 방식 및 Claude 앱 gateway와 다른 제품 중에서 선택하는 방법
+* [Claude 앱 gateway](/ko/claude-apps-gateway): SSO 로그인 및 OTLP 원격 분석을 포함한 Anthropic의 자체 호스팅 gateway
+* [Claude Code를 LLM gateway에 연결](/ko/llm-gateway-connect): 자신의 머신에서 기본 URL 및 자격 증명을 설정하고, 표면별 구성 및 문제 해결 테이블 포함
+* [조직을 위해 LLM gateway 배포](/ko/llm-gateway-rollout): gateway 배포, 개발자 자격 증명 발급 및 관리되는 설정 배포를 위한 관리자 체크리스트
+* [Gateway 프로토콜 참조](/ko/llm-gateway-protocol): Claude Code가 gateway에 전송하는 내용, gateway를 구성하는 운영자를 위해, 엔드포인트, 전달할 헤더 및 기능 통과를 다룸

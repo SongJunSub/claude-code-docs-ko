@@ -13,7 +13,7 @@
 * **컨텍스트 효율성:** 도구 정의는 컨텍스트 윈도우의 큰 부분을 차지할 수 있습니다(50개의 도구는 10-20K 토큰을 사용할 수 있음). 이로 인해 실제 작업을 위한 공간이 줄어듭니다.
 * **도구 선택 정확도:** 30-50개 이상의 도구가 동시에 로드되면 도구 선택 정확도가 저하됩니다.
 
-도구 검색은 기본적으로 활성화되어 있습니다. 이 페이지에서는 [작동 방식](#how-tool-search-works), [구성 방법](#configure-tool-search), [도구 발견 최적화 방법](#optimize-tool-discovery)을 다룹니다.
+도구 검색은 기본적으로 활성화되어 있습니다.
 
 <h2 id="how-tool-search-works">
   도구 검색의 작동 방식
@@ -26,7 +26,7 @@
 기본 API 메커니즘에 대한 자세한 내용은 [API의 도구 검색](https://platform.claude.com/docs/ko/agents-and-tools/tool-use/tool-search-tool)을 참조하십시오.
 
 <Note>
-  도구 검색에는 Claude Sonnet 4 이상 또는 Claude Opus 4 이상이 필요합니다. Haiku 모델은 도구 검색을 지원하지 않습니다.
+  도구 검색은 Haiku를 제외한 모든 Claude 모델에서 지원됩니다.
 </Note>
 
 <h2 id="configure-tool-search">
@@ -126,7 +126,7 @@ You can search for tools to interact with Slack, GitHub, and Jira.
 
 * **최대 도구:** 카탈로그에 10,000개의 도구
 * **검색 결과:** 검색당 가장 관련성이 높은 3-5개의 도구 반환
-* **모델 지원:** Claude Sonnet 4 이상, Claude Opus 4 이상(Haiku 제외)
+* **모델 지원:** Haiku를 제외한 모든 Claude 모델
 
 <h2 id="related-documentation">
   관련 문서

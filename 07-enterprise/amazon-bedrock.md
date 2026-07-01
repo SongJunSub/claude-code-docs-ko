@@ -6,6 +6,78 @@
 
 > Amazon Bedrock을 통한 Claude Code 구성, 설정, IAM 구성 및 문제 해결에 대해 알아봅니다.
 
+export const ContactSalesCard = ({surface}) => {
+  const utm = content => `utm_source=claude_code&utm_medium=docs&utm_content=${surface}_${content}`;
+  const iconArrowRight = (size = 13) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>;
+  const STYLES = `
+.cc-cs {
+  --cs-slate: #141413;
+  --cs-clay: #d97757;
+  --cs-clay-deep: #c6613f;
+  --cs-gray-000: #ffffff;
+  --cs-gray-700: #3d3d3a;
+  --cs-border-default: rgba(31, 30, 29, 0.15);
+  font-family: inherit;
+}
+.dark .cc-cs {
+  --cs-slate: #f0eee6;
+  --cs-gray-000: #262624;
+  --cs-gray-700: #bfbdb4;
+  --cs-border-default: rgba(240, 238, 230, 0.14);
+}
+.cc-cs-card {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 14px 16px; margin: 0;
+  background: var(--cs-gray-000); border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; flex-wrap: wrap;
+}
+.cc-cs-text { font-size: 13px; color: var(--cs-gray-700); line-height: 1.5; flex: 1; min-width: 240px; }
+.cc-cs-text strong { font-weight: 550; color: var(--cs-slate); }
+.cc-cs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.cc-cs-btn-clay {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cs-clay-deep); color: #fff; border: none;
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+  transition: background-color 0.15s; white-space: nowrap;
+}
+.cc-cs-btn-clay:hover { background: var(--cs-clay); }
+.cc-cs-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; color: var(--cs-gray-700);
+  border: 0.5px solid var(--cs-border-default);
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500;
+}
+.cc-cs-btn-ghost:hover { background: rgba(0, 0, 0, 0.04); }
+.dark .cc-cs-btn-ghost:hover { background: rgba(255, 255, 255, 0.04); }
+@media (max-width: 720px) {
+  .cc-cs-actions { width: 100%; }
+}
+`;
+  return <div className="cc-cs not-prose">
+      <style>{STYLES}</style>
+      <div className="cc-cs-card">
+        <div className="cc-cs-text">
+          <strong>Deploying Claude Code across your organization?</strong> Talk to sales about enterprise plans, SSO, and centralized billing.
+        </div>
+        <div className="cc-cs-actions">
+          <a href={`https://claude.com/pricing?${utm('view_plans')}#plans-business`} className="cc-cs-btn-ghost">
+            View plans
+          </a>
+          <a href={`https://claude.com/contact-sales?${utm('contact_sales')}`} className="cc-cs-btn-clay">
+            Contact sales {iconArrowRight()}
+          </a>
+        </div>
+      </div>
+    </div>;
+};
+
+<ContactSalesCard surface="bedrock" />
+
 <h2 id="prerequisites">
   필수 조건
 </h2>
@@ -45,7 +117,7 @@ AWS 자격 증명이 있고 Bedrock을 통해 Claude Code 사용을 시작하려
   수동으로 설정
 </h2>
 
-예를 들어 CI 또는 스크립트된 엔터프라이즈 롤아웃에서 마법사 대신 환경 변수를 통해 Bedrock을 구성하려면 아래 단계를 따르십시오.
+마법사 대신 환경 변수를 통해 Bedrock을 구성하려면(예: CI 또는 스크립트된 엔터프라이즈 롤아웃에서), 아래 단계를 따르십시오.
 
 <h3 id="1-submit-use-case-details">
   1. 사용 사례 세부 정보 제출
@@ -141,10 +213,15 @@ Claude Code는 AWS SSO 및 회사 ID 공급자에 대한 자동 자격 증명 �
   "Credentials": {
     "AccessKeyId": "value",
     "SecretAccessKey": "value",
-    "SessionToken": "value"
+    "SessionToken": "value",
+    "Expiration": "2026-01-01T00:00:00Z"
   }
 }
 ```
+
+{/* min-version: 2.1.181 */}`aws configure export-credentials --format process`의 평면 출력도 허용되며, 동일한 키가 `Credentials` 아래에 중첩되지 않고 최상위 수준에 있습니다.
+
+`Expiration`은 선택 사항입니다. {/* min-version: 2.1.176 */}Claude Code v2.1.176부터 명령이 유효한 ISO 8601 `Expiration`을 반환하면 Claude Code는 해당 시간 5분 전까지 자격 증명을 캐시합니다. 이것이 없거나 이전 버전에서는 자격 증명이 1시간 동안 캐시됩니다.
 
 <h3 id="3-configure-claude-code">
   3. Claude Code 구성
@@ -155,7 +232,7 @@ Bedrock을 활성화하려면 다음 환경 변수를 설정하십시오:
 ```bash theme={null}
 # Bedrock 통합 활성화
 export CLAUDE_CODE_USE_BEDROCK=1
-export AWS_REGION=us-east-1  # 또는 선호하는 지역
+export AWS_REGION=us-east-1  # AWS 프로필이 이미 지역을 설정한 경우 선택 사항
 
 # 선택 사항: 소형/빠른 모델(Bedrock 및 Mantle)의 AWS 지역 재정의
 # Bedrock에서는 ANTHROPIC_DEFAULT_HAIKU_MODEL
@@ -168,7 +245,14 @@ export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
 
 Claude Code에 대해 Bedrock을 활성화할 때 다음을 염두에 두십시오:
 
-* `AWS_REGION`은 필수 환경 변수입니다. Claude Code는 이 설정에 대해 `.aws` 구성 파일을 읽지 않습니다.
+* {/* min-version: 2.1.172 */}v2.1.172부터 AWS 프로필의 지역을 재정의하거나 프로필에 지역이 없을 때만 `AWS_REGION`을 설정하면 됩니다. Claude Code는 다음 순서로 지역을 확인합니다:
+
+  * `AWS_REGION`
+  * `AWS_DEFAULT_REGION`
+  * AWS 공유 자격 증명 파일에서 먼저 읽은 다음 공유 구성 파일에서 읽은 활성 AWS 프로필에 설정된 `region`(AWS SDK 우선순위와 일치)
+  * `us-east-1`
+
+  활성 프로필은 설정된 경우 `AWS_PROFILE`이고, 그렇지 않으면 `default`입니다. `AWS_SHARED_CREDENTIALS_FILE` 또는 `AWS_CONFIG_FILE`을 설정하여 기본이 아닌 파일 경로를 가리킵니다. `/status`를 실행하여 확인된 지역을 확인하십시오. 지역이 AWS 구성 파일 또는 기본 폴백에서 나온 경우 `/status`도 소스를 표시합니다. v2.1.171 이전에서는 Claude Code가 AWS 구성 파일을 읽지 않으므로 `AWS_REGION`을 명시적으로 설정하십시오.
 * Bedrock을 사용할 때 `/logout` 명령은 AWS 자격 증명을 통해 인증이 처리되므로 사용할 수 없습니다.
 * WebSearch 도구는 Bedrock에서 사용할 수 없습니다. [WebSearch 도구 동작](/ko/tools-reference#websearch-tool-behavior)을 참조하십시오.
 * 다른 프로세스에 유출되지 않도록 하려는 `AWS_PROFILE`과 같은 환경 변수에 설정 파일을 사용할 수 있습니다. 자세한 내용은 [설정](/ko/settings)을 참조하십시오.
@@ -178,7 +262,7 @@ Claude Code에 대해 Bedrock을 활성화할 때 다음을 염두에 두십시�
 </h3>
 
 <Warning>
-  여러 사용자에게 배포할 때 특정 모델 버전을 고정하십시오. 고정하지 않으면 `sonnet` 및 `opus`와 같은 모델 별칭이 최신 버전으로 확인되며, Anthropic이 업데이트를 출시할 때 Bedrock 계정에서 아직 사용할 수 없을 수 있습니다. Claude Code는 [시작 시](#startup-model-checks) 최신 버전을 사용할 수 없을 때 이전 버전으로 폴백하지만, 고정하면 사용자가 새 모델로 이동하는 시기를 제어할 수 있습니다.
+  여러 사용자에게 배포할 때 특정 모델 버전을 고정하십시오. 고정하지 않으면 `sonnet` 및 `opus`와 같은 모델 별칭이 Claude Code의 Bedrock용 기본 제공 기본값으로 확인되며, 이는 최신 릴리스보다 뒤떨어질 수 있고 계정에서 아직 사용할 수 없을 수 있습니다. Claude Code는 기본값을 사용할 수 없을 때 [시작 시](#startup-model-checks) 이전 버전으로 폴백하지만, 고정하면 사용자가 새 모델로 이동하는 시기를 제어할 수 있습니다.
 </Warning>
 
 이러한 환경 변수를 특정 Bedrock 모델 ID로 설정하십시오.
@@ -191,7 +275,7 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL='us.anthropic.claude-sonnet-4-6'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:0'
 ```
 
-이러한 변수는 교차 지역 추론 프로필 ID(`us.` 접두사 포함)를 사용합니다. 다른 지역 접두사 또는 애플리케이션 추론 프로필을 사용하는 경우 적절히 조정하십시오. 현재 및 레거시 모델 ID는 [모델 개요](https://platform.claude.com/docs/en/about-claude/models/overview)를 참조하십시오. 전체 환경 변수 목록은 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
+이러한 변수는 교차 지역 추론 프로필 ID(`us.` 접두사 포함)를 사용합니다. 다른 지역 접두사 또는 애플리케이션 추론 프로필을 사용하는 경우 적절히 조정하십시오. AWS GovCloud 지역에서는 `us-gov.` 접두사를 사용하십시오. 현재 및 레거시 모델 ID는 [모델 개요](https://platform.claude.com/docs/en/about-claude/models/overview)를 참조하십시오. 전체 환경 변수 목록은 [모델 구성](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
 
 고정 변수가 설정되지 않은 경우 Claude Code는 이러한 기본 모델을 사용합니다:
 
@@ -313,7 +397,7 @@ Claude Code에 필요한 권한이 있는 IAM 정책을 만드십시오:
   1M 토큰 컨텍스트 윈도우
 </h2>
 
-Claude Opus 4.6 이상 및 Sonnet 4.6은 Amazon Bedrock에서 [1M 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 지원합니다. Claude Code는 1M 모델 변형을 선택할 때 확장된 컨텍스트 윈도우를 자동으로 활성화합니다.
+Claude Sonnet 5, Opus 4.6 이상 및 Sonnet 4.6은 Amazon Bedrock에서 [1M 토큰 컨텍스트 윈도우](https://platform.claude.com/docs/ko/build-with-claude/context-windows#1m-token-context-window)를 지원합니다. Sonnet 5는 [Mantle 엔드포인트](#use-the-mantle-endpoint)를 통해 제공되며 항상 1M 윈도우로 실행되며, 선택할 `[1m]` 변형이 없습니다. 다른 모델의 경우, Claude Code는 1M 모델 변형을 선택할 때 확장된 컨텍스트 윈도우를 자동으로 활성화합니다.
 
 [설정 마법사](#sign-in-with-bedrock)는 모델을 고정할 때 1M 컨텍스트 옵션을 제공합니다. 수동으로 고정된 모델에 대해 대신 활성화하려면 모델 ID에 `[1m]`을 추가하십시오. 자세한 내용은 [타사 배포를 위한 모델 고정](/ko/model-config#pin-models-for-third-party-deployments)을 참조하십시오.
 
@@ -366,7 +450,7 @@ export CLAUDE_CODE_USE_MANTLE=1
 export AWS_REGION=us-east-1
 ```
 
-Claude Code는 `AWS_REGION`에서 엔드포인트 URL을 구성합니다. 사용자 정의 엔드포인트 또는 게이트웨이를 위해 재정의하려면 `ANTHROPIC_BEDROCK_MANTLE_BASE_URL`을 설정하십시오.
+Claude Code는 AWS 지역에서 엔드포인트 URL을 구성합니다. {/* min-version: 2.1.172 */}v2.1.172부터 지역은 [위의 Bedrock](#3-configure-claude-code)과 동일한 우선순위로 해결되며, 이전 버전은 `AWS_REGION`만 사용합니다. 사용자 정의 엔드포인트 또는 게이트웨이를 위해 URL을 재정의하려면 `ANTHROPIC_BEDROCK_MANTLE_BASE_URL`을 설정하십시오.
 
 Claude Code 내에서 `/status`를 실행하여 확인하십시오. Mantle이 활성화되면 제공자 줄에 `Amazon Bedrock (Mantle)`이 표시됩니다.
 
@@ -374,7 +458,7 @@ Claude Code 내에서 `/status`를 실행하여 확인하십시오. Mantle이 �
   Mantle 모델 선택
 </h3>
 
-Mantle은 `anthropic.` 접두사가 있고 버전 접미사가 없는 모델 ID를 사용합니다(예: `anthropic.claude-haiku-4-5`). 계정에서 사용 가능한 모델은 조직에 부여된 것에 따라 다르며, 추가 모델 ID는 AWS의 온보딩 자료에 나열됩니다. 허용 목록에 있는 모델에 대한 액세스를 요청하려면 AWS 계정 팀에 문의하십시오.
+Mantle은 `anthropic.` 접두사가 있고 버전 접미사가 없는 모델 ID를 사용합니다(예: `anthropic.claude-sonnet-5` 또는 `anthropic.claude-haiku-4-5`). 계정에서 사용 가능한 모델은 조직에 부여된 것에 따라 다르며, 추가 모델 ID는 AWS의 온보딩 자료에 나열됩니다. 허용 목록에 있는 모델에 대한 액세스를 요청하려면 AWS 계정 팀에 문의하십시오.
 
 `--model` 플래그 또는 Claude Code 내의 `/model`로 모델을 설정하십시오:
 
@@ -393,11 +477,11 @@ export CLAUDE_CODE_USE_BEDROCK=1
 export CLAUDE_CODE_USE_MANTLE=1
 ```
 
-Mantle 모델을 `/model` 선택기에 표시하려면 [설정 파일](/ko/settings)의 `availableModels`에 ID를 나열하십시오. 이 설정은 선택기를 나열된 항목으로 제한하므로 유지하려는 모든 별칭을 포함하십시오:
+Mantle 모델을 `/model` 선택기에 표시하려면 [설정 파일](/ko/settings)의 `availableModels`에 ID를 나열하십시오. 이 설정은 선택기를 나열된 항목으로 제한하므로 유지하려는 버전 접두사 또는 전체 ID를 나열하십시오. Mantle ID와 `haiku` 별칭은 동일한 모델 제품군으로 해결되므로 병합은 더 구체적인 항목만 유지합니다. [병합 동작](/ko/model-config#merge-behavior)을 참조하십시오:
 
 ```json theme={null}
 {
-  "availableModels": ["opus", "sonnet", "haiku", "anthropic.claude-haiku-4-5"]
+  "availableModels": ["opus", "sonnet", "claude-haiku-4-5", "anthropic.claude-haiku-4-5"]
 }
 ```
 
@@ -457,6 +541,14 @@ AWS SSO를 사용할 때 브라우저 탭이 반복적으로 생성되면 [설�
 * 모델을 [추론 프로필](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html) ID로 지정하십시오
 
 Claude Code는 Bedrock [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html)를 사용하며 Converse API를 지원하지 않습니다.
+
+<h3 id="zero-token-counts-in-/context">
+  /context의 0 토큰 개수
+</h3>
+
+`/context` 명령은 도구 스키마를 Bedrock count-tokens API로 전송하여 각 도구 그룹의 토큰을 계산합니다. {/* min-version: 2.1.196 */}v2.1.196 이전의 Claude Code 버전에서는 Bedrock이 스키마가 count-tokens API에서 허용하지 않는 필드를 포함하고 있어서 해당 요청을 거부했으므로 모든 도구 그룹이 0 토큰을 표시했습니다. 메시지 및 메모리 파일과 같은 분석의 다른 행은 영향을 받지 않습니다.
+
+v2.1.196 이상으로 업데이트하십시오.
 
 <h3 id="mantle-endpoint-errors">
   Mantle 엔드포인트 오류

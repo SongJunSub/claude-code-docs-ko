@@ -30,7 +30,7 @@
 | 파일 스캔 대신 언어 서버를 통해 기호의 정의 또는 호출자 찾기              | [코드 인텔리전스 플러그인](#reduce-file-reads-with-code-intelligence)                              |
 | Claude가 워크트리를 생성할 때 작업에 필요한 디렉토리만 체크아웃           | [`worktree.sparsePaths`](#check-out-only-the-directories-you-need)                      |
 | 같은 세션에서 형제 패키지 또는 다른 저장소 읽기 및 편집                 | [`--add-dir`](#grant-access-across-packages-or-repositories) 또는 `additionalDirectories` |
-| Claude에 관련이 있을 때만 로드되는 한 영역에 특정한 절차 제공           | 디렉토리별 [스킬](#add-per-directory-skills)                                                   |
+| Claude에 관련이 있을 때만 로드되는 한 영역에 특정한 절차 제공           | 디렉토리별 [skills](#add-per-directory-skills)                                               |
 | 많은 디렉토리별 CLAUDE.md 파일을 모든 사람이 설치하는 하나의 규칙 세트로 대체 | 내부 마켓플레이스의 [플러그인](#centralize-conventions-when-layering-stops-scaling)                  |
 
 <Tip>
@@ -148,7 +148,7 @@ CLAUDE.md 파일이 로드되고 상호작용하는 방식에 대한 자세한 �
 
 다른 팀의 패키지, 레거시 코드, 또는 벤더된 하위 트리와 같이 작업하지 않는 디렉토리에 사용하십시오. 제외 목록은 정적이며 작업별 스위치가 아닙니다. 오늘 한 패키지에 집중하고 내일 다른 패키지에 집중하려면 제외를 편집하는 대신 [해당 패키지의 디렉토리에서 Claude를 시작](#choose-where-to-start-claude)하십시오.
 
-이 제외를 자신만을 위해 원하면 설정을 `.claude/settings.local.json`에 넣으십시오. 이는 gitignored이고 커밋되지 않습니다. 패턴은 절대 파일 경로와 일치하는 글로브 구문을 사용하므로 상대 스타일 패턴을 `**/`로 시작하여 트리의 어디든 일치시킵니다. 아래 예제는 다른 팀이 소유한 패키지를 제외합니다:
+이 제외를 자신만을 위해 원하면 설정을 `.claude/settings.local.json`에 넣으십시오. Claude Code는 이를 생성할 때 gitignore합니다. 여기서 직접 생성하므로 gitignore에 추가하십시오. 패턴은 절대 파일 경로와 일치하는 glob 구문을 사용하므로 상대 스타일 패턴을 `**/`로 시작하여 트리의 어디든 일치시킵니다. 아래 예제는 다른 팀이 소유한 패키지를 제외합니다:
 
 ```json .claude/settings.local.json theme={null}
 {
@@ -220,7 +220,7 @@ Claude의 콘텐츠 검색은 기본적으로 `.gitignore`를 존중하므로 `n
 
 코드 인텔리전스 플러그인은 각 개발자의 머신에 언어의 언어 서버 바이너리가 필요합니다. [각 언어가 필요로 하는 바이너리](/ko/discover-plugins#code-intelligence)를 참조하십시오. 공식 마켓플레이스에서 설치하려면 마켓플레이스가 호스팅되는 GitHub에 대한 네트워크 액세스가 필요합니다. 제한된 네트워크에서는 [내부 Git 호스트 또는 로컬 경로에서 마켓플레이스를 추가](/ko/discover-plugins#add-from-other-git-hosts)하십시오.
 
-이는 위의 `claudeMdExcludes` 및 `Read` 거부 규칙과 잘 어울립니다. 이들은 관련 없는 콘텐츠를 컨텍스트에서 벗어나게 하고, 코드 인텍스는 Claude가 정의를 찾기 위해 남은 것을 읽지 못하도록 합니다.
+이는 위의 `claudeMdExcludes` 및 `Read` 거부 규칙과 잘 어울립니다. 이들은 관련 없는 콘텐츠를 컨텍스트에서 벗어나게 하고, 코드 인텔리전스는 Claude가 정의를 찾기 위해 남은 것을 읽지 못하도록 합니다.
 
 <h2 id="scope-worktrees-and-file-access">
   워크트리 및 파일 액세스 범위 지정
@@ -385,7 +385,7 @@ description: API 패키지의 테스트 패턴. packages/api/에서 테스트를
 범위 내 스킬은 Claude를 시작하는 위치에 따라 다릅니다:
 
 * **`packages/api/`와 같은 하위 디렉토리에서**: 해당 디렉토리의 스킬, 저장소 루트까지의 모든 상위 항목, 사용자 및 엔터프라이즈 수준
-* **저장소 루트에서**: 세션 중에 Claude가 터치하는 모든 하위 디렉토리의 스킬. 수백 개로 누적될 수 있음
+* **저장소 루트에서**: 세션 중에 Claude가 터치하는 모든 하위 디렉토리의 스킬. 수백 개로 누적될 수 있습니다.
 * **[`--add-dir`](#grant-access-across-packages-or-repositories)으로 형제 추가 후**: 해당 형제의 스킬도 로드됩니다. `additionalDirectories` 설정은 파일 액세스만 부여하고 스킬을 로드하지 않습니다.
 
 이름은 항상 로드되지만 [많은 스킬이 있을 때 설명이 단축되어](/ko/skills#skill-descriptions-are-cut-short) Claude가 스킬 적용 여부를 결정하는 데 사용하는 키워드를 제거할 수 있습니다. 설명을 짧게 유지하고 요청에 포함될 단어로 시작하십시오. 예를 들어 "`packages/api/`에서 테스트 작성 또는 수정".
@@ -402,19 +402,19 @@ description: API 패키지의 테스트 패턴. packages/api/에서 테스트를
 
 항상 로드되는 CLAUDE.md에서 규칙 및 참조 콘텐츠를 작업과 관련이 있을 때만 로드되는 메커니즘으로 이동하십시오:
 
-* [스킬](/ko/skills): Claude가 작업과 관련이 있을 때만 로드하는 참조 자료
-* [플러그인](/ko/plugins): 플랫폼 팀이 중앙에서 소유하는 스킬, 훅, 명령의 버전 관리 번들
-* [MCP 서버](/ko/mcp): 조직이 이미 저장소에 대한 코드 검색 또는 RAG 인덱스를 실행하면 MCP 도구로 노출하여 Claude가 파일을 직접 읽는 대신 쿼리하도록 합니다.
+* [Skills](/ko/skills): Claude가 작업과 관련이 있을 때만 로드하는 참조 자료
+* [Plugins](/ko/plugins): 플랫폼 팀이 중앙에서 소유하는 스킬, 훅, 명령의 버전 관리 번들
+* [MCP servers](/ko/mcp): 조직이 이미 저장소에 대한 코드 검색 또는 RAG 인덱스를 실행하면 MCP 도구로 노출하여 Claude가 파일을 직접 읽는 대신 쿼리하도록 합니다.
 
-플랫폼 팀이 이를 중앙에서 적용하는 방법은 [서버 관리 또는 엔드포인트 관리 설정](/ko/server-managed-settings#choose-between-server-managed-and-endpoint-managed-settings)을 참조하십시오.
+플랫폼 팀이 이를 중앙에서 적용하는 방법은 [server-managed or endpoint-managed settings](/ko/server-managed-settings#choose-between-server-managed-and-endpoint-managed-settings)을 참조하십시오.
 
 <h3 id="recommend-the-right-plugin-at-session-start">
   세션 시작 시 올바른 플러그인 권장
 </h3>
 
-규칙이 플러그인에 있으면 팀원이 트리의 낯선 부분에서 Claude를 시작할 때 해당 영역의 소유자가 유지하는 플러그인에 대한 신호가 없습니다. [`SessionStart` 훅](/ko/hooks#sessionstart)은 훅이 stdout에 인쇄하는 모든 것이 첫 번째 프롬프트 전에 Claude의 컨텍스트에 추가되므로 이 간격을 닫을 수 있습니다.
+규칙이 플러그인에 있으면 팀원이 트리의 낯선 부분에서 Claude를 시작할 때 해당 영역의 소유자가 유지하는 플러그인에 대한 신호가 없습니다. [`SessionStart` hook](/ko/hooks#sessionstart)은 훅이 stdout에 인쇄하는 모든 것이 첫 번째 프롬프트 전에 Claude의 컨텍스트에 추가되므로 이 간격을 닫을 수 있습니다.
 
-예를 들어 [훅 입력](/ko/hooks#common-input-fields)에서 시작 디렉토리를 읽고, 저장소에 커밋된 경로-플러그인 맵에서 조회하고, Claude가 첫 번째 응답에서 전달할 권장 사항을 인쇄하는 스크립트를 작성할 수 있습니다. 훅을 작성하고 등록하려면 [훅으로 작업 자동화](/ko/hooks-guide)를 참조하십시오.
+예를 들어 [hook input](/ko/hooks#common-input-fields)에서 시작 디렉토리를 읽고, 저장소에 커밋된 경로-플러그인 맵에서 조회하고, Claude가 첫 번째 응답에서 전달할 권장 사항을 인쇄하는 스크립트를 작성할 수 있습니다. 훅을 작성하고 등록하려면 [Automate actions with hooks](/ko/hooks-guide)를 참조하십시오.
 
 <h2 id="put-it-together">
   모두 함께 사용

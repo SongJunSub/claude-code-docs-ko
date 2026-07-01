@@ -150,6 +150,8 @@ SDK는 개발 및 테스트를 위해 `InMemorySessionStore`를 제공합니다.
   ```
 </CodeGroup>
 
+두 번째 쿼리는 첫 번째 쿼리의 파일 요약을 출력하며, 이는 에이전트가 저장소에서 전체 컨텍스트와 함께 재개되었음을 보여줍니다.
+
 <h2 id="write-your-own-adapter">
   자신의 어댑터 작성하기
 </h2>
@@ -233,7 +235,7 @@ async def test_my_store_conformance():
   미러 쓰기는 최선의 노력입니다
 </h3>
 
-`append()`가 거부하거나 시간 초과되면 오류가 기록되고, `{ type: "system", subtype: "mirror_error" }` 메시지가 반복자로 내보내지며, 쿼리가 계속됩니다. 로컬 기록은 이미 디스크에 내구적이므로 저장소 중단은 에이전트를 중단하거나 로컬에서 데이터를 손실하지 않습니다. 실패한 배치는 재시도되지 않으므로 저장소 데이터 손실을 감지해야 하는 경우 `mirror_error`를 모니터링합니다.
+`append()`가 거부하면 SDK는 짧은 백오프를 사용하여 배치를 최대 2회 더 재시도하며, 총 최대 3회 시도합니다. 시간 초과된 호출은 재시도되지 않습니다. 원본 호출이 여전히 도착할 수 있기 때문입니다. 배치가 여전히 실패하면 오류가 기록되고, `{ type: "system", subtype: "mirror_error" }` 메시지가 반복자로 내보내지며, 배치는 삭제되고 쿼리가 계속됩니다. 로컬 기록은 이미 디스크에 내구적이므로 저장소 중단은 에이전트를 중단하거나 로컬에서 데이터를 손실하지 않습니다. 저장소 데이터 손실을 감지해야 하는 경우 `mirror_error`를 모니터링합니다. 재시도된 배치는 이미 도착한 항목을 다시 전달할 수 있으므로 `append()` 구현에서 `entry.uuid`로 중복을 제거합니다.
 
 <h3 id="getsessionmessages-returns-the-post-compaction-chain">
   `getSessionMessages`는 압축 후 체인을 반환합니다

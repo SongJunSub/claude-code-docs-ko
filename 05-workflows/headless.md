@@ -6,10 +6,6 @@
 
 > Agent SDK를 사용하여 CLI, Python 또는 TypeScript에서 Claude Code를 프로그래밍 방식으로 실행합니다.
 
-<Note>
-  Starting June 15, 2026, Agent SDK and `claude -p` usage on subscription plans will draw from a new monthly Agent SDK credit, separate from your interactive usage limits. See [Use the Claude Agent SDK with your Claude plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) for details.
-</Note>
-
 [Agent SDK](/ko/agent-sdk/overview)는 Claude Code를 구동하는 동일한 도구, 에이전트 루프 및 컨텍스트 관리를 제공합니다. 스크립트 및 CI/CD용 CLI로 사용하거나 완전한 프로그래밍 방식 제어를 위한 [Python](/ko/agent-sdk/python) 및 [TypeScript](/ko/agent-sdk/typescript) 패키지로 사용할 수 있습니다.
 
 Claude Code를 비대화형 모드에서 실행하려면 프롬프트와 함께 `-p`를 전달하고 [CLI 옵션](/ko/cli-reference)을 사용합니다:
@@ -65,6 +61,14 @@ claude --bare -p "Summarize this file" --allowedTools "Read"
 <Note>
   `--bare`는 스크립트 및 SDK 호출에 권장되는 모드이며 향후 릴리스에서 `-p`의 기본값이 될 것입니다.
 </Note>
+
+<h3 id="background-tasks-at-exit">
+  종료 시 백그라운드 작업
+</h3>
+
+Claude가 `claude -p` 실행 중에 [백그라운드 Bash 작업](/ko/tools-reference#bash-tool-behavior)을 시작하는 경우(예: 개발 서버 또는 감시 빌드), 해당 셸은 Claude가 최종 결과를 반환하고 stdin이 닫힌 후 약 5초 후에 종료됩니다. 유예 기간을 통해 결과 직후에 완료되는 작업이 여전히 출력을 전달할 수 있습니다. v2.1.163 이전에는 종료되지 않는 백그라운드 프로세스가 `claude -p` 호출을 무한정 열어 두었습니다.
+
+백그라운드 [서브에이전트](/ko/sub-agents) 및 워크플로우는 5초 유예 기간에서 제외됩니다. 이들의 결과가 최종 출력의 일부이기 때문에 `claude -p`는 이들이 완료될 때까지 기다립니다. v2.1.182부터 해당 대기는 기본적으로 10분으로 제한되므로 중단된 백그라운드 에이전트가 프로세스를 무한정 열어 두지 않습니다. [`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`](/ko/env-vars)로 상한을 조정하거나 제한 없이 대기하도록 `0`으로 설정합니다.
 
 <h2 id="examples">
   예제
@@ -230,7 +234,7 @@ claude -p "Look at my staged changes and create an appropriate commit" \
 `--allowedTools` 플래그는 [권한 규칙 구문](/ko/settings#permission-rule-syntax)을 사용합니다. 뒤의 ` *`는 접두사 일치를 활성화하므로 `Bash(git diff *)`는 `git diff`로 시작하는 모든 명령을 허용합니다. 공백이 중요합니다: 없으면 `Bash(git diff*)`도 `git diff-index`와 일치합니다.
 
 <Note>
-  사용자가 호출한 [skills](/ko/skills)(`/code-review` 등) 및 [기본 제공 명령](/ko/commands)은 대화형 모드에서만 사용할 수 있습니다. `-p` 모드에서는 대신 수행하려는 작업을 설명합니다.
+  사용자가 호출한 [skills](/ko/skills) 및 사용자 정의 명령은 `-p` 모드에서 작동합니다: 프롬프트 문자열에 `/skill-name`을 포함하면 Claude Code가 실행하기 전에 이를 확장합니다. `/login`과 같은 대화형 대화를 열어주는 기본 제공 명령은 `-p` 모드에서 사용할 수 없습니다. {/* min-version: 2.1.181 */}`-p` 호출에서 설정을 변경하려면 `/config`에 `key=value`를 전달합니다. 예를 들어 `/config thinking=false`.
 </Note>
 
 <h3 id="customize-the-system-prompt">
@@ -268,6 +272,8 @@ claude -p "Generate a summary of all issues found" --continue
 session_id=$(claude -p "Start a review" --output-format json | jq -r '.session_id')
 claude -p "Continue that review" --resume "$session_id"
 ```
+
+동일한 디렉터리에서 두 명령을 실행합니다: 세션 ID 조회는 현재 프로젝트 디렉터리 및 해당 git worktrees로 범위가 지정됩니다. 전체 범위 규칙은 [세션 재개](/ko/sessions#resume-a-session)를 참조하십시오.
 
 <h2 id="next-steps">
   다음 단계

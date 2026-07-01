@@ -24,7 +24,8 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
   })) {
     if (message.type === "system" && message.subtype === "init") {
       console.log("Available slash commands:", message.slash_commands);
-      // Example output: ["clear", "compact", "context", "usage"]
+      // Includes built-in commands plus bundled skills, for example:
+      // ["clear", "compact", "context", "usage", "code-review", "verify", ...]
     }
   }
   ```
@@ -38,7 +39,8 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
       async for message in query(prompt="Hello Claude", options=ClaudeAgentOptions(max_turns=1)):
           if isinstance(message, SystemMessage) and message.subtype == "init":
               print("Available slash commands:", message.data["slash_commands"])
-              # Example output: ["clear", "compact", "context", "usage"]
+              # Includes built-in commands plus bundled skills, for example:
+              # ["clear", "compact", "context", "usage", "code-review", "verify", ...]
 
 
   asyncio.run(main())
@@ -49,19 +51,36 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
   슬래시 명령어 전송
 </h2>
 
-프롬프트 문자열에 슬래시 명령어를 포함하여 일반 텍스트처럼 전송합니다:
+슬래시 명령어를 프롬프트 문자열에 포함하여 일반 텍스트처럼 전송합니다. `/compact`와 같이 대화 기록에 작용하는 명령어는 작업할 이전 메시지가 필요하므로, 아래 예제에서는 먼저 질문을 한 다음 같은 대화에 대한 후속 명령어로 명령어를 전송합니다:
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Send a slash command
+  // Build up conversation history first
+  try {
+    for await (const message of query({
+      prompt: "What does the README in this directory cover?",
+      options: { maxTurns: 2 }
+    })) {
+      if (message.type === "result" && message.subtype === "success") {
+        console.log(message.result);
+      }
+    }
+  } catch (error) {
+    // A single-shot query() throws after yielding an error result,
+    // so the follow-up query below still runs.
+    console.error(`Session ended with an error: ${error}`);
+  }
+
+  // Send a slash command as a follow-up to the same conversation
   for await (const message of query({
     prompt: "/compact",
-    options: { maxTurns: 1 }
+    options: { continue: true, maxTurns: 1 }
   })) {
-    if (message.type === "result" && message.subtype === "success") {
-      console.log("Command executed:", message.result);
+    if (message.type === "result") {
+      console.log("Command executed, result subtype:", message.subtype);
+      // Example output: Command executed, result subtype: success
     }
   }
   ```
@@ -72,15 +91,40 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
 
 
   async def main():
-      # Send a slash command
-      async for message in query(prompt="/compact", options=ClaudeAgentOptions(max_turns=1)):
+      # Build up conversation history first
+      try:
+          async for message in query(
+              prompt="What does the README in this directory cover?",
+              options=ClaudeAgentOptions(max_turns=2),
+          ):
+              if isinstance(message, ResultMessage) and message.subtype == "success":
+                  print(message.result)
+      except Exception as error:
+          # A single-shot query() raises after yielding an error result,
+          # so the follow-up query below still runs.
+          print(f"Session ended with an error: {error}")
+
+      # Send a slash command as a follow-up to the same conversation
+      async for message in query(
+          prompt="/compact",
+          options=ClaudeAgentOptions(continue_conversation=True, max_turns=1),
+      ):
           if isinstance(message, ResultMessage):
-              print("Command executed:", message.result)
+              print("Command executed, result subtype:", message.subtype)
+              # Example output: Command executed, result subtype: success
 
 
   asyncio.run(main())
   ```
 </CodeGroup>
+
+<Note>
+  쿼리는 오류 결과로 끝날 수 있습니다. 예를 들어 작업이 완료되기 전에 `maxTurns` / `max_turns` 제한에 도달한 경우입니다. 최종 결과 메시지는 `is_error: true`를 가지며 `success` 대신 `error_max_turns`와 같은 오류 서브타입을 가집니다.
+
+  해당 최종 결과 메시지를 생성한 후 SDK는 CLI 프로세스가 0이 아닌 코드로 종료되기 때문에 오류를 발생시킵니다.
+
+  명령어가 제한에 도달할 수 있는 경우 TypeScript에서는 루프를 `try`/`catch`로 감싸거나 Python에서는 `try`/`except`로 감싸십시오. [단일 메시지 입력](/ko/agent-sdk/streaming-vs-single-mode#single-message-input)에 표시된 대로 하거나, 작업이 완료될 수 있도록 `maxTurns`를 충분히 높게 설정하십시오. Python에서는 `Exception`을 캐치하십시오: SDK는 오류 결과를 일반 `Exception`으로 표시합니다.
+</Note>
 
 <h2 id="common-slash-commands">
   일반적인 슬래시 명령어
@@ -90,40 +134,86 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
   `/compact` - 대화 기록 압축
 </h3>
 
-`/compact` 명령어는 이전 메시지를 요약하면서 중요한 컨텍스트를 보존하여 대화 기록의 크기를 줄입니다:
+`/compact` 명령어는 이전 메시지를 요약하면서 중요한 컨텍스트를 보존하여 대화 기록의 크기를 줄입니다. 압축을 수행하려면 최소 두 번의 이전 교환이 있는 기존 대화가 필요합니다. 이 예제는 먼저 대화를 진행한 후 압축을 수행하고 결과를 보고하는 `compact_boundary` 시스템 메시지를 읽습니다:
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
+  // Compaction needs existing history, so have a conversation first
+  try {
+    for await (const message of query({
+      prompt: "Explain what this project does",
+      options: { maxTurns: 2 }
+    })) {
+      if (message.type === "result" && message.subtype === "success") {
+        console.log(message.result);
+      }
+    }
+  } catch (error) {
+    // A single-shot query() throws after yielding an error result,
+    // so the follow-up query below still runs.
+    console.error(`Session ended with an error: ${error}`);
+  }
+
+  // Compact the same conversation
   for await (const message of query({
     prompt: "/compact",
-    options: { maxTurns: 1 }
+    options: { continue: true, maxTurns: 1 }
   })) {
     if (message.type === "system" && message.subtype === "compact_boundary") {
       console.log("Compaction completed");
       console.log("Pre-compaction tokens:", message.compact_metadata.pre_tokens);
       console.log("Trigger:", message.compact_metadata.trigger);
+      // Example output:
+      // Compaction completed
+      // Pre-compaction tokens: 1842
+      // Trigger: manual
     }
   }
   ```
 
   ```python Python theme={null}
   import asyncio
-  from claude_agent_sdk import query, ClaudeAgentOptions, SystemMessage
+  from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage, SystemMessage
 
 
   async def main():
-      async for message in query(prompt="/compact", options=ClaudeAgentOptions(max_turns=1)):
+      # Compaction needs existing history, so have a conversation first
+      try:
+          async for message in query(
+              prompt="Explain what this project does",
+              options=ClaudeAgentOptions(max_turns=2),
+          ):
+              if isinstance(message, ResultMessage) and message.subtype == "success":
+                  print(message.result)
+      except Exception as error:
+          # A single-shot query() raises after yielding an error result,
+          # so the follow-up query below still runs.
+          print(f"Session ended with an error: {error}")
+
+      # Compact the same conversation
+      async for message in query(
+          prompt="/compact",
+          options=ClaudeAgentOptions(continue_conversation=True, max_turns=1),
+      ):
           if isinstance(message, SystemMessage) and message.subtype == "compact_boundary":
               print("Compaction completed")
               print("Pre-compaction tokens:", message.data["compact_metadata"]["pre_tokens"])
               print("Trigger:", message.data["compact_metadata"]["trigger"])
+              # Example output:
+              # Compaction completed
+              # Pre-compaction tokens: 1842
+              # Trigger: manual
 
 
   asyncio.run(main())
   ```
 </CodeGroup>
+
+<Note>
+  `compact_boundary` 메시지는 압축이 실행되었을 때만 도착합니다. 요약할 내용이 없으면 `/compact`는 대신 이유를 보고합니다. 실행은 여전히 `success` 결과로 끝나고, `compact_boundary` 메시지는 발생하지 않으며, 결과 텍스트에 메시지가 포함됩니다. 예를 들어 짧은 단일 교환 후 `Not enough messages to compact.`입니다. 새로운 일회성 `query()` 호출은 빈 컨텍스트로 시작하므로 이 패턴을 이전 턴이 있는 세션에서 사용하세요. 예를 들어 [스트리밍 입력 모드](/ko/agent-sdk/streaming-vs-single-mode)에서 또는 세션을 재개할 때입니다.
+</Note>
 
 <h3 id="/clear-reset-conversation-context">
   `/clear` - 대화 컨텍스트 초기화
@@ -170,7 +260,7 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
   기본 예제
 </h4>
 
-`.claude/commands/refactor.md` 생성:
+프로젝트에 `.claude/commands` 디렉토리가 없으면 생성한 후 `.claude/commands/refactor.md`를 생성합니다:
 
 ```markdown theme={null}
 Refactor the selected code to improve readability and maintainability.
@@ -189,7 +279,7 @@ Focus on clean code principles and best practices.
 ---
 allowed-tools: Read, Grep, Glob
 description: Run security vulnerability scan
-model: claude-opus-4-7
+model: claude-opus-4-8
 ---
 
 Analyze the codebase for security vulnerabilities including:
@@ -210,13 +300,19 @@ Analyze the codebase for security vulnerabilities including:
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
   // 사용자 정의 명령어 사용
-  for await (const message of query({
-    prompt: "/refactor src/auth/login.ts",
-    options: { maxTurns: 3 }
-  })) {
-    if (message.type === "assistant") {
-      console.log("Refactoring suggestions:", message.message);
+  try {
+    for await (const message of query({
+      prompt: "/refactor src/auth/login.ts",
+      options: { maxTurns: 3 }
+    })) {
+      if (message.type === "assistant") {
+        console.log("Refactoring suggestions:", message.message);
+      }
     }
+  } catch (error) {
+    // 단일 쿼리 query()는 오류 결과를 반환한 후 throw하므로,
+    // 아래의 두 번째 쿼리는 여전히 실행됩니다.
+    console.error(`Session ended with an error: ${error}`);
   }
 
   // 사용자 정의 명령어는 slash_commands 목록에 나타납니다
@@ -225,9 +321,9 @@ Analyze the codebase for security vulnerabilities including:
     options: { maxTurns: 1 }
   })) {
     if (message.type === "system" && message.subtype === "init") {
-      // 기본 제공 명령어와 사용자 정의 명령어를 모두 포함합니다
       console.log("Available commands:", message.slash_commands);
-      // 예: ["clear", "compact", "context", "usage", "refactor", "security-check"]
+      // 기본 제공 명령어와 번들된 스킬 및 사용자 정의 명령어를 포함합니다. 예를 들어:
+      // ["clear", "compact", "context", "usage", "code-review", "verify", "refactor", "security-check", ...]
     }
   }
   ```
@@ -239,20 +335,25 @@ Analyze the codebase for security vulnerabilities including:
 
   async def main():
       # 사용자 정의 명령어 사용
-      async for message in query(
-          prompt="/refactor src/auth/login.py", options=ClaudeAgentOptions(max_turns=3)
-      ):
-          if isinstance(message, AssistantMessage):
-              for block in message.content:
-                  if hasattr(block, "text"):
-                      print("Refactoring suggestions:", block.text)
+      try:
+          async for message in query(
+              prompt="/refactor src/auth/login.py", options=ClaudeAgentOptions(max_turns=3)
+          ):
+              if isinstance(message, AssistantMessage):
+                  for block in message.content:
+                      if hasattr(block, "text"):
+                          print("Refactoring suggestions:", block.text)
+      except Exception as error:
+          # 단일 쿼리 query()는 오류 결과를 반환한 후 raise하므로,
+          # 아래의 두 번째 쿼리는 여전히 실행됩니다.
+          print(f"Session ended with an error: {error}")
 
       # 사용자 정의 명령어는 slash_commands 목록에 나타납니다
       async for message in query(prompt="Hello", options=ClaudeAgentOptions(max_turns=1)):
           if isinstance(message, SystemMessage) and message.subtype == "init":
-              # 기본 제공 명령어와 사용자 정의 명령어를 모두 포함합니다
               print("Available commands:", message.data["slash_commands"])
-              # 예: ["clear", "compact", "context", "usage", "refactor", "security-check"]
+              # 기본 제공 명령어와 번들된 스킬 및 사용자 정의 명령어를 포함합니다. 예를 들어:
+              # ["clear", "compact", "context", "usage", "code-review", "verify", "refactor", "security-check", ...]
 
 
   asyncio.run(main())
@@ -384,11 +485,11 @@ Check for security issues, outdated dependencies, and misconfigurations.
   실용적인 예제
 </h3>
 
-<h4 id="code-review-command">
-  코드 리뷰 명령어
+<h4 id="pull-request-review-command">
+  풀 리퀘스트 리뷰 명령어
 </h4>
 
-`.claude/commands/code-review.md` 생성:
+`.claude/commands/review-pr.md`를 생성합니다:
 
 ```markdown theme={null}
 ---
@@ -413,6 +514,10 @@ Review the above changes for:
 
 Provide specific, actionable feedback organized by priority.
 ```
+
+<Note>
+  Claude Code에는 번들된 `code-review` 및 `verify` 스킬이 포함되어 있습니다. 예를 들어 `.claude/commands/code-review.md`와 같이 사용자 정의 명령어의 이름을 이 중 하나로 지정하면, 사용자 정의 명령어가 번들된 스킬을 가리고 `slash_commands`는 이름을 한 번만 나열합니다.
+</Note>
 
 <h4 id="test-runner-command">
   테스트 러너 명령어
@@ -442,11 +547,17 @@ SDK를 통해 이러한 명령어를 사용합니다:
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
   // 코드 리뷰 실행
-  for await (const message of query({
-    prompt: "/code-review",
-    options: { maxTurns: 3 }
-  })) {
-    // 리뷰 피드백 처리
+  try {
+    for await (const message of query({
+      prompt: "/review-pr",
+      options: { maxTurns: 3 }
+    })) {
+      // 리뷰 피드백 처리
+    }
+  } catch (error) {
+    // 단일 쿼리 query()는 오류 결과를 반환한 후 throw하므로,
+    // 아래의 두 번째 쿼리는 여전히 실행됩니다.
+    console.error(`Session ended with an error: ${error}`);
   }
 
   // 특정 테스트 실행
@@ -465,9 +576,14 @@ SDK를 통해 이러한 명령어를 사용합니다:
 
   async def main():
       # 코드 리뷰 실행
-      async for message in query(prompt="/code-review", options=ClaudeAgentOptions(max_turns=3)):
-          # 리뷰 피드백 처리
-          pass
+      try:
+          async for message in query(prompt="/review-pr", options=ClaudeAgentOptions(max_turns=3)):
+              # 리뷰 피드백 처리
+              pass
+      except Exception as error:
+          # 단일 쿼리 query()는 오류 결과를 반환한 후 raise하므로,
+          # 아래의 두 번째 쿼리는 여전히 실행됩니다.
+          print(f"Session ended with an error: {error}")
 
       # 특정 테스트 실행
       async for message in query(prompt="/test auth", options=ClaudeAgentOptions(max_turns=5)):

@@ -16,21 +16,21 @@
 
 | 원하는 작업                     | 수행 방법                                                                                                                                                                                  |
 | :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 도구 정의                      | 이름, 설명, 스키마 및 핸들러를 사용하여 [`@tool`](/ko/agent-sdk/python#tool) (Python) 또는 [`tool()`](/ko/agent-sdk/typescript#tool) (TypeScript)을 사용합니다. [사용자 정의 도구 만들기](#create-a-custom-tool)를 참조하세요. |
+| 도구 정의                      | 이름, 설명, 스키마 및 핸들러를 사용하여 [`@tool`](/docs/ko/agent-sdk/python#tool) (Python) 또는 [`tool()`](/docs/ko/agent-sdk/typescript#tool) (TypeScript)을 사용합니다. [사용자 정의 도구 만들기](#create-a-custom-tool)를 참조하세요. |
 | Claude에 도구 등록              | `create_sdk_mcp_server` / `createSdkMcpServer`로 래핑하고 `query()`의 `mcpServers`에 전달합니다. [사용자 정의 도구 호출](#call-a-custom-tool)을 참조하세요.                                                       |
 | 도구 사전 승인                   | 허용된 도구에 추가합니다. [허용된 도구 구성](#configure-allowed-tools)을 참조하세요.                                                                                                                           |
 | Claude의 컨텍스트에서 기본 제공 도구 제거 | 원하는 기본 제공 도구만 나열하는 `tools` 배열을 전달합니다. [허용된 도구 구성](#configure-allowed-tools)을 참조하세요.                                                                                                    |
 | Claude가 도구를 병렬로 호출하도록 허용   | 부작용이 없는 도구에 `readOnlyHint: true`를 설정합니다. [도구 주석 추가](#add-tool-annotations)를 참조하세요.                                                                                                     |
-| 루프를 중지하지 않고 오류 처리          | 예외를 발생시키는 대신 `isError: true`를 반환합니다. [오류 처리](#handle-errors)를 참조하세요.                                                                                                                   |
+| Claude가 읽는 오류 메시지 제어       | 원시 예외를 표시하는 대신 메시지를 작성하려면 `isError: true`를 반환합니다. [오류 처리](#handle-errors)를 참조하세요.                                                                                                      |
 | 이미지 또는 파일 반환               | 콘텐츠 배열에서 `image` 또는 `resource` 블록을 사용합니다. [이미지 및 리소스 반환](#return-images-and-resources)을 참조하세요.                                                                                         |
 | 머신 판독 가능한 JSON 결과 반환       | 결과에 `structuredContent`를 설정합니다. [구조화된 데이터 반환](#return-structured-data)을 참조하세요.                                                                                                         |
-| 많은 도구로 확장                  | [도구 검색](/ko/agent-sdk/tool-search)을 사용하여 필요에 따라 도구를 로드합니다.                                                                                                                             |
+| 많은 도구로 확장                  | [도구 검색](/docs/ko/agent-sdk/tool-search)을 사용하여 필요에 따라 도구를 로드합니다.                                                                                                                             |
 
 <h2 id="create-a-custom-tool">
   사용자 정의 도구 만들기
 </h2>
 
-도구는 TypeScript의 [`tool()`](/ko/agent-sdk/typescript#tool) 헬퍼 또는 Python의 [`@tool`](/ko/agent-sdk/python#tool) 데코레이터에 인수로 전달되는 네 부분으로 정의됩니다:
+도구는 TypeScript의 [`tool()`](/docs/ko/agent-sdk/typescript#tool) 헬퍼 또는 Python의 [`@tool`](/docs/ko/agent-sdk/python#tool) 데코레이터에 인수로 전달되는 네 부분으로 정의됩니다:
 
 * **이름:** Claude가 도구를 호출하는 데 사용하는 고유 식별자입니다.
 * **설명:** 도구가 수행하는 작업입니다. Claude는 이를 읽고 도구를 호출할 시기를 결정합니다.
@@ -40,7 +40,7 @@
   * `structuredContent` (선택사항): 머신 판독 가능한 데이터로 결과를 보유하는 JSON 객체이며, `content`와 함께 반환됩니다. [구조화된 데이터 반환](#return-structured-data)을 참조하세요.
   * `isError` (선택사항): Claude가 반응할 수 있도록 도구 실패를 신호하려면 `true`로 설정합니다. [오류 처리](#handle-errors)를 참조하세요.
 
-도구를 정의한 후 [`createSdkMcpServer`](/ko/agent-sdk/typescript#createsdkmcpserver) (TypeScript) 또는 [`create_sdk_mcp_server`](/ko/agent-sdk/python#create_sdk_mcp_server) (Python)를 사용하여 서버로 래핑합니다. 서버는 별도의 프로세스가 아닌 애플리케이션 내에서 인프로세스로 실행됩니다.
+도구를 정의한 후 [`createSdkMcpServer`](/docs/ko/agent-sdk/typescript#createsdkmcpserver) (TypeScript) 또는 [`create_sdk_mcp_server`](/docs/ko/agent-sdk/python#create_sdk_mcp_server) (Python)를 사용하여 서버로 래핑합니다. 서버는 별도의 프로세스가 아닌 애플리케이션 내에서 인프로세스로 실행됩니다.
 
 <h3 id="weather-tool-example">
   날씨 도구 예제
@@ -128,7 +128,7 @@
   ```
 </CodeGroup>
 
-전체 매개변수 세부 정보, JSON Schema 입력 형식 및 반환 값 구조를 포함하여 [`tool()`](/ko/agent-sdk/typescript#tool) TypeScript 참조 또는 [`@tool`](/ko/agent-sdk/python#tool) Python 참조를 참조하세요.
+전체 매개변수 세부 정보, JSON Schema 입력 형식 및 반환 값 구조를 포함하여 [`tool()`](/docs/ko/agent-sdk/typescript#tool) TypeScript 참조 또는 [`@tool`](/docs/ko/agent-sdk/python#tool) Python 참조를 참조하세요.
 
 <Tip>
   매개변수를 선택사항으로 만들려면: TypeScript에서 Zod 필드에 `.default()`를 추가합니다. Python에서 딕셔너리 스키마는 모든 키를 필수로 취급하므로 스키마에서 매개변수를 생략하고, 설명 문자열에서 언급하고, 핸들러에서 `args.get()`으로 읽습니다. 아래의 [`get_precipitation_chance` 도구](#add-more-tools)는 두 패턴을 모두 보여줍니다.
@@ -273,7 +273,7 @@
   ```
 </CodeGroup>
 
-이 배열의 모든 도구는 매 턴마다 컨텍스트 윈도우 공간을 소비합니다. 수십 개의 도구를 정의하는 경우 [도구 검색](/ko/agent-sdk/tool-search)을 참조하여 필요할 때 로드합니다.
+이 배열의 모든 도구는 매 턴마다 컨텍스트 윈도우 공간을 소비합니다. 수십 개의 도구를 정의하는 경우 [도구 검색](/docs/ko/agent-sdk/tool-search)을 참조하여 필요할 때 로드합니다.
 
 <h3 id="add-tool-annotations">
   도구 주석 추가
@@ -320,7 +320,7 @@
   ```
 </CodeGroup>
 
-[TypeScript](/ko/agent-sdk/typescript#toolannotations) 또는 [Python](/ko/agent-sdk/python#toolannotations) 참조에서 `ToolAnnotations`를 참조하세요.
+[TypeScript](/docs/ko/agent-sdk/typescript#toolannotations) 또는 [Python](/docs/ko/agent-sdk/python#toolannotations) 참조에서 `ToolAnnotations`를 참조하세요.
 
 <h2 id="control-tool-access">
   도구 액세스 제어
@@ -347,23 +347,25 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
 | :------------------------ | :-- | :------------------------------------------------------------------------------------------------------------------------------------ |
 | `tools: ["Read", "Grep"]` | 가용성 | 나열된 기본 제공 도구만 Claude의 컨텍스트에 있습니다. 나열되지 않은 기본 제공 도구는 제거됩니다. MCP 도구는 영향을 받지 않습니다.                                                       |
 | `tools: []`               | 가용성 | 모든 기본 제공 도구가 제거됩니다. Claude는 MCP 도구만 사용할 수 있습니다.                                                                                       |
-| 허용된 도구                    | 권한  | 나열된 도구는 권한 프롬프트 없이 실행됩니다. 나열되지 않은 도구는 계속 사용 가능합니다. 호출은 [권한 흐름](/ko/agent-sdk/permissions)을 거칩니다.                                      |
+| 허용된 도구                    | 권한  | 나열된 도구는 권한 프롬프트 없이 실행됩니다. 나열되지 않은 도구는 계속 사용 가능합니다. 호출은 [권한 흐름](/docs/ko/agent-sdk/permissions)을 거칩니다.                                      |
 | 거부된 도구                    | 둘 다 | `"Bash"`와 같은 단순 도구 이름은 도구를 Claude의 컨텍스트에서 제거하며, `tools`에서 생략하는 것과 동일합니다. `"Bash(rm *)"` 같은 범위가 지정된 규칙은 도구를 컨텍스트에 남겨두고 일치하는 호출만 거부합니다. |
 
-기본 제공 도구를 완전히 제거하려면 `tools`에서 생략하거나 `disallowedTools`(Python: `disallowed_tools`)에 단순 이름을 나열합니다. 둘 다 도구를 컨텍스트 밖으로 유지하므로 Claude는 시도하지 않습니다. 범위가 지정된 `disallowedTools` 규칙은 일치하는 호출을 차단하지만 도구를 표시하므로 Claude는 시도하는 데 턴을 낭비할 수 있습니다. 전체 평가 순서는 [권한 구성](/ko/agent-sdk/permissions)을 참조하세요.
+기본 제공 도구를 완전히 제거하려면 `tools`에서 생략하거나 `disallowedTools`(Python: `disallowed_tools`)에 단순 이름을 나열합니다. 둘 다 도구를 컨텍스트 밖으로 유지하므로 Claude는 시도하지 않습니다. 범위가 지정된 `disallowedTools` 규칙은 일치하는 호출을 차단하지만 도구를 표시하므로 Claude는 시도하는 데 턴을 낭비할 수 있습니다. 전체 평가 순서는 [권한 구성](/docs/ko/agent-sdk/permissions)을 참조하세요.
 
 <h2 id="handle-errors">
   오류 처리
 </h2>
 
-핸들러가 오류를 보고하는 방식에 따라 에이전트 루프가 계속되는지 중지되는지가 결정됩니다:
+핸들러 오류는 에이전트 루프를 중지하지 않습니다. SDK의 인프로세스 MCP 서버는 포착되지 않은 예외를 잡아서 오류 결과로 반환하므로, 오류를 보고하는 방식에 따라 Claude가 읽는 내용이 결정되며, 쿼리 실패 여부는 결정되지 않습니다:
 
-| 발생하는 상황                                                                 | 결과                                                                        |
-| :---------------------------------------------------------------------- | :------------------------------------------------------------------------ |
-| 핸들러가 포착되지 않은 예외를 발생시킵니다                                                 | 에이전트 루프가 중지됩니다. Claude는 오류를 보지 못하고 `query` 호출이 실패합니다.                     |
-| 핸들러가 오류를 포착하고 `isError: true` (TS) / `"is_error": True` (Python)를 반환합니다 | 에이전트 루프가 계속됩니다. Claude는 오류를 데이터로 보고 재시도하거나, 다른 도구를 시도하거나, 실패를 설명할 수 있습니다. |
+| 발생하는 상황                                                                 | 결과                                                                                    |
+| :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------ |
+| 핸들러가 포착되지 않은 예외를 발생시킵니다                                                 | MCP 서버는 이를 원본 예외 메시지를 담은 오류 결과로 변환합니다. Claude는 해당 메시지를 보고 에이전트 루프가 계속됩니다.             |
+| 핸들러가 오류를 포착하고 `isError: true` (TS) / `"is_error": True` (Python)를 반환합니다 | Claude는 사용자가 작성한 메시지를 봅니다. 원본 예외가 부족한 컨텍스트(예: 어떤 요청이 실패했는지 또는 대신 시도할 사항)를 추가할 수 있습니다. |
 
-아래 예제는 핸들러 내에서 두 가지 종류의 실패를 포착합니다. 200이 아닌 HTTP 상태는 응답에서 포착되어 오류 결과로 반환됩니다. 네트워크 오류 또는 잘못된 JSON은 주변 `try/except` (Python) 또는 `try/catch` (TypeScript)로 포착되어 오류 결과로도 반환됩니다. 두 경우 모두 핸들러는 정상적으로 반환되고 에이전트 루프가 계속됩니다.
+두 경우 모두 Claude는 재시도하거나, 다른 도구를 시도하거나, 실패를 설명할 수 있습니다. 원본 예외 메시지가 Claude가 작용하기에 충분하지 않을 때 오류를 직접 포착하세요.
+
+아래 예제는 핸들러 내에서 두 가지 종류의 실패를 포착하고 Claude가 읽는 오류 메시지를 작성합니다. 200이 아닌 HTTP 상태는 응답에서 포착되어 오류 결과로 반환됩니다. 네트워크 오류 또는 잘못된 JSON은 주변 `try/except` (Python) 또는 `try/catch` (TypeScript)로 포착되어 오류 결과로도 반환됩니다. 두 경우 모두 Claude는 단순한 예외 문자열 대신 실패를 설명하는 메시지를 받습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -397,8 +399,8 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
               data = response.json()
               return {"content": [{"type": "text", "text": json.dumps(data, indent=2)}]}
       except Exception as e:
-          # 여기서 포착하면 에이전트 루프가 살아있습니다. 포착되지 않은 예외는
-          # 전체 query() 호출을 종료합니다.
+          # Claude가 읽는 메시지를 작성합니다. 포착되지 않은 예외는
+          # 컨텍스트 없이 원본 str(e)로 Claude에 도달합니다.
           return {
               "content": [{"type": "text", "text": f"Failed to fetch data: {str(e)}"}],
               "is_error": True,
@@ -440,8 +442,8 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
           ]
         };
       } catch (error) {
-        // 여기서 포착하면 에이전트 루프가 살아있습니다. 포착되지 않은 throw는
-        // 전체 query() 호출을 종료합니다.
+        // Claude가 읽는 메시지를 작성합니다. 포착되지 않은 throw는
+        // 컨텍스트 없이 원본 오류 메시지로 Claude에 도달합니다.
         return {
           content: [
             {
@@ -461,7 +463,7 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
   이미지 및 리소스 반환
 </h2>
 
-도구 결과의 `content` 배열은 `text`, `image`, `audio`, `resource` 및 `resource_link` 블록을 허용합니다. 동일한 응답에서 이들을 혼합할 수 있습니다. 오디오 블록은 디스크에 저장되며 Claude는 저장된 파일 경로가 포함된 텍스트 블록을 받습니다. 리소스 링크 블록은 링크의 이름, URI 및 설명을 포함하는 텍스트 블록으로 변환됩니다.
+도구 결과의 `content` 배열은 `text`, `image`, `audio`, `resource` 및 `resource_link` 블록을 허용합니다. 동일한 응답에서 이들을 혼합할 수 있습니다. TypeScript에서 오디오 블록은 디스크에 저장되며 Claude는 저장된 파일 경로가 포함된 텍스트 블록을 받습니다. Python에서 SDK는 도구 결과에서 오디오 블록을 삭제하고 경고를 기록합니다. 리소스 링크 블록은 링크의 이름, URI 및 설명을 포함하는 텍스트 블록으로 변환됩니다.
 
 <h3 id="images">
   이미지
@@ -534,13 +536,13 @@ MCP 도구가 Claude에 노출될 때 이름은 특정 형식을 따릅니다:
 
 리소스 블록은 URI로 식별되는 콘텐츠 조각을 포함합니다. URI는 Claude가 참조할 레이블입니다. 실제 콘텐츠는 블록의 `text` 또는 `blob` 필드에 있습니다. 도구가 나중에 이름으로 주소를 지정하는 것이 합리적인 것을 생성할 때 사용합니다. 예를 들어 생성된 파일 또는 외부 시스템의 레코드입니다.
 
-| 필드                  | 유형           | 참고                                           |
-| :------------------ | :----------- | :------------------------------------------- |
-| `type`              | `"resource"` |                                              |
-| `resource.uri`      | `string`     | 콘텐츠의 식별자입니다. 모든 URI 스키마                      |
-| `resource.text`     | `string`     | 텍스트인 경우 콘텐츠입니다. `blob` 대신 이것을 제공하되 둘 다는 아닙니다 |
-| `resource.blob`     | `string`     | 바이너리인 경우 base64로 인코딩된 콘텐츠입니다                 |
-| `resource.mimeType` | `string`     | 선택사항                                         |
+| 필드                  | 유형           | 참고                                                                                         |
+| :------------------ | :----------- | :----------------------------------------------------------------------------------------- |
+| `type`              | `"resource"` |                                                                                            |
+| `resource.uri`      | `string`     | 콘텐츠의 식별자입니다. 모든 URI 스키마                                                                    |
+| `resource.text`     | `string`     | 텍스트인 경우 콘텐츠입니다. `blob` 대신 이것을 제공하되 둘 다는 아닙니다                                               |
+| `resource.blob`     | `string`     | 바이너리인 경우 base64로 인코딩된 콘텐츠입니다. TypeScript만 해당: Python SDK는 도구 결과에서 바이너리 리소스를 삭제하고 경고를 기록합니다 |
+| `resource.mimeType` | `string`     | 선택사항                                                                                       |
 
 이 예제는 도구 핸들러 내에서 반환된 리소스 블록을 보여줍니다. URI `file:///tmp/report.md`는 Claude가 나중에 참조할 수 있는 레이블입니다. SDK는 해당 경로에서 읽지 않습니다.
 
@@ -604,7 +606,7 @@ return {
 ```
 
 <Note>
-  Python `@tool` 데코레이터는 핸들러의 반환 딕셔너리에서 `content` 및 `is_error`만 전달합니다. Python에서 `structuredContent`를 반환하려면 인프로세스 SDK 서버 대신 [독립형 MCP 서버](/ko/agent-sdk/mcp)를 실행합니다.
+  Python `@tool` 데코레이터는 핸들러의 반환 딕셔너리에서 `content` 및 `is_error`만 전달합니다. Python에서 `structuredContent`를 반환하려면 인프로세스 SDK 서버 대신 [독립형 MCP 서버](/docs/ko/agent-sdk/mcp)를 실행합니다.
 </Note>
 
 <h2 id="example-unit-converter">
@@ -853,15 +855,15 @@ return {
 
 여기서:
 
-* 서버가 수십 개의 도구로 증가하면 [도구 검색](/ko/agent-sdk/tool-search)을 참조하여 Claude가 필요할 때까지 로드를 연기합니다.
-* 자신의 도구를 빌드하는 대신 외부 MCP 서버(파일 시스템, GitHub, Slack)에 연결하려면 [MCP 서버 연결](/ko/agent-sdk/mcp)을 참조하세요.
-* 어떤 도구가 자동으로 실행되는지 대 승인이 필요한지 제어하려면 [권한 구성](/ko/agent-sdk/permissions)을 참조하세요.
+* 서버가 수십 개의 도구로 증가하면 [도구 검색](/docs/ko/agent-sdk/tool-search)을 참조하여 Claude가 필요할 때까지 로드를 연기합니다.
+* 자신의 도구를 빌드하는 대신 외부 MCP 서버(파일 시스템, GitHub, Slack)에 연결하려면 [MCP 서버 연결](/docs/ko/agent-sdk/mcp)을 참조하세요.
+* 어떤 도구가 자동으로 실행되는지 대 승인이 필요한지 제어하려면 [권한 구성](/docs/ko/agent-sdk/permissions)을 참조하세요.
 
 <h2 id="related-documentation">
   관련 문서
 </h2>
 
-* [TypeScript SDK 참조](/ko/agent-sdk/typescript)
-* [Python SDK 참조](/ko/agent-sdk/python)
+* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript)
+* [Python SDK 참조](/docs/ko/agent-sdk/python)
 * [MCP 문서](https://modelcontextprotocol.io)
-* [SDK 개요](/ko/agent-sdk/overview)
+* [SDK 개요](/docs/ko/agent-sdk/overview)

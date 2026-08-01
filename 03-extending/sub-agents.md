@@ -8,10 +8,10 @@
 
 Subagent는 특정 유형의 작업을 처리하는 특화된 AI 어시스턴트입니다. 부작업이 검색 결과, 로그 또는 다시 참조하지 않을 파일 콘텐츠로 주 대화를 넘칠 때 하나를 사용하세요: subagent는 자신의 컨텍스트에서 해당 작업을 수행하고 요약만 반환합니다. 동일한 지침으로 동일한 종류의 워커를 계속 생성할 때 사용자 정의 subagent를 정의합니다.
 
-각 subagent는 자체 컨텍스트 윈도우에서 실행되며 사용자 정의 시스템 프롬프트, 특정 도구 액세스 및 독립적인 권한을 가집니다. Claude가 subagent의 설명과 일치하는 작업을 만나면 해당 subagent에 위임하고, subagent는 독립적으로 작동하여 결과를 반환합니다. 실제로 컨텍스트 절감을 확인하려면 [컨텍스트 윈도우 시각화](/ko/context-window)에서 subagent가 자신의 별도 윈도우에서 연구를 처리하는 세션을 안내합니다.
+각 subagent는 자체 컨텍스트 윈도우에서 실행되며 사용자 정의 시스템 프롬프트, 특정 도구 액세스 및 독립적인 권한을 가집니다. Claude가 subagent의 설명과 일치하는 작업을 만나면 해당 subagent에 위임하고, subagent는 독립적으로 작동하여 결과를 반환합니다. 실제로 컨텍스트 절감을 확인하려면 [컨텍스트 윈도우 시각화](/docs/ko/context-window)에서 subagent가 자신의 별도 윈도우에서 연구를 처리하는 세션을 안내합니다.
 
 <Note>
-  Subagent는 단일 세션 내에서 작동합니다. 많은 독립적인 세션을 병렬로 실행하고 한 곳에서 모니터링하려면 [background agents](/ko/agent-view)를 참조하세요. 서로 통신하는 세션의 경우 [agent teams](/ko/agent-teams)를 참조하세요.
+  Subagent는 단일 세션 내에서 작동합니다. 많은 독립적인 세션을 병렬로 실행하고 한 곳에서 모니터링하려면 [background agents](/docs/ko/agent-view)를 참조하세요. 서로 통신하는 세션의 경우 [agent teams](/docs/ko/agent-teams)를 참조하세요.
 </Note>
 
 Subagent는 다음을 도와줍니다:
@@ -24,7 +24,7 @@ Subagent는 다음을 도와줍니다:
 
 Claude는 각 subagent의 설명을 사용하여 작업을 위임할 시기를 결정합니다. Subagent를 만들 때 Claude가 언제 사용할지 알 수 있도록 명확한 설명을 작성하세요.
 
-Claude Code에는 **Explore**, **Plan**, **general-purpose**와 같은 여러 내장 subagent가 포함되어 있습니다. 특정 작업을 처리하기 위해 사용자 정의 subagent를 만들 수도 있습니다.
+Claude Code에는 Explore, Plan, general-purpose와 같은 여러 내장 subagent가 포함되어 있습니다. 특정 작업을 처리하기 위해 사용자 정의 subagent를 만들 수도 있습니다.
 
 <h2 id="built-in-subagents">
   내장 subagent
@@ -38,9 +38,13 @@ Explore와 Plan은 연구를 빠르고 저렴하게 유지하기 위해 CLAUDE.m
   <Tab title="Explore">
     코드베이스 검색 및 분석에 최적화된 빠른 읽기 전용 에이전트입니다.
 
-    * **모델**: Haiku (빠름, 낮은 지연시간)
-    * **도구**: 읽기 전용 도구 (Write 및 Edit 도구에 대한 액세스 거부)
+    * **모델**: 주 대화에서 상속되며, Claude API에서 Opus로 제한되므로 Explore는 세션에 대해 이미 선택한 모델보다 더 비싼 모델에서 실행되지 않습니다.
+    * **도구**: 읽기 전용 도구; Write 및 Edit은 거부됩니다.
     * **목적**: 파일 검색, 코드 검색, 코드베이스 탐색
+
+    {/* min-version: 2.1.198 */}v2.1.198부터 Explore는 항상 Haiku에서 실행되는 대신 주 대화의 모델을 상속합니다. Claude API에서 상속된 모델은 Opus로 제한됩니다: 더 높은 계층의 주 대화는 Explore를 Opus에서 실행하고, Sonnet 또는 Haiku의 주 대화는 Explore를 동일한 모델에서 실행합니다. [Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry 또는 AWS의 Claude Platform](/docs/ko/third-party-integrations)과 같은 다른 공급자에서는 Explore가 주 대화의 모델을 직접 상속합니다.
+
+    `Explore`라는 [사용자 또는 프로젝트 subagent](#choose-the-subagent-scope)는 내장 subagent를 재정의하고 자신의 `model` 필드를 유지하므로, 탐색을 더 낮은 비용의 모델에서 유지하려면 `model: haiku`를 사용하여 정의하십시오.
 
     Claude는 변경 없이 코드베이스를 검색하거나 이해해야 할 때 Explore에 위임합니다. 이렇게 하면 탐색 결과가 주 대화 컨텍스트에서 벗어납니다.
 
@@ -48,7 +52,7 @@ Explore와 Plan은 연구를 빠르고 저렴하게 유지하기 위해 CLAUDE.m
   </Tab>
 
   <Tab title="Plan">
-    [plan mode](/ko/permission-modes#analyze-before-you-edit-with-plan-mode) 중에 계획을 제시하기 전에 컨텍스트를 수집하는 데 사용되는 연구 에이전트입니다.
+    [plan mode](/docs/ko/permission-modes#analyze-before-you-edit-with-plan-mode) 중에 계획을 제시하기 전에 컨텍스트를 수집하는 데 사용되는 연구 에이전트입니다.
 
     * **모델**: 주 대화에서 상속
     * **도구**: 읽기 전용 도구 (Write 및 Edit 도구에 대한 액세스 거부)
@@ -77,11 +81,12 @@ Explore와 Plan은 연구를 빠르고 저렴하게 유지하기 위해 CLAUDE.m
   </Tab>
 </Tabs>
 
-내장 subagent는 항상 대화형 세션에 등록됩니다. 특정 내장 유형을 차단하려면:
+내장 subagent는 기본적으로 대화형 세션에 등록됩니다. 이를 제한하려면:
 
 * 특정 내장 유형을 차단하려면 [특정 subagent 비활성화](#disable-specific-subagents)에 표시된 대로 `permissions.deny`에 추가하십시오.
-* Claude가 어떤 subagent에도 위임하는 것을 방지하려면 [`permissions.deny`](/ko/permissions#tool-specific-permission-rules)를 사용하여 `Agent` 도구 자체를 거부하십시오.
-* [비대화형 모드](/ko/headless) 및 [Agent SDK](/ko/agent-sdk/overview)에서는 [`CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1`](/ko/env-vars)을 설정하여 모든 내장 유형을 제거하고 자신의 것만 제공하십시오.
+* Claude가 어떤 subagent에도 위임하는 것을 방지하려면 [`permissions.deny`](/docs/ko/permissions#tool-specific-permission-rules)를 사용하여 `Agent` 도구 자체를 거부하십시오.
+* {/* min-version: 2.1.198 */}내장 `Explore` 및 `Plan` subagent만 제거하려면 [`CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1`](/docs/ko/env-vars)을 설정하십시오. Claude는 이들에게 위임하는 대신 파일을 직접 읽고 탐색합니다. Claude Code v2.1.198 이상이 필요합니다.
+* [비대화형 모드](/docs/ko/headless) 및 [Agent SDK](/docs/ko/agent-sdk/overview)에서는 [`CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS=1`](/docs/ko/env-vars)을 설정하여 모든 내장 유형을 제거하고 자신의 것만 제공하십시오.
 
 이러한 내장 subagent 외에도 사용자 정의 프롬프트, 도구 제한, 권한 모드, hooks 및 skills를 사용하여 자신의 subagent를 만들 수 있습니다. 다음 섹션에서는 시작하는 방법과 subagent를 사용자 정의하는 방법을 보여줍니다.
 
@@ -89,107 +94,96 @@ Explore와 Plan은 연구를 빠르고 저렴하게 유지하기 위해 CLAUDE.m
   빠른 시작: 첫 번째 subagent 만들기
 </h2>
 
-Subagent는 YAML frontmatter가 있는 Markdown 파일로 정의됩니다. [수동으로 만들거나](#write-subagent-files) `/agents` 명령을 사용할 수 있습니다.
+Subagent는 YAML frontmatter가 있는 Markdown 파일입니다. Claude에게 작성을 요청하거나 [수동으로 파일을 작성](#write-subagent-files)할 수 있습니다.
 
-이 연습에서는 `/agents` 명령을 사용하여 사용자 수준 subagent를 만드는 과정을 안내합니다. Subagent는 코드를 검토하고 코드베이스에 대한 개선 사항을 제안합니다.
+{/* min-version: 2.1.198 */}v2.1.198부터 `/agents` 명령은 더 이상 대화형 생성 마법사를 열지 않습니다. 이를 실행하면 Claude에게 요청하거나 `.claude/agents/`를 직접 편집하라는 알림이 출력됩니다. Subagent 파일, frontmatter 필드 및 `.claude/agents/`와 `~/.claude/agents/` 위치는 변경되지 않았습니다. 터미널 마법사만 제거되었습니다.
+
+이 연습에서는 코드를 검토하고 개선 사항을 제안하는 사용자 수준 subagent를 만듭니다.
 
 <Steps>
-  <Step title="subagent 인터페이스 열기">
-    Claude Code에서 다음을 실행합니다:
+  <Step title="Claude에게 subagent 생성 요청">
+    Claude Code에서 원하는 subagent와 저장 위치를 설명합니다:
 
     ```text wrap theme={null}
-    /agents
-    ```
-  </Step>
-
-  <Step title="위치 선택">
-    **Library** 탭으로 전환하고 **Create new agent**를 선택한 다음 **Personal**을 선택합니다. 이렇게 하면 subagent가 `~/.claude/agents/`에 저장되어 모든 프로젝트에서 사용할 수 있습니다.
-  </Step>
-
-  <Step title="Claude로 생성">
-    **Generate with Claude**를 선택합니다. 메시지가 표시되면 subagent를 설명합니다:
-
-    ```text wrap theme={null}
-    A code improvement agent that scans files and suggests improvements
-    for readability, performance, and best practices. It should explain
-    each issue, show the current code, and provide an improved version.
+    Create a personal code-improver subagent in ~/.claude/agents/ that scans
+    files and suggests improvements for readability, performance, and best
+    practices. It should explain each issue, show the current code, and
+    provide an improved version. Make it read-only and have it use Sonnet.
     ```
 
-    Claude가 식별자, 설명 및 시스템 프롬프트를 생성합니다.
+    Claude는 `name`, `description`, `tools` 목록, `model` 및 시스템 프롬프트가 포함된 파일을 작성합니다.
   </Step>
 
-  <Step title="도구 선택">
-    읽기 전용 검토자의 경우 **Read-only tools**를 제외한 모든 항목을 선택 해제합니다. 모든 도구를 선택한 상태로 유지하면 subagent는 주 대화에서 사용 가능한 모든 도구를 상속합니다.
+  <Step title="파일 검토">
+    `~/.claude/agents/code-improver.md`를 열고 frontmatter가 요청한 내용과 일치하는지 확인합니다. 결과는 다음과 같습니다:
+
+    ```markdown theme={null}
+    ---
+    name: code-improver
+    description: Scans files and suggests improvements for readability, performance, and best practices. Use after writing or modifying code.
+    tools: Read, Grep, Glob
+    model: sonnet
+    ---
+
+    You are a code improvement specialist. For each issue you find, explain
+    the problem, show the current code, and provide an improved version.
+    ```
+
+    파일이 `~/.claude/agents/`에 있으므로 subagent는 머신의 모든 프로젝트에서 사용할 수 있습니다. 대신 하나의 프로젝트로 범위를 지정하려면 해당 프로젝트의 `.claude/agents/` 디렉토리로 이동합니다. [subagent 범위 선택](#choose-the-subagent-scope)에서 두 가지를 비교합니다.
   </Step>
 
-  <Step title="모델 선택">
-    Subagent가 사용할 모델을 선택합니다. 이 예제 에이전트의 경우 코드 패턴 분석을 위해 기능과 속도의 균형을 맞추는 **Sonnet**을 선택합니다.
-  </Step>
-
-  <Step title="색상 선택">
-    Subagent의 배경색을 선택합니다. 이렇게 하면 UI에서 어느 subagent가 실행 중인지 식별하는 데 도움이 됩니다.
-  </Step>
-
-  <Step title="메모리 구성">
-    **User scope**를 선택하여 subagent에 `~/.claude/agent-memory/`에서 [지속적 메모리 디렉토리](#enable-persistent-memory)를 제공합니다. Subagent는 이를 사용하여 코드베이스 패턴 및 반복되는 문제와 같은 대화 간 통찰력을 축적합니다. Subagent가 학습을 유지하지 않으려면 **None**을 선택합니다.
-  </Step>
-
-  <Step title="저장 및 시도">
-    구성 요약을 검토합니다. `s` 또는 `Enter`를 눌러 저장하거나 `e`를 눌러 편집기에서 저장 및 편집합니다. Subagent는 즉시 사용 가능합니다. 시도해 봅니다:
+  <Step title="시도해 보기">
+    Claude에게 새 subagent에 위임하도록 요청합니다:
 
     ```text wrap theme={null}
     Use the code-improver agent to suggest improvements in this project
     ```
 
     Claude가 새 subagent에 위임하고, subagent가 코드베이스를 스캔하여 개선 제안을 반환합니다.
+
+    Claude가 새 subagent를 찾을 수 없으면 Claude Code를 다시 시작하고 다시 시도합니다. 이는 세션이 시작되기 전에 `~/.claude/agents/`가 없었을 때만 발생합니다. 실행 중인 세션은 새로 생성된 `agents` 디렉토리를 감지하지 않기 때문입니다.
   </Step>
 </Steps>
 
 이제 머신의 모든 프로젝트에서 코드베이스를 분석하고 개선 사항을 제안하는 데 사용할 수 있는 subagent가 있습니다.
 
-Markdown 파일로 subagent를 수동으로 만들거나, CLI 플래그를 통해 정의하거나, 플러그인을 통해 배포할 수도 있습니다. 다음 섹션에서는 모든 구성 옵션을 다룹니다.
+subagent 파일을 수동으로 작성하거나, CLI 플래그를 통해 정의하거나, 플러그인을 통해 배포할 수도 있습니다. 다음 섹션에서는 모든 구성 옵션을 다룹니다.
+
+<Note>
+  Claude Code v2.1.197 이전 버전에서는 `/agents`가 라이브 subagent를 나열하는 **Running** 탭과 생성, 편집 및 삭제를 위한 **Library** 탭이 있는 대화형 마법사를 엽니다. {/* max-version: 2.1.197 */}
+</Note>
 
 <h2 id="configure-subagents">
   Subagent 구성
 </h2>
 
-<h3 id="use-the-/agents-command">
-  /agents 명령 사용
-</h3>
-
-`/agents` 명령은 subagent를 관리하기 위한 탭 인터페이스를 엽니다. **Running** 탭은 라이브 및 최근에 완료된 subagent를 나열하고 열거나 중지할 수 있습니다. **Library** 탭을 사용하면 다음을 수행할 수 있습니다:
-
-* 사용 가능한 모든 subagent 보기 (내장, 사용자, 프로젝트, 플러그인)
-* 안내된 설정 또는 Claude 생성으로 새 subagent 만들기
-* 기존 subagent 구성 및 도구 액세스 편집
-* 사용자 정의 subagent 삭제
-* 중복이 있을 때 활성 subagent 확인
-
-이것이 subagent를 만들고 관리하는 권장 방법입니다. 수동 생성 또는 자동화의 경우 subagent 파일을 직접 추가할 수도 있습니다.
+Subagent의 파일 위치는 누가 사용할 수 있는지를 결정하고, 해당 frontmatter는 무엇을 할 수 있는지를 결정합니다. 이 섹션에서는 subagent 파일이 어디에 있는지와 지원하는 모든 필드를 다룹니다.
 
 <h3 id="choose-the-subagent-scope">
   Subagent 범위 선택
 </h3>
 
-Subagent는 YAML frontmatter가 있는 Markdown 파일입니다. 범위에 따라 다른 위치에 저장합니다. 여러 subagent가 같은 이름을 공유할 때 더 높은 우선순위 위치가 우선합니다.
+범위에 따라 다른 위치에 subagent 파일을 저장합니다. 여러 subagent가 같은 이름을 공유할 때 Claude Code는 더 높은 우선순위 위치의 subagent를 사용합니다.
 
 | 위치                   | 범위            | 우선순위   | 만드는 방법                         |
 | :------------------- | :------------ | :----- | :----------------------------- |
-| 관리되는 설정              | 조직 전체         | 1 (최고) | [관리되는 설정](/ko/settings)을 통해 배포 |
+| 관리되는 설정              | 조직 전체         | 1 (최고) | [관리되는 설정](/docs/ko/settings)을 통해 배포 |
 | `--agents` CLI 플래그   | 현재 세션         | 2      | Claude Code 시작 시 JSON 전달       |
-| `.claude/agents/`    | 현재 프로젝트       | 3      | 대화형 또는 수동                      |
-| `~/.claude/agents/`  | 모든 프로젝트       | 4      | 대화형 또는 수동                      |
-| 플러그인의 `agents/` 디렉토리 | 플러그인이 활성화된 위치 | 5 (최저) | [플러그인](/ko/plugins)과 함께 설치     |
+| `.claude/agents/`    | 현재 프로젝트       | 3      | Claude에 요청하거나 파일을 수동으로 생성      |
+| `~/.claude/agents/`  | 모든 프로젝트       | 4      | Claude에 요청하거나 파일을 수동으로 생성      |
+| 플러그인의 `agents/` 디렉토리 | 플러그인이 활성화된 위치 | 5 (최저) | [플러그인](/docs/ko/plugins)과 함께 설치     |
 
 **프로젝트 subagent** (`.claude/agents/`)는 코드베이스에 특정한 subagent에 이상적입니다. 버전 제어에 체크인하여 팀이 협력하여 사용하고 개선할 수 있습니다.
 
 프로젝트 subagent는 현재 작업 디렉토리에서 위로 이동하여 검색되므로 거기서 저장소 루트까지의 모든 `.claude/agents/`가 스캔됩니다. {/* min-version: 2.1.178 */}v2.1.178부터 이러한 중첩된 디렉토리 중 하나 이상이 동일한 `name`을 정의할 때 Claude Code는 작업 디렉토리에 가장 가까운 정의를 사용합니다.
 
-`--add-dir`로 추가된 디렉토리도 스캔됩니다: 추가된 디렉토리 내의 `.claude/agents/` 폴더는 프로젝트 subagent와 함께 로드됩니다. 다른 구성 유형이 `--add-dir`에서 로드되는 것에 대해서는 [추가 디렉토리](/ko/permissions#additional-directories-grant-file-access-not-configuration)를 참조하세요. `--add-dir` 없이 프로젝트 간에 subagent를 공유하려면 `~/.claude/agents/`를 사용하거나 [플러그인](/ko/plugins)을 사용합니다.
+`--add-dir`로 추가된 디렉토리도 스캔됩니다: 추가된 디렉토리 내의 `.claude/agents/` 폴더는 프로젝트 subagent와 함께 로드됩니다. 다른 구성 유형이 `--add-dir`에서 로드되는 것에 대해서는 [추가 디렉토리](/docs/ko/permissions#additional-directories-grant-file-access-not-configuration)를 참조하세요. `--add-dir` 없이 프로젝트 간에 subagent를 공유하려면 `~/.claude/agents/`를 사용하거나 [플러그인](/docs/ko/plugins)을 사용합니다.
 
 **사용자 subagent** (`~/.claude/agents/`)는 모든 프로젝트에서 사용 가능한 개인 subagent입니다.
 
-Claude Code는 `.claude/agents/` 및 `~/.claude/agents/`를 재귀적으로 스캔하므로 `agents/review/` 또는 `agents/research/`와 같은 하위 폴더로 정의를 구성할 수 있습니다. 하위 디렉토리 경로는 subagent가 식별되거나 호출되는 방식에 영향을 주지 않습니다. 왜냐하면 ID는 `name` frontmatter 필드에서만 나오기 때문입니다. 전체 트리에서 `name` 값을 고유하게 유지합니다: 한 범위 내의 두 파일이 같은 이름을 선언하면 Claude Code는 하나만 로드합니다. {/* min-version: 2.1.196 */}v2.1.196부터 `/doctor`를 실행하면 동일한 범위의 중복 에이전트 이름을 보고하고 활성 정의를 표시합니다.
+Claude Code는 `.claude/agents/` 및 `~/.claude/agents/`를 재귀적으로 스캔하므로 `agents/review/` 또는 `agents/research/`와 같은 하위 폴더로 정의를 구성할 수 있습니다. 하위 디렉토리 경로는 subagent가 식별되거나 호출되는 방식에 영향을 주지 않습니다. 왜냐하면 ID는 `name` frontmatter 필드에서만 나오기 때문입니다.
+
+전체 트리에서 `name` 값을 고유하게 유지합니다: 동일한 `.claude/agents/` 디렉토리 내의 두 파일이 (하위 폴더 포함) 동일한 이름을 선언하면 Claude Code는 하나만 로드하며, 파일시스템 읽기 순서가 아닌 문서화된 우선순위에 따라 선택됩니다. 중첩된 프로젝트 디렉토리 간에는 작업 디렉토리에 가장 가까운 정의가 우선합니다 (위에서 설명한 대로). {/* min-version: 2.1.205 */}[`/doctor`](/docs/ko/commands#all-commands) 설정 점검은 동일한 디렉토리에서 이름을 공유하는 파일을 보고하고 하나를 제외한 모두의 이름을 바꾸거나 제거할 것을 제안합니다. v2.1.205 이전에는 `/doctor`가 진단 화면을 열어 중복을 나열하고 활성 정의를 표시했습니다.
 
 플러그인 `agents/` 디렉토리도 재귀적으로 스캔됩니다. 프로젝트 및 사용자 범위와 달리 플러그인의 `agents/` 디렉토리 내의 하위 폴더는 [범위가 지정된 식별자](#invoke-subagents-explicitly)의 일부가 됩니다: 플러그인 `my-plugin`의 `agents/review/security.md`에 있는 파일은 `my-plugin:review:security`로 등록됩니다.
 
@@ -235,15 +229,15 @@ Claude Code는 `.claude/agents/` 및 `~/.claude/agents/`를 재귀적으로 스�
 
 `--agents` 플래그는 파일 기반 subagent와 동일한 [frontmatter](#supported-frontmatter-fields) 필드를 가진 JSON을 허용합니다: `description`, `prompt`, `tools`, `disallowedTools`, `model`, `permissionMode`, `mcpServers`, `hooks`, `maxTurns`, `skills`, `initialPrompt`, `memory`, `effort`, `background`, `isolation`, `color`. 시스템 프롬프트에는 `prompt`를 사용하며, 이는 파일 기반 subagent의 markdown 본문과 동등합니다.
 
-**관리되는 subagent**는 조직 관리자가 배포합니다. [관리되는 설정 디렉토리](/ko/settings#settings-files) 내의 `.claude/agents/`에 markdown 파일을 배치하고, 프로젝트 및 사용자 subagent와 동일한 frontmatter 형식을 사용합니다. 관리되는 정의는 같은 이름의 프로젝트 및 사용자 subagent보다 우선합니다.
+**관리되는 subagent**는 조직 관리자가 배포합니다. [관리되는 설정 디렉토리](/docs/ko/settings#settings-files) 내의 `.claude/agents/`에 markdown 파일을 배치하고, 프로젝트 및 사용자 subagent와 동일한 frontmatter 형식을 사용합니다. 관리되는 정의는 같은 이름의 프로젝트 및 사용자 subagent보다 우선합니다.
 
-**플러그인 subagent**는 설치한 [플러그인](/ko/plugins)에서 제공됩니다. `/agents`에서 사용자 정의 subagent와 함께 나타납니다. 플러그인 subagent 만드는 방법에 대한 자세한 내용은 [플러그인 컴포넌트 참조](/ko/plugins-reference#agents)를 참조하세요.
+**플러그인 subagent**는 설치한 [플러그인](/docs/ko/plugins)에서 제공됩니다. 이들은 사용자 정의 subagent와 함께 로드되고 범위가 지정된 이름 아래의 @-mention 자동완성에 나타납니다. 플러그인 subagent 만드는 방법에 대한 자세한 내용은 [플러그인 컴포넌트 참조](/docs/ko/plugins-reference#agents)를 참조하세요.
 
 <Note>
-  보안상의 이유로 플러그인 subagent는 `hooks`, `mcpServers`, `permissionMode` frontmatter 필드를 지원하지 않습니다. 이러한 필드는 플러그인에서 에이전트를 로드할 때 무시됩니다. 필요한 경우 에이전트 파일을 `.claude/agents/` 또는 `~/.claude/agents/`로 복사합니다. `settings.json` 또는 `settings.local.json`의 [`permissions.allow`](/ko/settings#permission-settings)에 규칙을 추가할 수도 있지만, 이러한 규칙은 전체 세션에 적용되며 플러그인 subagent에만 적용되지 않습니다.
+  보안상의 이유로 플러그인 subagent는 `hooks`, `mcpServers`, `permissionMode` frontmatter 필드를 지원하지 않습니다. 이러한 필드는 플러그인에서 에이전트를 로드할 때 무시됩니다. 필요한 경우 에이전트 파일을 `.claude/agents/` 또는 `~/.claude/agents/`로 복사합니다. `settings.json` 또는 `settings.local.json`의 [`permissions.allow`](/docs/ko/settings#permission-settings)에 규칙을 추가할 수도 있지만, 이러한 규칙은 전체 세션에 적용되며 플러그인 subagent에만 적용되지 않습니다.
 </Note>
 
-이러한 범위의 subagent 정의는 [agent teams](/ko/agent-teams#use-subagent-definitions-for-teammates)에서도 사용 가능합니다: 팀원을 생성할 때 subagent 유형을 참조할 수 있으며 팀원은 해당 `tools` 및 `model`을 사용하고, 정의의 본문이 팀원의 시스템 프롬프트에 추가 지침으로 추가됩니다. 어느 frontmatter 필드가 해당 경로에 적용되는지는 [agent teams](/ko/agent-teams#use-subagent-definitions-for-teammates)를 참조하세요.
+이러한 범위의 subagent 정의는 [agent teams](/docs/ko/agent-teams#use-subagent-definitions-for-teammates)에서도 사용 가능합니다: 팀원을 생성할 때 subagent 유형을 참조할 수 있으며 팀원은 해당 `tools` 및 `model`을 사용하고, 정의의 본문이 팀원의 시스템 프롬프트에 추가 지침으로 추가됩니다. 어느 frontmatter 필드가 해당 경로에 적용되는지는 [agent teams](/docs/ko/agent-teams#use-subagent-definitions-for-teammates)를 참조하세요.
 
 <h3 id="write-subagent-files">
   Subagent 파일 작성
@@ -252,7 +246,12 @@ Claude Code는 `.claude/agents/` 및 `~/.claude/agents/`를 재귀적으로 스�
 Subagent 파일은 구성을 위한 YAML frontmatter를 사용하고 그 뒤에 Markdown의 시스템 프롬프트가 옵니다:
 
 <Note>
-  Subagent는 세션 시작 시 로드됩니다. 디스크에서 subagent 파일을 직접 추가하거나 편집하면 세션을 다시 시작하여 로드합니다. `/agents` 인터페이스를 통해 생성된 subagent는 다시 시작하지 않고도 즉시 적용됩니다.
+  Claude Code는 `~/.claude/agents/` 및 `.claude/agents/`를 감시합니다. 디스크에서 subagent 파일을 추가하거나 편집하거나 Claude가 하나를 작성하도록 요청하면 Claude Code는 몇 초 내에 변경을 감지하고 다음 위임은 다시 시작할 필요 없이 업데이트된 정의를 사용합니다.
+
+  여전히 다시 시작이 필요한 두 가지 경우가 있습니다:
+
+  * 감시자는 세션이 시작될 때 존재했던 디렉토리만 포함하므로 새 `agents` 디렉토리에서 범위의 첫 번째 에이전트 파일을 생성한 후 다시 시작하여 로드합니다.
+  * `--disable-slash-commands`로 시작된 세션은 이러한 디렉토리를 전혀 감시하지 않습니다.
 </Note>
 
 ```markdown theme={null}
@@ -269,7 +268,11 @@ specific, actionable feedback on quality, security, and best practices.
 
 Frontmatter는 subagent의 메타데이터와 구성을 정의합니다. 본문은 subagent의 동작을 안내하는 시스템 프롬프트가 됩니다. Subagent는 이 시스템 프롬프트만 받습니다(작업 디렉토리와 같은 기본 환경 세부 정보 포함). 전체 Claude Code 시스템 프롬프트는 받지 않습니다.
 
+{/* min-version: 2.1.205 */}[비대화형 모드](/docs/ko/headless)에서 [`--append-subagent-system-prompt`](/docs/ko/cli-reference#cli-flags) 플래그는 중첩된 subagent를 포함하여 모든 subagent의 시스템 프롬프트 끝에 제공하는 텍스트를 추가합니다. Claude Code v2.1.205 이상이 필요합니다.
+
 Subagent는 주 대화의 현재 작업 디렉토리에서 시작합니다. Subagent 내에서 `cd` 명령은 Bash 또는 PowerShell 도구 호출 간에 유지되지 않으며 주 대화의 작업 디렉토리에 영향을 주지 않습니다. Subagent에 저장소의 격리된 복사본을 제공하려면 [`isolation: worktree`](#supported-frontmatter-fields)를 설정합니다.
+
+{/* min-version: 2.1.203 */}}`isolation: worktree`를 사용하는 subagent는 해당 worktree 내에서 Bash 및 PowerShell 명령을 실행합니다. 예를 들어 subagent가 실행 중일 때 worktree 디렉토리가 제거되었기 때문에 작업 디렉토리가 주 체크아웃으로 해결되는 명령은 오류로 실패합니다. v2.1.203 이전에는 이러한 명령이 주 체크아웃에서 실행될 수 있었습니다.
 
 <h4 id="supported-frontmatter-fields">
   지원되는 frontmatter 필드
@@ -277,30 +280,30 @@ Subagent는 주 대화의 현재 작업 디렉토리에서 시작합니다. Suba
 
 다음 필드를 YAML frontmatter에서 사용할 수 있습니다. `name`과 `description`만 필수입니다.
 
-| 필드                | 필수  | 설명                                                                                                                                                                                                                                  |
-| :---------------- | :-- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`            | 예   | 소문자 및 하이픈을 사용한 고유 식별자. [Hooks](/ko/hooks#subagentstart)는 이 값을 `agent_type`으로 받습니다. 파일 이름이 일치할 필요는 없습니다                                                                                                                              |
-| `description`     | 예   | Claude가 이 subagent에 위임해야 할 때                                                                                                                                                                                                        |
-| `tools`           | 아니오 | [도구](#available-tools) subagent가 사용할 수 있습니다. 생략하면 모든 도구 상속. Skills를 컨텍스트에 미리 로드하려면 여기에 `Skill`을 나열하는 대신 `skills` 필드를 사용합니다                                                                                                          |
-| `disallowedTools` | 아니오 | 거부할 도구, 상속되거나 지정된 목록에서 제거됨                                                                                                                                                                                                          |
-| `model`           | 아니오 | 사용할 [모델](#choose-a-model): `sonnet`, `opus`, `haiku`, `fable`, 전체 모델 ID (예: `claude-opus-4-8`), 또는 `inherit`. 기본값: `inherit`                                                                                                        |
-| `permissionMode`  | 아니오 | [권한 모드](#permission-modes): `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, 또는 `plan`. [플러그인 subagent](#choose-the-subagent-scope)에서는 무시됨                                                                         |
-| `maxTurns`        | 아니오 | Subagent가 중지되기 전의 최대 에이전트 턴 수                                                                                                                                                                                                       |
-| `skills`          | 아니오 | 시작 시 subagent의 컨텍스트에 로드할 [Skills](/ko/skills). 전체 skill 콘텐츠가 주입되며, 호출 가능하게 만들어지는 것이 아닙니다. Subagent는 여전히 Skill 도구를 통해 나열되지 않은 프로젝트, 사용자, 플러그인 skills를 호출할 수 있습니다                                                                     |
-| `mcpServers`      | 아니오 | 이 subagent에서 사용 가능한 [MCP servers](/ko/mcp). 각 항목은 이미 구성된 서버를 참조하는 서버 이름 (예: `"slack"`) 또는 서버 이름을 키로 하고 전체 [MCP server config](/ko/mcp#installing-mcp-servers)를 값으로 하는 인라인 정의입니다. [플러그인 subagent](#choose-the-subagent-scope)에서는 무시됨 |
-| `hooks`           | 아니오 | 이 subagent로 범위가 지정된 [라이프사이클 hooks](#define-hooks-for-subagents). [플러그인 subagent](#choose-the-subagent-scope)에서는 무시됨                                                                                                                 |
-| `memory`          | 아니오 | [지속적 메모리 범위](#enable-persistent-memory): `user`, `project`, 또는 `local`. 교차 세션 학습 활성화                                                                                                                                                |
-| `background`      | 아니오 | 이 subagent를 항상 [background task](#run-subagents-in-foreground-or-background)로 실행하려면 `true`로 설정합니다. 기본값: `false`                                                                                                                     |
-| `effort`          | 아니오 | 이 subagent가 활성화될 때의 노력 수준. 세션 노력 수준을 재정의합니다. 기본값: 세션에서 상속. 옵션: `low`, `medium`, `high`, `xhigh`, `max` (사용 가능한 수준은 모델에 따라 다름)                                                                                                       |
-| `isolation`       | 아니오 | Subagent를 임시 [git worktree](/ko/worktrees)에서 실행하려면 `worktree`로 설정하여 저장소의 격리된 복사본을 제공합니다. 기본적으로 [기본 분기](/ko/worktrees#choose-the-base-branch)에서 분기되며, 부모 세션의 `HEAD`가 아닙니다. Subagent가 변경 사항을 만들지 않으면 worktree가 자동으로 정리됩니다             |
-| `color`           | 아니오 | 작업 목록 및 트랜스크립트에서 subagent의 표시 색상입니다. `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, 또는 `cyan`을 허용합니다                                                                                                                 |
-| `initialPrompt`   | 아니오 | 이 에이전트가 주 세션 에이전트로 실행될 때 (`--agent` 또는 `agent` 설정을 통해) 첫 번째 사용자 턴으로 자동 제출됩니다. [Commands](/ko/commands) 및 [Skills](/ko/skills)가 처리됩니다. 사용자 제공 프롬프트에 앞에 붙습니다                                                                          |
+| 필드                | 필수  | 설명                                                                                                                                                                                                                                                        |
+| :---------------- | :-- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`            | 예   | 소문자 및 하이픈을 사용한 고유 식별자. [Hooks](/docs/ko/hooks#subagentstart)는 이 값을 `agent_type`으로 받습니다. 파일 이름이 일치할 필요는 없습니다                                                                                                                                                    |
+| `description`     | 예   | Claude가 이 subagent에 위임해야 할 때                                                                                                                                                                                                                              |
+| `tools`           | 아니오 | [도구](#available-tools) subagent가 사용할 수 있습니다. 생략하면 모든 도구 상속. Skills를 컨텍스트에 미리 로드하려면 여기에 `Skill`을 나열하는 대신 `skills` 필드를 사용합니다                                                                                                                                |
+| `disallowedTools` | 아니오 | 거부할 도구, 상속되거나 지정된 목록에서 제거됨                                                                                                                                                                                                                                |
+| `model`           | 아니오 | 사용할 [모델](#choose-a-model): `sonnet`, `opus`, `haiku`, `fable`, 전체 모델 ID (예: `claude-opus-4-8`), 또는 `inherit`. 기본값: `inherit`                                                                                                                              |
+| `permissionMode`  | 아니오 | [권한 모드](#permission-modes): `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan`, 또는 {/* min-version: 2.1.200 */}}`manual` (기본값의 별칭). `manual` 별칭은 Claude Code v2.1.200 이상이 필요합니다. [플러그인 subagent](#choose-the-subagent-scope)에서는 무시됨 |
+| `maxTurns`        | 아니오 | Subagent가 중지되기 전의 최대 에이전트 턴 수                                                                                                                                                                                                                             |
+| `skills`          | 아니오 | 시작 시 subagent의 컨텍스트에 로드할 [Skills](/docs/ko/skills). 전체 skill 콘텐츠가 주입되며, 호출 가능하게 만들어지는 것이 아닙니다. Subagent는 여전히 Skill 도구를 통해 나열되지 않은 프로젝트, 사용자, 플러그인 skills를 호출할 수 있습니다                                                                                           |
+| `mcpServers`      | 아니오 | 이 subagent에서 사용 가능한 [MCP servers](/docs/ko/mcp). 각 항목은 이미 구성된 서버를 참조하는 서버 이름 (예: `"slack"`) 또는 서버 이름을 키로 하고 전체 [MCP server config](/docs/ko/mcp#installing-mcp-servers)를 값으로 하는 인라인 정의입니다. [플러그인 subagent](#choose-the-subagent-scope)에서는 무시됨                       |
+| `hooks`           | 아니오 | 이 subagent로 범위가 지정된 [라이프사이클 hooks](#define-hooks-for-subagents). [플러그인 subagent](#choose-the-subagent-scope)에서는 무시됨                                                                                                                                       |
+| `memory`          | 아니오 | [지속적 메모리 범위](#enable-persistent-memory): `user`, `project`, 또는 `local`. 교차 세션 학습 활성화                                                                                                                                                                      |
+| `background`      | 아니오 | 이 subagent를 항상 [background task](#run-subagents-in-foreground-or-background)로 실행하려면 `true`로 설정합니다. 설정하지 않으면 Claude가 선택하고, {/* min-version: 2.1.198 */}}v2.1.198부터 기본적으로 subagent를 백그라운드에서 실행합니다                                                           |
+| `effort`          | 아니오 | 이 subagent가 활성화될 때의 노력 수준. 세션 노력 수준을 재정의합니다. 기본값: 세션에서 상속. 옵션: `low`, `medium`, `high`, `xhigh`, `max` (사용 가능한 수준은 모델에 따라 다름)                                                                                                                             |
+| `isolation`       | 아니오 | Subagent를 임시 [git worktree](/docs/ko/worktrees)에서 실행하려면 `worktree`로 설정하여 저장소의 격리된 복사본을 제공합니다. 기본적으로 [기본 분기](/docs/ko/worktrees#choose-the-base-branch)에서 분기되며, 부모 세션의 `HEAD`가 아닙니다. Subagent가 변경 사항을 만들지 않으면 worktree가 자동으로 정리됩니다                                   |
+| `color`           | 아니오 | 작업 목록 및 트랜스크립트에서 subagent의 표시 색상입니다. `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, 또는 `cyan`을 허용합니다                                                                                                                                       |
+| `initialPrompt`   | 아니오 | 이 에이전트가 주 세션 에이전트로 실행될 때 (`--agent` 또는 `agent` 설정을 통해) 첫 번째 사용자 턴으로 자동 제출됩니다. [Commands](/docs/ko/commands) 및 [Skills](/docs/ko/skills)가 처리됩니다. 사용자 제공 프롬프트에 앞에 붙습니다                                                                                                |
 
 <h3 id="choose-a-model">
   모델 선택
 </h3>
 
-`model` 필드는 subagent가 사용하는 [AI 모델](/ko/model-config)을 제어합니다:
+`model` 필드는 subagent가 사용하는 [AI 모델](/docs/ko/model-config)을 제어합니다:
 
 * **모델 별칭**: 사용 가능한 별칭 중 하나를 사용합니다: `sonnet`, `opus`, `haiku`, 또는 `fable`
 * **전체 모델 ID**: `claude-opus-4-8` 또는 `claude-sonnet-5`와 같은 전체 모델 ID를 사용합니다. `--model` 플래그와 동일한 값을 허용합니다
@@ -309,14 +312,16 @@ Subagent는 주 대화의 현재 작업 디렉토리에서 시작합니다. Suba
 
 Claude가 subagent를 호출할 때 해당 특정 호출에 대해 `model` 매개변수를 전달할 수도 있습니다. Claude Code는 다음 순서로 subagent의 모델을 해결합니다:
 
-1. [`CLAUDE_CODE_SUBAGENT_MODEL`](/ko/model-config#environment-variables) 환경 변수 (설정된 경우)
+1. [`CLAUDE_CODE_SUBAGENT_MODEL`](/docs/ko/model-config#environment-variables) 환경 변수 (설정된 경우)
 2. 호출별 `model` 매개변수
 3. Subagent 정의의 `model` frontmatter
 4. 주 대화의 모델
 
-{/* min-version: 2.1.196 */}v2.1.196부터 `CLAUDE_CODE_SUBAGENT_MODEL`을 `inherit`로 설정하는 것은 설정하지 않은 것과 동일합니다: 해결은 호출별 `model` 매개변수로 계속되고 frontmatter로 계속됩니다. 이전 버전에서는 `inherit`이 subagent를 주 대화의 모델로 강제하고 이 두 소스를 모두 무시했습니다.
+{/* min-version: 2.1.196 */}}v2.1.196부터 `CLAUDE_CODE_SUBAGENT_MODEL`을 `inherit`로 설정하는 것은 설정하지 않은 것과 동일합니다: 해결은 호출별 `model` 매개변수로 계속되고 frontmatter로 계속됩니다. 이전 버전에서는 `inherit`이 subagent를 주 대화의 모델로 강제하고 이 두 소스를 모두 무시했습니다.
 
-환경 변수, 호출별 매개변수, frontmatter 값은 조직의 [`availableModels`](/ko/model-config#restrict-model-selection) 허용 목록에 대해 확인됩니다. 제외된 모델로 해결되는 값은 사용되지 않으며 subagent는 상속된 모델에서 대신 실행됩니다.
+Claude Code는 환경 변수, 호출별 매개변수, frontmatter 값을 조직의 [`availableModels`](/docs/ko/model-config#restrict-model-selection) 허용 목록에 대해 확인합니다. 제외된 모델로 해결되는 값은 사용되지 않으며 subagent는 상속된 모델에서 대신 실행됩니다.
+
+{/* min-version: 2.1.198 */}}v2.1.198부터 subagent는 주 대화의 [extended thinking](/docs/ko/model-config#extended-thinking) 구성도 상속합니다: 세션에서 thinking이 켜져 있으면 subagent에서도 켜져 있고, 꺼져 있으면 꺼진 상태로 유지됩니다. subagent별 thinking 설정은 없습니다. v2.1.198 이전에는 주 대화의 설정에 관계없이 subagent가 extended thinking을 비활성화한 상태로 실행되었습니다.
 
 <h3 id="control-subagent-capabilities">
   Subagent 기능 제어
@@ -328,7 +333,7 @@ Claude가 subagent를 호출할 때 해당 특정 호출에 대해 `model` 매�
   사용 가능한 도구
 </h4>
 
-Subagent는 기본적으로 주 대화에서 사용 가능한 [내부 도구](/ko/tools-reference) 및 MCP 도구를 상속합니다. 다음 도구는 주 대화의 UI 또는 세션 상태에 따라 달라지며 `tools` 필드에 나열되어 있어도 subagent에서 사용할 수 없습니다:
+Subagent는 기본적으로 주 대화에서 사용 가능한 [내부 도구](/docs/ko/tools-reference) 및 MCP 도구를 상속합니다. 다음 도구는 주 대화의 UI 또는 세션 상태에 따라 달라지며 `tools` 필드에 나열되어 있어도 subagent에서 사용할 수 없습니다:
 
 * `AskUserQuestion`
 * `EnterPlanMode`
@@ -357,6 +362,8 @@ disallowedTools: Write, Edit
 ```
 
 둘 다 설정되면 `disallowedTools`가 먼저 적용되고 `tools`가 남은 풀에 대해 해결됩니다. 둘 다에 나열된 도구는 제거됩니다.
+
+`tools` 목록의 아무것도 도구로 해결되지 않을 때 (예: 모든 항목이 철자가 틀렸거나 subagent에서 사용할 수 없는 도구의 이름을 지정할 때) Claude Code는 subagent를 시작하기를 거부하고 Agent 도구는 해결되지 않은 항목의 이름을 지정하는 오류를 반환합니다. {/* min-version: 2.1.208 */}}v2.1.208 이전에는 해당 subagent가 도구 없이 시작되었고 빈 또는 혼란스러운 결과를 반환할 수 있었습니다.
 
 두 필드 모두 정확한 도구 이름 외에도 MCP 서버 수준 패턴을 허용합니다: `mcp__<server>` 또는 `mcp__<server>__*`는 명명된 서버의 모든 도구를 부여하거나 제거합니다. `disallowedTools`에서 `mcp__*`는 모든 서버의 모든 MCP 도구를 제거합니다. 이 예제는 `github` MCP 서버의 모든 도구를 제거하면서 다른 서버의 도구와 모든 내장 도구를 유지합니다:
 
@@ -400,7 +407,7 @@ tools: Agent, Read, Bash
   Subagent에 MCP 서버 범위 지정
 </h4>
 
-`mcpServers` 필드를 사용하여 주 대화에서 사용할 수 없는 [MCP](/ko/mcp) 서버에 subagent 액세스 권한을 부여합니다. 여기에 정의된 인라인 서버는 subagent가 시작될 때 연결되고 완료될 때 연결이 끊깁니다. 문자열 참조는 부모 세션의 연결을 공유합니다.
+`mcpServers` 필드를 사용하여 주 대화에서 사용할 수 없는 [MCP](/docs/ko/mcp) 서버에 subagent 액세스 권한을 부여합니다. 여기에 정의된 인라인 서버는 subagent가 시작될 때 연결되고 완료될 때 연결이 끊깁니다. 문자열 참조는 부모 세션의 연결을 공유합니다.
 
 <Note>
   `mcpServers` 필드는 에이전트 파일이 실행될 수 있는 두 가지 컨텍스트에 적용됩니다:
@@ -408,7 +415,7 @@ tools: Agent, Read, Bash
   * Agent 도구 또는 @-mention을 통해 생성된 subagent
   * [`--agent`](#invoke-subagents-explicitly) 또는 `agent` 설정으로 시작된 주 세션
 
-  에이전트가 주 세션일 때 인라인 서버 정의는 [`.mcp.json`](/ko/mcp) 및 설정 파일의 서버와 함께 시작 시 연결됩니다.
+  에이전트가 주 세션일 때 인라인 서버 정의는 [`.mcp.json`](/docs/ko/mcp) 및 설정 파일의 서버와 함께 시작 시 연결됩니다.
 </Note>
 
 목록의 각 항목은 인라인 서버 정의 또는 세션에서 이미 구성된 MCP 서버를 참조하는 문자열입니다:
@@ -430,15 +437,16 @@ mcpServers:
 Use the Playwright tools to navigate, screenshot, and interact with pages.
 ```
 
-인라인 정의는 `.mcp.json` 서버 항목 (`stdio`, `http`, `sse`, `ws`)과 동일한 스키마를 사용하며 서버 이름으로 키가 지정됩니다.
+인라인 정의는 `.mcp.json` 서버 항목과 동일한 스키마를 사용하며 서버 이름으로 키가 지정되고 `stdio`, `http`, `sse`, `ws` 유형을 지원합니다.
 
 MCP 서버를 주 대화에서 완전히 분리하고 도구 설명이 컨텍스트를 소비하지 않도록 하려면 `.mcp.json`이 아닌 여기에 인라인으로 정의합니다. Subagent는 도구를 얻고 부모 대화는 그렇지 않습니다.
 
+{/* min-version: 2.1.153 */}}
 v2.1.153부터 주 세션에 적용되는 MCP 제한은 subagent frontmatter에서 선언된 서버도 포함합니다:
 
-* [`--strict-mcp-config`](/ko/cli-reference) 및 [`--bare`](/ko/cli-reference)
-* [Enterprise 관리 MCP 구성](/ko/managed-mcp)
-* [`allowedMcpServers` 및 `deniedMcpServers` 정책](/ko/managed-mcp#policy-based-control-with-allowlists-and-denylists)
+* [`--strict-mcp-config`](/docs/ko/cli-reference) 및 [`--bare`](/docs/ko/cli-reference)
+* [Enterprise 관리 MCP 구성](/docs/ko/managed-mcp)
+* [`allowedMcpServers` 및 `deniedMcpServers` 정책](/docs/ko/managed-mcp#policy-based-control-with-allowlists-and-denylists)
 
 이 중 하나가 서버를 차단하면 Claude Code는 이를 건너뛰고 차단된 서버의 이름을 지정하는 경고를 표시합니다.
 
@@ -454,16 +462,16 @@ v2.1.153부터 주 세션에 적용되는 MCP 제한은 subagent frontmatter에�
 | :------------------ | :-------------------------------------------------------------------------------------------------- |
 | `default`           | 프롬프트를 사용한 표준 권한 확인                                                                                  |
 | `acceptEdits`       | 파일 편집 및 작업 디렉토리 또는 `additionalDirectories`의 경로에 대한 일반적인 파일시스템 명령 자동 수락                              |
-| `auto`              | [Auto mode](/ko/permission-modes#eliminate-prompts-with-auto-mode): 백그라운드 분류기가 명령을 검토하고 보호된 디렉토리 쓰기 |
+| `auto`              | [Auto mode](/docs/ko/permission-modes#eliminate-prompts-with-auto-mode): 백그라운드 분류기가 명령을 검토하고 보호된 디렉토리 쓰기 |
 | `dontAsk`           | 권한 프롬프트 자동 거부 (명시적으로 허용된 도구는 여전히 작동)                                                                |
 | `bypassPermissions` | 권한 프롬프트 건너뛰기                                                                                        |
 | `plan`              | Plan mode (읽기 전용 탐색)                                                                                |
 
 <Warning>
-  `bypassPermissions`는 주의해서 사용하세요. 권한 프롬프트를 건너뛰어 subagent가 승인 없이 작업을 실행할 수 있습니다. `.git`, `.config/git`, `.claude`, `.vscode`, `.idea`, `.husky`, `.cargo`, `.devcontainer`, `.yarn`, `.mvn`에 대한 쓰기를 포함하여 작업을 실행할 수 있습니다. 명시적 [`ask` 규칙](/ko/permissions#manage-permissions) 및 루트 및 홈 디렉토리 제거 (예: `rm -rf /`)는 여전히 프롬프트합니다. [권한 모드](/ko/permission-modes#skip-all-checks-with-bypasspermissions-mode)를 참조하세요.
+  `bypassPermissions`는 주의해서 사용하세요. 권한 프롬프트를 건너뛰어 subagent가 승인 없이 작업을 실행할 수 있습니다. `.git`, `.config/git`, `.claude`, `.vscode`, `.idea`, `.husky`, `.cargo`, `.devcontainer`, `.yarn`, `.mvn`에 대한 쓰기를 포함하여 작업을 실행할 수 있습니다. 명시적 [`ask` 규칙](/docs/ko/permissions#manage-permissions), connector 도구 (조직이 [`ask`](/docs/ko/mcp#organization-controls-on-connector-tools)로 설정한 경우), MCP 도구 (마크된 [`requiresUserInteraction`](/docs/ko/mcp#require-approval-for-a-specific-tool)), 루트 및 홈 디렉토리 제거 (예: `rm -rf /`)는 여전히 프롬프트합니다. [권한 모드](/docs/ko/permission-modes#skip-all-checks-with-bypasspermissions-mode)를 참조하세요.
 </Warning>
 
-부모가 `bypassPermissions` 또는 `acceptEdits`를 사용하면 이것이 우선하며 재정의할 수 없습니다. 부모가 [auto mode](/ko/permission-modes#eliminate-prompts-with-auto-mode)를 사용하면 subagent는 auto mode를 상속하고 frontmatter의 모든 `permissionMode`는 무시됩니다: 분류기는 부모 세션과 동일한 차단 및 허용 규칙으로 subagent의 도구 호출을 평가합니다.
+부모가 `bypassPermissions` 또는 `acceptEdits`를 사용하면 이것이 우선하며 재정의할 수 없습니다. 부모가 [auto mode](/docs/ko/permission-modes#eliminate-prompts-with-auto-mode)를 사용하면 subagent는 auto mode를 상속하고 frontmatter의 모든 `permissionMode`는 무시됩니다: 분류기는 부모 세션과 동일한 차단 및 허용 규칙으로 subagent의 도구 호출을 평가합니다.
 
 <h4 id="preload-skills-into-subagents">
   Subagent에 skills 미리 로드
@@ -488,7 +496,7 @@ Implement API endpoints. Follow the conventions and patterns from the preloaded 
 `disable-model-invocation: true`를 설정하는 skills는 미리 로드할 수 없습니다. 미리 로드는 Claude가 호출할 수 있는 동일한 skills 세트에서 가져오기 때문입니다. 나열된 skill이 누락되었거나 비활성화된 경우 Claude Code는 이를 건너뛰고 디버그 로그에 경고를 기록합니다.
 
 <Note>
-  이것은 [subagent에서 skill 실행](/ko/skills#run-skills-in-a-subagent)의 역입니다. Subagent의 `skills`를 사용하면 subagent가 시스템 프롬프트를 제어하고 skill 콘텐츠를 로드합니다. Skill의 `context: fork`를 사용하면 skill 콘텐츠가 지정한 에이전트에 주입됩니다. 둘 다 동일한 기본 시스템을 사용합니다.
+  이것은 [subagent에서 skill 실행](/docs/ko/skills#run-skills-in-a-subagent)의 역입니다. Subagent의 `skills`를 사용하면 subagent가 시스템 프롬프트를 제어하고 skill 콘텐츠를 로드합니다. Skill의 `context: fork`를 사용하면 skill 콘텐츠가 지정한 에이전트에 주입됩니다. 둘 다 동일한 기본 시스템을 사용합니다.
 </Note>
 
 <h4 id="enable-persistent-memory">
@@ -526,7 +534,7 @@ patterns, conventions, and recurring issues you discover.
   지속적 메모리 팁
 </h5>
 
-* `project`는 권장되는 기본 범위입니다. 메모리를 버전 제어를 통해 공유 가능하게 만듭니다. Subagent의 지식이 모든 프로젝트에 광범위하게 적용될 때 `user`를 사용하거나, 지식이 버전 제어에 체크인되지 않아야 할 때 `local`을 사용합니다.
+* `project`는 권장되는 기본 범위입니다. 메모리를 버전 제어를 통해 공유 가능하게 만듭니다.
 * Subagent에 작업을 시작하기 전에 메모리를 확인하도록 요청합니다: "Review this PR, and check your memory for patterns you've seen before."
 * Subagent에 작업을 완료한 후 메모리를 업데이트하도록 요청합니다: "Now that you're done, save what you learned to your memory." 시간이 지남에 따라 이렇게 하면 subagent를 더 효과적으로 만드는 지식 기반이 구축됩니다.
 * Subagent가 자신의 지식 기반을 적극적으로 유지하도록 메모리 지침을 subagent의 markdown 파일에 직접 포함합니다:
@@ -560,7 +568,7 @@ hooks:
 ---
 ```
 
-Claude Code는 [hook 입력을 JSON으로](/ko/hooks#pretooluse-input) stdin을 통해 hook 명령에 전달합니다. 검증 스크립트는 이 JSON을 읽고 Bash 명령을 추출하며 쓰기 작업을 차단하기 위해 [종료 코드 2](/ko/hooks#exit-code-2-behavior-per-event)로 종료합니다:
+Claude Code는 [hook 입력을 JSON으로](/docs/ko/hooks#pretooluse-input) stdin을 통해 hook 명령에 전달합니다. 검증 스크립트는 이 JSON을 읽고 Bash 명령을 추출하며 쓰기 작업을 차단하기 위해 [종료 코드 2](/docs/ko/hooks#exit-code-2-behavior-per-event)로 종료합니다:
 
 ```bash theme={null}
 #!/bin/bash
@@ -578,13 +586,13 @@ fi
 exit 0
 ```
 
-전체 입력 스키마는 [Hook input](/ko/hooks#pretooluse-input)을 참조하고 종료 코드가 동작에 미치는 영향은 [exit codes](/ko/hooks#exit-code-output)를 참조하세요. Windows에서는 PowerShell로 hook 스크립트를 작성하고 [PowerShell에서 hook 실행](/ko/hooks#windows-powershell-tool)에 표시된 대로 hook 항목에 `shell: powershell`을 추가합니다.
+전체 입력 스키마는 [Hook input](/docs/ko/hooks#pretooluse-input)을 참조하고 종료 코드가 동작에 미치는 영향은 [exit codes](/docs/ko/hooks#exit-code-output)를 참조하세요. Windows에서는 PowerShell로 hook 스크립트를 작성하고 [PowerShell에서 hook 실행](/docs/ko/hooks#windows-powershell-tool)에 표시된 대로 hook 항목에 `shell: powershell`을 추가합니다.
 
 <h4 id="disable-specific-subagents">
   특정 subagent 비활성화
 </h4>
 
-[설정](/ko/settings#permission-settings)의 `deny` 배열에 추가하여 Claude가 특정 subagent를 사용하지 못하도록 할 수 있습니다. `Agent(subagent-name)` 형식을 사용합니다. 여기서 `subagent-name`은 subagent의 name 필드와 일치합니다.
+[설정](/docs/ko/settings#permission-settings)의 `deny` 배열에 추가하여 Claude가 특정 subagent를 사용하지 못하도록 할 수 있습니다. `Agent(subagent-name)` 형식을 사용합니다. 여기서 `subagent-name`은 subagent의 name 필드와 일치합니다.
 
 ```json theme={null}
 {
@@ -600,13 +608,13 @@ exit 0
 claude --disallowedTools "Agent(Explore)"
 ```
 
-권한 규칙에 대한 자세한 내용은 [Permissions 문서](/ko/permissions#tool-specific-permission-rules)를 참조하세요.
+권한 규칙에 대한 자세한 내용은 [Permissions 문서](/docs/ko/permissions#tool-specific-permission-rules)를 참조하세요.
 
 <h3 id="define-hooks-for-subagents">
   Subagent에 대한 hook 정의
 </h3>
 
-Subagent는 subagent의 라이프사이클 중에 실행되는 [hooks](/ko/hooks)를 정의할 수 있습니다. Hook을 구성하는 두 가지 방법이 있습니다:
+Subagent는 subagent의 라이프사이클 중에 실행되는 [hooks](/docs/ko/hooks)를 정의할 수 있습니다. Hook을 구성하는 두 가지 방법이 있습니다:
 
 * **Subagent의 frontmatter에서**: 해당 subagent가 활성화된 동안만 실행되는 hook 정의
 * **`settings.json`에서**: Subagent가 시작되거나 중지될 때 주 세션에서 실행되는 hook 정의
@@ -618,10 +626,10 @@ Subagent는 subagent의 라이프사이클 중에 실행되는 [hooks](/ko/hooks
 Subagent의 markdown 파일에 직접 hook을 정의합니다. 이러한 hook은 해당 특정 subagent가 활성화된 동안만 실행되고 완료될 때 정리됩니다.
 
 <Note>
-  Frontmatter hook은 에이전트가 Agent 도구 또는 @-mention을 통해 subagent로 생성될 때 발생합니다. [`--agent`](#invoke-subagents-explicitly) 또는 `agent` 설정을 통해 주 세션으로 실행될 때도 발생합니다. 주 세션의 경우 [`settings.json`](/ko/hooks)에서 정의된 모든 hook과 함께 실행됩니다.
+  Frontmatter hook은 에이전트가 Agent 도구 또는 @-mention을 통해 subagent로 생성될 때 발생합니다. [`--agent`](#invoke-subagents-explicitly) 또는 `agent` 설정을 통해 주 세션으로 실행될 때도 발생합니다. 주 세션의 경우 [`settings.json`](/docs/ko/hooks)에서 정의된 모든 hook과 함께 실행됩니다.
 </Note>
 
-모든 [hook 이벤트](/ko/hooks#hook-events)가 지원됩니다. Subagent에 가장 일반적인 이벤트는:
+모든 [hook 이벤트](/docs/ko/hooks#hook-events)가 지원됩니다. Subagent에 가장 일반적인 이벤트는:
 
 | 이벤트           | Matcher 입력 | 실행 시기                                       |
 | :------------ | :--------- | :------------------------------------------ |
@@ -662,7 +670,7 @@ Frontmatter의 `Stop` hook은 자동으로 `SubagentStop` 이벤트로 변환됩
 | `SubagentStart` | 에이전트 유형 이름 | Subagent가 실행을 시작할 때 |
 | `SubagentStop`  | 에이전트 유형 이름 | Subagent가 완료될 때     |
 
-두 이벤트 모두 이름별로 특정 에이전트 유형을 대상으로 하는 matcher를 지원합니다. Matcher 값은 프로젝트 수준 및 사용자 수준 subagent의 경우 에이전트의 frontmatter `name`이거나, [플러그인 subagent](/ko/plugins)의 경우 `my-plugin:db-agent`와 같은 플러그인 범위 식별자입니다. 범위가 지정된 이름에는 콜론이 포함되므로 [고정되지 않은 정규식](/ko/hooks#matcher-patterns)으로 평가됩니다. `^my-plugin:db-agent$`와 같이 `^` 및 `$`로 고정하여 해당 에이전트만 일치시킵니다.
+두 이벤트 모두 이름별로 특정 에이전트 유형을 대상으로 하는 matcher를 지원합니다. Matcher 값은 프로젝트 수준 및 사용자 수준 subagent의 경우 에이전트의 frontmatter `name`이거나, [플러그인 subagent](/docs/ko/plugins)의 경우 `my-plugin:db-agent`와 같은 플러그인 범위 식별자입니다. 범위가 지정된 이름에는 콜론이 포함되므로 [고정되지 않은 정규식](/docs/ko/hooks#matcher-patterns)으로 평가됩니다. `^my-plugin:db-agent$`와 같이 `^` 및 `$`로 고정하여 해당 에이전트만 일치시킵니다.
 
 이 예제는 `db-agent` subagent가 시작될 때만 설정 스크립트를 실행하고 모든 subagent가 중지될 때 정리 스크립트를 실행합니다:
 
@@ -688,9 +696,10 @@ Frontmatter의 `Stop` hook은 자동으로 `SubagentStop` 이벤트로 변환됩
 }
 ```
 
+{/* min-version: 2.1.195 */}}
 하이픈이 있는 matcher (예: `db-agent`)는 Claude Code v2.1.195 이상에서 정확하게 일치합니다. 이전 버전에서는 고정되지 않은 정규식으로 평가되며 `prod-db-agent`와 같이 포함하는 모든 에이전트 유형에 대해서도 발생합니다. 이러한 버전에서는 `^db-agent$`로 고정합니다.
 
-전체 hook 구성 형식은 [Hooks](/ko/hooks)를 참조하세요.
+전체 hook 구성 형식은 [Hooks](/docs/ko/hooks)를 참조하세요.
 
 <h2 id="work-with-subagents">
   Subagent 작업
@@ -727,15 +736,17 @@ Have the code-reviewer subagent look at my recent changes
 
 전체 메시지는 여전히 Claude로 이동하며, Claude는 요청한 내용을 기반으로 subagent의 작업 프롬프트를 작성합니다. @-mention은 Claude가 호출하는 subagent를 제어하며, 받는 프롬프트는 제어하지 않습니다.
 
-활성화된 [플러그인](/ko/plugins)에서 제공하는 Subagent는 typeahead에 `my-plugin:code-reviewer` 또는 플러그인이 [agents를 하위 폴더로 구성](#choose-the-subagent-scope)할 때 `my-plugin:review:security`와 같은 범위가 지정된 이름으로 나타납니다. 세션에서 현재 실행 중인 명명된 background subagent도 typeahead에 나타나며 이름 옆에 상태를 표시합니다. 선택기를 사용하지 않고 수동으로 mention을 입력할 수도 있습니다: 로컬 subagent의 경우 `@agent-<name>`, 플러그인 subagent의 경우 범위가 지정된 이름 뒤에 `@agent-`를 입력합니다. 예를 들어 `@agent-my-plugin:code-reviewer`입니다.
+활성화된 [플러그인](/docs/ko/plugins)에서 제공하는 Subagent는 typeahead에 `my-plugin:code-reviewer` 또는 플러그인이 [agents를 하위 폴더로 구성](#choose-the-subagent-scope)할 때 `my-plugin:review:security`와 같은 범위가 지정된 이름으로 나타납니다. 세션에서 현재 실행 중인 명명된 background subagent도 typeahead에 나타나며 이름 옆에 상태를 표시합니다.
 
-**전체 세션을 subagent로 실행합니다.** [`--agent <name>`](/ko/cli-reference)을 전달하여 주 스레드 자체가 해당 subagent의 시스템 프롬프트, 도구 제한 및 모델을 취하는 세션을 시작합니다:
+선택기를 사용하지 않고 수동으로 mention을 입력할 수도 있습니다: 로컬 subagent의 경우 `@agent-<name>`, 플러그인 subagent의 경우 범위가 지정된 이름 뒤에 `@agent-`를 입력합니다. 예를 들어 `@agent-my-plugin:code-reviewer`입니다.
+
+**전체 세션을 subagent로 실행합니다.** [`--agent <name>`](/docs/ko/cli-reference)을 전달하여 주 스레드 자체가 해당 subagent의 시스템 프롬프트, 도구 제한 및 모델을 취하는 세션을 시작합니다:
 
 ```bash theme={null}
 claude --agent code-reviewer
 ```
 
-Subagent의 시스템 프롬프트는 [`--system-prompt`](/ko/cli-reference)와 동일한 방식으로 기본 Claude Code 시스템 프롬프트를 완전히 대체합니다. `CLAUDE.md` 파일 및 프로젝트 메모리는 여전히 일반적인 메시지 흐름을 통해 로드됩니다. 에이전트 이름은 시작 헤더에 `@<name>`으로 나타나므로 활성화되었는지 확인할 수 있습니다.
+Subagent의 시스템 프롬프트는 [`--system-prompt`](/docs/ko/cli-reference)와 동일한 방식으로 기본 Claude Code 시스템 프롬프트를 완전히 대체합니다. `CLAUDE.md` 파일 및 프로젝트 메모리는 여전히 일반적인 메시지 흐름을 통해 로드됩니다. 에이전트 이름은 시작 헤더에 `@<name>`으로 나타나므로 활성화되었는지 확인할 수 있습니다.
 
 이것은 내장 및 사용자 정의 subagent에서 작동하며, 세션을 재개할 때 선택이 유지됩니다.
 
@@ -772,14 +783,29 @@ Subagent는 foreground 또는 background에서 실행할 수 있습니다:
 * **Foreground subagent**는 완료될 때까지 주 대화를 차단합니다. 권한 프롬프트는 발생하는 대로 사용자에게 전달됩니다.
 * **Background subagent**는 계속 작업하는 동안 동시에 실행됩니다. {/* min-version: 2.1.186 */}v2.1.186부터 background subagent가 권한이 필요한 도구 호출에 도달하면 프롬프트가 주 세션에 표시되고 요청하는 subagent의 이름을 지정합니다. 승인하여 subagent를 계속하거나 Esc를 눌러 subagent를 중지하지 않고 해당 도구 호출을 거부합니다. v2.1.186 이전에는 background subagent가 프롬프트를 표시했을 모든 도구 호출을 자동으로 거부했습니다.
 
-Claude는 작업을 기반으로 subagent를 foreground 또는 background에서 실행할지 결정합니다. 다음을 수행할 수도 있습니다:
+{/* min-version: 2.1.198 */}v2.1.198부터 subagent는 기본적으로 background에서 실행됩니다. Claude는 결과가 필요한 경우 subagent를 foreground에서 실행합니다. 기본값은 subagent가 실행되는 위치를 변경하며, 수행할 수 있는 작업은 변경하지 않습니다: background subagent는 여전히 주 세션에서 모든 권한 프롬프트를 표시합니다. v2.1.198 이전에는 Claude가 작업을 기반으로 foreground와 background 중에서 선택했습니다.
 
-* Claude에 "run this in the background"를 요청
+다음을 수행할 수도 있습니다:
+
+* Claude에 작업을 background 또는 foreground에서 실행하도록 요청
 * **Ctrl+B**를 눌러 실행 중인 작업을 background로 이동
 
-모든 background 작업 기능을 비활성화하려면 `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 환경 변수를 `1`로 설정합니다. [환경 변수](/ko/env-vars)를 참조하세요.
+{/* min-version: 2.1.208 */}완료된 background subagent는 [`/tasks`](/docs/ko/commands)에 나열된 상태로 유지되며, 완료로 표시되고 실행 중인 작업 아래로 정렬되며, 세션이 작업 목록을 정리할 때까지 유지됩니다. 세부 정보 보기는 subagent가 완료될 때 열린 상태로 유지됩니다. 실패하거나 중지한 subagent는 목록을 떠납니다. v2.1.208 이전에는 완료된 subagent가 완료되는 순간 목록을 떠났고 세부 정보 보기가 닫혔습니다.
 
-[`CLAUDE_CODE_FORK_SUBAGENT`](#fork-the-current-conversation)가 `1`로 설정되면 `background` 필드와 관계없이 모든 subagent 생성이 background에서 실행됩니다. 이러한 background subagent의 권한 프롬프트는 위에서 설명한 대로 주 세션에 표시됩니다.
+모든 background 작업 기능을 비활성화하려면 `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 환경 변수를 `1`로 설정합니다. [환경 변수](/docs/ko/env-vars)를 참조하세요.
+
+[`CLAUDE_CODE_FORK_SUBAGENT`](#fork-the-current-conversation)가 `1`로 설정되면 모든 subagent 생성이 background에서 실행되고 frontmatter `background` 필드는 효과가 없습니다. fork 모드는 `Agent` 도구에서 `run_in_background` 매개변수를 제거하기 때문입니다. `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`는 fork 모드보다 우선하며 subagent 생성을 foreground에 유지합니다.
+
+<h3 id="api-errors-in-subagents">
+  Subagent의 API 오류
+</h3>
+
+{/* min-version: 2.1.199 */}v2.1.199부터 API 오류 (예: 사용 제한 또는 반복된 서버 오류)로 인해 실행이 종료된 subagent는 오류 텍스트를 subagent의 결과인 것처럼 반환하는 대신 해당 실패를 Claude에 보고합니다. Claude가 받는 내용은 subagent가 실행된 위치에 따라 다릅니다:
+
+* **Foreground**: 속도 제한, 과부하 또는 서버 오류가 이미 출력을 생성한 subagent를 중단하면 Agent 도구는 해당 부분 출력을 subagent가 중단되었으며 작업을 완료하지 못했다는 메모와 함께 반환합니다. {/* min-version: 2.1.200 */}아무것도 생성하지 않았거나 유일한 출력이 도구 호출이었던 subagent는 [`Agent terminated early due to an API error`](/docs/ko/errors#agent-terminated-early-due-to-an-api-error)로 실패하고 오류 세부 정보가 뒤따릅니다. v2.1.199에서는 도구 호출만 있는 형태를 중단한 속도 제한, 과부하 또는 서버 오류가 중단 메모만 포함하는 빈 부분 결과를 반환했습니다.
+* **Background**: subagent는 실패로 표시되며 Claude가 종료될 때 받는 메시지는 API 오류의 이름을 지정하고 subagent의 마지막 출력을 포함하므로 부분 작업이 손실되지 않습니다.
+
+기본 API 오류가 해결되면 Claude에 작업을 다시 시도하거나 [subagent를 재개](#resume-subagents)하도록 요청합니다.
 
 <h3 id="common-patterns">
   일반적인 패턴
@@ -811,7 +837,7 @@ Research the authentication, database, and API modules in parallel using separat
   Subagent가 완료되면 결과가 주 대화로 반환됩니다. 각각 자세한 결과를 반환하는 많은 subagent를 실행하면 상당한 컨텍스트를 소비할 수 있습니다.
 </Warning>
 
-지속적인 병렬성이 필요하거나 컨텍스트 윈도우를 초과하는 작업의 경우 [agent teams](/ko/agent-teams)는 각 워커에게 자신의 독립적인 컨텍스트를 제공합니다.
+지속적인 병렬성이 필요하거나 컨텍스트 윈도우를 초과하는 작업의 경우 [agent teams](/docs/ko/agent-teams)는 각 워커에게 자신의 독립적인 컨텍스트를 제공합니다.
 
 <h4 id="chain-subagents">
   Subagent 체인
@@ -840,9 +866,9 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 * 특정 도구 제한 또는 권한을 적용하려는 경우
 * 작업이 자체 포함되어 있고 요약을 반환할 수 있는 경우
 
-격리된 subagent 컨텍스트가 아닌 주 대화 컨텍스트에서 실행되는 재사용 가능한 프롬프트 또는 워크플로우를 원할 때 [Skills](/ko/skills)를 대신 고려합니다.
+격리된 subagent 컨텍스트가 아닌 주 대화 컨텍스트에서 실행되는 재사용 가능한 프롬프트 또는 워크플로우를 원할 때 [Skills](/docs/ko/skills)를 대신 고려합니다.
 
-대화에 이미 있는 항목에 대한 빠른 질문의 경우 subagent 대신 [`/btw`](/ko/interactive-mode#side-questions-with-%2Fbtw)를 사용합니다. 전체 컨텍스트를 보지만 도구 액세스가 없으며 답변은 기록에 추가되지 않습니다.
+대화에 이미 있는 항목에 대한 빠른 질문의 경우 subagent 대신 [`/btw`](/docs/ko/interactive-mode#side-questions-with-%2Fbtw)를 사용합니다. 전체 컨텍스트를 보지만 도구 액세스가 없으며 답변은 기록에 추가되지 않습니다.
 
 <h3 id="spawn-nested-subagents">
   중첩된 subagent 생성
@@ -850,7 +876,9 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 
 {/* min-version: 2.1.172 */}Claude Code v2.1.172부터 subagent는 자신의 subagent를 생성할 수 있습니다. 위임된 작업이 자체적으로 병렬 하위 작업으로 분할될 때 이를 사용합니다. 예를 들어 각 발견에 대해 검증자를 발송하는 검토자 subagent를 사용하면 중간 출력이 주 대화에 도달하지 않습니다. 최상위 subagent의 요약만 사용자에게 반환됩니다.
 
-중첩된 subagent는 최상위 subagent와 동일한 방식으로 구성되며 동일한 [범위](#choose-the-subagent-scope)에서 해결됩니다. 프롬프트 입력 아래의 subagent 패널은 전체 트리를 표시합니다: 각 행은 하위 항목의 `(+N)` 개수를 표시하고, {/* min-version: 2.1.193 */}v2.1.193부터 행을 열면 해당 subagent의 형제 및 직접 자식이 `main`으로 돌아가는 경로와 함께 표시됩니다. [`/agents`](#use-the-%2Fagents-command)의 Running 탭은 실행 중인 subagent를 평면 목록으로 나열합니다.
+중첩된 subagent는 최상위 subagent와 동일한 방식으로 구성되며 동일한 [범위](#choose-the-subagent-scope)에서 해결됩니다.
+
+프롬프트 입력 아래의 subagent 패널은 전체 트리를 표시합니다: 각 행은 하위 항목의 `(+N)` 개수를 표시하고, {/* min-version: 2.1.193 */}v2.1.193부터 행을 열면 해당 subagent의 형제 및 직접 자식이 `main`으로 돌아가는 경로와 함께 표시됩니다.
 
 깊이는 각 수준이 [foreground 또는 background](#run-subagents-in-foreground-or-background)에서 실행되는지 여부와 관계없이 주 대화 아래의 subagent 수준 수로 계산됩니다. 깊이 5의 subagent는 Agent 도구를 받지 않으며 추가로 생성할 수 없습니다. 제한은 고정되어 있으며 구성할 수 없습니다.
 
@@ -874,9 +902,10 @@ Claude Code v2.1.187부터 background subagent의 깊이는 처음 생성될 때
 
 * **시스템 프롬프트**: 에이전트 자신의 프롬프트 및 Claude Code가 추가하는 환경 세부 정보이며, 전체 Claude Code 시스템 프롬프트는 아닙니다. 사용자 정의 subagent는 [markdown body](#write-subagent-files) 또는 `prompt` 필드에서 정의합니다. 내장 에이전트는 미리 정의된 프롬프트를 가집니다.
 * **작업 메시지**: Claude가 작업을 넘길 때 작성하는 위임 프롬프트입니다.
-* **CLAUDE.md 및 메모리**: 주 대화가 로드하는 [메모리 계층 구조](/ko/memory#how-claude-md-files-load)의 모든 수준이며, `~/.claude/CLAUDE.md`, 프로젝트 규칙, `CLAUDE.local.md`, 및 관리되는 정책 파일을 포함합니다. 내장 Explore 및 Plan 에이전트는 이를 건너뜁니다.
-* **Git 상태**: 부모 세션 시작 시 촬영한 스냅샷입니다. 작업 디렉토리가 Git 저장소가 아니거나 [`includeGitInstructions`](/ko/settings#available-settings)가 `false`일 때 없습니다. Explore 및 Plan은 관계없이 이를 건너뜁니다.
+* **CLAUDE.md 및 메모리**: 주 대화가 로드하는 [메모리 계층 구조](/docs/ko/memory#how-claude-md-files-load)의 모든 수준이며, `~/.claude/CLAUDE.md`, 프로젝트 규칙, `CLAUDE.local.md`, 및 관리되는 정책 파일을 포함합니다. 내장 Explore 및 Plan 에이전트는 이를 건너뜁니다.
+* **Git 상태**: 부모 세션 시작 시 촬영한 스냅샷입니다. 작업 디렉토리가 Git 저장소가 아니거나 [`includeGitInstructions`](/docs/ko/settings#available-settings)가 `false`일 때 없습니다. Explore 및 Plan은 관계없이 이를 건너뜁니다.
 * **미리 로드된 skills**: 에이전트의 [`skills` 필드](#preload-skills-into-subagents)에 명명된 모든 skill의 전체 내용입니다. 내장 에이전트는 skills를 미리 로드하지 않습니다.
+* **형제 명단**: `main` 및 세션의 다른 모든 명명된 에이전트를 나열하는 시스템 알림이며, 각각은 [`SendMessage`](#resume-subagents)에 대한 유효한 `to` 값입니다. {/* min-version: 2.1.206 */}Claude Code v2.1.206 이상이 필요합니다. 명단은 subagent의 도구에 `SendMessage`가 포함되고 Claude가 생성할 때 이름을 지정했거나 [agent teams](/docs/ko/agent-teams) 팀원으로 실행되는 다른 에이전트가 하나 이상 있을 때만 나타납니다. 이는 subagent가 시작될 때 촬영한 스냅샷이므로 나중에 명명된 에이전트는 나타나지 않습니다.
 
 Explore 및 Plan은 CLAUDE.md 및 git 상태를 생략하는 유일한 subagent입니다. 어떤 에이전트가 이를 건너뛸지 변경하는 frontmatter 필드 또는 에이전트별 설정이 없습니다.
 
@@ -890,7 +919,9 @@ Explore 및 Plan은 CLAUDE.md 및 git 상태를 생략하는 유일한 subagent�
 
 재개된 subagent는 모든 이전 도구 호출, 결과 및 추론을 포함한 전체 대화 기록을 유지합니다. Subagent는 새로 시작하는 대신 정확히 중단한 위치에서 계속됩니다.
 
-Subagent가 완료되면 Claude는 에이전트 ID를 받습니다. 내장 Explore 및 Plan 에이전트는 일회성이며 에이전트 ID를 반환하지 않으므로 재개할 수 없습니다. 작업을 계속해야 할 때는 `general-purpose` 또는 사용자 정의 subagent를 사용합니다. Claude는 에이전트의 ID를 `to` 필드로 사용하여 `SendMessage` 도구를 사용하여 재개합니다. `SendMessage` 도구는 항상 에이전트 ID 또는 이름으로 subagent를 재개하는 데 사용할 수 있습니다. `shutdown_request` 및 `plan_approval_response`와 같은 구조화된 팀 프로토콜 메시지는 [agent teams](/ko/agent-teams)가 활성화되어야 합니다.
+Subagent가 완료되면 Claude는 에이전트 ID를 받습니다. 내장 Explore 및 Plan 에이전트는 일회성이며 에이전트 ID를 반환하지 않으므로 재개할 수 없습니다. 작업을 계속해야 할 때는 `general-purpose` 또는 사용자 정의 subagent를 사용합니다.
+
+Claude는 `SendMessage` 도구를 에이전트의 ID 또는 이름을 `to` 필드로 사용하여 재개합니다. `SendMessage`는 [agent teams](/docs/ko/agent-teams)가 활성화되어야 하는 `shutdown_request` 및 `plan_approval_response`와 같은 구조화된 팀 프로토콜 메시지를 필요로 하지 않습니다. 에이전트 ID 또는 이름으로 subagent를 재개하는 데만 사용할 수 있습니다.
 
 Subagent를 재개하려면 Claude에 이전 작업을 계속하도록 요청합니다:
 
@@ -902,7 +933,15 @@ Continue that code review and now analyze the authorization logic
 [Claude resumes the subagent with full context from previous conversation]
 ```
 
-중단된 subagent가 `SendMessage`를 받으면 새로운 `Agent` 호출 없이 background에서 자동으로 재개됩니다.
+중단된 subagent가 `SendMessage`를 받으면 새로운 `Agent` 호출 없이 background에서 자동으로 재개됩니다. `TaskStop` 도구로 Claude가 중단한 subagent도 마찬가지입니다.
+
+{/* min-version: 2.1.191 */}v2.1.191부터 `/tasks`에서 `x`를 사용하거나 SDK `stop_task` 요청으로 직접 중단한 subagent는 자동으로 재개되지 않습니다. `SendMessage` 호출은 에이전트가 취소되었음을 알리는 거부를 반환합니다. subagent 패널의 해당 subagent 트랜스크립트에 입력하여 직접 재개하면 중지가 해제되어 나중에 `SendMessage` 호출이 다시 자동으로 재개할 수 있습니다.
+
+재개는 동일한 ID 아래에서 에이전트의 새로운 실행을 시작하므로 이미 실패했거나 완료된 subagent는 작업 목록 및 Agent SDK의 작업 이벤트에서 다시 실행 중으로 표시됩니다. v2.1.205 이전에는 재개된 실행이 작동하는 동안 이전의 실패했거나 완료된 상태를 계속 표시했습니다.
+
+{/* min-version: 2.1.199 */}v2.1.199부터 `SendMessage`는 이름이 여전히 대화에서 이전에 도달한 동일한 에이전트를 참조하는지 확인합니다. 더 새로운 에이전트가 이름을 가져간 경우 (예: 이름을 재사용한 다시 생성된 background 에이전트), Claude Code는 잘못된 에이전트에 전달하는 대신 전송을 거부하며 오류는 이름이 현재 도달하는 에이전트를 보고하므로 Claude가 재대상화할 수 있습니다. 여전히 실행 중인 이전 에이전트에 도달하려면 Claude는 생성 결과의 에이전트 ID로 주소를 지정합니다. 확인은 현재 대화로 범위가 지정되며 `/clear`에서 재설정됩니다.
+
+{/* min-version: 2.1.198 */}v2.1.198부터 subagent는 이를 시작한 에이전트의 메시지를 일반적인 작업 지시로 취급하며, 중간 작업 과정 수정을 포함하고 자신의 권한 설정 내에서 작동합니다. 메시지를 보낸 사람과 관계없이 두 가지 제한이 여전히 유지됩니다: 어떤 에이전트의 메시지도 보류 중인 권한 프롬프트에 대한 승인으로 계산되지 않으며, 어떤 에이전트 메시지도 subagent의 권한 설정, `CLAUDE.md` 또는 구성을 변경할 수 없습니다. 권한 시스템 또는 자신의 메시지만 승인을 부여할 수 있습니다.
 
 에이전트 ID를 명시적으로 참조하려면 Claude에 ID를 요청할 수도 있으며, `~/.claude/projects/{project}/{sessionId}/subagents/`의 트랜스크립트 파일에서 ID를 찾을 수 있습니다. 각 트랜스크립트는 `agent-{agentId}.jsonl`로 저장됩니다.
 
@@ -916,7 +955,7 @@ Subagent 트랜스크립트는 주 대화와 독립적으로 유지됩니다:
   자동 압축
 </h4>
 
-Subagent는 주 대화와 동일한 논리를 사용하여 자동 압축을 지원합니다. 압축은 동일한 조건에서 트리거되며, `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`는 subagent에도 적용됩니다. 재정의가 적용되는 시기는 [환경 변수](/ko/env-vars)를 참조하세요.
+Subagent는 주 대화와 동일한 논리를 사용하여 자동 압축을 지원합니다. 압축은 동일한 조건에서 트리거되며, `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`는 subagent에도 적용됩니다. 재정의가 적용되는 시기는 [환경 변수](/docs/ko/env-vars)를 참조하세요.
 
 압축 이벤트는 subagent 트랜스크립트 파일에 기록됩니다:
 
@@ -938,12 +977,12 @@ Subagent는 주 대화와 동일한 논리를 사용하여 자동 압축을 지�
 </h2>
 
 <Note>
-  포크된 subagent는 Claude Code v2.1.117 이상이 필요합니다. {/* min-version: 2.1.161 */}v2.1.161부터 `/fork` 명령은 기본적으로 활성화되어 있습니다. 이전 버전에서는 [`CLAUDE_CODE_FORK_SUBAGENT`](/ko/env-vars) 환경 변수를 `1`로 설정해야 합니다. Claude 자체가 포크를 생성하도록 하는 것은 실험적이며 향후 릴리스에서 변경될 수 있습니다. 이 기능은 단계적 롤아웃의 일부로 대화형 세션에서도 활성화될 수 있습니다.
+  포크된 subagent는 Claude Code v2.1.117 이상이 필요합니다. {/* min-version: 2.1.161 */}v2.1.161부터 `/fork` 명령은 기본적으로 활성화되어 있습니다. 이전 버전에서는 [`CLAUDE_CODE_FORK_SUBAGENT`](/docs/ko/env-vars) 환경 변수를 `1`로 설정해야 합니다. Claude 자체가 포크를 생성하도록 하는 것은 실험적이며 향후 릴리스에서 변경될 수 있습니다. 이 기능은 단계적 롤아웃의 일부로 대화형 세션에서도 활성화될 수 있습니다.
 </Note>
 
 포크는 새로 시작하는 대신 지금까지의 전체 대화를 상속하는 subagent입니다. 이렇게 하면 subagent가 일반적으로 제공하는 입력 격리가 떨어집니다: 포크는 주 세션과 동일한 시스템 프롬프트, 도구, 모델 및 메시지 기록을 보므로 상황을 다시 설명할 필요 없이 부작업을 전달할 수 있습니다. 포크의 자체 도구 호출은 여전히 대화에서 벗어나고 최종 결과만 돌아오므로 주 컨텍스트 윈도우가 깨끗하게 유지됩니다. 명명된 subagent가 유용하기에는 너무 많은 배경이 필요하거나 동일한 시작점에서 여러 접근 방식을 병렬로 시도하려는 경우 포크를 사용합니다.
 
-단계적 롤아웃과 관계없이 포크 모드를 제어하려면 [`CLAUDE_CODE_FORK_SUBAGENT`](/ko/env-vars)를 `1`로 설정하여 명시적으로 활성화하거나 `0`으로 설정하여 비활성화합니다. 이 변수는 대화형 모드 및 SDK 또는 `claude -p`를 통해 인정됩니다.
+단계적 롤아웃과 관계없이 포크 모드를 제어하려면 [`CLAUDE_CODE_FORK_SUBAGENT`](/docs/ko/env-vars)를 `1`로 설정하여 명시적으로 활성화하거나 `0`으로 설정하여 비활성화합니다. 이 변수는 대화형 모드 및 SDK 또는 `claude -p`를 통해 인정됩니다.
 
 포크 모드를 활성화하면 Claude Code가 두 가지 방식으로 변경됩니다:
 
@@ -971,6 +1010,8 @@ Subagent는 주 대화와 동일한 논리를 사용하여 자동 압축을 지�
 | `x`       | 완료된 포크를 닫거나 실행 중인 포크 중지      |
 | `Esc`     | 프롬프트 입력으로 포커스 반환             |
 
+포크 또는 subagent의 트랜스크립트가 열려 있으면 후속 메시지 및 [skills](/docs/ko/skills)는 해당 에이전트로 이동하지만 기본 제공 명령은 여전히 주 대화에서 실행됩니다. {/* min-version: 2.1.199 */}v2.1.199부터 해당 보기에서 `/model` 또는 `/fast`를 입력하면 보기된 에이전트의 모델이나 빠른 모드가 아닌 주 대화의 모델이나 빠른 모드를 변경한다는 알림이 표시되며, 자동으로 실행되지 않습니다.
+
 <h3 id="how-forks-differ-from-named-subagents">
   포크와 명명된 subagent의 차이점
 </h3>
@@ -985,7 +1026,7 @@ Subagent는 주 대화와 동일한 논리를 사용하여 자동 압축을 지�
 | 권한            | 프롬프트가 터미널에 표시됨 | [background에서 실행 중일 때 프롬프트가 주 세션에 표시됨](#run-subagents-in-foreground-or-background) |
 | 프롬프트 캐시       | 주 세션과 공유       | 별도 캐시                                                                              |
 
-포크의 시스템 프롬프트 및 도구 정의가 부모와 동일하기 때문에 첫 번째 요청은 부모의 [프롬프트 캐시](/ko/prompt-caching#subagents-and-the-cache)를 재사용합니다. 이렇게 하면 동일한 컨텍스트가 필요한 작업에 대해 새로운 subagent를 생성하는 것보다 포크가 더 저렴합니다.
+포크의 시스템 프롬프트 및 도구 정의가 부모와 동일하기 때문에 첫 번째 요청은 부모의 [프롬프트 캐시](/docs/ko/prompt-caching#subagents-and-the-cache)를 재사용합니다. 이렇게 하면 동일한 컨텍스트가 필요한 작업에 대해 새로운 subagent를 생성하는 것보다 포크가 더 저렴합니다.
 
 Claude가 Agent 도구를 통해 포크를 생성할 때 `isolation: "worktree"`를 전달하여 포크의 파일 편집이 체크아웃 대신 별도의 git worktree에 기록되도록 할 수 있습니다.
 
@@ -993,7 +1034,7 @@ Claude가 Agent 도구를 통해 포크를 생성할 때 `isolation: "worktree"`
   제한 사항
 </h3>
 
-`CLAUDE_CODE_FORK_SUBAGENT=1`을 설정하면 대화형 세션, [비대화형 모드](/ko/headless) 및 Agent SDK에서 포크 모드를 활성화합니다. `CLAUDE_CODE_FORK_SUBAGENT`를 `0`으로 설정하면 서버 측 롤아웃을 포함하여 모든 곳에서 포크 모드를 비활성화합니다. 포크는 추가 포크를 생성할 수 없습니다.
+`CLAUDE_CODE_FORK_SUBAGENT=1`을 설정하면 대화형 세션, [비대화형 모드](/docs/ko/headless) 및 Agent SDK에서 포크 모드를 활성화합니다. `CLAUDE_CODE_FORK_SUBAGENT`를 `0`으로 설정하면 서버 측 롤아웃을 포함하여 모든 곳에서 포크 모드를 비활성화합니다. 포크는 추가 포크를 생성할 수 없습니다.
 
 <h2 id="example-subagents">
   예제 subagent
@@ -1156,7 +1197,7 @@ When asked to analyze data:
 You cannot modify data. If asked to INSERT, UPDATE, DELETE, or modify schema, explain that you only have read access.
 ```
 
-Claude Code는 [hook 입력을 JSON으로](/ko/hooks#pretooluse-input) stdin을 통해 hook 명령에 전달합니다. 검증 스크립트는 이 JSON을 읽고 실행 중인 명령을 추출하고 SQL 쓰기 작업 목록에 대해 확인합니다. 쓰기 작업이 감지되면 스크립트는 [종료 코드 2](/ko/hooks#exit-code-2-behavior-per-event)로 종료하여 실행을 차단하고 stderr를 통해 Claude에 오류 메시지를 반환합니다.
+Claude Code는 [hook 입력을 JSON으로](/docs/ko/hooks#pretooluse-input) stdin을 통해 hook 명령에 전달합니다. 검증 스크립트는 이 JSON을 읽고 실행 중인 명령을 추출하고 SQL 쓰기 작업 목록에 대해 확인합니다. 쓰기 작업이 감지되면 스크립트는 [종료 코드 2](/docs/ko/hooks#exit-code-2-behavior-per-event)로 종료하여 실행을 차단하고 stderr를 통해 Claude에 오류 메시지를 반환합니다.
 
 프로젝트의 어디든지 검증 스크립트를 만듭니다. 경로는 hook 구성의 `command` 필드와 일치해야 합니다:
 
@@ -1189,9 +1230,9 @@ macOS 및 Linux에서 스크립트를 실행 가능하게 만듭니다:
 chmod +x ./scripts/validate-readonly-query.sh
 ```
 
-Windows에서는 검증 스크립트를 PowerShell로 작성하고 hook 항목에 `shell: powershell`을 추가합니다. [PowerShell에서 hook 실행](/ko/hooks#windows-powershell-tool)을 참조하세요.
+Windows에서는 검증 스크립트를 PowerShell로 작성하고 hook 항목에 `shell: powershell`을 추가합니다. [PowerShell에서 hook 실행](/docs/ko/hooks#windows-powershell-tool)을 참조하세요.
 
-Hook은 stdin을 통해 JSON을 받으며 Bash 명령은 `tool_input.command`에 있습니다. 종료 코드 2는 작업을 차단하고 오류 메시지를 Claude에 피드백합니다. 종료 코드 및 출력에 대한 자세한 내용은 [Hooks](/ko/hooks#exit-code-output)를 참조하고 [Hook input](/ko/hooks#pretooluse-input)에서 전체 입력 스키마를 확인하세요.
+Hook은 stdin을 통해 JSON을 받으며 Bash 명령은 `tool_input.command`에 있습니다. 종료 코드 2는 작업을 차단하고 오류 메시지를 Claude에 피드백합니다. 종료 코드 및 출력에 대한 자세한 내용은 [Hooks](/docs/ko/hooks#exit-code-output)를 참조하고 [Hook input](/docs/ko/hooks#pretooluse-input)에서 전체 입력 스키마를 확인하세요.
 
 <h2 id="next-steps">
   다음 단계
@@ -1199,6 +1240,6 @@ Hook은 stdin을 통해 JSON을 받으며 Bash 명령은 `tool_input.command`에
 
 이제 subagent를 이해했으므로 다음 관련 기능을 탐색합니다:
 
-* [플러그인으로 subagent 배포](/ko/plugins) - 팀 또는 프로젝트 간에 subagent 공유
-* [Claude Code를 프로그래밍 방식으로 실행](/ko/headless) - CI/CD 및 자동화를 위한 Agent SDK
-* [MCP 서버 사용](/ko/mcp) - Subagent에 외부 도구 및 데이터에 대한 액세스 제공
+* [플러그인으로 subagent 배포](/docs/ko/plugins) - 팀 또는 프로젝트 간에 subagent 공유
+* [Claude Code를 프로그래밍 방식으로 실행](/docs/ko/headless) - CI/CD 및 자동화를 위한 Agent SDK
+* [MCP 서버 사용](/docs/ko/mcp) - Subagent에 외부 도구 및 데이터에 대한 액세스 제공

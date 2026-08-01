@@ -7,7 +7,7 @@
 > Slack 워크스페이스에서 직접 코딩 작업 위임
 
 <Note>
-  Slack의 Claude Code는 Team 및 Enterprise 워크스페이스를 위해 [Claude Tag](https://claude.com/docs/claude-tag/overview)로 대체되고 있습니다. Claude Tag는 @Claude를 조직의 공유 ID로 실행하며 관리자가 구성한 액세스 권한을 가지고 동일한 Slack 앱에서 실행되므로 다시 설치할 필요가 없으며 기존 설정은 전환 중에 계속 작동합니다. 워크스페이스를 전환하려면 [이전 Slack의 Claude에서 마이그레이션](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)을 참조하십시오.
+  Slack의 Claude Code는 Team 및 Enterprise 워크스페이스를 위해 [Claude Tag](https://claude.com/product/tag)로 대체되고 있습니다. Claude Tag는 @Claude를 조직의 공유 ID로 실행하며 관리자가 구성한 액세스 권한을 가지고 동일한 Slack 앱에서 실행되므로 다시 설치할 필요가 없으며 기존 설정은 전환 중에 계속 작동합니다. 워크스페이스를 전환하려면 [이전 Slack의 Claude에서 마이그레이션](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)을 참조하십시오.
 </Note>
 
 Slack의 Claude Code는 Claude Code의 강력한 기능을 Slack 워크스페이스에 직접 가져옵니다. `@Claude`를 언급하여 코딩 작업을 요청하면, Claude는 자동으로 의도를 감지하고 웹에서 Claude Code 세션을 생성하여 팀 대화를 떠나지 않고도 개발 작업을 위임할 수 있습니다.
@@ -32,7 +32,7 @@ Slack에서 Claude Code를 사용하기 전에 다음을 확인하세요:
 | 요구 사항          | 세부 정보                                                                              |
 | :------------- | :--------------------------------------------------------------------------------- |
 | Claude 플랜      | Claude Code 액세스가 있는 Pro, Max, Team 또는 Enterprise(프리미엄 시트 또는 Chat + Claude Code 시트) |
-| 웹의 Claude Code | [웹의 Claude Code](/ko/claude-code-on-the-web) 액세스가 활성화되어야 함                         |
+| 웹의 Claude Code | [웹의 Claude Code](/docs/ko/claude-code-on-the-web) 액세스가 활성화되어야 함                         |
 | GitHub 계정      | 웹의 Claude Code에 연결되어 있으며 최소 하나의 저장소가 인증됨                                           |
 | Slack 인증       | Claude 앱을 통해 Claude 계정에 연결된 Slack 계정                                               |
 
@@ -194,7 +194,7 @@ Claude는 설치 후 자동으로 채널에 추가되지 않습니다. 사용자
 
 **웹에서**: 전체 대화 기록, 모든 코드 변경, 파일 작업 및 세션을 계속하거나 풀 요청을 생성할 수 있는 기능이 있는 완전한 Claude Code 세션입니다.
 
-Enterprise 및 Team 계정의 경우 Slack의 Claude에서 생성된 세션은 조직에 자동으로 표시됩니다. 자세한 내용은 [웹의 Claude Code 공유](/ko/claude-code-on-the-web#share-sessions)를 참조하세요.
+Enterprise 및 Team 계정의 경우 Slack의 Claude에서 생성된 세션은 조직에 자동으로 표시됩니다. 자세한 내용은 [웹의 Claude Code 공유](/docs/ko/claude-code-on-the-web#share-sessions)를 참조하세요.
 
 <h2 id="best-practices">
   모범 사례
@@ -279,7 +279,7 @@ Enterprise 및 Team 계정의 경우 Slack의 Claude에서 생성된 세션은 �
 </h2>
 
 <CardGroup>
-  <Card title="웹의 Claude Code" icon="globe" href="/ko/claude-code-on-the-web">
+  <Card title="웹의 Claude Code" icon="globe" href="/docs/ko/claude-code-on-the-web">
     웹의 Claude Code에 대해 자세히 알아보기
   </Card>
 

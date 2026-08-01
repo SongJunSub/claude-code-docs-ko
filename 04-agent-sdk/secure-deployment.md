@@ -26,12 +26,12 @@ Claude Code와 Agent SDK는 코드를 실행하고, 파일에 접근하며, 외�
   기본 제공 보안 기능
 </h2>
 
-Claude Code에는 일반적인 문제를 해결하는 여러 보안 기능이 포함되어 있습니다. 전체 세부사항은 [보안 설명서](/ko/security)를 참조하십시오.
+Claude Code에는 일반적인 문제를 해결하는 여러 보안 기능이 포함되어 있습니다. 전체 세부사항은 [보안 설명서](/docs/ko/security)를 참조하십시오.
 
-* **권한 시스템**: 모든 도구 및 bash 명령을 허용, 차단 또는 사용자 승인 요청으로 구성할 수 있습니다. glob 패턴을 사용하여 "모든 npm 명령 허용" 또는 "sudo가 있는 모든 명령 차단"과 같은 규칙을 만듭니다. 조직은 모든 사용자에게 적용되는 정책을 설정할 수 있습니다. [권한](/ko/permissions)을 참조하십시오.
+* **권한 시스템**: 모든 도구 및 bash 명령을 허용, 차단 또는 사용자 승인 요청으로 구성할 수 있습니다. glob 패턴을 사용하여 "모든 npm 명령 허용" 또는 "sudo가 있는 모든 명령 차단"과 같은 규칙을 만듭니다. 조직은 모든 사용자에게 적용되는 정책을 설정할 수 있습니다. [권한](/docs/ko/permissions)을 참조하십시오.
 * **권한을 위한 명령 파싱**: bash 명령을 실행하기 전에 Claude Code는 이를 AST로 파싱하고 결과를 권한 규칙과 비교합니다. 깔끔하게 파싱할 수 없거나 허용 규칙과 일치하지 않는 명령은 명시적 승인이 필요합니다. `eval`과 같은 작은 구성 집합은 허용 규칙에 관계없이 항상 승인이 필요합니다. 이는 권한 게이트이지 샌드박스가 아닙니다. 대상 경로나 효과에서 명령이 위험한지 여부를 추론하지 않습니다.
 * **웹 검색 요약**: 검색 결과는 원본 콘텐츠를 컨텍스트에 직접 전달하는 대신 요약되어 악성 웹 콘텐츠로부터의 프롬프트 주입 위험을 줄입니다.
-* **샌드박스 모드**: Bash 명령은 파일 시스템 및 네트워크 접근을 제한하는 샌드박스 환경에서 실행될 수 있습니다. 자세한 내용은 [샌드박싱 설명서](/ko/sandboxing)를 참조하십시오.
+* **샌드박스 모드**: Bash 명령은 파일 시스템 및 네트워크 접근을 제한하는 샌드박스 환경에서 실행될 수 있습니다. 자세한 내용은 [샌드박싱 설명서](/docs/ko/sandboxing)를 참조하십시오.
 
 <h2 id="security-principles">
   보안 원칙
@@ -116,7 +116,7 @@ npm install @anthropic-ai/sandbox-runtime
 
 1. **동일 호스트 커널**: VM과 달리 샌드박스 프로세스는 호스트 커널을 공유합니다. 커널 취약점은 이론적으로 탈출을 가능하게 할 수 있습니다. 일부 위협 모델의 경우 이는 허용되지만, 커널 수준 격리가 필요한 경우 gVisor 또는 별도의 VM을 사용하십시오.
 
-2. **TLS 검사 없음**: 프록시는 클라이언트가 제공한 호스트명을 기반으로 도메인을 허용 목록에 추가하며 암호화된 트래픽을 종료하거나 검사하지 않습니다. 샌드박스 내부에서 실행되는 코드는 잠재적으로 [도메인 프론팅](https://en.wikipedia.org/wiki/Domain_fronting) 또는 유사한 기술을 사용하여 허용 목록 외부의 호스트에 도달할 수 있습니다. 위협 모델이 더 강력한 보장을 요구하는 경우, [TLS 종료 프록시](#traffic-forwarding)를 구성하십시오. 자세한 내용은 [샌드박싱 보안 제한사항](/ko/sandboxing#security-limitations)을 참조하십시오. 별도로, 에이전트가 허용된 도메인에 대한 허용 자격증명을 가지고 있는 경우, 해당 도메인을 사용하여 다른 네트워크 요청을 트리거하거나 데이터를 유출할 수 없도록 하십시오.
+2. **TLS 검사 없음**: 프록시는 클라이언트가 제공한 호스트명을 기반으로 도메인을 허용 목록에 추가하며 암호화된 트래픽을 종료하거나 검사하지 않습니다. 샌드박스 내부에서 실행되는 코드는 잠재적으로 [도메인 프론팅](https://en.wikipedia.org/wiki/Domain_fronting) 또는 유사한 기술을 사용하여 허용 목록 외부의 호스트에 도달할 수 있습니다. 위협 모델이 더 강력한 보장을 요구하는 경우, [TLS 종료 프록시](#traffic-forwarding)를 구성하십시오. 자세한 내용은 [샌드박싱 보안 제한사항](/docs/ko/sandboxing#security-limitations)을 참조하십시오. 별도로, 에이전트가 허용된 도메인에 대한 허용 자격증명을 가지고 있는 경우, 해당 도메인을 사용하여 다른 네트워크 요청을 트리거하거나 데이터를 유출할 수 없도록 하십시오.
 
 많은 단일 개발자 및 CI/CD 사용 사례의 경우, sandbox-runtime은 최소한의 설정으로 상당히 높은 수준을 제공합니다. 아래 섹션은 더 강력한 격리가 필요한 배포를 위해 컨테이너 및 VM을 다룹니다.
 
@@ -385,9 +385,9 @@ docker run \
   추가 읽기
 </h2>
 
-* [Claude Code 보안 설명서](/ko/security)
-* [Agent SDK 호스팅](/ko/agent-sdk/hosting)
-* [권한 처리](/ko/agent-sdk/permissions)
+* [Claude Code 보안 설명서](/docs/ko/security)
+* [Agent SDK 호스팅](/docs/ko/agent-sdk/hosting)
+* [권한 처리](/docs/ko/agent-sdk/permissions)
 * [샌드박스 런타임](https://github.com/anthropic-experimental/sandbox-runtime)
 * [AI 에이전트를 위한 치명적인 삼중주](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)
 * [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/)

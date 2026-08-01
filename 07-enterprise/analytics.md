@@ -26,7 +26,7 @@ Team 및 Enterprise 대시보드에는 다음이 포함됩니다:
 * **리더보드**: Claude Code 사용량으로 순위가 매겨진 상위 기여자
 * **데이터 내보내기**: 사용자 정의 보고를 위해 기여도 데이터를 CSV로 다운로드
 
-사용자별 토큰 수 및 비용 추정치는 [OpenTelemetry 내보내기](/ko/monitoring-usage)를 구성하세요.
+사용자별 토큰 수 및 비용 추정치는 [OpenTelemetry 내보내기](/docs/ko/monitoring-usage)를 구성하거나, 조직의 분석 설정에서 [지출 보고서](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)를 내보내세요. 이 보고서는 사용자별 및 모델별 토큰 사용량 및 예상 사용량 크레딧 지출을 나열합니다.
 
 <h3 id="enable-contribution-metrics">
   기여도 지표 활성화
@@ -41,7 +41,7 @@ Team 및 Enterprise 대시보드에는 다음이 포함됩니다:
 분석 설정을 구성하려면 소유자 역할이 필요합니다. GitHub 관리자가 GitHub 앱을 설치해야 합니다.
 
 <Warning>
-  기여도 지표는 [Zero Data Retention](/ko/zero-data-retention)이 활성화된 조직에서는 사용할 수 없습니다. 분석 대시보드는 사용량 지표만 표시합니다.
+  기여도 지표는 [Zero Data Retention](/docs/ko/zero-data-retention)이 활성화된 조직에서는 사용할 수 없습니다. 분석 대시보드는 사용량 지표만 표시합니다.
 </Warning>
 
 <Steps>
@@ -228,13 +228,15 @@ PR 병합 날짜 21일 전부터 2일 후까지의 세션이 속성 일치를 �
   프로그래매틱 방식으로 데이터 접근
 </h4>
 
+Enterprise 플랜에서 [Claude Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics)는 Claude Code를 포함한 Claude 전체 표면에서 조직의 사용자별 참여, 사용량 및 비용 보고서를 반환합니다. 기본 소유자는 [claude.ai/analytics/api-keys](https://claude.ai/analytics/api-keys)에서 `read:analytics` 범위를 가진 키를 생성합니다. API는 Teams 플랜에서 사용할 수 없습니다.
+
 GitHub를 통해 이 데이터를 쿼리하려면 `claude-code-assisted` 레이블이 지정된 PR을 검색합니다.
 
 <h2 id="access-analytics-for-api-customers">
   API 고객을 위한 분석 접근
 </h2>
 
-Claude Console을 사용하는 API 고객은 [platform.claude.com/claude-code](https://platform.claude.com/claude-code)에서 분석에 접근할 수 있습니다. 대시보드에 접근하려면 UsageView 권한이 필요하며, 이는 개발자, 청구, 관리자, 소유자 및 기본 소유자 역할에 부여됩니다.
+Claude Console을 사용하는 API 고객은 [platform.claude.com/claude-code](https://platform.claude.com/claude-code)에서 분석에 접근할 수 있습니다. 대시보드에 접근하려면 UsageView 권한이 필요하며, 이는 Developer, Billing, Admin, Owner 및 Primary Owner 역할에 부여됩니다. 동일한 일일 사용자별 지표를 프로그래밍 방식으로 가져오려면 Admin API 키를 사용하여 [Claude Code Analytics API](https://platform.claude.com/docs/ko/build-with-claude/claude-code-analytics-api)를 사용합니다.
 
 <Note>
   GitHub 통합을 포함한 기여도 지표는 현재 API 고객에게 사용할 수 없습니다. Console 대시보드는 사용량 및 지출 지표만 표시합니다.
@@ -265,6 +267,6 @@ Console 대시보드는 다음을 표시합니다:
   관련 리소스
 </h2>
 
-* [OpenTelemetry를 사용한 모니터링](/ko/monitoring-usage): 실시간 지표 및 이벤트를 관찰성 스택으로 내보내기
-* [비용 효과적으로 관리하기](/ko/costs): 지출 한도 설정 및 토큰 사용량 최적화
-* [권한](/ko/permissions): 역할 및 권한 구성
+* [OpenTelemetry를 사용한 모니터링](/docs/ko/monitoring-usage): 실시간 지표 및 이벤트를 관찰성 스택으로 내보내기
+* [비용 효과적으로 관리하기](/docs/ko/costs): 지출 한도 설정 및 토큰 사용량 최적화
+* [권한](/docs/ko/permissions): 역할 및 권한 구성

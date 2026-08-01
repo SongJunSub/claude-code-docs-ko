@@ -27,7 +27,7 @@ Claude Code 플러그인은 다음을 포함한 대부분의 JetBrains IDE와 �
 
 * **빠른 실행**: `Cmd+Esc` (Mac) 또는 `Ctrl+Esc` (Windows/Linux)를 사용하여 편집기에서 직접 Claude Code를 열거나, UI의 Claude Code 버튼을 클릭합니다
 * **Diff 보기**: 코드 변경 사항을 터미널 대신 IDE diff 뷰어에 직접 표시할 수 있습니다
-* **선택 영역 컨텍스트**: IDE의 현재 선택 영역 또는 탭이 Claude Code와 자동으로 공유됩니다. [`Read` 거부 규칙](/ko/permissions#read-and-edit)은 일치하는 파일에 대해 이 공유를 차단합니다
+* **선택 영역 컨텍스트**: IDE의 현재 선택 영역 또는 탭이 Claude Code와 자동으로 공유됩니다. [`Read` 거부 규칙](/docs/ko/permissions#read-and-edit)은 일치하는 파일에 대해 이 공유를 차단합니다
 * **파일 참조 바로가기**: `Cmd+Option+K` (Mac) 또는 `Alt+Ctrl+K` (Linux/Windows)를 사용하여 `@src/auth.ts#L1-99`와 같은 파일 참조를 삽입합니다
 * **진단 공유**: IDE의 진단 오류 (lint 및 구문 오류 등)가 작업할 때 Claude와 자동으로 공유됩니다
 
@@ -39,7 +39,7 @@ Claude Code 플러그인은 다음을 포함한 대부분의 JetBrains IDE와 �
 
 <Steps>
   <Step title="Claude Code CLI 설치">
-    아직 설치하지 않았다면 [빠른 시작](/ko/quickstart)을 따라 CLI를 설치합니다. `claude`가 PATH에 없으면 플러그인에 "Claude Code를 시작할 수 없음" 알림이 표시됩니다.
+    아직 설치하지 않았다면 [빠른 시작](/docs/ko/quickstart)을 따라 CLI를 설치합니다. `claude`가 PATH에 없으면 플러그인에 "Claude Code를 시작할 수 없음" 알림이 표시됩니다.
   </Step>
 
   <Step title="JetBrains 플러그인 설치">
@@ -49,7 +49,7 @@ Claude Code 플러그인은 다음을 포함한 대부분의 JetBrains IDE와 �
 
 `claude`가 IDE가 찾을 수 없는 위치에 설치된 경우 플러그인의 [Claude 명령 설정](#general-settings)에서 전체 경로를 설정합니다.
 
-Claude Code는 모든 유료 Claude 구독(Pro, Max, Team 또는 Enterprise) 또는 Claude Console 계정과 함께 작동하며, API 키가 필요하지 않습니다. `claude`를 처음 실행할 때 [로그인](/ko/authentication#log-in-to-claude-code)하라는 메시지가 표시됩니다.
+Claude Code는 모든 유료 Claude 구독(Pro, Max, Team 또는 Enterprise) 또는 Claude Console 계정과 함께 작동하며, API 키가 필요하지 않습니다. `claude`를 처음 실행할 때 [로그인](/docs/ko/authentication#log-in-to-claude-code)하라는 메시지가 표시됩니다.
 
 <Note>
   플러그인을 설치한 후 IDE를 완전히 다시 시작해야 적용될 수 있습니다.
@@ -233,7 +233,7 @@ Claude 아이콘을 클릭하면 "명령을 찾을 수 없음"이 표시되는 �
   보안 고려 사항
 </h2>
 
-Claude Code가 [`acceptEdits` 권한 모드](/ko/permission-modes#auto-approve-file-edits-with-acceptedits-mode)에서 JetBrains IDE에서 실행될 때, IDE에서 자동으로 실행될 수 있는 IDE 구성 파일을 수정할 수 있습니다. 이는 `acceptEdits` 모드에서 Claude Code를 실행하는 위험을 증가시킬 수 있으며 bash 실행에 대한 Claude Code의 권한 프롬프트를 우회할 수 있습니다.
+Claude Code가 [`acceptEdits` 권한 모드](/docs/ko/permission-modes#auto-approve-file-edits-with-acceptedits-mode)에서 JetBrains IDE에서 실행될 때, IDE에서 자동으로 실행될 수 있는 IDE 구성 파일을 수정할 수 있습니다. 이는 `acceptEdits` 모드에서 Claude Code를 실행하는 위험을 증가시킬 수 있으며 bash 실행에 대한 Claude Code의 권한 프롬프트를 우회할 수 있습니다.
 
 JetBrains IDE에서 실행할 때 다음을 고려합니다:
 
@@ -241,4 +241,30 @@ JetBrains IDE에서 실행할 때 다음을 고려합니다:
 * Claude가 신뢰할 수 있는 프롬프트로만 사용되도록 각별히 주의
 * Claude Code가 수정할 수 있는 파일이 무엇인지 인식
 
-Claude Code 설치 또는 로그인 문제가 IDE 외부에서 발생하는 경우 [설치 및 로그인 문제 해결](/ko/troubleshoot-install)을 참조하세요.
+Claude Code 설치 또는 로그인 문제가 IDE 외부에서 발생하는 경우 [설치 및 로그인 문제 해결](/docs/ko/troubleshoot-install)을 참조하세요.
+
+<h3 id="the-built-in-ide-mcp-server">
+  기본 제공 IDE MCP 서버
+</h3>
+
+플러그인이 활성화되면 CLI가 자동으로 연결하는 로컬 MCP 서버를 실행합니다. 이것이 CLI가 IDE의 기본 diff 뷰어에서 diff를 열고, `@`-멘션에 대한 현재 선택 항목을 읽고, 검사 진단을 대화에 가져오는 방식입니다.
+
+서버의 이름은 `ide`이며 구성할 항목이 없으므로 `/mcp`에서 숨겨집니다. 그러나 조직에서 [`PreToolUse` 훅](/docs/ko/hooks#pretooluse)을 사용하여 MCP 도구를 허용 목록에 추가하는 경우 이 서버가 존재한다는 것을 알아야 합니다.
+
+**선택 항목 및 열린 파일 컨텍스트.** 연결되어 있는 동안 CLI는 보낸 각 프롬프트에 현재 편집기 선택 항목과 활성 파일의 경로를 컨텍스트로 포함합니다. 이 경우 기록에 `⧉ Selected N lines from <file>` 줄이 표시됩니다. `.env`와 같은 민감한 파일을 제외하려면 해당 경로에 대한 [`Read` 거부 규칙](/docs/ko/permissions#read-and-edit)을 추가합니다. 일치하는 거부 규칙은 선택된 텍스트와 해당 파일에 대한 열린 파일 공지가 Claude에 도달하는 것을 모두 방지합니다.
+
+**전송 및 인증.** 서버는 OS에서 할당한 임시 포트에서 수신하며 포트는 구성할 수 없습니다. 전송은 암호화되지 않은 `ws://`입니다. 루프백에서 트래픽을 캡처할 수 있는 모든 프로세스는 잠금 파일에서 토큰을 읽을 수도 있으므로 TLS는 로컬 공격자에 대한 보호를 추가하지 않습니다. 각 IDE 시작은 새로운 임의의 인증 토큰을 생성하고 `~/.claude/ide/<port>.lock`의 잠금 파일에 기록하며, CLI는 이를 `X-Claude-Code-Ide-Authorization` 헤더로 제시하여 연결해야 합니다. `CLAUDE_CONFIG_DIR`이 설정된 경우 잠금 파일은 `$CLAUDE_CONFIG_DIR/ide/` 대신에 기록됩니다.
+
+**모델에 노출된 도구.** 서버는 여러 도구를 호스팅하지만 모델에는 하나만 표시됩니다. 나머지는 CLI가 diff 열기 및 선택 항목 읽기와 같은 자체 UI에 사용하는 내부 RPC이며 도구 목록이 Claude에 도달하기 전에 필터링됩니다.
+
+| 도구 이름 (훅에서 보이는 대로)         | 수행 작업                                                          | 읽기 전용 |
+| -------------------------- | -------------------------------------------------------------- | ----- |
+| `mcp__ide__getDiagnostics` | IDE의 검사 진단, 편집기에 표시되는 오류 및 경고를 반환합니다. 선택적으로 하나의 파일로 범위가 지정됩니다. | 예     |
+
+JetBrains 플러그인은 모델에 코드 실행 도구를 노출하지 않습니다.
+
+**수신 대기 인터페이스.** 서버가 바인딩하는 네트워크 인터페이스는 \*\*설정 → 도구 → Claude Code \[베타] → 네트워킹 (고급)\*\*에서 **모든 네트워크 인터페이스에서 연결 수락**으로 제어됩니다. 설정이 비활성화되면 서버는 `127.0.0.1`에서만 수신하며 다른 호스트에서 도달할 수 없습니다. 활성화되면 포트는 로컬 네트워크에서 도달할 수 있습니다. 이 설정은 WSL2의 기본 NAT 네트워킹 또는 원격 IDE 설정과 같이 CLI가 루프백을 통해 IDE에 도달할 수 없는 경우를 위해 존재합니다. 해당 시나리오는 [WSL 구성](#wsl-configuration)을 참조하세요.
+
+<Warning>
+  **모든 네트워크 인터페이스에서 연결 수락**을 활성화하면 IDE MCP 포트가 로컬 네트워크에서 도달할 수 있게 됩니다. 연결에는 여전히 잠금 파일의 인증 토큰이 필요하지만 전송이 암호화되지 않은 `ws://`이므로 설정이 켜져 있을 때 세션 트래픽과 해당 토큰이 모두 네트워크를 통해 평문으로 전달됩니다. 루프백이 정말로 작동할 수 없을 때만 켜세요. WSL2의 경우 Windows 루프백 인터페이스가 Linux VM과 공유되고 소켓이 루프백에 유지될 수 있도록 [미러링된 네트워킹](#switch-wsl2-to-mirrored-networking)을 선호합니다.
+</Warning>

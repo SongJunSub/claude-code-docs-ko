@@ -6,7 +6,7 @@
 
 > Claude Code를 사용하여 코드베이스 탐색, 버그 수정, 리팩토링, 테스트 및 기타 일상적인 작업을 위한 단계별 가이드입니다.
 
-이 페이지는 일상적인 개발을 위한 짧은 레시피를 모아놓았습니다. 프롬프팅 및 컨텍스트 관리에 대한 더 높은 수준의 지침은 [모범 사례](/ko/best-practices)를 참조하십시오.
+이 페이지는 일상적인 개발을 위한 짧은 레시피를 모아놓았습니다. 프롬프팅 및 컨텍스트 관리에 대한 더 높은 수준의 지침은 [모범 사례](/docs/ko/best-practices)를 참조하십시오.
 
 이 페이지는 다음을 다룹니다:
 
@@ -27,7 +27,7 @@
   새로운 코드베이스 이해하기
 </h3>
 
-모노레포 또는 대규모 코드베이스에서 Claude Code를 구성하는 방법은 [모노레포 및 대규모 저장소](/ko/large-codebases)를 참조하십시오.
+모노레포 또는 대규모 코드베이스에서 Claude Code를 구성하는 방법은 [모노레포 및 대규모 저장소](/docs/ko/large-codebases)를 참조하십시오.
 
 <h4 id="get-a-quick-codebase-overview">
   코드베이스의 빠른 개요 얻기
@@ -108,7 +108,7 @@
 
   * 찾고 있는 것에 대해 구체적으로 설명하기
   * 프로젝트의 도메인 언어 사용하기
-  * 언어에 대한 [코드 인텔리전스 플러그인](/ko/discover-plugins#code-intelligence)을 설치하여 Claude에게 정확한 "정의로 이동" 및 "참조 찾기" 네비게이션 제공하기
+  * 언어에 대한 [코드 인텔리전스 플러그인](/docs/ko/discover-plugins#code-intelligence)을 설치하여 Claude에게 정확한 "정의로 이동" 및 "참조 찾기" 네비게이션 제공하기
 </Tip>
 
 ***
@@ -255,7 +255,7 @@ Claude에게 직접 풀 요청을 만들도록 요청하거나 ("create a pr for
   </Step>
 </Steps>
 
-`gh pr create`를 사용하여 PR을 만들면 세션이 자동으로 해당 PR에 연결됩니다. 나중에 `claude --from-pr <number>`로 재개하거나 [`/resume` 선택기](/ko/sessions#use-the-session-picker)에 PR URL을 붙여넣어 재개할 수 있습니다.
+`gh pr create`를 사용하여 PR을 만들면 세션이 자동으로 해당 PR에 연결됩니다. 나중에 `claude --from-pr 123`으로 재개하거나 (123을 PR 번호로 바꾸기), [`/resume` 선택기](/docs/ko/sessions#use-the-session-picker)에 PR URL을 붙여넣어 재개할 수 있습니다.
 
 <Tip>
   Claude가 생성한 PR을 제출하기 전에 검토하고 Claude에게 잠재적 위험이나 고려사항을 강조하도록 요청하십시오.
@@ -324,7 +324,7 @@ Claude Code는 모든 디렉토리에서 작동합니다. 노트 저장소, 문�
     다음 방법 중 하나를 사용할 수 있습니다:
 
     1. Claude Code 창으로 이미지를 드래그 앤 드롭하기
-    2. 이미지를 복사하고 ctrl+v로 CLI에 붙여넣기 (cmd+v 사용하지 않기)
+    2. 이미지를 복사하고 Ctrl+V로 CLI에 붙여넣기. macOS에서는 iTerm2에서도 Cmd+V가 작동합니다.
     3. Claude에 이미지 경로 제공하기. 예: "Analyze this image: /path/to/your/image.png"
   </Step>
 
@@ -403,7 +403,7 @@ Claude Code는 모든 디렉토리에서 작동합니다. 노트 저장소, 문�
     Show me the data from @github:repos/owner/repo/issues
     ```
 
-    이것은 @server:resource 형식을 사용하여 연결된 MCP 서버에서 데이터를 가져옵니다. 자세한 내용은 [MCP 리소스](/ko/mcp#use-mcp-resources)를 참조하십시오.
+    이것은 @server:resource 형식을 사용하여 연결된 MCP 서버에서 데이터를 가져옵니다. 자세한 내용은 [MCP 리소스](/docs/ko/mcp#use-mcp-resources)를 참조하십시오.
   </Step>
 </Steps>
 
@@ -428,10 +428,10 @@ Claude가 정기적으로 작업을 자동으로 처리하도록 하고 싶다�
 
 | 옵션                                        | 실행 위치            | 최적 사용                                                                                                                                     |
 | :---------------------------------------- | :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| [Routines](/ko/routines)                  | Anthropic 관리 인프라 | 컴퓨터가 꺼져 있어도 실행되어야 하는 작업. API 호출 또는 GitHub 이벤트 외에도 일정에 따라 트리거될 수 있습니다. [claude.ai/code/routines](https://claude.ai/code/routines)에서 구성합니다. |
-| [데스크톱 예약 작업](/ko/desktop-scheduled-tasks) | 데스크톱 앱을 통한 컴퓨터   | 로컬 파일, 도구 또는 커밋되지 않은 변경사항에 직접 액세스해야 하는 작업.                                                                                                |
-| [GitHub Actions](/ko/github-actions)      | CI 파이프라인         | 열린 PR 또는 cron 일정과 같은 저장소 이벤트와 연결된 작업. 워크플로우 구성과 함께 있어야 합니다.                                                                               |
-| [`/loop`](/ko/scheduled-tasks)            | 현재 CLI 세션        | 세션이 열려 있는 동안 빠른 폴링. 새 대화를 시작하면 작업이 중지됩니다. `--resume` 및 `--continue`는 만료되지 않은 것을 복원합니다.                                                    |
+| [Routines](/docs/ko/routines)                  | Anthropic 관리 인프라 | 컴퓨터가 꺼져 있어도 실행되어야 하는 작업. API 호출 또는 GitHub 이벤트 외에도 일정에 따라 트리거될 수 있습니다. [claude.ai/code/routines](https://claude.ai/code/routines)에서 구성합니다. |
+| [데스크톱 예약 작업](/docs/ko/desktop-scheduled-tasks) | 데스크톱 앱을 통한 컴퓨터   | 로컬 파일, 도구 또는 커밋되지 않은 변경사항에 직접 액세스해야 하는 작업.                                                                                                |
+| [GitHub Actions](/docs/ko/github-actions)      | CI 파이프라인         | 열린 PR 또는 cron 일정과 같은 저장소 이벤트와 연결된 작업. 워크플로우 구성과 함께 있어야 합니다.                                                                               |
+| [`/loop`](/docs/ko/scheduled-tasks)            | 현재 CLI 세션        | 세션이 열려 있는 동안 빠른 폴링. 새 대화를 시작하면 작업이 중지됩니다. `--resume` 및 `--continue`는 만료되지 않은 것을 복원합니다.                                                    |
 
 <Tip>
   예약된 작업을 위한 프롬프트를 작성할 때 성공이 무엇인지, 결과를 어떻게 처리할지 명시적으로 설명하십시오. 작업이 자동으로 실행되므로 명확한 질문을 할 수 없습니다. 예를 들어: "Review open PRs labeled `needs-review`, leave inline comments on any issues, and post a summary in the `#eng-reviews` Slack channel."
@@ -497,7 +497,7 @@ what are the limitations of Claude Code?
 claude --continue
 ```
 
-이것은 현재 디렉토리에서 가장 최근 세션을 재개합니다. 아직 없으면 `No conversation found to continue`를 출력하고 종료합니다. `claude --resume`을 사용하여 목록에서 선택하거나 실행 중인 세션 내에서 `/resume`을 사용합니다. [세션 관리](/ko/sessions)에서 이름 지정, 분기 및 전체 선택기 참조를 참조하십시오.
+이것은 현재 디렉토리에서 가장 최근 세션을 재개합니다. 아직 없으면 `No conversation found to continue`를 출력하고 종료합니다. `claude --resume`을 사용하여 목록에서 선택하거나 실행 중인 세션 내에서 `/resume`을 사용합니다. [세션 관리](/docs/ko/sessions)에서 이름 지정, 분기 및 전체 선택기 참조를 참조하십시오.
 
 <h2 id="run-parallel-sessions-with-worktrees">
   worktree를 사용하여 병렬 세션 실행하기
@@ -509,7 +509,7 @@ claude --continue
 claude --worktree feature-auth
 ```
 
-다른 이름으로 두 번째 터미널에서 동일한 명령을 실행하여 격리된 병렬 세션을 시작합니다. [Worktrees](/ko/worktrees)에서 정리, `.worktreeinclude` 및 비git VCS 지원을 참조하십시오. 별도의 터미널 대신 한 화면에서 병렬 세션을 모니터링하려면 [백그라운드 에이전트](/ko/agent-view)를 참조하십시오.
+다른 이름으로 두 번째 터미널에서 동일한 명령을 실행하여 격리된 병렬 세션을 시작합니다. [Worktrees](/docs/ko/worktrees)에서 정리, `.worktreeinclude` 및 비git VCS 지원을 참조하십시오. 별도의 터미널 대신 한 화면에서 병렬 세션을 모니터링하려면 [백그라운드 에이전트](/docs/ko/agent-view)를 참조하십시오.
 
 <h2 id="plan-before-editing">
   편집 전에 계획하기
@@ -521,7 +521,7 @@ claude --worktree feature-auth
 claude --permission-mode plan
 ```
 
-세션 중에 `Shift+Tab`을 눌러 계획 모드로 전환할 수도 있습니다. [계획 모드](/ko/permission-modes#analyze-before-you-edit-with-plan-mode)에서 승인 흐름 및 텍스트 편집기에서 계획 편집을 참조하십시오.
+세션 중에 `Shift+Tab`을 눌러 계획 모드로 전환할 수도 있습니다. [계획 모드](/docs/ko/permission-modes#analyze-before-you-edit-with-plan-mode)에서 승인 흐름 및 텍스트 편집기에서 계획 편집을 참조하십시오.
 
 <h2 id="delegate-research-to-subagents">
   subagent에게 연구 위임하기
@@ -533,7 +533,7 @@ claude --permission-mode plan
 use a subagent to investigate how our auth system handles token refresh
 ```
 
-subagent는 자체 컨텍스트 윈도우에서 파일을 읽고 요약을 보고합니다. [Subagents](/ko/sub-agents)에서 자체 도구 및 프롬프트가 있는 사용자 정의 에이전트 정의를 참조하십시오.
+subagent는 자체 컨텍스트 윈도우에서 파일을 읽고 요약을 보고합니다. [Subagents](/docs/ko/sub-agents)에서 자체 도구 및 프롬프트가 있는 사용자 정의 에이전트 정의를 참조하십시오.
 
 <h2 id="pipe-claude-into-scripts">
   Claude를 스크립트로 파이프하기
@@ -545,26 +545,26 @@ CI, 사전 커밋 훅 또는 배치 처리를 위해 Claude를 비대화형으�
 git log --oneline -20 | claude -p "summarize these recent commits"
 ```
 
-[비대화형 모드](/ko/headless)에서 출력 형식, 권한 플래그 및 팬아웃 패턴을 참조하십시오.
+[비대화형 모드](/docs/ko/headless)에서 출력 형식, 권한 플래그 및 팬아웃 패턴을 참조하십시오.
 
 <h2 id="next-steps">
   다음 단계
 </h2>
 
 <CardGroup cols={2}>
-  <Card title="모범 사례" icon="lightbulb" href="/ko/best-practices">
+  <Card title="모범 사례" icon="lightbulb" href="/docs/ko/best-practices">
     Claude Code에서 최대한 활용하기 위한 패턴
   </Card>
 
-  <Card title="세션 관리" icon="rotate-left" href="/ko/sessions">
+  <Card title="세션 관리" icon="rotate-left" href="/docs/ko/sessions">
     대화 재개, 이름 지정 및 분기
   </Card>
 
-  <Card title="Worktrees" icon="code-branch" href="/ko/worktrees">
+  <Card title="Worktrees" icon="code-branch" href="/docs/ko/worktrees">
     격리된 병렬 세션 실행
   </Card>
 
-  <Card title="Claude Code 확장하기" icon="puzzle-piece" href="/ko/features-overview">
+  <Card title="Claude Code 확장하기" icon="puzzle-piece" href="/docs/ko/features-overview">
     skill, hook, MCP, subagent 및 플러그인 추가
   </Card>
 </CardGroup>

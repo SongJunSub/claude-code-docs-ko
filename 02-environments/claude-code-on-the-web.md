@@ -4,7 +4,7 @@
 
 # 웹에서 Claude Code 사용하기
 
-> 클라우드 환경, 설정 스크립트, 네트워크 액세스 및 Docker를 Anthropic의 샌드박스에서 구성합니다. `--remote` 및 `--teleport`를 사용하여 웹과 터미널 간에 세션을 이동합니다.
+> 클라우드 환경, 설정 스크립트, 네트워크 액세스 및 Docker를 Anthropic의 샌드박스에서 구성합니다. `--cloud` 및 `--teleport`를 사용하여 웹과 터미널 간에 세션을 이동합니다.
 
 <Note>
   웹에서 Claude Code는 Pro, Max 및 Team 사용자, 그리고 프리미엄 시트 또는 Chat + Claude Code 시트가 있는 Enterprise 사용자를 위한 연구 미리보기 상태입니다.
@@ -13,7 +13,7 @@
 웹에서 Claude Code는 [claude.ai/code](https://claude.ai/code)의 Anthropic 관리 클라우드 인프라에서 작업을 실행합니다. 세션은 브라우저를 닫아도 유지되며, Claude 모바일 앱에서 모니터링할 수 있습니다.
 
 <Tip>
-  웹에서 Claude Code를 처음 사용하시나요? [시작하기](/ko/web-quickstart)에서 GitHub 계정을 연결하고 첫 번째 작업을 제출하세요.
+  웹에서 Claude Code를 처음 사용하시나요? [시작하기](/docs/ko/web-quickstart)에서 GitHub 계정을 연결하고 첫 번째 작업을 제출하세요.
 </Tip>
 
 이 페이지에서 다루는 내용:
@@ -22,7 +22,7 @@
 * [클라우드 환경](#the-cloud-environment): 어떤 구성이 이월되는지, 어떤 도구가 설치되어 있는지, 환경을 구성하는 방법
 * [설정 스크립트](#setup-scripts) 및 종속성 관리
 * [네트워크 액세스](#network-access): 수준, 프록시 및 기본 허용 목록
-* [`--remote` 및 `--teleport`를 사용하여 웹과 터미널 간에 작업 이동](#move-tasks-between-web-and-terminal)
+* [`--cloud` 및 `--teleport`를 사용하여 웹과 터미널 간에 작업 이동](#move-tasks-between-web-and-terminal)
 * [세션 작업](#work-with-sessions): 검토, 공유, 보관, 삭제
 * [Pull request 자동 수정](#auto-fix-pull-requests): CI 실패 및 검토 주석에 자동으로 응답
 * [보안 및 격리](#security-and-isolation): 세션이 어떻게 격리되는지
@@ -36,21 +36,21 @@
 
 | 방법               | 작동 방식                                                       | 최적 대상                                             |
 | :--------------- | :---------------------------------------------------------- | :------------------------------------------------ |
-| **GitHub App**   | [웹 온보딩](/ko/web-quickstart) 중에 Claude GitHub App을 승인합니다.    | 브라우저 온보딩; [자동 수정](#auto-fix-pull-requests)을 원하는 팀 |
+| **GitHub App**   | [웹 온보딩](/docs/ko/web-quickstart) 중에 Claude GitHub App을 승인합니다.    | 브라우저 온보딩; [자동 수정](#auto-fix-pull-requests)을 원하는 팀 |
 | **`/web-setup`** | 터미널에서 `/web-setup`을 실행하여 로컬 `gh` CLI 토큰을 Claude 계정과 동기화합니다. | 이미 `gh`를 사용하는 개별 개발자                              |
 
 <Note>
   두 방법 모두에서 클라우드 세션은 Claude GitHub App이 설치된 저장소뿐만 아니라 연결된 GitHub 계정이 볼 수 있는 모든 저장소에 액세스할 수 있습니다. App 설치는 [자동 수정](#auto-fix-pull-requests)을 위한 PR 웹훅을 활성화합니다. 이는 세션 수준의 액세스 제어가 아닙니다. 클라우드 세션에서 팀이 도달할 수 있는 저장소를 제한하려면 GitHub 자체에서 액세스를 제한하세요. 예를 들어 연결된 GitHub 계정의 팀 또는 저장소 멤버십을 제한하면 됩니다.
 </Note>
 
-두 방법 모두 작동합니다. [`/schedule`](/ko/routines)은 두 형태의 액세스를 확인하고 구성되지 않은 경우 `/web-setup`을 실행하라는 메시지를 표시합니다. `/web-setup` 안내는 [터미널에서 연결](/ko/web-quickstart#connect-from-your-terminal)을 참조하세요.
+두 방법 모두 작동합니다. [`/schedule`](/docs/ko/routines)은 두 형태의 액세스를 확인하고 구성되지 않은 경우 `/web-setup`을 실행하라는 메시지를 표시합니다. `/web-setup` 안내는 [터미널에서 연결](/docs/ko/web-quickstart#connect-from-your-terminal)을 참조하세요.
 
 GitHub App은 App을 사용하여 PR 웹훅을 수신하는 [자동 수정](#auto-fix-pull-requests)에 필요합니다. `/web-setup`으로 연결했다가 나중에 자동 수정을 원하면 해당 저장소에 App을 설치하세요.
 
 Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)의 Quick web setup 토글로 `/web-setup`을 비활성화할 수 있습니다.
 
 <Note>
-  [Zero Data Retention](/ko/zero-data-retention)이 활성화된 조직은 `/web-setup` 또는 기타 클라우드 세션 기능을 사용할 수 없습니다.
+  [Zero Data Retention](/docs/ko/zero-data-retention)이 활성화된 조직은 `/web-setup` 또는 기타 클라우드 세션 기능을 사용할 수 없습니다.
 </Note>
 
 <h2 id="the-cloud-environment">
@@ -63,7 +63,7 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
   클라우드 세션에서 사용 가능한 것
 </h3>
 
-클라우드 세션은 저장소의 새로운 복제본에서 시작됩니다. 저장소에 커밋된 모든 것이 사용 가능합니다. 자신의 머신에만 설치하거나 구성한 것은 사용할 수 없습니다. 조직의 정책은 [서버 관리 설정](/ko/server-managed-settings)을 통해 별도로 도착합니다.
+클라우드 세션은 저장소의 새로운 복제본에서 시작됩니다. 저장소에 커밋된 모든 것이 사용 가능합니다. 자신의 머신에만 설치하거나 구성한 것은 사용할 수 없습니다. 조직의 정책은 [서버 관리 설정](/docs/ko/server-managed-settings)을 통해 별도로 도착합니다.
 
 |                                                                     | 클라우드 세션에서 사용 가능 | 이유                                                                                                                                                                                                |
 | :------------------------------------------------------------------ | :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -72,16 +72,18 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
 | 저장소의 `.mcp.json` MCP 서버                                             | 예               | 복제본의 일부                                                                                                                                                                                           |
 | 저장소의 `.claude/rules/`                                               | 예               | 복제본의 일부                                                                                                                                                                                           |
 | 저장소의 `.claude/skills/`, `.claude/agents/`, `.claude/commands/`      | 예               | 복제본의 일부                                                                                                                                                                                           |
-| `.claude/settings.json`에 선언된 플러그인                                   | 예               | 선언한 [마켓플레이스](/ko/plugin-marketplaces)에서 세션 시작 시 설치됩니다. 마켓플레이스 소스에 도달하려면 네트워크 액세스가 필요합니다                                                                                                           |
-| 조직의 [서버 관리 설정](/ko/server-managed-settings)                         | 예               | 세션이 시작될 때 Anthropic의 서버에서 가져옵니다. 클라우드 세션에서 `availableModels`이 어떻게 적용되는지는 [표면 범위](/ko/model-config#surface-coverage)를 참조하세요. MDM 또는 관리 설정 파일을 통해 장치에 배포된 설정은 세션이 Anthropic 관리 VM에서 실행되므로 적용되지 않습니다 |
+| `.claude/settings.json`에 선언된 플러그인                                   | 예               | 선언한 [마켓플레이스](/docs/ko/plugin-marketplaces)에서 세션 시작 시 설치됩니다. 마켓플레이스 소스에 도달하려면 네트워크 액세스가 필요합니다                                                                                                           |
+| 조직의 [서버 관리 설정](/docs/ko/server-managed-settings)                         | 예               | 세션이 시작될 때 Anthropic의 서버에서 가져옵니다. 클라우드 세션에서 `availableModels`이 어떻게 적용되는지는 [표면 범위](/docs/ko/model-config#surface-coverage)를 참조하세요. MDM 또는 관리 설정 파일을 통해 장치에 배포된 설정은 세션이 Anthropic 관리 VM에서 실행되므로 적용되지 않습니다 |
 | 사용자 `~/.claude/CLAUDE.md`                                           | 아니오             | 저장소가 아닌 머신에 있습니다                                                                                                                                                                                  |
 | 사용자 `~/.claude/skills/`, `~/.claude/agents/`, `~/.claude/commands/` | 아니오             | 저장소가 아닌 머신에 있습니다. 대신 저장소의 `.claude/` 디렉토리에 커밋하세요. claude.ai에서 활성화한 Skills는 클라우드 세션에 자동으로 로드됩니다                                                                                                    |
 | 사용자 설정에서만 활성화된 플러그인                                                 | 아니오             | 사용자 범위 `enabledPlugins`는 `~/.claude/settings.json`에 있습니다. 저장소의 `.claude/settings.json`에 선언하세요                                                                                                     |
-| `claude mcp add`로 추가한 MCP 서버                                        | 아니오             | 저장소가 아닌 로컬 사용자 구성에 씁니다. [`.mcp.json`](/ko/mcp#project-scope)에 서버를 선언하세요                                                                                                                           |
+| `claude mcp add`로 추가한 MCP 서버                                        | 아니오             | 저장소가 아닌 로컬 사용자 구성에 씁니다. [`.mcp.json`](/docs/ko/mcp#project-scope)에 서버를 선언하세요                                                                                                                           |
 | 정적 API 토큰 및 자격 증명                                                   | 아니오             | 아직 전용 비밀 저장소가 없습니다. 아래를 참조하세요                                                                                                                                                                     |
 | AWS SSO와 같은 대화형 인증                                                  | 아니오             | 지원되지 않습니다. SSO는 클라우드 세션에서 실행할 수 없는 브라우저 기반 로그인이 필요합니다                                                                                                                                             |
 
-클라우드 세션에서 구성을 사용 가능하게 하려면 저장소에 커밋하세요. 조직 정책은 [서버 관리 설정](/ko/server-managed-settings)을 통해 별도로 도착합니다. 아직 전용 비밀 저장소가 없습니다. 환경 변수와 설정 스크립트 모두 환경 구성에 저장되며, 해당 환경을 편집할 수 있는 모든 사람이 볼 수 있습니다. 클라우드 세션에서 비밀이 필요하면 이러한 가시성을 염두에 두고 환경 변수로 추가하세요.
+클라우드 세션에서 구성을 사용 가능하게 하려면 저장소에 커밋하세요. 조직 정책은 [서버 관리 설정](/docs/ko/server-managed-settings)을 통해 별도로 도착합니다.
+
+전용 비밀 저장소는 아직 사용할 수 없습니다. 환경 변수와 설정 스크립트 모두 환경 구성에 저장되며, 해당 환경을 편집할 수 있는 모든 사람이 볼 수 있습니다. 클라우드 세션에서 비밀이 필요하면 이러한 가시성을 염두에 두고 환경 변수로 추가하세요.
 
 <h3 id="installed-tools">
   설치된 도구
@@ -113,6 +115,13 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
 
 클라우드 세션에는 Claude가 이슈를 읽고, pull request를 나열하고, diff를 가져오고, 설정 없이 주석을 게시할 수 있는 기본 제공 GitHub 도구가 포함되어 있습니다. 이러한 도구는 [GitHub 프록시](#github-proxy)를 통해 인증되며, [GitHub 인증 옵션](#github-authentication-options)에서 구성한 방법을 사용하므로 토큰이 컨테이너에 들어가지 않습니다.
 
+[환경 설정](#configure-your-environment)에서 `GH_TOKEN` 또는 `GITHUB_TOKEN`을 직접 설정하거나, 둘 다 설정하지 않고 [GitHub 프록시](#github-proxy)가 자동으로 인증하도록 할 수 있습니다:
+
+* 토큰을 설정하면 컨테이너에 변경되지 않은 상태로 전달되므로 `gh`와 스크립트가 직접 사용합니다.
+* 둘 다 설정하지 않으면 컨테이너는 두 변수를 자리 표시자 문자열 `proxy-injected`로 설정하고 프록시는 아웃바운드 GitHub 요청에서 실제 자격 증명을 대체합니다. `gh`는 자신의 토큰 없이 작동하지만, `GITHUB_TOKEN`을 직접 읽는 스크립트는 자리 표시자를 받으며, 사용 가능한 토큰을 받지 않습니다.
+
+세션에 어느 경우가 적용되는지 확인하려면 Claude에 `echo $GH_TOKEN`을 실행하도록 요청하세요.
+
 `gh` CLI는 사전 설치되지 않습니다. 기본 제공 도구가 다루지 않는 `gh release` 또는 `gh workflow run`과 같은 `gh` 명령이 필요하면 직접 설치하고 인증하세요:
 
 <Steps>
@@ -120,8 +129,8 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
     [설정 스크립트](#setup-scripts)에 `apt update && apt install -y gh`를 추가하세요.
   </Step>
 
-  <Step title="토큰 제공">
-    GitHub 개인 액세스 토큰으로 [환경 설정](#configure-your-environment)에 `GH_TOKEN` 환경 변수를 추가하세요. `gh`는 `GH_TOKEN`을 자동으로 읽으므로 `gh auth login` 단계가 필요하지 않습니다.
+  <Step title="프록시가 인증을 처리하지 않는 경우 토큰 제공">
+    `echo $GH_TOKEN`이 `proxy-injected`를 출력하면 [GitHub 프록시](#github-proxy)가 `gh`를 인증하므로 이 단계는 불필요합니다. 그렇지 않으면 GitHub 개인 액세스 토큰으로 [환경 설정](#configure-your-environment)에 `GH_TOKEN` 환경 변수를 추가하세요. `gh`는 `GH_TOKEN`을 자동으로 읽으므로 `gh auth login` 단계가 필요하지 않습니다.
   </Step>
 </Steps>
 
@@ -131,7 +140,7 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
 
 각 클라우드 세션에는 claude.ai의 트랜스크립트 URL이 있으며, 세션은 `CLAUDE_CODE_REMOTE_SESSION_ID` 환경 변수에서 자신의 ID를 읽을 수 있습니다. 이를 사용하여 PR 본문, 커밋 메시지, Slack 게시물 또는 생성된 보고서에 추적 가능한 링크를 넣어서 검토자가 이를 생성한 실행을 열 수 있습니다.
 
-v2.1.179부터 Claude가 웹 세션에서 생성하는 커밋에는 `Claude-Session: <url>` git 트레일러가 포함되며, PR 본문에는 세션 URL이 자체 줄에 포함됩니다. {/* min-version: 2.1.182 */}v2.1.182부터 [`attribution.sessionUrl`](/ko/settings#attribution-settings)을 `false`로 설정하여 트레일러와 PR 본문 링크를 생략할 수 있습니다.
+v2.1.179부터 Claude가 웹 세션에서 생성하는 커밋에는 `Claude-Session: <url>` git 트레일러가 포함되며, PR 본문에는 세션 URL이 자체 줄에 포함됩니다. {/* min-version: 2.1.182 */}v2.1.182부터 [`attribution.sessionUrl`](/docs/ko/settings#attribution-settings)을 `false`로 설정하여 트레일러와 PR 본문 링크를 생략할 수 있습니다.
 
 커밋이나 PR이 아닌 다른 것(예: Claude가 게시하는 Slack 메시지 또는 작성하는 보고서 파일)에 세션 링크를 포함하려면 Claude에 다음 명령을 실행하도록 하고 출력을 사용하세요. 이 명령은 환경 변수의 값에서 `cse_` 접두사를 트랜스크립트 URL이 예상하는 `session_` 접두사로 변환합니다:
 
@@ -143,7 +152,7 @@ echo "https://claude.ai/code/${CLAUDE_CODE_REMOTE_SESSION_ID/#cse_/session_}"
   테스트 실행, 서비스 시작 및 패키지 추가
 </h3>
 
-Claude는 작업을 수행하는 과정에서 테스트를 실행합니다. 프롬프트에서 요청하세요. 예: "tests/의 실패한 테스트 수정" 또는 "각 변경 후 pytest 실행". pytest, jest, cargo test와 같은 테스트 러너는 사전 설치되어 있으므로 기본적으로 작동합니다.
+Claude는 작업을 수행하는 과정에서 테스트를 실행합니다. 프롬프트에서 요청하세요. 예: "tests/의 실패한 테스트 수정" 또는 "각 변경 후 pytest 실행". pytest, jest, cargo test와 같은 테스트 러너는 사전 설치되어 있으므로 추가 설정 없이 작동합니다.
 
 PostgreSQL 및 Redis는 사전 설치되어 있지만 기본적으로 실행되지 않습니다. 세션 중에 Claude에 각각을 시작하도록 요청하세요:
 
@@ -171,7 +180,7 @@ Docker는 컨테이너화된 서비스를 실행하는 데 사용 가능합니�
 * 16 GB RAM
 * 30 GB 디스크
 
-대규모 빌드 작업이나 메모리 집약적 테스트와 같이 훨씬 더 많은 메모리가 필요한 작업은 실패하거나 종료될 수 있습니다. 이러한 제한을 초과하는 워크로드의 경우 [Remote Control](/ko/remote-control)을 사용하여 자신의 하드웨어에서 Claude Code를 실행하세요.
+대규모 빌드 작업이나 메모리 집약적 테스트와 같이 훨씬 더 많은 메모리가 필요한 작업은 실패하거나 종료될 수 있습니다. 이러한 제한을 초과하는 워크로드의 경우 [Remote Control](/docs/ko/remote-control)을 사용하여 자신의 하드웨어에서 Claude Code를 실행하세요.
 
 <h3 id="configure-your-environment">
   환경 구성
@@ -179,12 +188,12 @@ Docker는 컨테이너화된 서비스를 실행하는 데 사용 가능합니�
 
 환경은 [네트워크 액세스](#network-access), 환경 변수 및 세션이 시작되기 전에 실행되는 [설정 스크립트](#setup-scripts)를 제어합니다. 구성 없이 사용 가능한 것은 [설치된 도구](#installed-tools)를 참조하세요. 웹 인터페이스 또는 터미널에서 환경을 관리할 수 있습니다:
 
-| 작업                 | 방법                                                                                                                  |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------ |
-| 환경 추가              | 현재 환경을 선택하여 선택기를 열고 **Add environment**를 선택합니다. 대화 상자에는 이름, 네트워크 액세스 수준, 환경 변수 및 설정 스크립트가 포함됩니다.                    |
-| 환경 편집              | 클라우드 아이콘을 선택하여 현재 환경의 이름을 표시하고 선택기를 열고, 환경 위에 마우스를 올리고, 오른쪽에 나타나는 설정 아이콘을 클릭합니다.                                    |
-| 환경 보관              | 환경을 편집하기 위해 열고 **Archive**를 선택합니다. 보관된 환경은 선택기에서 숨겨지지만 기존 세션은 계속 실행됩니다.                                             |
-| `--remote`의 기본값 설정 | 터미널에서 `/remote-env`를 실행합니다. 단일 환경이 있으면 이 명령은 현재 구성을 표시합니다. `/remote-env`는 기본값만 선택합니다. 웹 인터페이스에서 환경을 추가, 편집 및 보관합니다. |
+| 작업                    | 방법                                                                                                                  |
+| :-------------------- | :------------------------------------------------------------------------------------------------------------------ |
+| 환경 추가                 | 현재 환경을 선택하여 선택기를 열고 **환경 추가**를 선택합니다. 대화 상자에는 이름, 네트워크 액세스 수준, 환경 변수 및 설정 스크립트가 포함됩니다.                              |
+| 환경 편집                 | 클라우드 아이콘을 선택하여 현재 환경의 이름을 표시하고 선택기를 열고, 환경 위에 마우스를 올리고, 오른쪽에 나타나는 설정 아이콘을 클릭합니다.                                    |
+| 환경 보관                 | 환경을 편집하기 위해 열고 **보관**을 선택합니다. 보관된 환경은 선택기에서 숨겨지지만 기존 세션은 계속 실행됩니다.                                                  |
+| CLI 클라우드 세션의 기본 환경 설정 | 터미널에서 `/remote-env`를 실행합니다. 단일 환경이 있으면 이 명령은 현재 구성을 표시합니다. `/remote-env`는 기본값만 선택합니다. 웹 인터페이스에서 환경을 추가, 편집 및 보관합니다. |
 
 환경 변수는 `.env` 형식을 사용하며 한 줄에 하나의 `KEY=value` 쌍입니다. 따옴표는 값의 일부로 저장되므로 값을 따옴표로 감싸지 마세요. 이 예제는 세 개의 변수를 정의합니다:
 
@@ -193,6 +202,19 @@ NODE_ENV=development
 LOG_LEVEL=debug
 DATABASE_URL=postgres://localhost:5432/myapp
 ```
+
+<h3 id="organization-shared-environments">
+  조직 공유 환경
+</h3>
+
+Team 및 Enterprise 플랜의 소유자와 관리자는 조직의 모든 구성원과 공유되는 클라우드 환경을 만들 수 있습니다. 공유 환경은 각 구성원의 환경 선택기에 개인 환경과 함께 나타나므로 팀이 각 구성원이 다시 만드는 대신 하나의 구성으로 표준화할 수 있습니다.
+
+[관리 설정](https://claude.ai/admin-settings)의 **클라우드 환경** 페이지에서 공유 환경을 관리합니다. 여기에서 다음을 수행할 수 있습니다:
+
+* 공유 환경을 만들고, 편집하고, 보관합니다. 각각은 개인 환경과 동일한 필드를 가집니다: 이름, [네트워크 액세스 수준](#access-levels), `.env` 형식의 [환경 변수](#configure-your-environment) 및 [설정 스크립트](#setup-scripts).
+* 조직의 기본 환경을 설정합니다.
+
+공유 환경의 값은 해당 환경의 모든 구성원의 세션에 도달합니다. 개인 환경과 마찬가지로 공유 환경에는 전용 비밀 저장소가 없으므로 비밀을 포함하지 마세요.
 
 <h2 id="setup-scripts">
   설정 스크립트
@@ -235,7 +257,7 @@ apt update && apt install -y gh
   설정 스크립트 vs. SessionStart hooks
 </h3>
 
-클라우드가 필요하지만 노트북에 이미 있는 것(예: 언어 런타임 또는 CLI 도구)을 설치하려면 설정 스크립트를 사용합니다. 클라우드 및 로컬 모두에서 실행되어야 하는 프로젝트 설정(예: `npm install`)의 경우 [SessionStart hook](/ko/hooks#sessionstart)을 사용합니다.
+클라우드가 필요하지만 노트북에 이미 있는 것(예: 언어 런타임 또는 CLI 도구)을 설치하려면 설정 스크립트를 사용합니다. 클라우드 및 로컬 모두에서 실행되어야 하는 프로젝트 설정(예: `npm install`)의 경우 [SessionStart hook](/docs/ko/hooks#sessionstart)을 사용합니다.
 
 둘 다 세션 시작 시 실행되지만 다른 위치에 속합니다:
 
@@ -246,7 +268,7 @@ apt update && apt install -y gh
 | 실행    | Claude Code 시작 전, [캐시된 환경](#environment-caching)이 없을 때만 | Claude Code 시작 후, 재개된 세션을 포함한 모든 세션에서 |
 | 범위    | 클라우드 환경만                                                | 로컬 및 클라우드 모두                          |
 
-SessionStart hooks는 로컬의 사용자 수준 `~/.claude/settings.json`에서도 정의할 수 있지만 사용자 수준 설정은 클라우드 세션으로 이월되지 않습니다. 클라우드에서는 저장소에서 그리고 조직의 [서버 관리 설정](/ko/server-managed-settings)에서 hooks가 제공됩니다.
+SessionStart hooks는 로컬의 사용자 수준 `~/.claude/settings.json`에서도 정의할 수 있지만 사용자 수준 설정은 클라우드 세션으로 이월되지 않습니다. 클라우드에서는 저장소에서 그리고 조직의 [서버 관리 설정](/docs/ko/server-managed-settings)에서 hooks가 제공됩니다.
 
 <h3 id="install-dependencies-with-a-sessionstart-hook">
   SessionStart hook로 종속성 설치
@@ -293,7 +315,7 @@ SessionStart hooks는 클라우드 세션에서 몇 가지 제한 사항이 있�
 * **프록시 호환성**: 모든 아웃바운드 트래픽은 [보안 프록시](#security-proxy)를 통과합니다. 일부 패키지 관리자는 이 프록시에서 제대로 작동하지 않습니다. Bun은 알려진 예입니다.
 * **시작 지연 추가**: hooks는 세션이 시작되거나 재개될 때마다 실행됩니다. 설정 스크립트와 달리 [환경 캐싱](#environment-caching)의 이점을 얻지 못합니다. 재설치하기 전에 종속성이 이미 있는지 확인하여 설치 스크립트를 빠르게 유지하세요.
 
-후속 Bash 명령에 대한 환경 변수를 유지하려면 `$CLAUDE_ENV_FILE`의 파일에 쓰세요. 자세한 내용은 [SessionStart hooks](/ko/hooks#sessionstart)를 참조하세요.
+후속 Bash 명령에 대한 환경 변수를 유지하려면 `$CLAUDE_ENV_FILE`의 파일에 쓰세요. 자세한 내용은 [SessionStart hooks](/docs/ko/hooks#sessionstart)를 참조하세요.
 
 기본 이미지를 자신의 Docker 이미지로 바꾸는 것은 아직 지원되지 않습니다. [제공된 이미지](#installed-tools) 위에 필요한 것을 설치하려면 설정 스크립트를 사용하거나, `docker compose`로 Claude와 함께 이미지를 컨테이너로 실행하세요.
 
@@ -303,7 +325,7 @@ SessionStart hooks는 클라우드 세션에서 몇 가지 제한 사항이 있�
 
 네트워크 액세스는 클라우드 환경에서 아웃바운드 연결을 제어합니다. 각 환경은 하나의 액세스 수준을 지정하며, 사용자 정의 허용 도메인으로 확장할 수 있습니다. 기본값은 **Trusted**이며, 패키지 레지스트리 및 기타 [허용 목록 도메인](#default-allowed-domains)을 허용합니다.
 
-환경의 네트워크 액세스를 변경하려면 [편집을 위해 열고](#configure-your-environment) 대화 상자에서 **Network access** 선택기를 사용하세요. 별도의 Environments 페이지가 없습니다. 클라우드 세션을 시작하거나 [routine](/ko/routines#environments-and-network-access)을 구성할 때마다 클라우드 아이콘이 나타납니다.
+환경의 네트워크 액세스를 변경하려면 [편집을 위해 열고](#configure-your-environment) 대화 상자에서 **Network access** 선택기를 사용하세요. 별도의 Environments 페이지가 없습니다. 클라우드 세션을 시작하거나 [routine](/docs/ko/routines#environments-and-network-access)을 구성할 때마다 클라우드 아이콘이 나타납니다.
 
 <Note>
   MCP 커넥터 트래픽은 Anthropic의 서버를 통해 라우팅되므로 세션 또는 routine에서 활성화한 커넥터는 **Allowed domains**에 해당 호스트를 추가하지 않고도 작동합니다. 커넥터는 세션별 또는 routine별로 구성됩니다. 필요하지 않은 것을 제거하여 Claude가 도달할 수 있는 도구를 제한하세요. 이는 [보안 및 격리](#security-and-isolation)에서 언급한 동일한 Anthropic 바운드 채널에 의존합니다.
@@ -338,15 +360,20 @@ registry.example.com
 
 와일드카드 하위 도메인 일치를 위해 `*.`를 사용하세요. **Also include default list of common package managers**를 확인하여 [Trusted 도메인](#default-allowed-domains)을 사용자 정의 항목과 함께 유지하거나, 나열한 것만 허용하려면 선택 해제하세요.
 
+허용 도메인은 환경별로 구성됩니다. 소유자가 모든 사용자의 환경에 푸시할 수 있는 조직 수준의 허용 목록은 없습니다. [서버 관리 설정](/docs/ko/server-managed-settings)은 클라우드 세션을 제한할 수 있지만 허용 도메인을 추가할 수 없습니다.
+
 <h3 id="github-proxy">
   GitHub 프록시
 </h3>
 
-보안을 위해 모든 GitHub 작업은 모든 git 상호 작용을 투명하게 처리하는 전용 프록시 서비스를 통해 진행됩니다. 샌드박스 내에서 git 클라이언트는 사용자 정의 빌드 범위 자격 증명을 사용하여 인증합니다. 이 프록시는:
+보안을 위해 모든 GitHub 작업은 실제 GitHub 자격 증명을 샌드박스 외부에 유지하는 전용 프록시 서비스를 통해 진행됩니다. 프록시는 두 가지 유형의 트래픽을 인증합니다:
 
-* GitHub 인증을 안전하게 관리합니다: git 클라이언트는 샌드박스 내에서 범위 자격 증명을 사용하며, 프록시가 이를 확인하고 실제 GitHub 인증 토큰으로 변환합니다
-* 안전을 위해 git push 작업을 현재 작업 분기로 제한합니다
-* 보안 경계를 유지하면서 복제, 가져오기 및 PR 작업을 활성화합니다
+* Git 상호 작용: 샌드박스 내의 git 클라이언트는 사용자 정의 빌드 범위 자격 증명을 사용하며, 프록시가 이를 확인하고 실제 GitHub 인증 토큰으로 변환합니다
+* GitHub API 요청: 프록시는 기본 제공 GitHub 도구의 요청과 [GitHub 이슈 및 풀 요청 작업](#work-with-github-issues-and-pull-requests)에서 설명한 `proxy-injected` 플레이스홀더를 설정하는 세션의 `gh`에서 실제 자격 증명을 대체합니다
+
+프록시는 또한 안전을 위해 git push 작업을 현재 작업 분기로 제한하며, 보안 경계를 유지하면서 복제, 가져오기 및 PR 작업을 활성화합니다.
+
+프록시는 환경의 [네트워크 액세스 수준](#access-levels)과 관계없이 GitHub API 및 릴리스 자산 요청을 세션에 연결된 저장소로 제한합니다. 연결되지 않은 저장소에서 릴리스 자산을 다운로드하는 설정 스크립트는 403을 반환합니다. 공개 저장소의 커밋된 파일은 `raw.githubusercontent.com`을 통해 가져오며, [보안 프록시](#security-proxy)가 처리합니다. 해당 도메인은 기본 [Trusted 목록](#default-allowed-domains)에 있으므로 환경의 [액세스 수준](#access-levels)이 이를 제외하지 않는 한 파일은 계속 도달 가능합니다.
 
 <h3 id="security-proxy">
   보안 프록시
@@ -624,28 +651,28 @@ registry.example.com
   웹과 터미널 간에 작업 이동
 </h2>
 
-이러한 워크플로우는 동일한 claude.ai 계정에 로그인한 [Claude Code CLI](/ko/quickstart)가 필요합니다. 터미널에서 새 클라우드 세션을 시작하거나 클라우드 세션을 터미널로 가져와 로컬에서 계속할 수 있습니다. 클라우드 세션은 노트북을 닫아도 유지되며, Claude 모바일 앱을 포함한 어디서나 모니터링할 수 있습니다.
+이러한 워크플로우는 동일한 claude.ai 계정에 로그인한 [Claude Code CLI](/docs/ko/quickstart)가 필요합니다. 터미널에서 새 클라우드 세션을 시작하거나 클라우드 세션을 터미널로 가져와 로컬에서 계속할 수 있습니다. 클라우드 세션은 노트북을 닫아도 유지되며, Claude 모바일 앱을 포함한 어디서나 모니터링할 수 있습니다.
 
 <Note>
-  CLI에서 세션 핸드오프는 일방향입니다: `--teleport`로 클라우드 세션을 터미널로 가져올 수 있지만 기존 터미널 세션을 웹으로 푸시할 수 없습니다. `--remote` 플래그는 현재 저장소에 대한 새로운 클라우드 세션을 생성합니다. [Desktop 앱](/ko/desktop#continue-in-another-surface)은 로컬 세션을 웹으로 보낼 수 있는 Continue in 메뉴를 제공합니다.
+  CLI에서 세션 핸드오프는 일방향입니다: `--teleport`로 클라우드 세션을 터미널로 가져올 수 있지만 기존 터미널 세션을 웹으로 푸시할 수 없습니다. `--cloud` 플래그는 현재 저장소에 대한 새로운 클라우드 세션을 생성합니다. [Desktop 앱](/docs/ko/desktop#continue-in-another-surface)은 로컬 세션을 웹으로 보낼 수 있는 Continue in 메뉴를 제공합니다.
 </Note>
 
 <h3 id="from-terminal-to-web">
   터미널에서 웹으로
 </h3>
 
-`--remote` 플래그로 명령줄에서 클라우드 세션을 시작하세요:
+`--cloud` 플래그로 명령줄에서 클라우드 세션을 시작하세요:
 
 ```bash theme={null}
-claude --remote "Fix the authentication bug in src/auth/login.ts"
+claude --cloud "Fix the authentication bug in src/auth/login.ts"
 ```
 
-이렇게 하면 claude.ai에서 새 클라우드 세션이 생성됩니다. 세션은 현재 디렉토리의 GitHub 원격을 현재 분기에서 복제하므로, VM이 머신이 아닌 GitHub에서 복제하기 때문에 로컬 커밋이 있으면 먼저 푸시하세요. `--remote`는 한 번에 하나의 저장소에서 작동합니다. 작업은 클라우드에서 실행되는 동안 로컬에서 계속 작업할 수 있습니다.
+이렇게 하면 claude.ai에서 새 클라우드 세션이 생성됩니다. 세션은 현재 디렉토리의 GitHub 원격을 현재 분기에서 복제하므로, VM이 머신이 아닌 GitHub에서 복제하기 때문에 로컬 커밋이 있으면 먼저 푸시하세요. `--cloud`는 한 번에 하나의 저장소에서 작동합니다. 작업은 클라우드에서 실행되는 동안 로컬에서 계속 작업할 수 있습니다. 더 이상 사용되지 않는 `--remote` 표기법은 여전히 `--cloud`의 더 이상 사용되지 않는 별칭으로 작동합니다.
 
 {/* min-version: 2.1.195 */}v2.1.195부터 CLI는 저장소 복제 및 [설정 스크립트](#setup-scripts) 실행과 같은 설정 단계의 라이브 체크리스트를 표시하며, 클라우드 컨테이너가 시작됩니다. 컨테이너가 프로비저닝되는 동안 입력한 메시지는 큐에 저장되었다가 세션이 준비되면 전송됩니다.
 
 <Note>
-  `--remote`는 클라우드 세션을 생성합니다. `--remote-control`은 관련이 없습니다: 로컬 CLI 세션을 노출하여 웹에서 모니터링할 수 있습니다. [Remote Control](/ko/remote-control)을 참조하세요.
+  `--cloud`는 클라우드 세션을 생성합니다. `--remote-control`은 관련이 없습니다: 로컬 CLI 세션을 노출하여 웹에서 모니터링할 수 있습니다. [Remote Control](/docs/ko/remote-control)을 참조하세요.
 </Note>
 
 Claude Code CLI에서 `/tasks`를 사용하여 진행 상황을 확인하거나 claude.ai 또는 Claude 모바일 앱에서 세션을 열어 직접 상호 작용하세요. 여기서 Claude를 조종하고, 피드백을 제공하거나, 다른 대화처럼 질문에 답변할 수 있습니다.
@@ -663,19 +690,19 @@ claude --permission-mode plan
 Plan Mode에서 Claude는 파일을 읽고, 명령을 실행하여 탐색하고, 소스 코드를 편집하지 않고 계획을 제안합니다. 계획에 만족하면 저장소에 저장하고, 커밋하고, 푸시하여 클라우드 VM이 복제할 수 있도록 한 다음 자율 실행을 위해 클라우드 세션을 시작하세요:
 
 ```bash theme={null}
-claude --remote "Execute the migration plan in docs/migration-plan.md"
+claude --cloud "Execute the migration plan in docs/migration-plan.md"
 ```
 
 이 패턴은 Claude가 클라우드에서 자율적으로 실행되도록 하면서 전략에 대한 제어를 제공합니다.
 
-**ultraplan으로 클라우드에서 계획**: 웹 세션 자체에서 계획을 작성하고 검토하려면 [ultraplan](/ko/ultraplan)을 사용하세요. Claude는 웹에서 Claude Code on the web에서 계획을 생성하는 동안 계속 작업하고, 브라우저에서 섹션에 주석을 달고 원격으로 실행하거나 계획을 터미널로 다시 보낼 수 있습니다.
+**ultraplan으로 클라우드에서 계획**: 웹 세션 자체에서 계획을 작성하고 검토하려면 [ultraplan](/docs/ko/ultraplan)을 사용하세요. Claude는 웹에서 Claude Code on the web에서 계획을 생성하는 동안 계속 작업하고, 브라우저에서 섹션에 주석을 달고 원격으로 실행하거나 계획을 터미널로 다시 보낼 수 있습니다.
 
-**작업을 병렬로 실행**: 각 `--remote` 명령은 독립적으로 실행되는 자체 클라우드 세션을 생성합니다. 여러 작업을 시작할 수 있으며 모두 별도의 세션에서 동시에 실행됩니다:
+**작업을 병렬로 실행**: 각 `--cloud` 명령은 독립적으로 실행되는 자체 클라우드 세션을 생성합니다. 여러 작업을 시작할 수 있으며 모두 별도의 세션에서 동시에 실행됩니다:
 
 ```bash theme={null}
-claude --remote "Fix the flaky test in auth.spec.ts"
-claude --remote "Update the API documentation"
-claude --remote "Refactor the logger to use structured output"
+claude --cloud "Fix the flaky test in auth.spec.ts"
+claude --cloud "Update the API documentation"
+claude --cloud "Refactor the logger to use structured output"
 ```
 
 Claude Code CLI에서 `/tasks`로 모든 세션을 모니터링하세요. 세션이 완료되면 웹 인터페이스에서 PR을 생성하거나 [세션을 텔레포트](#from-web-to-terminal)하여 터미널에서 계속 작업할 수 있습니다.
@@ -684,12 +711,12 @@ Claude Code CLI에서 `/tasks`로 모든 세션을 모니터링하세요. 세션
   GitHub 없이 로컬 저장소 보내기
 </h4>
 
-GitHub에 연결되지 않은 저장소에서 `claude --remote`를 실행하면 Claude Code가 로컬 저장소를 번들로 만들어 클라우드 세션에 직접 업로드합니다. 번들에는 모든 분기의 전체 저장소 기록과 추적된 파일에 대한 커밋되지 않은 변경 사항이 포함됩니다.
+GitHub에 연결되지 않은 저장소에서 `claude --cloud`를 실행하면 Claude Code가 로컬 저장소를 번들로 만들어 클라우드 세션에 직접 업로드합니다. 번들에는 모든 분기의 전체 저장소 기록과 추적된 파일에 대한 커밋되지 않은 변경 사항이 포함됩니다.
 
 GitHub 액세스를 사용할 수 없을 때 이 폴백이 자동으로 활성화됩니다. GitHub가 연결되어 있어도 강제하려면 `CCR_FORCE_BUNDLE=1`을 설정하세요:
 
 ```bash theme={null}
-CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
+CCR_FORCE_BUNDLE=1 claude --cloud "Run the test suite and fix any failures"
 ```
 
 번들된 저장소는 이러한 제한을 충족해야 합니다:
@@ -720,18 +747,18 @@ CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
 
 텔레포트는 세션을 재개하기 전에 이러한 요구 사항을 확인합니다. 요구 사항이 충족되지 않으면 오류가 표시되거나 문제를 해결하라는 메시지가 표시됩니다.
 
-| 요구 사항           | 세부 정보                                                                     |
-| --------------- | ------------------------------------------------------------------------- |
-| Clean git state | 작업 디렉토리에 커밋되지 않은 변경 사항이 없어야 합니다. 텔레포트가 필요한 경우 변경 사항을 stash하라는 메시지를 표시합니다. |
-| 올바른 저장소         | fork가 아닌 동일한 저장소의 체크아웃에서 `--teleport`를 실행해야 합니다.                          |
-| 분기 사용 가능        | 클라우드 세션의 분기가 원격으로 푸시되어야 합니다. 텔레포트가 자동으로 가져와 체크아웃합니다.                      |
-| 동일한 계정          | 클라우드 세션에서 사용한 동일한 claude.ai 계정으로 인증되어야 합니다.                               |
+| 요구 사항           | 세부 정보                                                                                                                                                                                                                                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Clean git state | 작업 디렉토리에 커밋되지 않은 변경 사항이 없어야 합니다. 텔레포트가 필요한 경우 변경 사항을 stash하라는 메시지를 표시합니다.                                                                                                                                                                                                         |
+| 올바른 저장소         | fork가 아닌 동일한 저장소의 체크아웃에서 `--teleport`를 실행해야 합니다. {/* min-version: 2.1.199 */}v2.1.199부터 Claude Code는 `git@work:owner/repo.git`과 같은 SSH 호스트 별칭이나 `insteadOf`로 다시 쓴 짧은 형식과 같이 원격을 호스트 이름으로 구문 분석할 수 없는 경우에도 체크아웃을 수락합니다. 먼저 확인 프롬프트를 표시하고, 원격의 소유자 및 저장소 이름이 세션의 저장소와 일치할 때만 표시됩니다. |
+| 분기 사용 가능        | 클라우드 세션의 분기가 원격으로 푸시되어야 합니다. 텔레포트가 자동으로 가져와 체크아웃합니다.                                                                                                                                                                                                                              |
+| 동일한 계정          | 클라우드 세션에서 사용한 동일한 claude.ai 계정으로 인증되어야 합니다.                                                                                                                                                                                                                                       |
 
 <h4 id="teleport-is-unavailable">
   `--teleport`를 사용할 수 없음
 </h4>
 
-텔레포트는 claude.ai 구독 인증이 필요합니다. API 키, Bedrock, Vertex AI 또는 Microsoft Foundry를 통해 인증된 경우 `/login`을 실행하여 대신 claude.ai 계정으로 로그인하세요. 이미 claude.ai를 통해 로그인했는데 `--teleport`를 여전히 사용할 수 없으면 조직이 클라우드 세션을 비활성화했을 수 있습니다.
+텔레포트는 claude.ai 구독 인증이 필요합니다. API 키, Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry를 통해 인증된 경우 `/login`을 실행하여 대신 claude.ai 계정으로 로그인하세요. 이미 claude.ai를 통해 로그인했는데 `--teleport`를 여전히 사용할 수 없으면 조직이 클라우드 세션을 비활성화했을 수 있습니다.
 
 <h2 id="work-with-sessions">
   세션 작업
@@ -743,7 +770,10 @@ CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
   컨텍스트 관리
 </h3>
 
-클라우드 세션은 텍스트 출력을 생성하는 [기본 제공 명령](/ko/commands)을 지원합니다. `/model` 또는 `/config`와 같이 대화형 터미널 선택기를 여는 명령은 사용할 수 없습니다.
+클라우드 세션은 텍스트 출력을 생성하는 [기본 제공 명령](/docs/ko/commands)을 지원합니다. `/plugin` 또는 `/resume`과 같이 터미널 인터페이스에서만 실행되는 명령은 사용할 수 없습니다. 터미널에서 선택기 또는 패널을 열어야 하는 명령은 클라우드 세션에서 다르게 작동합니다:
+
+* {/* min-version: 2.1.205 */}**`/model`, `/effort`, `/fast`, `/color`, `/rename`**: 터미널 선택기 또는 슬라이더를 열지 않고 대신 인수로 값을 전달합니다(예: `/model sonnet`). 인수 형식은 세션의 환경에서 Claude Code v2.1.205 이상이 필요하며 각 명령의 [가용성 참고 사항](/docs/ko/commands#all-commands)을 따릅니다: `/effort`는 모델의 [launch-default effort hold](/docs/ko/model-config#adjust-effort-level)가 적용 중일 때 `Not applied`를 보고하고, `/fast`는 빠른 모드가 켜진 상태로 시작된 세션에서만 작동합니다.
+* **`/config`**: 웹에서는 값을 설정하는 대신 Claude Code 설정 섹션을 열며, `key=value`를 포함한 명령 뒤의 텍스트는 무시됩니다. 클라우드 세션의 설정을 변경하려면 [환경 변수](#configure-your-environment)를 사용하거나 [설정 파일](/docs/ko/settings)을 저장소에 커밋하세요.
 
 컨텍스트 관리 특히:
 
@@ -753,17 +783,17 @@ CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
 | `/context` | 예            | 현재 컨텍스트 윈도우에 있는 것을 표시합니다                                                    |
 | `/clear`   | 아니오          | 사이드바에서 새 세션을 시작하세요                                                          |
 
-자동 압축은 컨텍스트 윈도우가 용량에 접근할 때 자동으로 실행됩니다. 더 일찍 트리거하려면 [환경 변수](#configure-your-environment)에서 [`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/ko/env-vars)를 설정하세요. 예를 들어 `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70`은 윈도우가 거의 가득 찰 때까지 기다리는 대신 70% 용량에서 압축합니다. 압축 계산을 위한 유효 윈도우 크기를 변경하려면 [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/ko/env-vars)를 사용하세요.
+자동 압축은 컨텍스트 윈도우가 용량에 접근할 때 자동으로 실행됩니다. 더 일찍 트리거하려면 [환경 변수](#configure-your-environment)에서 [`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE`](/docs/ko/env-vars)를 설정하세요. 예를 들어 `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70`은 윈도우가 거의 가득 찰 때까지 기다리는 대신 70% 용량에서 압축합니다. 압축 계산을 위한 유효 윈도우 크기를 변경하려면 [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](/docs/ko/env-vars)를 사용하세요.
 
-[Subagents](/ko/sub-agents)는 로컬과 동일한 방식으로 작동합니다. Claude는 Task 도구로 이들을 생성하여 연구 또는 병렬 작업을 별도의 컨텍스트 윈도우로 오프로드하여 주 대화를 더 가볍게 유지할 수 있습니다. 저장소의 `.claude/agents/`에 정의된 Subagents는 자동으로 선택됩니다.
+[Subagents](/docs/ko/sub-agents)는 로컬과 동일한 방식으로 작동합니다. Claude는 Task 도구로 이들을 생성하여 연구 또는 병렬 작업을 별도의 컨텍스트 윈도우로 오프로드하여 주 대화를 더 가볍게 유지할 수 있습니다. 저장소의 `.claude/agents/`에 정의된 Subagents는 자동으로 선택됩니다.
 
-[Agent teams](/ko/agent-teams)는 기본적으로 꺼져 있지만 [환경 변수](#configure-your-environment)에 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`을 추가하여 활성화할 수 있습니다.
+[Agent teams](/docs/ko/agent-teams)는 기본적으로 꺼져 있지만 [환경 변수](#configure-your-environment)에 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`을 추가하여 활성화할 수 있습니다.
 
 <h3 id="review-changes">
   변경 사항 검토
 </h3>
 
-각 세션은 추가 및 제거된 줄을 표시하는 diff 표시기를 표시합니다(예: `+42 -18`). 이를 선택하여 diff 보기를 열고, 특정 줄에 인라인 주석을 남기고, 다음 메시지로 Claude에 보내세요. 전체 안내는 PR 생성을 포함하여 [검토 및 반복](/ko/web-quickstart#review-and-iterate)을 참조하세요. Claude가 PR을 모니터링하여 CI 실패 및 검토 주석에 자동으로 응답하도록 하려면 [Pull request 자동 수정](#auto-fix-pull-requests)을 참조하세요.
+각 세션은 추가 및 제거된 줄을 표시하는 diff 표시기를 표시합니다(예: `+42 -18`). 이를 선택하여 diff 보기를 열고, 특정 줄에 인라인 주석을 남기고, 다음 메시지로 Claude에 보내세요. 전체 안내는 PR 생성을 포함하여 [검토 및 반복](/docs/ko/web-quickstart#review-and-iterate)을 참조하세요. Claude가 PR을 모니터링하여 CI 실패 및 검토 주석에 자동으로 응답하도록 하려면 [Pull request 자동 수정](#auto-fix-pull-requests)을 참조하세요.
 
 <h3 id="share-sessions">
   세션 공유
@@ -775,7 +805,7 @@ CCR_FORCE_BUNDLE=1 claude --remote "Run the test suite and fix any failures"
   Enterprise 또는 Team 계정에서 공유
 </h4>
 
-Enterprise 및 Team 계정의 경우 두 가지 가시성 옵션은 **Private** 및 **Team**입니다. Team 가시성은 claude.ai 조직의 다른 구성원에게 세션을 표시합니다. [Claude in Slack](/ko/slack) 세션은 자동으로 Team 가시성으로 공유됩니다.
+Enterprise 및 Team 계정의 경우 두 가지 가시성 옵션은 **Private** 및 **Team**입니다. Team 가시성은 claude.ai 조직의 다른 구성원에게 세션을 표시합니다. [Claude in Slack](/docs/ko/slack) 세션은 자동으로 Team 가시성으로 공유됩니다.
 
 저장소 액세스 확인은 기본적으로 수신자의 계정에 연결된 GitHub 계정을 기반으로 활성화됩니다. 계정의 표시 이름은 액세스 권한이 있는 모든 수신자에게 표시됩니다.
 
@@ -815,13 +845,13 @@ Max 및 Pro 계정의 경우 두 가지 가시성 옵션은 **Private** 및 **Pu
 Claude는 pull request를 감시하고 CI 실패 및 검토 주석에 자동으로 응답할 수 있습니다. Claude는 PR의 GitHub 활동을 구독하고, 검사가 실패하거나 검토자가 주석을 남기면 Claude가 조사하고 명확한 수정이 있으면 푸시합니다.
 
 <Note>
-  자동 수정을 위해서는 Claude GitHub App이 저장소에 설치되어야 합니다. 아직 설치하지 않았으면 [GitHub App 페이지](https://github.com/apps/claude)에서 설치하거나 [설정](/ko/web-quickstart#connect-github-and-create-an-environment) 중에 메시지가 표시될 때 설치합니다.
+  자동 수정을 위해서는 Claude GitHub App이 저장소에 설치되어야 합니다. 아직 설치하지 않았으면 [GitHub App 페이지](https://github.com/apps/claude)에서 설치하거나 [설정](/docs/ko/web-quickstart#connect-github-and-create-an-environment) 중에 메시지가 표시될 때 설치합니다.
 </Note>
 
 PR이 어디에서 왔는지와 어떤 기기를 사용하는지에 따라 자동 수정을 켜는 방법은 몇 가지가 있습니다:
 
 * **웹에서 Claude Code로 생성된 PR**: CI 상태 표시줄을 열고 **Auto-fix**를 선택합니다
-* **터미널에서**: PR의 분기에 있는 동안 [`/autofix-pr`](/ko/commands)을 실행합니다. Claude Code가 `gh`로 열린 PR을 감지하고, 웹 세션을 생성하고, 한 단계에서 자동 수정을 켭니다
+* **터미널에서**: PR의 분기에 있는 동안 [`/autofix-pr`](/docs/ko/commands)을 실행합니다. Claude Code가 `gh`로 열린 PR을 감지하고, 웹 세션을 생성하고, 한 단계에서 자동 수정을 켭니다
 * **모바일 앱에서**: Claude에 PR을 자동 수정하도록 지시합니다. 예를 들어 "watch this PR and fix any CI failures or review comments"
 * **기존 PR**: PR URL을 세션에 붙여넣고 Claude에 자동 수정하도록 지시합니다
 
@@ -860,7 +890,7 @@ Claude는 GitHub의 검토 주석 스레드에 회신할 수 있습니다. 이�
   문제 해결
 </h2>
 
-런타임 API 오류(예: `API Error: 500`, `529 Overloaded`, `429` 또는 `Prompt is too long`)가 대화에 나타나면 [오류 참조](/ko/errors)를 참조하세요. 이러한 오류와 해결 방법은 CLI 및 Desktop 앱과 공유됩니다. 아래 섹션에서는 클라우드 세션에 특정한 문제를 다룹니다.
+런타임 API 오류(예: `API Error: 500`, `529 Overloaded`, `429` 또는 `Prompt is too long`)가 대화에 나타나면 [오류 참조](/docs/ko/errors)를 참조하세요. 이러한 오류와 해결 방법은 CLI 및 Desktop 앱과 공유됩니다. 아래 섹션에서는 클라우드 세션에 특정한 문제를 다룹니다.
 
 <h3 id="session-creation-failed">
   세션 생성 실패
@@ -898,18 +928,18 @@ Claude는 GitHub의 검토 주석 스레드에 회신할 수 있습니다. 이�
 
 * **속도 제한**: Claude Code on the web은 계정 내의 다른 모든 Claude 및 Claude Code 사용과 속도 제한을 공유합니다. 여러 작업을 병렬로 실행하면 비례적으로 더 많은 속도 제한을 소비합니다. 클라우드 VM에 대한 별도의 컴퓨팅 요금은 없습니다.
 * **저장소 인증**: 웹에서 로컬로 세션을 이동할 때 동일한 계정으로 인증된 경우에만 가능합니다
-* **플랫폼 제한**: 저장소 복제 및 pull request 생성에는 GitHub가 필요합니다. 자체 호스팅 [GitHub Enterprise Server](/ko/github-enterprise-server) 인스턴스는 Team 및 Enterprise 플랜에서 지원됩니다. GitLab, Bitbucket 및 기타 비 GitHub 저장소는 [로컬 번들](#send-local-repositories-without-github)로 클라우드 세션에 보낼 수 있지만 세션이 원격으로 결과를 다시 푸시할 수 없습니다
-* **조직 IP 허용 목록**: 클라우드 세션은 네트워크에서가 아닌 Anthropic 관리 인프라에서 Anthropic API를 호출합니다. 조직에 [IP 허용 목록](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)이 활성화되어 있으면 모든 클라우드 세션이 인증 오류로 실패합니다. 동일하게 [Code Review](/ko/code-review) 및 [Routines](/ko/routines)에 적용됩니다. [Anthropic 지원](https://support.claude.com/)에 문의하여 조직의 IP 허용 목록에서 Anthropic 호스팅 서비스를 제외하세요.
+* **플랫폼 제한**: 저장소 복제 및 pull request 생성에는 GitHub가 필요합니다. 자체 호스팅 [GitHub Enterprise Server](/docs/ko/github-enterprise-server) 인스턴스는 Team 및 Enterprise 플랜에서 지원됩니다. GitLab, Bitbucket 및 기타 비 GitHub 저장소는 [로컬 번들](#send-local-repositories-without-github)로 클라우드 세션에 보낼 수 있지만 세션이 원격으로 결과를 다시 푸시할 수 없습니다
+* **조직 IP 허용 목록**: 클라우드 세션은 네트워크에서가 아닌 Anthropic 관리 인프라에서 Anthropic API를 호출합니다. 조직에 [IP 허용 목록](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting)이 활성화되어 있으면 모든 클라우드 세션이 인증 오류로 실패합니다. 동일하게 [Code Review](/docs/ko/code-review) 및 [Routines](/docs/ko/routines)에 적용됩니다. [Anthropic 지원](https://support.claude.com/)에 문의하여 조직의 IP 허용 목록에서 Anthropic 호스팅 서비스를 제외하세요.
 
 <h2 id="related-resources">
   관련 리소스
 </h2>
 
-* [Ultraplan](/ko/ultraplan): 클라우드 세션에서 계획을 작성하고 브라우저에서 검토합니다
-* [Ultrareview](/ko/ultrareview): 클라우드 샌드박스에서 심층 다중 에이전트 코드 검토를 실행합니다
-* [Routines](/ko/routines): 일정에 따라, API 호출을 통해 또는 GitHub 이벤트에 응답하여 작업을 자동화합니다
-* [Hooks 구성](/ko/hooks): 세션 수명 주기 이벤트에서 스크립트를 실행합니다
-* [설정 참조](/ko/settings): 모든 구성 옵션
-* [보안](/ko/security): 격리 보장 및 데이터 처리
-* [데이터 사용](/ko/data-usage): Anthropic이 클라우드 세션에서 보유하는 것
+* [Ultraplan](/docs/ko/ultraplan): 클라우드 세션에서 계획을 작성하고 브라우저에서 검토합니다
+* [Ultrareview](/docs/ko/ultrareview): 클라우드 샌드박스에서 심층 다중 에이전트 코드 검토를 실행합니다
+* [Routines](/docs/ko/routines): 일정에 따라, API 호출을 통해 또는 GitHub 이벤트에 응답하여 작업을 자동화합니다
+* [Hooks 구성](/docs/ko/hooks): 세션 수명 주기 이벤트에서 스크립트를 실행합니다
+* [설정 참조](/docs/ko/settings): 모든 구성 옵션
+* [보안](/docs/ko/security): 격리 보장 및 데이터 처리
+* [데이터 사용](/docs/ko/data-usage): Anthropic이 클라우드 세션에서 보유하는 것
 * [Claude Tag](https://claude.com/docs/claude-tag/overview): 동일한 클라우드 환경에서 실행되는 조직 관리형 Slack의 @Claude

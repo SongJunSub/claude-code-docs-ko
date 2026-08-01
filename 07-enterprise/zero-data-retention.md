@@ -15,11 +15,11 @@ Zero Data Retention(ZDR)은 Claude for Enterprise를 통해 사용할 때 Claude
 Claude for Enterprise의 ZDR은 엔터프라이즈 고객에게 Zero Data Retention으로 Claude Code를 사용하고 관리 기능에 액세스할 수 있는 기능을 제공합니다:
 
 * 사용자별 비용 제어
-* [분석](/ko/analytics) 대시보드
-* [서버 관리 설정](/ko/server-managed-settings)
+* [분석](/docs/ko/analytics) 대시보드
+* [서버 관리 설정](/docs/ko/server-managed-settings)
 * 감사 로그
 
-Claude for Enterprise의 Claude Code에 대한 ZDR은 Anthropic의 직접 플랫폼에만 적용됩니다. Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry의 Claude 배포의 경우 해당 플랫폼의 데이터 보존 정책을 참조하세요.
+Claude for Enterprise의 Claude Code에 대한 ZDR은 Anthropic의 직접 플랫폼에만 적용됩니다. Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry의 Claude 배포의 경우 해당 플랫폼의 데이터 보존 정책을 참조하세요.
 
 <h2 id="zdr-scope">
   ZDR 범위
@@ -41,13 +41,13 @@ ZDR은 Claude for Enterprise의 Claude Code를 통해 이루어진 모델 추론
   ZDR이 포함하지 않는 것
 </h3>
 
-ZDR은 ZDR이 활성화된 조직의 경우에도 다음을 포함하지 않습니다. 이러한 기능은 [표준 데이터 보존 정책](/ko/data-usage#data-retention)을 따릅니다:
+ZDR은 ZDR이 활성화된 조직의 경우에도 다음을 포함하지 않습니다. 이러한 기능은 [표준 데이터 보존 정책](/docs/ko/data-usage#data-retention)을 따릅니다:
 
 | 기능             | 세부 정보                                                                                                                               |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | claude.ai의 채팅  | Claude for Enterprise 웹 인터페이스를 통한 채팅 대화는 ZDR에 포함되지 않습니다.                                                                            |
 | Cowork         | Cowork 세션은 ZDR에 포함되지 않습니다.                                                                                                          |
-| Claude Code 분석 | 프롬프트 또는 모델 응답을 저장하지 않지만 계정 이메일 및 사용 통계와 같은 생산성 메타데이터를 수집합니다. 기여도 메트릭은 ZDR 조직에서 사용할 수 없습니다. [분석 대시보드](/ko/analytics)는 사용 메트릭만 표시합니다. |
+| Claude Code 분석 | 프롬프트 또는 모델 응답을 저장하지 않지만 계정 이메일 및 사용 통계와 같은 생산성 메타데이터를 수집합니다. 기여도 메트릭은 ZDR 조직에서 사용할 수 없습니다. [분석 대시보드](/docs/ko/analytics)는 사용 메트릭만 표시합니다. |
 | 사용자 및 시트 관리    | 계정 이메일 및 시트 할당과 같은 관리 데이터는 표준 정책에 따라 보존됩니다.                                                                                         |
 | 타사 통합          | 타사 도구, MCP servers 또는 기타 외부 통합에서 처리한 데이터는 ZDR에 포함되지 않습니다. 해당 서비스의 데이터 처리 관행을 독립적으로 검토하세요.                                           |
 
@@ -57,12 +57,13 @@ ZDR은 ZDR이 활성화된 조직의 경우에도 다음을 포함하지 않습�
 
 Claude for Enterprise의 Claude Code 조직에 대해 ZDR이 활성화되면 프롬프트 또는 완성을 저장해야 하는 특정 기능이 백엔드 수준에서 자동으로 비활성화됩니다:
 
-| 기능                                               | 이유                                       |
-| ------------------------------------------------ | ---------------------------------------- |
-| [웹의 Claude Code](/ko/claude-code-on-the-web)     | 대화 기록의 서버 측 저장이 필요합니다.                   |
-| Desktop 앱의 [클라우드 세션](/ko/desktop#cloud-sessions) | 프롬프트 및 완성을 포함하는 지속적인 세션 데이터가 필요합니다.      |
-| [Artifacts](/ko/artifacts)                       | Anthropic 운영 인프라에 게시된 페이지 콘텐츠를 저장해야 합니다. |
-| 피드백 제출(`/feedback`)                              | 피드백을 제출하면 대화 데이터가 Anthropic으로 전송됩니다.     |
+| 기능                                               | 이유                                         |
+| ------------------------------------------------ | ------------------------------------------ |
+| [웹의 Claude Code](/docs/ko/claude-code-on-the-web)     | 대화 기록의 서버 측 저장이 필요합니다.                     |
+| Desktop 앱의 [클라우드 세션](/docs/ko/desktop#cloud-sessions) | 프롬프트 및 완성을 포함하는 지속적인 세션 데이터가 필요합니다.        |
+| [Artifacts](/docs/ko/artifacts)                       | Anthropic 운영 인프라에 게시된 페이지 콘텐츠를 저장해야 합니다.   |
+| 피드백 제출(`/feedback`)                              | 피드백을 제출하면 대화 데이터가 Anthropic으로 전송됩니다.       |
+| [원격 제어](/docs/ko/remote-control)                      | Anthropic 서버에 세션 기록을 저장하여 기기 간 대화를 동기화합니다. |
 
 이러한 기능은 클라이언트 측 표시에 관계없이 백엔드에서 차단됩니다. 시작 중에 Claude Code 터미널에서 비활성화된 기능이 표시되면 이를 사용하려고 시도하면 조직의 정책이 해당 작업을 허용하지 않음을 나타내는 오류가 반환됩니다.
 

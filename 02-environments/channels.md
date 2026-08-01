@@ -7,7 +7,7 @@
 > 채널을 사용하여 MCP 서버에서 실행 중인 Claude Code 세션으로 메시지, 알림 및 웹훅을 푸시합니다. CI 결과, 채팅 메시지 및 모니터링 이벤트를 전달하여 Claude가 자리를 비웠을 때 반응할 수 있도록 합니다.
 
 <Note>
-  채널은 [연구 미리보기](#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. Anthropic 인증이 필요하며 claude.ai 또는 Console API 키를 통해 인증합니다. Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry에서는 사용할 수 없습니다. Team 및 Enterprise 조직은 [명시적으로 활성화](#enterprise-controls)해야 합니다.
+  채널은 [연구 미리보기](#research-preview)에 있으며 Anthropic 인증이 필요합니다(claude.ai 또는 Console API 키를 통해). Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry에서는 사용할 수 없습니다. Team 및 Enterprise 조직은 [명시적으로 활성화](#enterprise-controls)해야 합니다.
 </Note>
 
 채널은 실행 중인 Claude Code 세션으로 이벤트를 푸시하는 MCP 서버이므로 Claude는 터미널에 없을 때 발생하는 일에 반응할 수 있습니다. 채널은 양방향일 수 있습니다. Claude는 이벤트를 읽고 동일한 채널을 통해 다시 회신합니다(채팅 브리지처럼). 이벤트는 세션이 열려 있는 동안에만 도착하므로 항상 켜진 설정의 경우 Claude를 백그라운드 프로세스 또는 지속적인 터미널에서 실행합니다.
@@ -18,7 +18,7 @@
 
 Claude가 채널을 통해 회신할 때 터미널에서 인바운드 메시지를 볼 수 있지만 회신 텍스트는 볼 수 없습니다. 터미널에는 도구 호출과 확인(예: "전송됨")이 표시되고 실제 회신은 다른 플랫폼에 나타납니다.
 
-Team, Enterprise 또는 Console 조직을 관리하는 경우 [조직에 대해 채널 활성화](#enterprise-controls)를 참조하세요. 자신의 채널을 구축하려면 [채널 참조](/ko/channels-reference)를 참조하세요.
+Team, Enterprise 또는 Console 조직을 관리하는 경우 [조직에 대해 채널 활성화](#enterprise-controls)를 참조하세요. 자신의 채널을 구축하려면 [채널 참조](/docs/ko/channels-reference)를 참조하세요.
 
 <h2 id="supported-channels">
   지원되는 채널
@@ -209,7 +209,7 @@ Team, Enterprise 또는 Console 조직을 관리하는 경우 [조직에 대해 
   </Tab>
 </Tabs>
 
-아직 플러그인이 없는 시스템의 경우 [자신의 채널을 구축](/ko/channels-reference)할 수도 있습니다.
+아직 플러그인이 없는 시스템의 경우 [자신의 채널을 구축](/docs/ko/channels-reference)할 수도 있습니다.
 
 <h2 id="quickstart">
   빠른 시작
@@ -221,7 +221,7 @@ fakechat을 설치하고 활성화한 후 브라우저에서 입력하면 메시
 
 fakechat 데모를 시도하려면 다음이 필요합니다:
 
-* Claude Code [설치 및 인증](/ko/quickstart#step-1-install-claude-code): claude.ai 계정 또는 Claude Console API 키 사용
+* Claude Code [설치 및 인증](/docs/ko/quickstart#step-1-install-claude-code): claude.ai 계정 또는 Claude Console API 키 사용
 * [Bun](https://bun.sh) 설치됨. 사전 구축된 채널 플러그인은 Bun 스크립트입니다. `bun --version`으로 확인하세요. 실패하면 [Bun 설치](https://bun.sh/docs/installation)하세요.
 * **Team, Enterprise 또는 관리 Console 조직**: 조직 관리자가 관리 설정에서 [채널을 활성화](#enterprise-controls)해야 합니다.
 
@@ -261,7 +261,7 @@ fakechat 데모를 시도하려면 다음이 필요합니다:
   </Step>
 </Steps>
 
-Claude가 터미널에서 멀리 있을 때 권한 프롬프트에 도달하면 세션이 응답할 때까지 일시 중지됩니다. [권한 릴레이 기능](/ko/channels-reference#relay-permission-prompts)을 선언하는 채널 서버는 이러한 프롬프트를 사용자에게 전달하여 원격으로 승인하거나 거부할 수 있습니다. 무인 사용의 경우 [`--dangerously-skip-permissions`](/ko/permission-modes#skip-all-checks-with-bypasspermissions-mode)는 명시적 요청 규칙 이외의 프롬프트를 우회하지만 신뢰하는 환경에서만 사용하세요.
+Claude가 터미널에서 멀리 있을 때 권한 프롬프트에 도달하면 세션이 응답할 때까지 일시 중지됩니다. [권한 릴레이 기능](/docs/ko/channels-reference#relay-permission-prompts)을 선언하는 채널 서버는 이러한 프롬프트를 사용자에게 전달하여 원격으로 승인하거나 거부할 수 있습니다. 무인 사용의 경우 [`--dangerously-skip-permissions`](/docs/ko/permission-modes#skip-all-checks-with-bypasspermissions-mode)는 명시적 요청 규칙 이외의 프롬프트를 우회하지만 신뢰하는 환경에서만 사용하세요. 명시적 요청 규칙, 커넥터 도구 [조직에서 `ask`로 설정](/docs/ko/mcp#organization-controls-on-connector-tools), 그리고 [`requiresUserInteraction`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시된 MCP 도구는 여전히 프롬프트를 표시합니다.
 
 비대화형 모드에서 `-p`로 채널을 실행할 때 여러 선택지 질문 및 계획 모드 승인과 같이 터미널 입력이 필요한 도구는 비활성화되므로 세션이 입력을 기다리며 멈추지 않습니다.
 
@@ -284,13 +284,13 @@ iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동�
 
 `.mcp.json`에 있는 것만으로는 메시지를 푸시하기에 충분하지 않습니다. 서버도 `--channels`에서 명명되어야 합니다.
 
-허용 목록은 채널이 선언하는 경우 [권한 릴레이](/ko/channels-reference#relay-permission-prompts)도 게이트합니다. 채널을 통해 회신할 수 있는 모든 사람이 세션에서 도구 사용을 승인하거나 거부할 수 있으므로 해당 권한을 신뢰하는 발신자만 허용 목록에 추가하세요.
+허용 목록은 채널이 선언하는 경우 [권한 릴레이](/docs/ko/channels-reference#relay-permission-prompts)도 게이트합니다. 채널을 통해 회신할 수 있는 모든 사람이 세션에서 도구 사용을 승인하거나 거부할 수 있으므로 해당 권한을 신뢰하는 발신자만 허용 목록에 추가하세요.
 
 <h2 id="enterprise-controls">
   Enterprise 제어
 </h2>
 
-관리자는 사용자가 재정의할 수 없는 두 가지 [관리 설정](/ko/settings)을 통해 가용성을 제어합니다. 기본값은 인증 방식에 따라 다릅니다:
+관리자는 사용자가 재정의할 수 없는 두 가지 [관리 설정](/docs/ko/settings)을 통해 가용성을 제어합니다. 기본값은 인증 방식에 따라 다릅니다:
 
 * **claude.ai Team 및 Enterprise**: 소유자가 활성화할 때까지 채널이 차단됩니다.
 * **Anthropic Console with API key authentication**: 채널이 기본적으로 허용됩니다. 조직이 관리 설정을 배포하는 경우에만 이 설정이 필요합니다.
@@ -341,7 +341,7 @@ iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동�
 
 미리보기 중에 `--channels`는 Anthropic 유지 관리 허용 목록의 플러그인만 허용하거나 관리자가 [`allowedChannelPlugins`](#restrict-which-channel-plugins-can-run)을 설정한 경우 조직의 허용 목록에서만 허용합니다. [claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)의 채널 플러그인은 기본 승인된 집합입니다. 유효한 허용 목록에 없는 것을 전달하면 Claude Code가 정상적으로 시작되지만 채널이 등록되지 않으며 시작 알림이 이유를 알려줍니다.
 
-구축 중인 채널을 테스트하려면 `--dangerously-load-development-channels`를 사용합니다. 구축하는 사용자 정의 채널 테스트에 대한 정보는 [연구 미리보기 중 테스트](/ko/channels-reference#test-during-the-research-preview)를 참조하세요.
+구축 중인 채널을 테스트하려면 `--dangerously-load-development-channels`를 사용합니다. 구축하는 사용자 정의 채널 테스트에 대한 정보는 [연구 미리보기 중 테스트](/docs/ko/channels-reference#test-during-the-research-preview)를 참조하세요.
 
 [Claude Code GitHub 저장소](https://github.com/anthropics/claude-code/issues)에서 문제 또는 피드백을 보고합니다.
 
@@ -353,15 +353,15 @@ iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동�
 
 | 기능                                           | 수행하는 작업                                   | 좋은 점                                  |
 | -------------------------------------------- | ----------------------------------------- | ------------------------------------- |
-| [웹의 Claude Code](/ko/claude-code-on-the-web) | GitHub에서 복제된 새로운 클라우드 샌드박스에서 작업 실행        | 나중에 확인하는 자체 포함된 비동기 작업 위임             |
-| [Slack의 Claude](/ko/slack)                   | 채널 또는 스레드의 `@Claude` 언급에서 웹 세션 생성         | 팀 대화 컨텍스트에서 직접 작업 시작                  |
-| 표준 [MCP 서버](/ko/mcp)                         | Claude는 작업 중에 쿼리합니다. 세션으로 푸시되는 것은 없습니다.   | Claude에게 시스템을 읽거나 쿼리하기 위한 온디맨드 액세스 제공 |
-| [Remote Control](/ko/remote-control)         | claude.ai 또는 Claude 모바일 앱에서 로컬 세션을 운전합니다. | 책상에서 멀리 있을 때 진행 중인 세션 조종              |
+| [웹의 Claude Code](/docs/ko/claude-code-on-the-web) | GitHub에서 복제된 새로운 클라우드 샌드박스에서 작업 실행        | 나중에 확인하는 자체 포함된 비동기 작업 위임             |
+| [Slack의 Claude](/docs/ko/slack)                   | 채널 또는 스레드의 `@Claude` 언급에서 웹 세션 생성         | 팀 대화 컨텍스트에서 직접 작업 시작                  |
+| 표준 [MCP 서버](/docs/ko/mcp)                         | Claude는 작업 중에 쿼리합니다. 세션으로 푸시되는 것은 없습니다.   | Claude에게 시스템을 읽거나 쿼리하기 위한 온디맨드 액세스 제공 |
+| [Remote Control](/docs/ko/remote-control)         | claude.ai 또는 Claude 모바일 앱에서 로컬 세션을 운전합니다. | 책상에서 멀리 있을 때 진행 중인 세션 조종              |
 
 채널은 Claude가 아닌 소스의 이벤트를 이미 실행 중인 로컬 세션으로 푸시하여 해당 목록의 간격을 채웁니다.
 
 * **채팅 브리지**: Telegram, Discord 또는 iMessage를 통해 휴대폰에서 Claude에 무언가를 물어보고 답변이 같은 채팅으로 돌아오는 동안 작업이 기계에서 실제 파일에 대해 실행됩니다.
-* **[웹훅 수신기](/ko/channels-reference#example-build-a-webhook-receiver)**: CI, 오류 추적기, 배포 파이프라인 또는 기타 외부 서비스의 웹훅이 Claude가 이미 파일을 열고 있고 디버깅 중인 것을 기억하는 곳에 도착합니다.
+* **[웹훅 수신기](/docs/ko/channels-reference#example-build-a-webhook-receiver)**: CI, 오류 추적기, 배포 파이프라인 또는 기타 외부 서비스의 웹훅이 Claude가 이미 파일을 열고 있고 디버깅 중인 것을 기억하는 곳에 도착합니다.
 
 <h2 id="next-steps">
   다음 단계
@@ -369,6 +369,6 @@ iMessage는 다르게 작동합니다. 자신에게 문자를 보내면 자동�
 
 채널이 실행 중이면 다음 관련 기능을 살펴보세요:
 
-* [자신의 채널 구축](/ko/channels-reference) - 아직 플러그인이 없는 시스템의 경우
-* [Remote Control](/ko/remote-control) - 이벤트를 전달하는 대신 휴대폰에서 로컬 세션을 운전하기
-* [예약된 작업](/ko/scheduled-tasks) - 푸시된 이벤트에 반응하는 대신 타이머에서 폴링하기
+* [자신의 채널 구축](/docs/ko/channels-reference) - 아직 플러그인이 없는 시스템의 경우
+* [Remote Control](/docs/ko/remote-control) - 이벤트를 전달하는 대신 휴대폰에서 로컬 세션을 운전하기
+* [예약된 작업](/docs/ko/scheduled-tasks) - 푸시된 이벤트에 반응하는 대신 타이머에서 폴링하기

@@ -50,7 +50,7 @@
 
 파일 체크포인팅을 사용하려면 옵션에서 활성화하고, 응답 스트림에서 체크포인트 UUID를 캡처한 다음, 복원이 필요할 때 `rewindFiles()`(TypeScript) 또는 `rewind_files()`(Python)를 호출합니다.
 
-다음 예제는 전체 흐름을 보여줍니다: 체크포인팅을 활성화하고, 응답 스트림에서 체크포인트 UUID와 세션 ID를 캡처한 다음, 나중에 세션을 재개하여 파일을 되돌립니다. 각 단계는 아래에서 자세히 설명됩니다.
+다음 예제는 전체 흐름을 보여줍니다: 체크포인팅을 활성화하고, 응답 스트림에서 체크포인트 UUID와 세션 ID를 캡처한 다음, 나중에 세션을 재개하여 파일을 되돌립니다. 각 단계는 아래에서 자세히 설명됩니다. 이 섹션의 예제는 "인증 모듈 리팩토링"이라는 프롬프트를 사용합니다. 인증 모듈을 포함하는 프로젝트에서 실행하거나, 프롬프트를 변경하여 프로젝트에 존재하는 파일을 지정하면 파일 변경을 확인하고 되돌리기가 파일을 복원하는 것을 볼 수 있습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -197,8 +197,8 @@
       session_id = None
 
       async for message in client.receive_response():
-          # Update checkpoint on each user message (keeps the latest)
-          if isinstance(message, UserMessage) and message.uuid:
+          # Capture the first user message UUID as the checkpoint
+          if isinstance(message, UserMessage) and message.uuid and checkpoint_id is None:
               checkpoint_id = message.uuid
           # Capture session ID from the result message
           if isinstance(message, ResultMessage):
@@ -210,8 +210,8 @@
       let sessionId: string | undefined;
 
       for await (const message of response) {
-        // Update checkpoint on each user message (keeps the latest)
-        if (message.type === "user" && message.uuid) {
+        // Capture the first user message UUID as the checkpoint
+        if (message.type === "user" && message.uuid && !checkpointId) {
           checkpointId = message.uuid;
         }
         // Capture session ID from any message that has it
@@ -250,11 +250,13 @@
       ```
     </CodeGroup>
 
-    세션 ID와 체크포인트 ID를 캡처한 경우 CLI에서도 되돌릴 수 있습니다:
+    세션 ID와 체크포인트 ID를 캡처한 경우 CLI에서도 되돌릴 수 있습니다. 이 명령은 [Claude Code 설치](/docs/ko/setup)에서 제공되는 `claude` 실행 파일이 필요하며 SDK 패키지에는 설치되지 않습니다. SDK는 체크포인팅을 활성화하지만, `claude -p`를 직접 실행할 때는 `CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING` 환경 변수를 설정해야 합니다:
 
     ```bash theme={null}
-    claude -p --resume <session-id> --rewind-files <checkpoint-uuid>
+    CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true claude -p --resume <session-id> --rewind-files <checkpoint-uuid>
     ```
+
+    `--rewind-files` 플래그는 `claude --help` 출력에 나타나지 않지만 CLI는 표시된 대로 이를 허용합니다.
   </Step>
 </Steps>
 
@@ -269,6 +271,8 @@
 </h3>
 
 이 패턴은 가장 최근의 체크포인트 UUID만 유지하며, 각 에이전트 턴 전에 업데이트합니다. 처리 중에 문제가 발생하면 마지막 안전한 상태로 즉시 되돌리고 루프를 벗어날 수 있습니다.
+
+이 예제를 실행하기 전에 `your_revert_condition`(Python) 또는 `yourRevertCondition`(TypeScript)을 오류 감지 또는 유효성 검사 실패와 같은 자신의 확인으로 바꾸십시오. 플레이스홀더는 예제에서 정의되지 않습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -475,7 +479,7 @@ Claude가 여러 턴에 걸쳐 변경을 수행하는 경우, 모든 방식으�
 
 이 완전한 예제는 작은 유틸리티 파일을 생성하고, 에이전트가 문서 주석을 추가하도록 하며, 변경 사항을 표시한 다음, 되돌리고 싶은지 묻습니다.
 
-시작하기 전에 [Claude Agent SDK가 설치](/ko/agent-sdk/quickstart)되어 있는지 확인하세요.
+시작하기 전에 [Claude Agent SDK가 설치](/docs/ko/agent-sdk/quickstart)되어 있는지 확인하세요.
 
 <Steps>
   <Step title="테스트 파일 생성">
@@ -752,6 +756,20 @@ Claude가 여러 턴에 걸쳐 변경을 수행하는 경우, 모든 방식으�
 
 **해결책**: 원본 세션에서 `enable_file_checkpointing=True`(Python) 또는 `enableFileCheckpointing: true`(TypeScript)가 설정되었는지 확인한 다음, 예제에 표시된 패턴을 사용합니다: 첫 번째 사용자 메시지 UUID를 캡처하고, 세션을 완전히 완료한 다음, 빈 프롬프트로 재개하고 `rewindFiles()`를 한 번 호출합니다.
 
+<h3 id="file-rewinding-is-not-enabled-error">
+  "File rewinding is not enabled" 오류
+</h3>
+
+이 오류는 체크포인팅이 활성화되지 않은 상태에서 비대화형 되돌리기를 시도할 때 발생합니다: `--rewind-files`를 사용하여 bare `claude -p`를 실행하거나, 체크포인팅을 활성화하지 않는 옵션이 있는 재개된 세션을 포함한 SDK 세션을 실행하는 경우입니다. SDK는 `enable_file_checkpointing`(Python) 또는 `enableFileCheckpointing`(TypeScript)이 되돌리기를 수행하는 세션에서 활성화될 때만 내부적으로 `CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING` 환경 변수를 설정합니다. bare CLI는 절대 설정하지 않습니다.
+
+**해결책**: bare CLI의 경우 명령을 실행할 때 환경 변수를 설정합니다:
+
+```bash theme={null}
+CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true claude -p --resume <session-id> --rewind-files <checkpoint-uuid>
+```
+
+SDK의 경우, 이 페이지의 예제에서 수행하는 것처럼 재개된 세션에서 `enable_file_checkpointing=True`(Python) 또는 `enableFileCheckpointing: true`(TypeScript)를 설정합니다.
+
 <h3 id="processtransport-is-not-ready-for-writing-error">
   "ProcessTransport is not ready for writing" 오류
 </h3>
@@ -790,7 +808,7 @@ Claude가 여러 턴에 걸쳐 변경을 수행하는 경우, 모든 방식으�
   다음 단계
 </h2>
 
-* **[세션](/ko/agent-sdk/sessions)**: 세션을 재개하는 방법을 알아봅니다. 이는 스트림이 완료된 후 되돌리기에 필요합니다. 세션 ID, 대화 재개 및 세션 포킹을 다룹니다.
-* **[권한](/ko/agent-sdk/permissions)**: Claude가 사용할 수 있는 도구와 파일 수정이 승인되는 방식을 구성합니다. 편집이 발생하는 시기를 더 많이 제어하려는 경우 유용합니다.
-* **[TypeScript SDK 참조](/ko/agent-sdk/typescript)**: `query()` 및 `rewindFiles()` 메서드의 모든 옵션을 포함한 완전한 API 참조입니다.
-* **[Python SDK 참조](/ko/agent-sdk/python)**: `ClaudeAgentOptions` 및 `rewind_files()` 메서드의 모든 옵션을 포함한 완전한 API 참조입니다.
+* **[세션](/docs/ko/agent-sdk/sessions)**: 세션을 재개하는 방법을 알아봅니다. 이는 스트림이 완료된 후 되돌리기에 필요합니다. 세션 ID, 대화 재개 및 세션 포킹을 다룹니다.
+* **[권한](/docs/ko/agent-sdk/permissions)**: Claude가 사용할 수 있는 도구와 파일 수정이 승인되는 방식을 구성합니다. 편집이 발생하는 시기를 더 많이 제어하려는 경우 유용합니다.
+* **[TypeScript SDK 참조](/docs/ko/agent-sdk/typescript)**: `query()` 및 `rewindFiles()` 메서드의 모든 옵션을 포함한 완전한 API 참조입니다.
+* **[Python SDK 참조](/docs/ko/agent-sdk/python)**: `ClaudeAgentOptions` 및 `rewind_files()` 메서드의 모든 옵션을 포함한 완전한 API 참조입니다.

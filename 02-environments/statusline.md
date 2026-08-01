@@ -15,7 +15,7 @@
 * 여러 세션에서 작업하고 이들을 구분해야 하는 경우
 * git 브랜치 및 상태를 항상 표시하려는 경우
 
-상태 표시줄은 기본 제공 바닥글 배지 위의 자체 행에서 렌더링되며 이를 대체하지 않습니다. 대화에 ID가 나타날 때 스크립트를 작성하지 않고 바닥글에 클릭 가능한 링크 배지를 추가하려면 대신 [`footerLinksRegexes`](/ko/settings#footer-link-badges)를 구성합니다.
+상태 표시줄은 기본 제공 바닥글 배지 위의 자체 행에서 렌더링되며 이를 대체하지 않습니다. 대화에 ID가 나타날 때 스크립트를 작성하지 않고 바닥글에 클릭 가능한 링크 배지를 추가하려면 대신 [`footerLinksRegexes`](/docs/ko/settings#footer-link-badges)를 구성합니다.
 
 다음은 첫 번째 줄에 git 정보를 표시하고 두 번째 줄에 색상으로 구분된 컨텍스트 막대를 표시하는 [다중 줄 상태 표시줄](#display-multiple-lines)의 예입니다.
 
@@ -45,7 +45,7 @@
   상태 표시줄 수동 구성
 </h3>
 
-사용자 설정(`~/.claude/settings.json`, 여기서 `~`는 홈 디렉토리) 또는 [프로젝트 설정](/ko/settings#settings-files)에 `statusLine` 필드를 추가합니다. `type`을 `"command"`로 설정하고 `command`를 스크립트 경로 또는 인라인 셸 명령으로 지정합니다. 스크립트 생성에 대한 전체 설명은 [상태 표시줄 단계별 구축](#build-a-status-line-step-by-step)을 참조하세요.
+사용자 설정(`~/.claude/settings.json`, 여기서 `~`는 홈 디렉토리) 또는 [프로젝트 설정](/docs/ko/settings#settings-files)에 `statusLine` 필드를 추가합니다. `type`을 `"command"`로 설정하고 `command`를 스크립트 경로 또는 인라인 셸 명령으로 지정합니다. 스크립트 생성에 대한 전체 설명은 [상태 표시줄 단계별 구축](#build-a-status-line-step-by-step)을 참조하세요.
 
 ```json theme={null}
 {
@@ -194,11 +194,11 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
 | `rate_limits.five_hour.resets_at`, `rate_limits.seven_day.resets_at`             | 5시간 또는 7일 속도 제한 윈도우가 재설정되는 Unix epoch 초                                                                                                                                   |
 | `session_id`                                                                     | 고유 세션 식별자                                                                                                                                                                 |
 | `session_name`                                                                   | `--name` 플래그 또는 `/rename`으로 설정된 사용자 정의 세션 이름. 사용자 정의 이름이 설정되지 않은 경우 없음                                                                                                    |
-| `prompt_id`                                                                      | 현재 처리 중인 사용자 프롬프트를 식별하는 UUID. OpenTelemetry 이벤트의 [`prompt.id` 속성](/ko/monitoring-usage#event-correlation-attributes)과 일치합니다. 첫 번째 사용자 입력까지 없음. Claude Code v2.1.196 이상 필요 |
+| `prompt_id`                                                                      | 현재 처리 중인 사용자 프롬프트를 식별하는 UUID. OpenTelemetry 이벤트의 [`prompt.id` 속성](/docs/ko/monitoring-usage#event-correlation-attributes)과 일치합니다. 첫 번째 사용자 입력까지 없음. Claude Code v2.1.196 이상 필요 |
 | `transcript_path`                                                                | 대화 기록 파일의 경로                                                                                                                                                              |
 | `version`                                                                        | Claude Code 버전                                                                                                                                                            |
 | `output_style.name`                                                              | 현재 출력 스타일의 이름                                                                                                                                                             |
-| `vim.mode`                                                                       | [vim 모드](/ko/interactive-mode#vim-editor-mode)가 활성화되어 있을 때 현재 vim 모드(`NORMAL`, `INSERT`, `VISUAL` 또는 `VISUAL LINE`)                                                       |
+| `vim.mode`                                                                       | [vim 모드](/docs/ko/interactive-mode#vim-editor-mode)가 활성화되어 있을 때 현재 vim 모드(`NORMAL`, `INSERT`, `VISUAL` 또는 `VISUAL LINE`)                                                       |
 | `agent.name`                                                                     | `--agent` 플래그 또는 에이전트 설정이 구성되어 있을 때 에이전트 이름                                                                                                                               |
 | `pr.number`, `pr.url`                                                            | 현재 브랜치에 대한 열린 풀 요청. 하단 상태 표시줄의 PR 배지를 반영합니다. PR을 찾을 때까지, git 저장소에 없을 때, 또는 PR이 병합되거나 닫힌 후에는 없음                                                                            |
 | `pr.review_state`                                                                | 열린 PR의 검토 상태: `approved`, `pending`, `changes_requested` 또는 `draft`. `pr`이 있을 때도 독립적으로 없을 수 있음                                                                            |
@@ -332,7 +332,7 @@ Claude Code는 stdin을 통해 스크립트에 다음 JSON 필드를 보냅니�
 * `cache_creation_input_tokens`: 캐시에 기록된 토큰
 * `cache_read_input_tokens`: 캐시에서 읽은 토큰
 
-캐시 필드의 의미와 청구 방식에 대해서는 [캐시 성능 확인](/ko/prompt-caching#check-cache-performance)을 참조하세요.
+캐시 필드의 의미와 청구 방식에 대해서는 [캐시 성능 확인](/docs/ko/prompt-caching#check-cache-performance)을 참조하세요.
 
 `used_percentage` 필드는 입력 토큰만으로 계산됩니다: `input_tokens + cache_creation_input_tokens + cache_read_input_tokens`. `output_tokens`는 포함하지 않습니다.
 
@@ -1033,7 +1033,7 @@ PowerShell 스크립트를 상태 표시줄로 실행하려면 `powershell`을 �
   서브에이전트 상태 표시줄
 </h2>
 
-`subagentStatusLine` 설정은 [서브에이전트](/ko/sub-agents) 패널에 표시된 각 서브에이전트에 대한 사용자 정의 행 본문을 렌더링합니다. 기본 `name · description · token count` 행을 자신의 형식으로 바꾸는 데 사용합니다.
+`subagentStatusLine` 설정은 [서브에이전트](/docs/ko/sub-agents) 패널에 표시된 각 서브에이전트에 대한 사용자 정의 행 본문을 렌더링합니다. 기본 `name · description · token count` 행을 자신의 형식으로 바꾸는 데 사용합니다.
 
 ```json theme={null}
 {
@@ -1044,11 +1044,13 @@ PowerShell 스크립트를 상태 표시줄로 실행하려면 `powershell`을 �
 }
 ```
 
-명령은 새로 고침 틱마다 한 번 실행되며 모든 표시 가능한 서브에이전트 행이 stdin의 단일 JSON 객체로 전달됩니다. 입력에는 [기본 훅 필드](/ko/hooks#common-input-fields)와 `columns`(사용 가능한 행 너비) 및 `tasks` 배열이 포함되며, 각 작업에는 `id`, `name`, `type`, `status`, `description`, `label`, `startTime`, `tokenCount`, `tokenSamples` 및 `cwd`가 있습니다.
+명령은 새로 고침 틱마다 한 번 실행되며 모든 표시 가능한 서브에이전트 행이 stdin의 단일 JSON 객체로 전달됩니다. 입력에는 [기본 훅 필드](/docs/ko/hooks#common-input-fields), `columns` 필드(사용 가능한 행 너비 포함) 및 `tasks` 배열이 포함됩니다. 각 작업에는 `id`, `name`, `type`, `status`, `description`, `label`, `startTime`, `model`, `contextWindowSize`, `tokenCount`, `tokenSamples` 및 `cwd`가 있습니다.
+
+작업별 `model` 필드는 작업이 실행되는 확인된 모델 ID입니다. `contextWindowSize`는 해당 모델의 컨텍스트 윈도우(토큰 단위)이며, 메인 상태 표시줄의 `context_window.context_window_size`와 동일한 방식으로 계산되므로 `tokenCount`에서 행별 백분율을 렌더링할 수 있습니다. 두 필드 모두 Claude Code v2.1.205 이상이 필요하며 모델이 아직 확인되지 않은 작업의 경우 생략됩니다.
 
 재정의하려는 각 행에 대해 stdout에 한 줄의 JSON을 작성합니다: `{"id": "<task id>", "content": "<row body>"}`. `content` 문자열은 ANSI 색상 및 OSC 8 하이퍼링크를 포함하여 그대로 렌더링됩니다. 작업의 `id`를 생략하여 해당 행의 기본 렌더링을 유지합니다. 빈 `content` 문자열을 내보내 숨깁니다.
 
-`statusLine`에 적용되는 동일한 신뢰 및 `disableAllHooks` 게이트가 여기에 적용됩니다. 플러그인은 [`settings.json`](/ko/plugins-reference#standard-plugin-layout)에서 기본 `subagentStatusLine`을 제공할 수 있습니다.
+`statusLine`에 적용되는 동일한 신뢰 및 `disableAllHooks` 게이트가 여기에 적용됩니다. 플러그인은 [`settings.json`](/docs/ko/plugins-reference#standard-plugin-layout)에서 기본 `subagentStatusLine`을 제공할 수 있습니다.
 
 <h2 id="tips">
   팁

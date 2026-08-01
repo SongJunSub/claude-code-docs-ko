@@ -23,7 +23,7 @@ Claude Code SDK의 이름이 **Claude Agent SDK**로 변경되었으며 설명�
 | **설명서 위치**         | Claude Code 문서              | API 가이드 → Agent SDK 섹션           |
 
 <Note>
-  **설명서 변경 사항:** Agent SDK 설명서가 Claude Code 문서에서 API 가이드의 전용 [Agent SDK](/ko/agent-sdk/overview) 섹션으로 이동되었습니다. Claude Code 문서는 이제 CLI 도구 및 자동화 기능에 중점을 두고 있습니다.
+  **설명서 변경 사항:** Agent SDK 설명서가 Claude Code 문서에서 API 가이드의 전용 [Agent SDK](/docs/ko/agent-sdk/overview) 섹션으로 이동되었습니다. Claude Code 문서는 이제 CLI 도구 및 자동화 기능에 중점을 두고 있습니다.
 </Note>
 
 <h2 id="migration-steps">
@@ -278,7 +278,7 @@ options = ClaudeAgentOptions(model="claude-opus-4-7", permission_mode="acceptEdi
 격리는 특히 CI/CD 파이프라인, 배포된 애플리케이션, 테스트 환경 및 로컬 사용자 정의가 유입되지 않아야 하는 다중 테넌트 시스템에 중요합니다.
 
 <Note>
-  SDK v0.1.0은 잠시 설정이 로드되지 않는 것으로 기본값을 설정했으나 이후 릴리스에서 되돌려졌습니다. Python SDK 0.1.59 이하는 빈 목록을 옵션 생략과 동일하게 처리했으므로 `setting_sources=[]`에 의존하기 전에 업그레이드하십시오. `settingSources`가 `[]`일 때 읽히는 입력에 대해서는 [settingSources가 제어하지 않는 것](/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)을 참조하십시오.
+  SDK v0.1.0은 잠시 설정이 로드되지 않는 것으로 기본값을 설정했으나 이후 릴리스에서 되돌려졌습니다. Python SDK 0.1.59 이하는 빈 목록을 옵션 생략과 동일하게 처리했으므로 `setting_sources=[]`에 의존하기 전에 업그레이드하십시오. `settingSources`가 `[]`일 때 읽히는 입력에 대해서는 [settingSources가 제어하지 않는 것](/docs/ko/agent-sdk/claude-code-features#what-settingsources-does-not-control)을 참조하십시오.
 </Note>
 
 <h2 id="why-the-rename">
@@ -313,7 +313,7 @@ Claude Code SDK는 원래 코딩 작업을 위해 설계되었지만 모든 유�
   다음 단계
 </h2>
 
-* [Agent SDK 개요](/ko/agent-sdk/overview)를 탐색하여 사용 가능한 기능에 대해 알아봅니다
-* [TypeScript SDK 참조](/ko/agent-sdk/typescript)를 확인하여 자세한 API 설명서를 봅니다
-* [Python SDK 참조](/ko/agent-sdk/python)를 검토하여 Python 관련 설명서를 봅니다
-* [사용자 정의 도구](/ko/agent-sdk/custom-tools) 및 [MCP 통합](/ko/agent-sdk/mcp)에 대해 알아봅니다
+* [Agent SDK 개요](/docs/ko/agent-sdk/overview)를 탐색하여 사용 가능한 기능에 대해 알아봅니다
+* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript)를 확인하여 자세한 API 설명서를 봅니다
+* [Python SDK 참조](/docs/ko/agent-sdk/python)를 검토하여 Python 관련 설명서를 봅니다
+* [사용자 정의 도구](/docs/ko/agent-sdk/custom-tools) 및 [MCP 통합](/docs/ko/agent-sdk/mcp)에 대해 알아봅니다

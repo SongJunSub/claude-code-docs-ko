@@ -253,7 +253,7 @@ sequenceDiagram
   * 자연스러운 다중 턴 대화
 </Warning>
 
-쿼리가 `error_max_turns`와 같은 오류 결과로 끝나면, 단일 메시지 `query()` 호출은 최종 결과 메시지를 생성한 후 실패 텍스트를 포함하는 오류를 발생시키므로, 코드가 계속 실행되어야 하는 경우 루프를 try 블록으로 감싸십시오. 결과 하위 유형에 대해서는 [결과 처리](/ko/agent-sdk/agent-loop#handle-the-result)를 참조하십시오.
+쿼리가 `error_max_turns`와 같은 오류 결과로 끝나면, 단일 메시지 `query()` 호출은 최종 결과 메시지를 생성한 후 실패 텍스트를 포함하는 오류를 발생시키므로, 코드가 계속 실행되어야 하는 경우 루프를 try 블록으로 감싸십시오. 결과 하위 유형에 대해서는 [결과 처리](/docs/ko/agent-sdk/agent-loop#handle-the-result)를 참조하십시오.
 
 <h3 id="implementation-example-1">
   구현 예제

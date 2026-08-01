@@ -6,7 +6,7 @@
 
 > Claude Code 설치 또는 로그인 시 command not found, PATH, 권한, 네트워크 및 인증 오류를 수정합니다.
 
-설치가 실패하거나 로그인할 수 없는 경우 아래에서 오류를 찾으세요. Claude Code가 작동한 후 런타임 문제의 경우 [문제 해결](/ko/troubleshooting)을 참조하세요. 설정이 적용되지 않거나 hooks가 실행되지 않는 등의 구성 문제의 경우 [구성 디버깅](/ko/debug-your-config)을 참조하세요.
+설치가 실패하거나 로그인할 수 없는 경우 아래에서 오류를 찾으세요. Claude Code가 작동한 후 런타임 문제의 경우 [문제 해결](/docs/ko/troubleshooting)을 참조하세요. 설정이 적용되지 않거나 hooks가 실행되지 않는 등의 구성 문제의 경우 [구성 디버깅](/docs/ko/debug-your-config)을 참조하세요.
 
 <h2 id="find-your-error">
   오류 찾기
@@ -14,38 +14,39 @@
 
 표시되는 오류 메시지 또는 증상을 수정 사항과 일치시키세요:
 
-| 표시되는 내용                                                                                     | 해결책                                                                                            |
-| :------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------- |
-| `command not found: claude` 또는 `'claude' is not recognized`                                 | [PATH 수정](#command-not-found-claude-after-installation)                                        |
-| `syntax error near unexpected token '<'`                                                    | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                     |
-| `curl: (22) The requested URL returned error: 403`                                          | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                     |
-| `curl: (23)` 또는 `curl: (56) Failure writing output to destination`                          | [연결성 확인 또는 대체 설치 프로그램 사용](#curl-56-failure-writing-output-to-destination)                      |
-| Linux에서 설치 중 `Killed`                                                                       | [저메모리 서버에 스왑 공간 추가](#install-killed-on-low-memory-linux-servers)                               |
-| `TLS connect error` 또는 `SSL/TLS secure channel`                                             | [CA 인증서 업데이트](#tls-or-ssl-connection-errors)                                                   |
-| `Failed to fetch version` 또는 다운로드 서버에 도달할 수 없음                                              | [네트워크 및 프록시 설정 확인](#check-network-connectivity)                                                |
-| `irm is not recognized` 또는 `&& is not valid`                                                | [셸에 맞는 명령 사용](#wrong-install-command-on-windows)                                               |
-| `Cask 'claude-code' is unavailable: No Cask with this name exists`                          | [Homebrew 업데이트](#homebrew-cask-unavailable-or-outdated)                                        |
-| `'bash' is not recognized as the name of a cmdlet`                                          | [Windows 설치 프로그램 명령 사용](#wrong-install-command-on-windows)                                     |
-| `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`           | [셸 설치](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)         |
-| `Claude Code does not support 32-bit Windows`                                               | [Windows PowerShell 열기, x86 항목 아님](#claude-code-does-not-support-32-bit-windows)               |
-| `The process cannot access the file ... because it is being used by another process`        | [다운로드 폴더 지우기 및 다시 시도](#the-process-cannot-access-the-file-during-windows-install)              |
-| `Error loading shared library`                                                              | [시스템에 맞는 잘못된 바이너리 변형](#linux-musl-or-glibc-binary-mismatch)                                    |
-| `Illegal instruction`                                                                       | [아키텍처 또는 CPU 명령어 세트 불일치](#illegal-instruction)                                                 |
-| WSL에서 `cannot execute binary file: Exec format error`                                       | [WSL1 네이티브 바이너리 회귀](#exec-format-error-on-wsl1)                                                |
-| PowerShell 설치 프로그램이 완료되지만 `claude`를 찾을 수 없거나 이전 버전 표시                                       | [설치 디렉터리를 PATH에 추가](#verify-your-path), 그런 다음 새 터미널 열기                                         |
-| macOS에서 `dyld: cannot load`, `dyld: Symbol not found` 또는 `Abort trap`                       | [바이너리 비호환성](#dyld-cannot-load-on-macos)                                                        |
-| `Invoke-Expression: Missing argument in parameter list`                                     | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                     |
-| `App unavailable in region`                                                                 | Claude Code는 귀국에서 사용할 수 없습니다. [지원되는 국가](https://www.anthropic.com/supported-countries)를 참조하세요. |
-| `unable to get local issuer certificate`                                                    | [회사 CA 인증서 구성](#tls-or-ssl-connection-errors)                                                  |
-| `OAuth error` 또는 `403 Forbidden`                                                            | [인증 수정](#login-and-authentication)                                                             |
-| `Could not load the default credentials` 또는 `Could not load credentials from any providers` | [Bedrock, Vertex 또는 Foundry 자격증명](#bedrock-vertex-or-foundry-credentials-not-loading)          |
-| `ChainedTokenCredential authentication failed` 또는 `CredentialUnavailableError`              | [Bedrock, Vertex 또는 Foundry 자격증명](#bedrock-vertex-or-foundry-credentials-not-loading)          |
-| `API Error: 500`, `529 Overloaded`, `429` 또는 위에 나열되지 않은 기타 4xx 및 5xx 오류                     | [오류 참조](/ko/errors)를 참조하세요                                                                     |
+| 표시되는 내용                                                                                     | 해결책                                                                                                                                  |
+| :------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `command not found: claude` 또는 `'claude' is not recognized`                                 | [PATH 수정](#command-not-found-claude-after-installation)                                                                              |
+| `syntax error near unexpected token '<'`                                                    | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                                                           |
+| `curl: (22) The requested URL returned error: 403`                                          | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                                                           |
+| `curl: (23)` 또는 `curl: (56) Failure writing output to destination`                          | [연결성 확인 또는 대체 설치 프로그램 사용](#curl-56-failure-writing-output-to-destination)                                                            |
+| Linux에서 설치 중 `Killed` 또는 `Installation was killed before it could finish (exit code 137)`   | [저메모리 서버에 스왑 공간 추가](#install-killed-on-low-memory-linux-servers)                                                                     |
+| `TLS connect error` 또는 `SSL/TLS secure channel`                                             | [CA 인증서 업데이트](#tls-or-ssl-connection-errors)                                                                                         |
+| `Failed to fetch version` 또는 다운로드 서버에 도달할 수 없음                                              | [네트워크 및 프록시 설정 확인](#check-network-connectivity)                                                                                      |
+| `irm is not recognized` 또는 `&& is not valid`                                                | [셸에 맞는 명령 사용](#wrong-install-command-on-windows)                                                                                     |
+| `Cask 'claude-code' is unavailable: No Cask with this name exists`                          | [Homebrew 업데이트](#homebrew-cask-unavailable-or-outdated)                                                                              |
+| `'bash' is not recognized as the name of a cmdlet`                                          | [Windows 설치 프로그램 명령 사용](#wrong-install-command-on-windows)                                                                           |
+| `A parameter cannot be found that matches parameter name 'fsSL'`                            | [Windows 설치 프로그램 명령 사용](#wrong-install-command-on-windows)                                                                           |
+| `Claude Code on Windows requires either Git for Windows (for bash) or PowerShell`           | [셸 설치](#claude-code-on-windows-requires-either-git-for-windows-for-bash-or-powershell)                                               |
+| `Claude Code does not support 32-bit Windows`                                               | [Windows PowerShell 열기, x86 항목 아님](#claude-code-does-not-support-32-bit-windows)                                                     |
+| `The process cannot access the file ... because it is being used by another process`        | [다운로드 폴더 지우기 및 다시 시도](#the-process-cannot-access-the-file-during-windows-install)                                                    |
+| `Error loading shared library`                                                              | [시스템에 맞는 잘못된 바이너리 변형](#linux-musl-or-glibc-binary-mismatch)                                                                          |
+| `Illegal instruction`                                                                       | [아키텍처 또는 CPU 명령어 세트 불일치](#illegal-instruction)                                                                                       |
+| WSL에서 `cannot execute binary file: Exec format error`                                       | [WSL1 네이티브 바이너리 회귀](#exec-format-error-on-wsl1)                                                                                      |
+| PowerShell 설치 프로그램이 완료되지만 `claude`를 찾을 수 없거나 이전 버전 표시                                       | [설치 디렉터리를 PATH에 추가](#verify-your-path), 그런 다음 새 터미널 열기                                                                               |
+| macOS에서 `dyld: cannot load`, `dyld: Symbol not found` 또는 `Abort trap`                       | [바이너리 비호환성](#dyld-cannot-load-on-macos)                                                                                              |
+| `Invoke-Expression: Missing argument in parameter list`                                     | [설치 스크립트가 HTML 반환](#install-script-returns-html-instead-of-a-shell-script)                                                           |
+| `App unavailable in region`                                                                 | Claude Code는 귀국에서 사용할 수 없습니다. [지원되는 국가](https://www.anthropic.com/supported-countries)를 참조하세요.                                       |
+| `unable to get local issuer certificate`                                                    | [회사 CA 인증서 구성](#tls-or-ssl-connection-errors)                                                                                        |
+| `OAuth error` 또는 `403 Forbidden`                                                            | [인증 수정](#login-and-authentication)                                                                                                   |
+| `Could not load the default credentials` 또는 `Could not load credentials from any providers` | [Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry 자격증명](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
+| `ChainedTokenCredential authentication failed` 또는 `CredentialUnavailableError`              | [Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry 자격증명](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
+| `API Error: 500`, `529 Overloaded`, `429` 또는 위에 나열되지 않은 기타 4xx 및 5xx 오류                     | [오류 참조](/docs/ko/errors)를 참조하세요                                                                                                           |
 
 문제가 나열되지 않은 경우 아래의 진단 검사를 수행하여 원인을 좁혀보세요.
 
 <Tip>
-  터미널을 완전히 건너뛰고 싶다면 [Claude Code Desktop 앱](/ko/desktop-quickstart)을 사용하여 그래픽 인터페이스를 통해 Claude Code를 설치하고 사용할 수 있습니다. [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs), [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs) 또는 [Linux](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)용으로 다운로드하고 명령줄 설정 없이 코딩을 시작하세요.
+  터미널을 완전히 건너뛰고 싶다면 [Claude Code Desktop 앱](/docs/ko/desktop-quickstart)을 사용하여 그래픽 인터페이스를 통해 Claude Code를 설치하고 사용할 수 있습니다. [macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs) 또는 [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs)용으로 다운로드하고 명령줄 설정 없이 코딩을 시작하세요. Linux에서는 [Linux 설치 지침](/docs/ko/desktop-linux)을 따라 apt로 앱을 설치하세요.
 </Tip>
 
 <h2 id="run-diagnostic-checks">
@@ -99,7 +100,7 @@ PowerShell에서는 `curl.exe -sI`를 대신 실행하세요. PowerShell은 `cur
 설치가 성공했지만 `claude`를 실행할 때 `command not found` 또는 `not recognized` 오류가 발생하면 설치 디렉토리가 PATH에 없습니다. 셸은 PATH에 나열된 디렉토리에서 프로그램을 검색하고 설치 프로그램은 macOS/Linux에서 `~/.local/bin/claude`에 또는 Windows에서 `%USERPROFILE%\.local\bin\claude.exe`에 `claude`를 배치합니다.
 
 <Note>
-  [VS Code 확장](/ko/vs-code)은 `claude`를 이 위치에 배치하지 않습니다. 확장 디렉토리 내에 CLI의 개인 복사본을 번들로 제공하며 자체 채팅 패널용으로 사용하고 PATH에 추가하지 않습니다. 확장만 설치한 경우 `~/.local/bin/claude`가 존재하지 않습니다. [독립 실행형 설치](/ko/setup)를 실행하여 터미널에서 `claude`를 사용한 다음 아래를 계속하세요.
+  [VS Code 확장](/docs/ko/vs-code)은 `claude`를 이 위치에 배치하지 않습니다. 확장 디렉토리 내에 CLI의 개인 복사본을 번들로 제공하며 자체 채팅 패널용으로 사용하고 PATH에 추가하지 않습니다. 확장만 설치한 경우 `~/.local/bin/claude`가 존재하지 않습니다. [독립 실행형 설치](/docs/ko/setup)를 실행하여 터미널에서 `claude`를 사용한 다음 아래를 계속하세요.
 </Note>
 
 PATH 항목을 나열하고 `local/bin`을 필터링하여 설치 디렉토리가 PATH에 있는지 확인하세요:
@@ -194,6 +195,8 @@ PATH 항목을 나열하고 `local/bin`을 필터링하여 설치 디렉토리�
     ```bash theme={null}
     ls -la ~/.local/bin/claude
     ```
+
+    네이티브 설치는 `~/.local/share/claude/versions/`로의 심볼릭 링크를 표시합니다. 이 경로에서 직접 만든 스크립트 또는 심볼릭 링크는 사용자 정의 런처이며, [자동 업데이트는 제자리에 남겨둡니다](/docs/ko/setup#auto-updates).
 
     `ls` 명령이 `No such file or directory`를 인쇄하면 오류가 아닙니다. 이는 해당 위치에 아무것도 설치되지 않았음을 의미하므로 다음 검사로 이동하세요.
 
@@ -291,7 +294,7 @@ Windows에서 PowerShell을 사용하세요:
 Get-Command claude | Select-Object Source
 ```
 
-Linux에서 누락된 공유 라이브러리를 확인하세요. `ldd`가 누락된 라이브러리를 표시하면 시스템 패키지를 설치해야 할 수 있습니다. Alpine Linux 및 기타 musl 기반 배포판의 경우 [Alpine Linux 설정](/ko/setup#alpine-linux-and-musl-based-distributions)을 참조하세요.
+Linux에서 누락된 공유 라이브러리를 확인하세요. `ldd`가 누락된 라이브러리를 표시하면 시스템 패키지를 설치해야 할 수 있습니다. Alpine Linux 및 기타 musl 기반 배포판의 경우 [Alpine Linux 설정](/docs/ko/setup#alpine-linux-and-musl-based-distributions)을 참조하세요.
 
 ```bash theme={null}
 ldd "$(command -v claude)" | grep "not found"
@@ -410,7 +413,7 @@ brew update
 brew install --cask claude-code
 ```
 
-Homebrew가 예상보다 이전 Claude Code 버전을 설치하면 동일한 오래된 인덱스가 일반적으로 원인입니다. `claude-code` cask는 안정적인 채널을 추적하며 일반적으로 최신 릴리스보다 약 1주일 뒤떨어져 있습니다. 최신 버전의 경우 대신 `brew install --cask claude-code@latest`를 실행하세요. 두 cask의 차이점은 [릴리스 채널 구성](/ko/setup#configure-release-channel)을 참조하세요.
+Homebrew가 예상보다 이전 Claude Code 버전을 설치하면 동일한 오래된 인덱스가 일반적으로 원인입니다. `claude-code` cask는 안정적인 채널을 추적하며 일반적으로 최신 릴리스보다 약 1주일 뒤떨어져 있습니다. 최신 버전의 경우 대신 `brew install --cask claude-code@latest`를 실행하세요. 두 cask의 차이점은 [릴리스 채널 구성](/docs/ko/setup#configure-release-channel)을 참조하세요.
 
 <h3 id="tls-or-ssl-connection-errors">
   TLS 또는 SSL 연결 오류
@@ -446,11 +449,11 @@ Homebrew가 예상보다 이전 Claude Code 버전을 설치하면 동일한 오
    ```
    인증서 파일이 없으면 IT 팀에 문의하세요. 프록시가 원인인지 확인하기 위해 직접 연결에서 시도할 수도 있습니다.
 
-4. **Windows에서 인증서 해지 확인 무시** `CRYPT_E_NO_REVOCATION_CHECK (0x80092012)` 또는 `CRYPT_E_REVOCATION_OFFLINE (0x80092013)`이 표시되면. 이는 curl이 서버에 도달했지만 네트워크가 인증서 해지 조회를 차단함을 의미하며, 이는 회사 방화벽 뒤에서 일반적입니다. 설치 명령에 `--ssl-revoke-best-effort`를 추가하세요:
-   ```batch theme={null}
-   curl --ssl-revoke-best-effort -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+4. **Windows에서 네트워크가 해지 확인을 차단하는 경우 설치 프로그램 전환**. `CRYPT_E_NO_REVOCATION_CHECK (0x80092012)` 및 `CRYPT_E_REVOCATION_OFFLINE (0x80092013)` 오류는 curl이 서버에 도달했지만 네트워크가 인증서 해지 조회를 차단함을 의미하며, 이는 회사 방화벽 뒤에서 일반적입니다. curl의 `--ssl-revoke-best-effort` 플래그를 추가해도 이를 해결하지 못합니다. 플래그는 `install.cmd` 자체 다운로드에만 적용되고 스크립트 자체의 다운로드는 이 플래그 없이 실행되므로 설치가 동일한 오류로 실패합니다. 대신 차단된 조회를 허용하는 설치 방법을 사용하세요. PowerShell을 열고 PowerShell 설치 프로그램을 실행하세요. 이는 .NET을 통해 다운로드하며 해지 서버에 도달할 수 없을 때 실패하지 않습니다:
+   ```powershell theme={null}
+   irm https://claude.ai/install.ps1 | iex
    ```
-   또는 curl을 완전히 피하는 `winget install Anthropic.ClaudeCode`로 설치하세요.
+   `winget install Anthropic.ClaudeCode`로 설치할 수도 있으며, 이는 curl을 완전히 피합니다.
 
 <h3 id="failed-to-fetch-version-from-downloads-claude-ai">
   `Failed to fetch version from downloads.claude.ai`
@@ -465,7 +468,7 @@ Homebrew가 예상보다 이전 Claude Code 버전을 설치하면 동일한 오
    curl -sI https://downloads.claude.ai/claude-code-releases/latest
    ```
 
-2. **프록시 뒤에 있는 경우** `HTTPS_PROXY`를 설정하여 설치 프로그램이 프록시를 통해 라우팅할 수 있도록 하세요. 자세한 내용은 [프록시 구성](/ko/network-config#proxy-configuration)을 참조하세요.
+2. **프록시 뒤에 있는 경우** `HTTPS_PROXY`를 설정하여 설치 프로그램이 프록시를 통해 라우팅할 수 있도록 하세요. 자세한 내용은 [프록시 구성](/docs/ko/network-config#proxy-configuration)을 참조하세요.
    ```bash theme={null}
    export HTTPS_PROXY=http://proxy.example.com:8080
    curl -fsSL https://claude.ai/install.sh | bash
@@ -489,7 +492,7 @@ Homebrew가 예상보다 이전 Claude Code 버전을 설치하면 동일한 오
   Windows에서 잘못된 설치 명령
 </h3>
 
-`'irm' is not recognized`, `The token '&&' is not valid` 또는 `'bash' is not recognized as the name of a cmdlet`이 표시되면 다른 셸 또는 운영 체제의 설치 명령을 복사했습니다.
+`'irm' is not recognized`, `The token '&&' is not valid`, `A parameter cannot be found that matches parameter name 'fsSL'` 또는 `'bash' is not recognized as the name of a cmdlet`이 표시되면 다른 셸 또는 운영 체제의 설치 명령을 복사했습니다.
 
 * **`irm` 인식 안 됨**: CMD에 있고 PowerShell이 아닙니다. 두 가지 옵션이 있습니다:
 
@@ -506,6 +509,11 @@ Homebrew가 예상보다 이전 Claude Code 버전을 설치하면 동일한 오
   ```
 
 * **`&&` 유효하지 않음**: PowerShell에 있지만 CMD 설치 프로그램 명령을 실행했습니다. PowerShell 설치 프로그램을 사용하세요:
+  ```powershell theme={null}
+  irm https://claude.ai/install.ps1 | iex
+  ```
+
+* **`A parameter cannot be found that matches parameter name 'fsSL'`**: Windows PowerShell에서 macOS/Linux `curl -fsSL ... | bash` 설치 프로그램을 실행했습니다. 여기서 `curl`은 `Invoke-WebRequest`의 별칭이며 `-fsSL` 플래그를 거부합니다. 대신 PowerShell 설치 프로그램을 사용하세요:
   ```powershell theme={null}
   irm https://claude.ai/install.ps1 | iex
   ```
@@ -532,15 +540,18 @@ irm https://claude.ai/install.ps1 | iex
   저메모리 Linux 서버에서 설치 중단
 </h3>
 
-VPS 또는 클라우드 인스턴스에서 설치 중에 `Killed`가 표시되면:
+설치 중에 `Killed` 메시지가 표시되면 일반적으로 Linux OOM(메모리 부족) killer가 시스템이 메모리 부족으로 인해 `claude install` 단계를 종료했음을 의미합니다. 이는 작은 VPS 및 클라우드 인스턴스에서 일반적입니다. 설치 스크립트는 원인을 보고하고 종료 코드 137로 종료됩니다:
 
 ```text theme={null}
 Setting up Claude Code...
-Installing Claude Code native build latest...
 bash: line 142: 34803 Killed    "$binary_path" install ${TARGET:+"$TARGET"}
+Installation was killed before it could finish (exit code 137). This usually means the system ran out of memory.
+Claude Code needs roughly 512MB of free memory to install. Free up memory, then run this script again.
 ```
 
-Linux OOM killer는 시스템이 메모리 부족으로 인해 프로세스를 종료했습니다. Claude Code는 최소 4GB의 사용 가능한 RAM이 필요합니다.
+v2.1.200 이전에는 스크립트가 설명 없이 셸의 단순 `Killed` 줄로만 종료되었습니다.
+
+설치에는 대략 512MB의 여유 메모리가 필요하며 Claude Code를 실행하려면 더 많은 메모리가 필요합니다. [시스템 요구사항](/docs/ko/setup#system-requirements)을 참조하세요.
 
 **해결책:**
 
@@ -596,13 +607,13 @@ Claude Desktop을 최신 버전으로 업데이트하여 이 문제를 해결하
   Windows에서 Claude Code는 Git for Windows(Bash용) 또는 PowerShell 필요
 </h3>
 
-Git for Windows는 선택 사항입니다. Claude Code는 Git Bash가 없을 때 [PowerShell 도구](/ko/tools-reference#powershell-tool)를 사용하므로 이 오류는 어느 셸도 찾을 수 없음을 의미합니다.
+Git for Windows는 선택 사항입니다. Claude Code는 Git Bash가 없을 때 [PowerShell 도구](/docs/ko/tools-reference#powershell-tool)를 사용하므로 이 오류는 어느 셸도 찾을 수 없음을 의미합니다.
 
 **PowerShell이 PATH에서 누락된 경우** 기본 위치는 `C:\Windows\System32\WindowsPowerShell\v1.0\`입니다. 해당 디렉토리를 `PATH`에 추가하거나 `pwsh`를 제공하는 [PowerShell 7](https://aka.ms/powershell)을 설치하세요.
 
 **Git for Windows를 설치하려면** [git-scm.com/downloads/win](https://git-scm.com/downloads/win)에서 다운로드하세요. 설정 중에 "Add to PATH"를 선택하세요. 설치 후 터미널을 다시 시작하세요. 설치하면 Bash 도구가 활성화되어 Bash 기반 스크립트 및 도구로 작업할 때 유용합니다.
 
-**Git이 이미 설치되어 있지만** Claude Code가 찾을 수 없으면 [settings.json 파일](/ko/settings)에서 경로를 설정하세요:
+**Git이 이미 설치되어 있지만** Claude Code가 찾을 수 없으면 [settings.json 파일](/docs/ko/settings)에서 경로를 설정하세요:
 
 ```json theme={null}
 {
@@ -630,7 +641,7 @@ Windows는 시작 메뉴에 두 개의 PowerShell 항목을 포함합니다: `Wi
 
 이것이 `True`를 인쇄하면 운영 체제는 정상입니다. 창을 닫고 x86 접미사 없이 `Windows PowerShell`을 열고 설치 명령을 다시 실행하세요.
 
-이것이 `False`를 인쇄하면 32비트 Windows 버전을 사용 중입니다. Claude Code는 64비트 운영 체제가 필요합니다. [시스템 요구사항](/ko/setup#system-requirements)을 참조하세요.
+이것이 `False`를 인쇄하면 32비트 Windows 버전을 사용 중입니다. Claude Code는 64비트 운영 체제가 필요합니다. [시스템 요구사항](/docs/ko/setup#system-requirements)을 참조하세요.
 
 <h3 id="linux-musl-or-glibc-binary-mismatch">
   Linux musl 또는 glibc 바이너리 불일치
@@ -726,7 +737,7 @@ claude() {
   WSL에서 npm 설치 오류
 </h3>
 
-이 문제는 WSL 내에서 `npm install -g`로 Claude Code를 설치한 경우 적용됩니다. [네이티브 설치 프로그램](/ko/setup)을 사용한 경우 이 섹션을 건너뛰세요.
+이 문제는 WSL 내에서 `npm install -g`로 Claude Code를 설치한 경우 적용됩니다. [네이티브 설치 프로그램](/docs/ko/setup)을 사용한 경우 이 섹션을 건너뛰세요.
 
 **OS 또는 플랫폼 감지 문제.** npm이 설치 중에 플랫폼 불일치를 보고하면 WSL이 Windows `npm`을 선택하고 있을 가능성이 높습니다. 먼저 `npm config set os linux`를 실행한 다음 `npm install -g @anthropic-ai/claude-code --force`로 설치하세요. `sudo`를 사용하지 마세요.
 
@@ -775,7 +786,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 `@anthropic-ai/claude-code` npm 패키지는 `@anthropic-ai/claude-code-darwin-arm64`와 같은 플랫폼별 선택적 종속성을 통해 네이티브 바이너리를 가져옵니다. 설치 후 `claude`를 실행하면 `Could not find native binary package "@anthropic-ai/claude-code-<platform>"`이 인쇄되면 다음 원인을 확인하세요:
 
 * **선택적 종속성이 비활성화됨.** npm 설치 명령에서 `--omit=optional`을 제거하고 pnpm에서 `--no-optional`을 제거하고 yarn에서 `--ignore-optional`을 제거하고 `.npmrc`가 `optional=false`를 설정하지 않는지 확인하세요. 그런 다음 다시 설치하세요. 네이티브 바이너리는 선택적 종속성으로만 제공되므로 건너뛰면 JavaScript 폴백이 없습니다.
-* **지원되지 않는 플랫폼.** 미리 빌드된 바이너리는 `darwin-arm64`, `darwin-x64`, `linux-x64`, `linux-arm64`, `linux-x64-musl`, `linux-arm64-musl`, `win32-x64` 및 `win32-arm64`에 대해 게시됩니다. Claude Code는 다른 플랫폼에 대한 바이너리를 제공하지 않습니다. [시스템 요구사항](/ko/setup#system-requirements)을 참조하세요.
+* **지원되지 않는 플랫폼.** 미리 빌드된 바이너리는 `darwin-arm64`, `darwin-x64`, `linux-x64`, `linux-arm64`, `linux-x64-musl`, `linux-arm64-musl`, `win32-x64` 및 `win32-arm64`에 대해 게시됩니다. Claude Code는 다른 플랫폼에 대한 바이너리를 제공하지 않습니다. [시스템 요구사항](/docs/ko/setup#system-requirements)을 참조하세요. {/* min-version: 2.1.205 */}FreeBSD에서 설치 프로그램은 플랫폼을 지원되지 않음으로 보고합니다. v2.1.205 이전에는 FreeBSD를 Linux로 취급하고 실행할 수 없는 바이너리를 다운로드했습니다.
 * **회사 npm 미러가 플랫폼 패키지를 누락함.** 레지스트리가 메타 패키지 외에도 8개의 `@anthropic-ai/claude-code-*` 플랫폼 패키지를 모두 미러링하는지 확인하세요.
 
 `--ignore-scripts`로 설치하면 이 오류가 트리거되지 않습니다. 바이너리를 제자리에 연결하는 postinstall 단계를 건너뛰므로 Claude Code는 각 시작 시 플랫폼 바이너리를 찾아 생성하는 래퍼로 폴백합니다. 이는 작동하지만 더 느리게 시작됩니다. 직접 실행을 위해 스크립트를 활성화하여 다시 설치하세요.
@@ -818,7 +829,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 * **Claude Pro/Max 사용자**: [claude.ai/settings](https://claude.ai/settings)에서 구독이 활성화되어 있는지 확인
 * **Anthropic Console 사용자**: 계정에 "Claude Code" 또는 "Developer" 역할이 있는지 확인. 관리자는 Anthropic Console의 설정 → 멤버에서 이를 할당합니다.
-* **프록시 뒤에 있음**: 회사 프록시가 API 요청을 방해할 수 있습니다. 프록시 설정은 [네트워크 구성](/ko/network-config)을 참조하세요.
+* **프록시 뒤에 있음**: 회사 프록시가 API 요청을 방해할 수 있습니다. 프록시 설정은 [네트워크 구성](/docs/ko/network-config)을 참조하세요.
 
 <h3 id="this-organization-has-been-disabled-with-an-active-subscription">
   이 조직은 활성 구독으로 비활성화되었습니다
@@ -826,7 +837,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 활성 Claude 구독이 있음에도 불구하고 `API Error: 400 ... "This organization has been disabled"`가 표시되면 `ANTHROPIC_API_KEY` 환경 변수가 구독을 무시하고 있습니다. 이는 이전 고용주 또는 프로젝트의 이전 API 키가 여전히 셸 프로필에 설정되어 있을 때 일반적으로 발생합니다.
 
-`ANTHROPIC_API_KEY`가 있고 승인한 경우 Claude Code는 구독의 OAuth 자격증명 대신 해당 키를 사용합니다. `-p` 플래그를 사용한 비대화형 모드에서는 키가 있을 때 항상 사용됩니다. 전체 해결 순서는 [인증 우선순위](/ko/authentication#authentication-precedence)를 참조하세요.
+`ANTHROPIC_API_KEY`가 있고 승인한 경우 Claude Code는 구독의 OAuth 자격증명 대신 해당 키를 사용합니다. `-p` 플래그를 사용한 비대화형 모드에서는 키가 있을 때 항상 사용됩니다. 전체 해결 순서는 [인증 우선순위](/docs/ko/authentication#authentication-precedence)를 참조하세요.
 
 대신 구독을 사용하려면 환경 변수를 설정 해제하고 셸 프로필에서 제거하세요:
 
@@ -870,19 +881,19 @@ Claude Code가 세션 후 다시 로그인하도록 요청하면 OAuth 토큰이
 
 macOS에서 Keychain이 잠겨 있거나 암호가 계정 암호와 동기화되지 않으면 로그인이 실패할 수도 있으며, 이는 Claude Code가 자격증명을 저장하지 못하게 합니다. `claude doctor`를 실행하여 Keychain 액세스를 확인하세요. Keychain을 수동으로 잠금 해제하려면 `security unlock-keychain ~/Library/Keychains/login.keychain-db`를 실행하세요. 잠금 해제가 도움이 되지 않으면 Keychain Access를 열고 `login` keychain을 선택한 다음 편집 > Keychain "login"의 암호 변경을 선택하여 계정 암호와 다시 동기화하세요.
 
-<h3 id="bedrock-vertex-or-foundry-credentials-not-loading">
-  Bedrock, Vertex 또는 Foundry 자격증명이 로드되지 않음
+<h3 id="bedrock-agent-platform-or-foundry-credentials-not-loading">
+  Bedrock, Agent Platform 또는 Foundry 자격증명이 로드되지 않음
 </h3>
 
-Claude Code를 클라우드 공급자를 사용하도록 구성했고 Bedrock에서 `Could not load credentials from any providers`, Vertex에서 `Could not load the default credentials` 또는 Foundry에서 `ChainedTokenCredential authentication failed`가 표시되면 클라우드 공급자 CLI가 현재 셸에서 인증되지 않았을 가능성이 높습니다.
+Claude Code를 클라우드 공급자를 사용하도록 구성했고 Amazon Bedrock에서 `Could not load credentials from any providers`, Google Cloud의 Agent Platform에서 `Could not load the default credentials` 또는 Microsoft Foundry에서 `ChainedTokenCredential authentication failed`가 표시되면 클라우드 공급자 CLI가 현재 셸에서 인증되지 않았을 가능성이 높습니다.
 
-Bedrock의 경우 AWS 자격증명이 유효한지 확인하세요:
+Amazon Bedrock의 경우 AWS 자격증명이 유효한지 확인하세요:
 
 ```bash theme={null}
 aws sts get-caller-identity
 ```
 
-Vertex AI의 경우 `ANTHROPIC_VERTEX_PROJECT_ID` 및 `CLOUD_ML_REGION`이 셸에 설정되어 있는지 확인한 다음 애플리케이션 기본 자격증명을 설정하세요:
+Google Cloud의 Agent Platform의 경우 `ANTHROPIC_VERTEX_PROJECT_ID` 및 `CLOUD_ML_REGION`이 셸에 설정되어 있는지 확인한 다음 애플리케이션 기본 자격증명을 설정하세요:
 
 ```bash theme={null}
 gcloud auth application-default login
@@ -896,7 +907,7 @@ az login
 
 자격증명이 터미널에서 작동하지만 VS Code 또는 JetBrains 확장에서 작동하지 않으면 IDE 프로세스가 셸 환경을 상속하지 않았을 가능성이 높습니다. IDE의 자체 설정에서 공급자 환경 변수를 설정하거나 이미 내보낸 터미널에서 IDE를 시작하세요.
 
-전체 공급자 설정은 [Amazon Bedrock](/ko/amazon-bedrock), [Google Vertex AI](/ko/google-vertex-ai) 또는 [Microsoft Foundry](/ko/microsoft-foundry)를 참조하세요.
+전체 공급자 설정은 [Amazon Bedrock](/docs/ko/amazon-bedrock), [Google Cloud의 Agent Platform](/docs/ko/google-vertex-ai) 또는 [Microsoft Foundry](/docs/ko/microsoft-foundry)를 참조하세요.
 
 <h2 id="still-stuck">
   여전히 막혔습니다

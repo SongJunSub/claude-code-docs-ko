@@ -7,15 +7,15 @@
 > 공유 작업, 에이전트 간 메시징, 중앙 집중식 관리를 통해 함께 작동하는 여러 Claude Code 인스턴스를 조율합니다.
 
 <Warning>
-  에이전트 팀은 실험적이며 기본적으로 비활성화되어 있습니다. [settings.json](/ko/settings)이나 환경에 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`를 추가하여 활성화합니다. 해당 변수가 없으면 세션 시작 시 팀이 설정되지 않고, 팀 디렉토리가 작성되지 않으며, Claude가 팀원을 생성하거나 제안하지 않습니다. 에이전트 팀은 세션 재개, 작업 조율, 종료 동작 관련 [알려진 제한 사항](#limitations)이 있습니다.
+  에이전트 팀은 실험적이며 기본적으로 비활성화되어 있습니다. [settings.json](/docs/ko/settings)이나 환경에 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`를 추가하여 활성화합니다. 해당 변수가 없으면 세션 시작 시 팀이 설정되지 않고, 팀 디렉토리가 작성되지 않으며, Claude가 팀원을 생성하거나 제안하지 않습니다. 에이전트 팀은 세션 재개, 작업 조율, 종료 동작 관련 [알려진 제한 사항](#limitations)이 있습니다.
 </Warning>
 
 에이전트 팀을 사용하면 함께 작동하는 여러 Claude Code 인스턴스를 조율할 수 있습니다. 한 세션이 팀 리더 역할을 하여 작업을 조율하고, 작업을 할당하며, 결과를 종합합니다. 팀원들은 독립적으로 작동하며, 각각 자신의 컨텍스트 윈도우에서 작동하고, 서로 직접 통신합니다.
 
-단일 세션 내에서 실행되고 메인 에이전트에게만 보고할 수 있는 [subagents](/ko/sub-agents)와 달리, 리더를 거치지 않고 개별 팀원과 직접 상호작용할 수도 있습니다.
+단일 세션 내에서 실행되고 메인 에이전트에게만 보고할 수 있는 [subagents](/docs/ko/sub-agents)와 달리, 리더를 거치지 않고 개별 팀원과 직접 상호작용할 수도 있습니다.
 
 <Note>
-  이 페이지는 v2.1.178 기준의 에이전트 팀을 설명합니다. `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`가 설정되면, 팀원을 생성할 때 더 이상 설정 단계가 필요하지 않으며, 세션이 종료될 때 정리가 자동으로 수행됩니다. v2.1.178 이전에는 먼저 Claude에게 팀을 생성하고 이름을 지정하도록 요청했으며, Claude는 `TeamCreate` 및 `TeamDelete` 도구를 사용하여 설정하고 제거했습니다. 두 도구는 더 이상 존재하지 않습니다. Agent 도구의 `team_name` 입력은 허용되지만 무시되며, `TaskCreated`, `TaskCompleted`, 및 `TeammateIdle` [hook payloads](/ko/hooks#taskcreated)의 `team_name` 필드는 세션에서 파생된 이름을 전달하며 더 이상 사용되지 않습니다.
+  이 페이지는 v2.1.178 기준의 에이전트 팀을 설명합니다. `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`가 설정되면, 팀원을 생성할 때 더 이상 설정 단계가 필요하지 않으며, 세션이 종료될 때 정리가 자동으로 수행됩니다. v2.1.178 이전에는 먼저 Claude에게 팀을 생성하고 이름을 지정하도록 요청했으며, Claude는 `TeamCreate` 및 `TeamDelete` 도구를 사용하여 설정하고 제거했습니다. 두 도구는 더 이상 존재하지 않습니다. Agent 도구의 `team_name` 입력은 허용되지만 무시되며, `TaskCreated`, `TaskCompleted`, 및 `TeammateIdle` [hook payloads](/docs/ko/hooks#taskcreated)의 `team_name` 필드는 세션에서 파생된 이름을 전달하며 더 이상 사용되지 않습니다.
 </Note>
 
 <h2 id="when-to-use-agent-teams">
@@ -29,13 +29,13 @@
 * **경쟁하는 가설로 디버깅하기**: 팀원들이 다양한 이론을 병렬로 테스트하고 더 빠르게 답에 수렴합니다
 * **교차 계층 조율**: 프론트엔드, 백엔드, 테스트에 걸친 변경 사항으로, 각각 다른 팀원이 소유합니다
 
-에이전트 팀은 조율 오버헤드를 추가하고 단일 세션보다 훨씬 더 많은 토큰을 사용합니다. 팀원들이 독립적으로 작동할 수 있을 때 가장 잘 작동합니다. 순차적 작업, 동일 파일 편집, 또는 많은 종속성이 있는 작업의 경우 단일 세션이나 [subagents](/ko/sub-agents)가 더 효과적입니다.
+에이전트 팀은 조율 오버헤드를 추가하고 단일 세션보다 훨씬 더 많은 토큰을 사용합니다. 팀원들이 독립적으로 작동할 수 있을 때 가장 잘 작동합니다. 순차적 작업, 동일 파일 편집, 또는 많은 종속성이 있는 작업의 경우 단일 세션이나 [subagents](/docs/ko/sub-agents)가 더 효과적입니다.
 
 <h3 id="compare-with-subagents">
   subagents와 비교
 </h3>
 
-에이전트 팀과 [subagents](/ko/sub-agents) 모두 작업을 병렬화할 수 있지만, 다르게 작동합니다. 워커들이 서로 통신해야 하는지 여부에 따라 선택합니다:
+에이전트 팀과 [subagents](/docs/ko/sub-agents) 모두 작업을 병렬화할 수 있지만, 다르게 작동합니다. 워커들이 서로 통신해야 하는지 여부에 따라 선택합니다:
 
 <Frame caption="Subagents는 결과만 메인 에이전트에게 보고하고 서로 대화하지 않습니다. 에이전트 팀에서는 팀원들이 작업 목록을 공유하고, 작업을 요청하며, 서로 직접 통신합니다.">
   <img src="https://mintcdn.com/claude-code/nsvRFSDNfpSU5nT7/images/subagents-vs-agent-teams-light.png?fit=max&auto=format&n=nsvRFSDNfpSU5nT7&q=85&s=2f8db9b4f3705dd3ab931fbe2d96e42a" className="dark:hidden" alt="Subagent와 에이전트 팀 아키텍처를 비교하는 다이어그램입니다. Subagents는 메인 에이전트에 의해 생성되고, 작업을 수행하며, 결과를 보고합니다. 에이전트 팀은 공유 작업 목록을 통해 조율되며, 팀원들이 서로 직접 통신합니다." width="4245" height="1615" data-path="images/subagents-vs-agent-teams-light.png" />
@@ -57,7 +57,7 @@
   에이전트 팀 활성화
 </h2>
 
-에이전트 팀은 기본적으로 비활성화되어 있습니다. `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 환경 변수를 `1`로 설정하여 활성화합니다. 셸 환경이나 [settings.json](/ko/settings)을 통해 설정할 수 있습니다:
+에이전트 팀은 기본적으로 비활성화되어 있습니다. `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` 환경 변수를 `1`로 설정하여 활성화합니다. 셸 환경이나 [settings.json](/docs/ko/settings)을 통해 설정할 수 있습니다:
 
 ```json settings.json theme={null}
 {
@@ -81,7 +81,7 @@ their codebase. Spawn three teammates to explore this from different angles:
 one on UX, one on technical architecture, one playing devil's advocate.
 ```
 
-그러면 Claude는 [공유 작업 목록](/ko/interactive-mode#task-list)을 채우고, 각 관점에 대한 팀원들을 생성하며, 문제를 탐색하고, 완료되었을 때 발견을 종합합니다.
+그러면 Claude는 [공유 작업 목록](/docs/ko/interactive-mode#task-list)을 채우고, 각 관점에 대한 팀원들을 생성하며, 문제를 탐색하고, 완료되었을 때 발견을 종합합니다.
 
 리더의 터미널은 프롬프트 입력 아래의 에이전트 패널에 팀원들을 나열합니다. 패널에서:
 
@@ -89,7 +89,9 @@ one on UX, one on technical architecture, one playing devil's advocate.
 * **Enter**: 선택한 팀원의 대화 기록을 열고 직접 메시지 전송
 * **Escape**: 선택한 팀원의 현재 턴 중단
 
-{/* min-version: 2.1.181 */}v2.1.181부터, 유휴 팀원의 행은 30초 후 숨겨지고 다음 턴에 다시 나타납니다. 팀원은 숨겨진 상태에서도 계속 실행되고 주소 지정 가능합니다.
+{/* min-version: 2.1.199 */}v2.1.199부터, 유휴 팀원의 행은 다른 팀원이나 서브에이전트가 여전히 작업 중인 동안 패널에 남아 있으므로, 이를 선택하여 대화 기록을 검토하거나 추가 작업을 보낼 수 있습니다. 패널의 모든 에이전트가 유휴 상태가 되면, 유휴 행은 30초 후 숨겨지고 팀원의 다음 턴에 다시 나타납니다. 팀원은 숨겨진 상태에서도 계속 실행되고 주소 지정 가능합니다. v2.1.181부터 v2.1.198까지는, 유휴 행이 다른 팀원들이 여전히 작업 중이더라도 자신의 턴이 끝난 후 30초 후에 숨겨졌습니다. v2.1.181 이전 버전에서는 유휴 행이 숨겨지지 않습니다.
+
+세 명 이상의 팀원이 동시에 유휴 상태일 때, 처음 세 명을 넘는 행들은 `5명이 유휴 상태일 때 2명의 유휴 에이전트`와 같이 축소된 팀원의 수를 세는 단일 행으로 축소됩니다. 이를 선택하고 Enter를 누르면 축소된 행들이 확장되거나, Esc를 누르면 다시 축소됩니다. 작업 중인 팀원, 실패한 팀원, 그리고 현재 보고 있는 팀원은 항상 자신의 행을 유지합니다.
 
 각 팀원이 자신의 분할 창에 있기를 원하면 [표시 모드 선택](#choose-a-display-mode)을 참조합니다.
 
@@ -116,7 +118,7 @@ one on UX, one on technical architecture, one playing devil's advocate.
 
 {/* min-version: 2.1.186 */}v2.1.186부터는 `"iterm2"`를 설정하여 iTerm2 네이티브 분할 창을 명시적으로 사용합니다. 이 모드는 [`it2` CLI](https://github.com/mkusaka/it2)가 필요하며 `it2`가 누락된 경우 설치 명령과 함께 오류를 표시합니다. 터미널이 iTerm2이고 tmux를 폴백으로 사용할 수 있을 때 `"auto"` 또는 `"tmux"` 아래에 `it2`를 설치하거나 tmux로 전환할 것을 제안하는 설정 프롬프트가 나타납니다.
 
-기본값을 재정의하려면 `~/.claude/settings.json`에서 [`teammateMode`](/ko/settings#available-settings)를 설정합니다:
+기본값을 재정의하려면 `~/.claude/settings.json`에서 [`teammateMode`](/docs/ko/settings#available-settings)를 설정합니다:
 
 ```json theme={null}
 {
@@ -148,7 +150,7 @@ each teammate.
 
 팀원들은 기본적으로 리더의 `/model` 선택을 상속하지 않습니다. 프롬프트가 지정하지 않을 때 사용되는 모델을 변경하려면, `/config`에서 **기본 팀원 모델**을 설정합니다. \*\*기본값(리더의 모델)\*\*을 선택하여 팀원들이 리더의 현재 모델을 따르도록 합니다.
 
-{/* min-version: 2.1.186 */}팀원들은 리더의 [노력 수준](/ko/model-config#adjust-effort-level)을 상속합니다. 분할 창 모드에서는 v2.1.186부터 적용됩니다. 이전 버전은 리더의 세션 노력을 분할 창 팀원에게 전달하지 않았습니다.
+{/* min-version: 2.1.186 */}팀원들은 리더의 [노력 수준](/docs/ko/model-config#adjust-effort-level)을 상속합니다. 분할 창 모드에서는 v2.1.186부터 적용됩니다. 이전 버전은 리더의 세션 노력을 분할 창 팀원에게 전달하지 않았습니다.
 
 <h3 id="require-plan-approval-for-teammates">
   팀원을 위한 계획 승인 요구
@@ -173,6 +175,10 @@ Require plan approval before they make any changes.
 
 * **In-process 모드**: 에이전트 패널에서 위아래 화살표 키를 사용하여 팀원을 선택한 후 Enter를 눌러 세션을 보고 입력하여 메시지를 보냅니다. 선택된 팀원에서 `x`를 눌러 중지합니다. Ctrl+T를 눌러 작업 목록을 전환합니다.
 * **분할 창 모드**: 팀원의 창을 클릭하여 세션과 직접 상호작용합니다. 각 팀원은 자신의 터미널의 전체 보기를 가집니다.
+
+팀원을 보고 있는 동안, 일반 텍스트와 [skills](/docs/ko/skills)는 해당 팀원에게 전달되지만, 기본 제공 명령은 여전히 리더의 세션에서 실행됩니다.
+
+팀원의 모델과 빠른 모드는 생성될 때 고정되므로, `/model`과 `/fast`는 리더의 설정만 변경합니다. {/* min-version: 2.1.199 */}v2.1.199부터는 팀원을 보고 있는 동안 두 명령 중 하나를 입력하면 변경이 리더에게 적용된다는 알림이 표시됩니다. 이전 버전은 표시 없이 리더에게 적용했습니다. `/effort`는 여전히 보고 있는 팀원의 이후 턴에 적용됩니다. 팀원들은 리더의 [노력 수준](/docs/ko/model-config#adjust-effort-level)을 따르기 때문입니다.
 
 <h3 id="assign-and-claim-tasks">
   작업 할당 및 요청
@@ -205,11 +211,11 @@ Ask the researcher teammate to shut down
   hooks로 품질 게이트 적용
 </h3>
 
-[hooks](/ko/hooks)를 사용하여 팀원들이 작업을 마치거나 작업이 생성되거나 완료될 때 규칙을 적용합니다:
+[hooks](/docs/ko/hooks)를 사용하여 팀원들이 작업을 마치거나 작업이 생성되거나 완료될 때 규칙을 적용합니다:
 
-* [`TeammateIdle`](/ko/hooks#teammateidle): 팀원이 유휴 상태가 되려고 할 때 실행됩니다. 종료 코드 2로 종료하여 피드백을 보내고 팀원을 계속 작동하게 합니다.
-* [`TaskCreated`](/ko/hooks#taskcreated): 작업이 생성될 때 실행됩니다. 종료 코드 2로 종료하여 생성을 방지하고 피드백을 보냅니다.
-* [`TaskCompleted`](/ko/hooks#taskcompleted): 작업이 완료로 표시될 때 실행됩니다. 종료 코드 2로 종료하여 완료를 방지하고 피드백을 보냅니다.
+* [`TeammateIdle`](/docs/ko/hooks#teammateidle): 팀원이 유휴 상태가 되려고 할 때 실행됩니다. 종료 코드 2로 종료하여 피드백을 보내고 팀원을 계속 작동하게 합니다.
+* [`TaskCreated`](/docs/ko/hooks#taskcreated): 작업이 생성될 때 실행됩니다. 종료 코드 2로 종료하여 생성을 방지하고 피드백을 보냅니다.
+* [`TaskCompleted`](/docs/ko/hooks#taskcompleted): 작업이 완료로 표시될 때 실행됩니다. 종료 코드 2로 종료하여 완료를 방지하고 피드백을 보냅니다.
 
 <h2 id="how-agent-teams-work">
   에이전트 팀이 어떻게 작동하는지
@@ -243,6 +249,8 @@ Ask the researcher teammate to shut down
 
 표시 구성 옵션은 [표시 모드 선택](#choose-a-display-mode)을 참조합니다. 팀원 메시지는 리더에게 자동으로 도착합니다.
 
+각 에이전트의 메일박스는 `~/.claude/teams/{team-name}/inboxes/{agent-name}.json`의 JSON 파일입니다. Claude Code는 메일박스 파일을 읽을 때 모든 항목을 검증합니다. 메시지 형식과 일치하지 않는 항목은 오류로 보고되고 파일에서 제거됩니다. 유효한 메시지는 여전히 전달됩니다. v2.1.207 이전에는 단일 형식이 잘못된 메일박스 항목으로 인해 매초 반복되는 오류가 발생했으며 파일을 수동으로 삭제할 때까지 해당 메일박스의 전달이 차단되었습니다.
+
 시스템은 작업 종속성을 자동으로 관리합니다. 팀원이 다른 작업이 종속된 작업을 완료하면, 차단된 작업은 수동 개입 없이 차단 해제됩니다.
 
 팀과 작업은 세션 파생 이름으로 로컬에 저장됩니다. 이름은 `session-` 뒤에 세션 ID의 처음 8자가 붙습니다:
@@ -250,7 +258,7 @@ Ask the researcher teammate to shut down
 * **팀 구성**: `~/.claude/teams/{team-name}/config.json`
 * **작업 목록**: `~/.claude/tasks/{team-name}/`
 
-Claude Code는 세션 시작 시 이 둘을 자동으로 생성하고 팀원들이 참여하거나, 유휴 상태가 되거나, 떠날 때 업데이트합니다. 팀 구성 디렉토리는 세션이 끝날 때 제거됩니다. 작업 목록 디렉토리는 로컬에 유지되며 절대 업로드되지 않으므로, 재개된 세션은 작업을 유지합니다. 보존은 세션 트랜스크립트에 대해 이미 제어하는 것과 동일한 [`cleanupPeriodDays`](/ko/settings#available-settings)에 의해 관리됩니다.
+Claude Code는 세션 시작 시 이 둘을 자동으로 생성하고 팀원들이 참여하거나, 유휴 상태가 되거나, 떠날 때 업데이트합니다. 팀 구성 디렉토리는 세션이 끝날 때 제거됩니다. 작업 목록 디렉토리는 로컬에 유지되며 절대 업로드되지 않으므로, 재개된 세션은 작업을 유지합니다. 보존은 세션 트랜스크립트에 대해 이미 제어하는 것과 동일한 [`cleanupPeriodDays`](/docs/ko/settings#available-settings)에 의해 관리됩니다.
 
 팀 구성은 세션 ID 및 tmux 창 ID와 같은 런타임 상태를 보유하므로, 수동으로 편집하거나 사전 작성하지 마십시오: 다음 상태 업데이트에서 변경 사항이 덮어씌워집니다.
 
@@ -264,7 +272,7 @@ Claude Code는 세션 시작 시 이 둘을 자동으로 생성하고 팀원들�
   팀원을 위해 subagent 정의 사용
 </h3>
 
-팀원을 생성할 때, 프로젝트, 사용자, 플러그인, 또는 CLI 정의 등 모든 [subagent 범위](/ko/sub-agents#choose-the-subagent-scope)의 [subagent](/ko/sub-agents) 유형을 참조할 수 있습니다. 이를 통해 보안 검토자 또는 테스트 실행자와 같은 역할을 한 번 정의하고 위임된 subagent와 에이전트 팀 팀원 모두로 재사용할 수 있습니다.
+팀원을 생성할 때, 프로젝트, 사용자, 플러그인, 또는 CLI 정의 등 모든 [subagent 범위](/docs/ko/sub-agents#choose-the-subagent-scope)의 [subagent](/docs/ko/sub-agents) 유형을 참조할 수 있습니다. 이를 통해 보안 검토자 또는 테스트 실행자와 같은 역할을 한 번 정의하고 위임된 subagent와 에이전트 팀 팀원 모두로 재사용할 수 있습니다.
 
 subagent 정의를 사용하려면, Claude에게 팀원을 생성하도록 요청할 때 이름으로 언급합니다:
 
@@ -284,6 +292,8 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
 
 팀원들은 리더의 권한 설정으로 시작합니다. 리더가 `--dangerously-skip-permissions`로 실행되면, 모든 팀원도 그렇게 합니다. 생성 후, 개별 팀원 모드를 변경할 수 있지만, 생성 시 팀원별 모드를 설정할 수 없습니다.
 
+한 에이전트가 `SendMessage`를 통해 다른 에이전트에게 메시지를 보낼 때, 수신 에이전트는 사용자가 아닌 다른 Claude 세션에서 온 것으로 알려집니다. 팀원은 권한 프롬프트를 승인하거나 사용자를 대신하여 동의를 제공할 수 없으며, 작업이 거부된 팀원은 이를 다른 팀원에게 전달하여 확인을 우회할 수 없습니다. [자동 모드](/docs/ko/permission-modes#eliminate-prompts-with-auto-mode)에서, 분류기는 다른 에이전트에서 전달된 승인 주장을 사용자로부터의 확인이 아닌 신뢰할 수 없는 입력으로 취급합니다. 팀원 권한 프롬프트는 리더 세션으로 버블업되므로, 거기서 직접 승인합니다. [계획 승인](#require-plan-approval-for-teammates)은 설계된 예외입니다: 리더 세션은 사용자에게 별도의 프롬프트 없이 팀원 계획 승인을 부여합니다.
+
 <h3 id="context-and-communication">
   컨텍스트 및 통신
 </h3>
@@ -293,7 +303,7 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
 **팀원들이 정보를 공유하는 방법:**
 
 * **자동 메시지 전달**: 팀원들이 메시지를 보낼 때, 자동으로 수신자에게 전달됩니다. 리더가 업데이트를 폴링할 필요가 없습니다.
-* **유휴 알림**: 팀원이 완료되고 중지되면, 자동으로 리더에게 알립니다.
+* **유휴 알림**: 팀원이 완료되고 중지되면, 자동으로 리더에게 알립니다. {/* min-version: 2.1.198 */}v2.1.198부터, 턴이 API 오류로 끝난 팀원은 정상적으로 완료된 것처럼 보이는 대신 실패했음을 리더에게 알리고 오류 텍스트를 포함합니다.
 * **공유 작업 목록**: 모든 에이전트는 작업 상태를 보고 사용 가능한 작업을 요청할 수 있습니다.
 * **팀원 메시징**: 이름으로 특정 팀원 한 명에게 메시지를 보냅니다. 모든 사람에게 도달하려면, 각 수신자에게 하나의 메시지를 보냅니다.
 
@@ -303,7 +313,7 @@ Spawn a teammate using the security-reviewer agent type to audit the auth module
   토큰 사용
 </h3>
 
-에이전트 팀은 단일 세션보다 훨씬 더 많은 토큰을 사용합니다. 각 팀원은 자신의 컨텍스트 윈도우를 가지며, 토큰 사용은 활성 팀원의 수에 따라 증가합니다. 연구, 검토, 새로운 기능 작업의 경우, 추가 토큰은 일반적으로 가치가 있습니다. 일상적인 작업의 경우, 단일 세션이 더 비용 효율적입니다. 사용 지침은 [에이전트 팀 토큰 비용](/ko/costs#agent-team-token-costs)을 참조합니다.
+에이전트 팀은 단일 세션보다 훨씬 더 많은 토큰을 사용합니다. 각 팀원은 자신의 컨텍스트 윈도우를 가지며, 토큰 사용은 활성 팀원의 수에 따라 증가합니다. 연구, 검토, 새로운 기능 작업의 경우, 추가 토큰은 일반적으로 가치가 있습니다. 일상적인 작업의 경우, 단일 세션이 더 비용 효율적입니다. 사용 지침은 [에이전트 팀 토큰 비용](/docs/ko/costs#agent-team-token-costs)을 참조합니다.
 
 <h2 id="use-case-examples">
   사용 사례 예시
@@ -367,13 +377,13 @@ httpOnly cookies. Report any issues with severity ratings."
 
 팀원의 수에 대한 하드 제한은 없지만, 실질적인 제약이 적용됩니다:
 
-* **토큰 비용이 선형으로 증가**: 각 팀원은 자신의 컨텍스트 윈도우를 가지며 독립적으로 토큰을 소비합니다. 자세한 내용은 [에이전트 팀 토큰 비용](/ko/costs#agent-team-token-costs)을 참조합니다.
+* **토큰 비용이 선형으로 증가**: 각 팀원은 자신의 컨텍스트 윈도우를 가지며 독립적으로 토큰을 소비합니다. 자세한 내용은 [에이전트 팀 토큰 비용](/docs/ko/costs#agent-team-token-costs)을 참조합니다.
 * **조율 오버헤드 증가**: 더 많은 팀원은 더 많은 통신, 작업 조율, 충돌 가능성을 의미합니다
 * **수익 감소**: 특정 지점을 넘으면, 추가 팀원은 작업 속도를 비례적으로 높이지 않습니다
 
 대부분의 워크플로우에 대해 3-5명의 팀원으로 시작합니다. 이는 병렬 작업과 관리 가능한 조율의 균형을 맞춥니다. 이 가이드의 예시들은 3-5명의 팀원을 사용합니다. 이 범위는 다양한 작업 유형에서 잘 작동하기 때문입니다.
 
-팀원당 5-6개의 [작업](/ko/agent-teams#architecture)을 유지하면 과도한 컨텍스트 전환 없이 모두를 생산적으로 유지합니다. 15개의 독립적인 작업이 있으면, 3명의 팀원이 좋은 시작점입니다.
+팀원당 5-6개의 [작업](/docs/ko/agent-teams#architecture)을 유지하면 과도한 컨텍스트 전환 없이 모두를 생산적으로 유지합니다. 15개의 독립적인 작업이 있으면, 3명의 팀원이 좋은 시작점입니다.
 
 작업이 실제로 팀원들이 동시에 작동하는 것의 이점이 있을 때만 확장합니다. 세 명의 집중된 팀원은 종종 다섯 명의 산만한 팀원을 능가합니다.
 
@@ -428,7 +438,7 @@ Wait for your teammates to complete their tasks before proceeding
 Claude에게 팀원을 생성하도록 요청한 후 팀원이 나타나지 않으면:
 
 * In-process 모드에서, 팀원들이 프롬프트 입력 아래의 에이전트 패널에 나타납니다. 위아래 화살표 키를 사용하여 팀원을 선택한 후 Enter를 눌러 확인합니다.
-* 유휴 상태로 앉아 있다가 사라진 팀원 행은 중지된 것이 아니라 숨겨진 것입니다. 유휴 행은 30초 후에 숨겨지며 팀원의 다음 차례에 다시 나타납니다. 팀원의 이름으로 메시지를 보내 다시 표시합니다.
+* 유휴 상태로 앉아 있다가 사라진 팀원 행은 중지된 것이 아니라 숨겨진 것입니다. 유휴 행은 전체 패널이 유휴 상태가 된 후 30초 후에 숨겨지며 팀원의 다음 차례에 다시 나타납니다. 3명 이상의 팀원이 유휴 상태일 때, 초과 행들은 Enter로 확장할 수 있는 단일 `N idle agents` 행으로 축소됩니다. 팀원의 이름으로 메시지를 보내 숨겨진 행을 다시 표시합니다.
 * Claude에게 준 작업이 팀을 보증할 만큼 복잡한지 확인합니다. Claude는 작업에 따라 팀원을 생성할지 결정합니다.
 * 분할 창을 명시적으로 요청했으면, tmux가 설치되어 있고 PATH에서 사용 가능한지 확인합니다:
   ```bash theme={null}
@@ -440,7 +450,7 @@ Claude에게 팀원을 생성하도록 요청한 후 팀원이 나타나지 않�
   너무 많은 권한 프롬프트
 </h3>
 
-팀원 권한 요청이 리더로 버블업되어 마찰을 일으킬 수 있습니다. 팀원들을 생성하기 전에 [권한 설정](/ko/permissions)에서 일반적인 작업을 사전 승인하여 중단을 줄입니다.
+팀원 권한 요청이 리더로 버블업되어 마찰을 일으킬 수 있습니다. 팀원들을 생성하기 전에 [권한 설정](/docs/ko/permissions)에서 일반적인 작업을 사전 승인하여 중단을 줄입니다.
 
 <h3 id="teammates-stopping-on-errors">
   팀원들이 오류에서 중지됨
@@ -450,6 +460,8 @@ Claude에게 팀원을 생성하도록 요청한 후 팀원이 나타나지 않�
 
 * 직접 추가 지시를 제공합니다
 * 작업을 계속하기 위해 대체 팀원을 생성합니다
+
+v2.1.198 기준으로, 리더 또는 다른 팀원의 메시지는 실패한 API 요청을 재시도하기 위해 대기 중인 in-process 팀원을 깨우므로, 전체 재시도 지연을 기다리지 않고 즉시 재시도합니다.
 
 <h3 id="lead-shuts-down-before-work-is-done">
   리더가 작업 완료 전에 종료됨
@@ -479,6 +491,7 @@ tmux kill-session -t <session-name>
 * **종료가 느릴 수 있음**: 팀원들은 현재 요청이나 도구 호출을 마친 후 종료되어 시간이 걸릴 수 있습니다.
 * **세션당 한 팀**: 세션은 정확히 하나의 팀을 가지며, 해당 세션으로 범위가 지정됩니다. 추가 명명된 팀을 만들거나 세션 간에 팀을 공유할 수 없습니다.
 * **중첩된 팀 없음**: 팀원들은 자신의 팀원을 생성할 수 없습니다. 리더만 팀을 관리할 수 있습니다.
+* **In-process 팀원의 백그라운드 서브에이전트 없음**: in-process 팀원의 자체 서브에이전트는 포그라운드에서 실행됩니다. `run_in_background`를 사용하거나 `background: true`를 설정하는 서브에이전트 정의로 백그라운드 서브에이전트를 요청하면 오류가 반환됩니다. 팀원의 백그라운드 작업은 리더의 프로세스보다 오래 지속될 수 없기 때문입니다. 주 대화에서 시작된 서브에이전트는 [백그라운드 기본값](/docs/ko/sub-agents#run-subagents-in-foreground-or-background)을 따릅니다.
 * **리더가 고정됨**: 주 세션은 수명 동안 리더입니다. 팀원을 리더로 승격하거나 리더십을 이전할 수 없습니다.
 * **생성 시 권한 설정**: 모든 팀원은 리더의 권한 모드로 시작합니다. 생성 후 개별 팀원 모드를 변경할 수 있지만, 생성 시 팀원별 모드를 설정할 수 없습니다.
 * **분할 창은 tmux 또는 iTerm2 필요**: 기본 in-process 모드는 모든 터미널에서 작동합니다. 분할 창 모드는 VS Code의 통합 터미널, Windows Terminal, Ghostty에서 지원되지 않습니다.
@@ -493,6 +506,6 @@ tmux kill-session -t <session-name>
 
 병렬 작업 및 위임을 위한 관련 접근 방식을 탐색합니다:
 
-* **경량 위임**: [subagents](/ko/sub-agents)는 세션 내에서 연구 또는 검증을 위해 도우미 에이전트를 생성하며, 에이전트 간 조율이 필요하지 않은 작업에 더 좋습니다
-* **수동 병렬 세션**: [Git worktrees](/ko/worktrees)를 사용하면 자동화된 팀 조율 없이 여러 Claude Code 세션을 직접 실행할 수 있습니다
-* **접근 방식 비교**: [subagent vs 에이전트 팀](/ko/features-overview#compare-similar-features) 비교를 참조하여 나란히 비교합니다
+* **경량 위임**: [subagents](/docs/ko/sub-agents)는 세션 내에서 연구 또는 검증을 위해 도우미 에이전트를 생성하며, 에이전트 간 조율이 필요하지 않은 작업에 더 좋습니다
+* **수동 병렬 세션**: [Git worktrees](/docs/ko/worktrees)를 사용하면 자동화된 팀 조율 없이 여러 Claude Code 세션을 직접 실행할 수 있습니다
+* **접근 방식 비교**: [subagent vs 에이전트 팀](/docs/ko/features-overview#compare-similar-features) 비교를 참조하여 나란히 비교합니다

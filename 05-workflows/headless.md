@@ -6,21 +6,21 @@
 
 > Agent SDK를 사용하여 CLI, Python 또는 TypeScript에서 Claude Code를 프로그래밍 방식으로 실행합니다.
 
-[Agent SDK](/ko/agent-sdk/overview)는 Claude Code를 구동하는 동일한 도구, 에이전트 루프 및 컨텍스트 관리를 제공합니다. 스크립트 및 CI/CD용 CLI로 사용하거나 완전한 프로그래밍 방식 제어를 위한 [Python](/ko/agent-sdk/python) 및 [TypeScript](/ko/agent-sdk/typescript) 패키지로 사용할 수 있습니다.
+[Agent SDK](/docs/ko/agent-sdk/overview)는 Claude Code를 구동하는 동일한 도구, 에이전트 루프 및 컨텍스트 관리를 제공합니다. 스크립트 및 CI/CD용 CLI로 사용하거나 완전한 프로그래밍 방식 제어를 위한 [Python](/docs/ko/agent-sdk/python) 및 [TypeScript](/docs/ko/agent-sdk/typescript) 패키지로 사용할 수 있습니다.
 
-Claude Code를 비대화형 모드에서 실행하려면 프롬프트와 함께 `-p`를 전달하고 [CLI 옵션](/ko/cli-reference)을 사용합니다:
+Claude Code를 비대화형 모드에서 실행하려면 프롬프트와 함께 `-p`를 전달하고 [CLI 옵션](/docs/ko/cli-reference)을 사용합니다:
 
 ```bash theme={null}
 claude -p "Find and fix the bug in auth.py" --allowedTools "Read,Edit,Bash"
 ```
 
-이 페이지는 CLI(`claude -p`)를 통한 Agent SDK 사용을 다룹니다. 구조화된 출력, 도구 승인 콜백 및 기본 메시지 객체가 있는 Python 및 TypeScript SDK 패키지의 경우 [전체 Agent SDK 문서](/ko/agent-sdk/overview)를 참조하십시오.
+이 페이지는 CLI(`claude -p`)를 통한 Agent SDK 사용을 다룹니다. 구조화된 출력, 도구 승인 콜백 및 기본 메시지 객체가 있는 Python 및 TypeScript SDK 패키지의 경우 [전체 Agent SDK 문서](/docs/ko/agent-sdk/overview)를 참조하십시오.
 
 <h2 id="basic-usage">
   기본 사용법
 </h2>
 
-`-p`(또는 `--print`) 플래그를 모든 `claude` 명령에 추가하여 비대화형으로 실행합니다. 모든 [CLI 옵션](/ko/cli-reference)은 `-p`와 함께 작동합니다:
+`-p`(또는 `--print`) 플래그를 모든 `claude` 명령에 추가하여 비대화형으로 실행합니다. 모든 [CLI 옵션](/docs/ko/cli-reference)은 `-p`와 함께 작동합니다:
 
 * `--continue`는 [대화 계속하기](#continue-conversations)용
 * `--allowedTools`는 [도구 자동 승인](#auto-approve-tools)용
@@ -36,7 +36,7 @@ claude -p "What does the auth module do?"
   베어 모드로 더 빠르게 시작하기
 </h3>
 
-`--bare`를 추가하여 hooks, skills, plugins, MCP 서버, 자동 메모리 및 CLAUDE.md의 자동 검색을 건너뛰어 시작 시간을 단축합니다. 이를 사용하지 않으면 `claude -p`는 대화형 세션과 동일한 [컨텍스트](/ko/how-claude-code-works#the-context-window)를 로드하며, 작업 디렉토리 또는 `~/.claude`에 구성된 모든 항목을 포함합니다.
+`--bare`를 추가하여 hooks, skills, plugins, MCP 서버, 자동 메모리 및 CLAUDE.md의 자동 검색을 건너뛰어 시작 시간을 단축합니다. 이를 사용하지 않으면 `claude -p`는 대화형 세션과 동일한 [컨텍스트](/docs/ko/how-claude-code-works#the-context-window)를 로드하며, 작업 디렉토리 또는 `~/.claude`에 구성된 모든 항목을 포함합니다.
 
 베어 모드는 모든 머신에서 동일한 결과가 필요한 CI 및 스크립트에 유용합니다. 팀원의 `~/.claude`에 있는 hook이나 프로젝트의 `.mcp.json`에 있는 MCP 서버는 베어 모드가 이들을 읽지 않기 때문에 실행되지 않습니다. 명시적으로 전달하는 플래그만 적용됩니다.
 
@@ -56,7 +56,7 @@ claude --bare -p "Summarize this file" --allowedTools "Read"
 | 사용자 정의 에이전트 | `--agents <json>`                                       |
 | 플러그인        | `--plugin-dir <path>`, `--plugin-url <url>`             |
 
-베어 모드는 OAuth 및 키체인 읽기를 건너뜁니다. Anthropic 인증은 `ANTHROPIC_API_KEY` 또는 `--settings`에 전달된 JSON의 `apiKeyHelper`에서 가져와야 합니다. Bedrock, Vertex 및 Foundry는 일반적인 공급자 자격 증명을 사용합니다.
+베어 모드는 OAuth 및 키체인 읽기를 건너뜁니다. Anthropic 인증은 `ANTHROPIC_API_KEY` 또는 `--settings`에 전달된 JSON의 `apiKeyHelper`에서 가져와야 합니다. Amazon Bedrock, Google Cloud의 Agent Platform 및 Microsoft Foundry는 일반적인 공급자 자격 증명을 사용합니다.
 
 <Note>
   `--bare`는 스크립트 및 SDK 호출에 권장되는 모드이며 향후 릴리스에서 `-p`의 기본값이 될 것입니다.
@@ -66,9 +66,9 @@ claude --bare -p "Summarize this file" --allowedTools "Read"
   종료 시 백그라운드 작업
 </h3>
 
-Claude가 `claude -p` 실행 중에 [백그라운드 Bash 작업](/ko/tools-reference#bash-tool-behavior)을 시작하는 경우(예: 개발 서버 또는 감시 빌드), 해당 셸은 Claude가 최종 결과를 반환하고 stdin이 닫힌 후 약 5초 후에 종료됩니다. 유예 기간을 통해 결과 직후에 완료되는 작업이 여전히 출력을 전달할 수 있습니다. v2.1.163 이전에는 종료되지 않는 백그라운드 프로세스가 `claude -p` 호출을 무한정 열어 두었습니다.
+Claude가 `claude -p` 실행 중에 [백그라운드 Bash 작업](/docs/ko/tools-reference#bash-tool-behavior)을 시작하는 경우(예: 개발 서버 또는 감시 빌드), 해당 셸은 Claude가 최종 결과를 반환하고 stdin이 닫힌 후 약 5초 후에 종료됩니다. 유예 기간을 통해 결과 직후에 완료되는 작업이 여전히 출력을 전달할 수 있습니다. v2.1.163 이전에는 종료되지 않는 백그라운드 프로세스가 `claude -p` 호출을 무한정 열어 두었습니다.
 
-백그라운드 [서브에이전트](/ko/sub-agents) 및 워크플로우는 5초 유예 기간에서 제외됩니다. 이들의 결과가 최종 출력의 일부이기 때문에 `claude -p`는 이들이 완료될 때까지 기다립니다. v2.1.182부터 해당 대기는 기본적으로 10분으로 제한되므로 중단된 백그라운드 에이전트가 프로세스를 무한정 열어 두지 않습니다. [`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`](/ko/env-vars)로 상한을 조정하거나 제한 없이 대기하도록 `0`으로 설정합니다.
+백그라운드 [서브에이전트](/docs/ko/sub-agents) 및 워크플로우는 5초 유예 기간에서 제외됩니다. 이들의 결과가 최종 출력의 일부이기 때문에 `claude -p`는 이들이 완료될 때까지 기다립니다. v2.1.182부터 해당 대기는 기본적으로 10분으로 제한되므로 중단된 백그라운드 에이전트가 프로세스를 무한정 열어 두지 않습니다. [`CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS`](/docs/ko/env-vars)로 상한을 조정하거나 제한 없이 대기하도록 `0`으로 설정합니다.
 
 <h2 id="examples">
   예제
@@ -88,7 +88,7 @@ Claude가 `claude -p` 실행 중에 [백그라운드 Bash 작업](/ko/tools-refe
 cat build-error.txt | claude -p 'concisely explain the root cause of this build error' > output.txt
 ```
 
-`--output-format json`을 사용하면 응답 페이로드에 `total_cost_usd`와 모델별 비용 분석이 포함되므로 스크립트 호출자는 [사용 대시보드](/ko/costs)를 참조하지 않고도 호출당 지출을 추적할 수 있습니다.
+`--output-format json`을 사용하면 응답 페이로드에 `total_cost_usd`와 모델별 비용 분석이 포함되므로 스크립트 호출자는 [사용 대시보드](/docs/ko/costs)를 참조하지 않고도 호출당 지출을 추적할 수 있습니다.
 
 <Note>
   Claude Code v2.1.128부터 파이프된 stdin은 10MB로 제한됩니다. 제한을 초과하면 Claude Code는 명확한 오류 메시지와 함께 0이 아닌 상태로 종료됩니다. 더 큰 입력으로 작업하려면 콘텐츠를 파일에 작성하고 파이프하는 대신 프롬프트에서 파일 경로를 참조합니다.
@@ -136,6 +136,8 @@ claude -p "Extract the main function names from auth.py" \
   --json-schema '{"type":"object","properties":{"functions":{"type":"array","items":{"type":"string"}}},"required":["functions"]}'
 ```
 
+JSON Schema가 유효하지 않으면 `claude`는 `Error: --json-schema is not a valid JSON Schema`와 함께 종료되고 검증자의 진단이 뒤따릅니다. Claude Code는 `format` 키워드를 사용하는 스키마(예: `"format": "email"`)를 허용하지만 `format`을 주석으로 취급하고 이를 적용하지 않습니다. v2.1.205 이전에는 Claude Code가 유효하지 않은 스키마를 자동으로 무시하고 구조화되지 않은 텍스트를 반환했으며, `format`을 포함하는 모든 스키마를 유효하지 않은 것으로 취급했습니다.
+
 <Tip>
   [jq](https://jqlang.github.io/jq/)와 같은 도구를 사용하여 응답을 구문 분석하고 특정 필드를 추출합니다:
 
@@ -161,6 +163,8 @@ claude -p "Extract the main function names from auth.py" \
 claude -p "Explain recursion" --output-format stream-json --verbose --include-partial-messages
 ```
 
+스트림의 마지막 줄은 최종 응답 텍스트, 비용 및 세션 메타데이터가 포함된 `result` 메시지입니다. {/* min-version: 2.1.208 */}v2.1.208 이전에는 큰 응답을 파이프하면 최종 줄이 잘리고 `result` 메시지가 생략될 수 있었습니다.
+
 다음 예제는 [jq](https://jqlang.github.io/jq/)를 사용하여 텍스트 델타를 필터링하고 스트리밍 텍스트만 표시합니다. `-r` 플래그는 원본 문자열(따옴표 없음)을 출력하고 `-j`는 줄 바꿈 없이 조인하므로 토큰이 계속 스트리밍됩니다:
 
 ```bash theme={null}
@@ -182,14 +186,21 @@ API 요청이 재시도 가능한 오류로 실패하면 Claude Code는 재시�
 | `uuid`           | 문자열           | 고유 이벤트 식별자                                                                                                                                                                                   |
 | `session_id`     | 문자열           | 이벤트가 속한 세션                                                                                                                                                                                   |
 
-`system/init` 이벤트는 모델, 도구, MCP 서버 및 로드된 플러그인을 포함한 세션 메타데이터를 보고합니다. [`CLAUDE_CODE_SYNC_PLUGIN_INSTALL`](/ko/env-vars)이 설정되지 않은 경우 스트림의 첫 번째 이벤트이며, 이 경우 `plugin_install` 이벤트가 앞에 옵니다. 플러그인 필드를 사용하여 플러그인이 로드되지 않았을 때 CI를 실패하게 합니다:
+`system/init` 이벤트는 모델, 도구, MCP 서버 및 로드된 플러그인을 포함한 세션 메타데이터를 보고합니다. 이는 시작 이벤트가 앞에 오지 않는 한 스트림의 첫 번째 이벤트입니다:
 
-| 필드              | 유형 | 설명                                                                                                                           |
-| --------------- | -- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `plugins`       | 배열 | 성공적으로 로드된 플러그인, 각각 `name` 및 `path` 포함                                                                                        |
-| `plugin_errors` | 배열 | 만족하지 않은 종속성 버전과 같은 플러그인 로드 시간 오류, 각각 `plugin`, `type` 및 `message` 포함. 영향을 받는 플러그인은 강등되고 `plugins`에서 제외됩니다. 오류가 없을 때 키는 생략됩니다 |
+* [`CLAUDE_CODE_SYNC_PLUGIN_INSTALL`](/docs/ko/env-vars)이 설정되었을 때 `plugin_install` 이벤트입니다.
+* {/* min-version: 2.1.204 */}구성된 [`SessionStart`](/docs/ko/hooks#sessionstart) 또는 [`Setup`](/docs/ko/hooks#setup) 훅이 실행되는 동안 [`hook_started`, `hook_progress` 및 `hook_response` 이벤트](/docs/ko/agent-sdk/typescript#sdkhookstartedmessage)입니다. 이들은 훅이 생성할 때 스트리밍됩니다. Claude Code v2.1.169부터 v2.1.203까지는 훅이 완료된 후 한 배치로 전달했으며, 여전히 `system/init` 앞에 있었습니다. v2.1.204는 라이브 전달을 복원했습니다.
 
-[`CLAUDE_CODE_SYNC_PLUGIN_INSTALL`](/ko/env-vars)이 설정되면 Claude Code는 첫 번째 턴 전에 마켓플레이스 플러그인이 설치되는 동안 `system/plugin_install` 이벤트를 내보냅니다. 이를 사용하여 자신의 UI에서 설치 진행 상황을 표시합니다.
+이 이벤트는 또한 이 Claude Code 버전이 구현하는 프로토콜 동작의 이름을 지정하는 선택적 `capabilities` 문자열 배열을 전달합니다(예: `interrupt_receipt_v1`). 버전 문자열을 비교하는 대신 기능을 감지하는 데 사용하고 인식하지 못하는 값은 무시합니다. 이 필드는 Claude Code v2.1.205 이상이 필요하며 이전 버전에는 없습니다. 기능 목록은 [`SDKSystemMessage`](/docs/ko/agent-sdk/typescript#sdksystemmessage)를 참조하십시오.
+
+플러그인 필드를 사용하여 플러그인이 로드되지 않았을 때 CI를 실패하게 합니다:
+
+| 필드              | 유형 | 설명                                                                                                                                                                             |
+| --------------- | -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `plugins`       | 배열 | 성공적으로 로드된 플러그인, 각각 `name` 및 `path` 포함                                                                                                                                          |
+| `plugin_errors` | 배열 | 만족하지 않은 종속성 버전 및 `--plugin-dir` 로드 실패(예: 누락된 경로 또는 유효하지 않은 아카이브)와 같은 플러그인 로드 시간 오류, 각각 `plugin`, `type` 및 `message` 포함. 영향을 받는 플러그인은 강등되고 `plugins`에서 제외됩니다. 오류가 없을 때 키는 생략됩니다 |
+
+[`CLAUDE_CODE_SYNC_PLUGIN_INSTALL`](/docs/ko/env-vars)이 설정되면 Claude Code는 첫 번째 턴 전에 마켓플레이스 플러그인이 설치되는 동안 `system/plugin_install` 이벤트를 내보냅니다. 이를 사용하여 자신의 UI에서 설치 진행 상황을 표시합니다.
 
 | 필드           | 유형                                                      | 설명                                                                            |
 | ------------ | ------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -201,7 +212,7 @@ API 요청이 재시도 가능한 오류로 실패하면 Claude Code는 재시�
 | `uuid`       | 문자열                                                     | 고유 이벤트 식별자                                                                    |
 | `session_id` | 문자열                                                     | 이벤트가 속한 세션                                                                    |
 
-콜백 및 메시지 객체를 사용한 프로그래밍 방식 스트리밍의 경우 Agent SDK 문서의 [실시간 응답 스트리밍](/ko/agent-sdk/streaming-output)을 참조하십시오.
+콜백 및 메시지 객체를 사용한 프로그래밍 방식 스트리밍의 경우 Agent SDK 문서의 [실시간 응답 스트리밍](/docs/ko/agent-sdk/streaming-output)을 참조하십시오.
 
 <h3 id="auto-approve-tools">
   도구 자동 승인
@@ -214,7 +225,9 @@ claude -p "Run the test suite and fix any failures" \
   --allowedTools "Bash,Read,Edit"
 ```
 
-전체 세션에 대한 기준선을 설정하려면 개별 도구를 나열하는 대신 [권한 모드](/ko/permission-modes)를 전달합니다. `dontAsk`는 `permissions.allow` 규칙이나 [읽기 전용 명령 집합](/ko/permissions#read-only-commands)에 없는 모든 항목을 거부하며, 이는 잠긴 CI 실행에 유용합니다. `acceptEdits`는 Claude가 프롬프트 없이 파일을 쓸 수 있도록 하고 `mkdir`, `touch`, `mv` 및 `cp`와 같은 일반적인 파일 시스템 명령을 자동 승인합니다. 다른 셸 명령 및 네트워크 요청은 여전히 `--allowedTools` 항목이나 `permissions.allow` 규칙이 필요하며, 그렇지 않으면 시도될 때 실행이 중단됩니다:
+전체 세션에 대한 기준선을 설정하려면 개별 도구를 나열하는 대신 [권한 모드](/docs/ko/permission-modes)를 전달합니다. `dontAsk`는 `permissions.allow` 규칙이나 [읽기 전용 명령 집합](/docs/ko/permissions#read-only-commands)에 없는 모든 항목을 거부하며, 이는 잠긴 CI 실행에 유용합니다. `AskUserQuestion`, 조직이 [`ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 커넥터 도구, 그리고 [`requiresUserInteraction`으로 표시된](/docs/ko/mcp#require-approval-for-a-specific-tool) MCP 도구는 허용 규칙이 일치하더라도 거부됩니다.
+
+`acceptEdits`는 Claude가 프롬프트 없이 파일을 쓸 수 있도록 하고 `mkdir`, `touch`, `mv` 및 `cp`와 같은 일반적인 파일 시스템 명령을 자동 승인합니다. 다른 셸 명령 및 네트워크 요청은 여전히 `--allowedTools` 항목이나 `permissions.allow` 규칙이 필요하며, 그렇지 않으면 시도될 때 실행이 중단됩니다:
 
 ```bash theme={null}
 claude -p "Apply the lint fixes" --permission-mode acceptEdits
@@ -231,10 +244,10 @@ claude -p "Look at my staged changes and create an appropriate commit" \
   --allowedTools "Bash(git diff *),Bash(git log *),Bash(git status *),Bash(git commit *)"
 ```
 
-`--allowedTools` 플래그는 [권한 규칙 구문](/ko/settings#permission-rule-syntax)을 사용합니다. 뒤의 ` *`는 접두사 일치를 활성화하므로 `Bash(git diff *)`는 `git diff`로 시작하는 모든 명령을 허용합니다. 공백이 중요합니다: 없으면 `Bash(git diff*)`도 `git diff-index`와 일치합니다.
+`--allowedTools` 플래그는 [권한 규칙 구문](/docs/ko/settings#permission-rule-syntax)을 사용합니다. 뒤의 ` *`는 접두사 일치를 활성화하므로 `Bash(git diff *)`는 `git diff`로 시작하는 모든 명령을 허용합니다. 공백이 중요합니다: 없으면 `Bash(git diff*)`도 `git diff-index`와 일치합니다.
 
 <Note>
-  사용자가 호출한 [skills](/ko/skills) 및 사용자 정의 명령은 `-p` 모드에서 작동합니다: 프롬프트 문자열에 `/skill-name`을 포함하면 Claude Code가 실행하기 전에 이를 확장합니다. `/login`과 같은 대화형 대화를 열어주는 기본 제공 명령은 `-p` 모드에서 사용할 수 없습니다. {/* min-version: 2.1.181 */}`-p` 호출에서 설정을 변경하려면 `/config`에 `key=value`를 전달합니다. 예를 들어 `/config thinking=false`.
+  사용자가 호출한 [skills](/docs/ko/skills) 및 사용자 정의 명령은 `-p` 모드에서 작동합니다: 프롬프트 문자열에 `/skill-name`을 포함하면 Claude Code가 실행하기 전에 이를 확장합니다. `/login`과 같은 대화형 대화를 열어주는 기본 제공 명령은 `-p` 모드에서 사용할 수 없습니다. {/* min-version: 2.1.205 */}`/model`, `/effort`, `/fast`, `/color` 및 `/rename`은 값을 인수로 받습니다(예: `/model sonnet`). `/mcp`는 인수 없이 서버 상태의 텍스트 요약을 출력합니다. 이러한 형식은 Claude Code v2.1.205 이상이 필요하며 각 명령의 [가용성 참고 사항](/docs/ko/commands#all-commands)을 따릅니다. {/* min-version: 2.1.181 */}`-p` 호출에서 설정을 변경하려면 `/config`에 `key=value`를 전달합니다(예: `/config thinking=false`).
 </Note>
 
 <h3 id="customize-the-system-prompt">
@@ -249,7 +262,7 @@ gh pr diff "$1" | claude -p \
   --output-format json
 ```
 
-기본 프롬프트를 완전히 바꾸는 `--system-prompt`를 포함한 더 많은 옵션은 [시스템 프롬프트 플래그](/ko/cli-reference#system-prompt-flags)를 참조하십시오.
+기본 프롬프트를 완전히 바꾸는 `--system-prompt`를 포함한 더 많은 옵션은 [시스템 프롬프트 플래그](/docs/ko/cli-reference#system-prompt-flags)를 참조하십시오.
 
 <h3 id="continue-conversations">
   대화 계속하기
@@ -273,13 +286,13 @@ session_id=$(claude -p "Start a review" --output-format json | jq -r '.session_i
 claude -p "Continue that review" --resume "$session_id"
 ```
 
-동일한 디렉터리에서 두 명령을 실행합니다: 세션 ID 조회는 현재 프로젝트 디렉터리 및 해당 git worktrees로 범위가 지정됩니다. 전체 범위 규칙은 [세션 재개](/ko/sessions#resume-a-session)를 참조하십시오.
+동일한 디렉터리에서 두 명령을 실행합니다: 세션 ID 조회는 현재 프로젝트 디렉터리 및 해당 git worktrees로 범위가 지정됩니다. 전체 범위 규칙은 [세션 재개](/docs/ko/sessions#resume-a-session)를 참조하십시오.
 
 <h2 id="next-steps">
   다음 단계
 </h2>
 
-* [Agent SDK 빠른 시작](/ko/agent-sdk/quickstart): Python 또는 TypeScript로 첫 번째 에이전트 구축
-* [CLI 참조](/ko/cli-reference): 모든 CLI 플래그 및 옵션
-* [GitHub Actions](/ko/github-actions): GitHub 워크플로우에서 Agent SDK 사용
-* [GitLab CI/CD](/ko/gitlab-ci-cd): GitLab 파이프라인에서 Agent SDK 사용
+* [Agent SDK 빠른 시작](/docs/ko/agent-sdk/quickstart): Python 또는 TypeScript로 첫 번째 에이전트 구축
+* [CLI 참조](/docs/ko/cli-reference): 모든 CLI 플래그 및 옵션
+* [GitHub Actions](/docs/ko/github-actions): GitHub 워크플로우에서 Agent SDK 사용
+* [GitLab CI/CD](/docs/ko/gitlab-ci-cd): GitLab 파이프라인에서 Agent SDK 사용

@@ -10,7 +10,7 @@ security-guidance 플러그인은 Claude가 작업하는 동안 자신의 코드
 
 설치되면 플러그인이 자동으로 실행됩니다. 호출할 것도 없고 기억해야 할 별도의 명령도 없습니다.
 
-플러그인은 [Code Review](/ko/code-review)의 세션 내 동반자이며, 이는 풀 요청에서 실행됩니다. 이 플러그인은 PR에 도달하는 것을 줄입니다. Code Review는 도달하는 것을 포착합니다. 플러그인이 온디맨드 검토 및 CI 스캔과 어떻게 계층화되는지에 대해서는 [이것이 다른 보안 도구와 어떻게 맞는지](#how-this-fits-with-other-security-tools)를 참조하십시오.
+플러그인은 [Code Review](/docs/ko/code-review)의 세션 내 동반자이며, 이는 풀 요청에서 실행됩니다. 이 플러그인은 PR에 도달하는 것을 줄입니다. Code Review는 도달하는 것을 포착합니다. 플러그인이 온디맨드 검토 및 CI 스캔과 어떻게 계층화되는지에 대해서는 [이것이 다른 보안 도구와 어떻게 맞는지](#how-this-fits-with-other-security-tools)를 참조하십시오.
 
 <h2 id="prerequisites">
   필수 조건
@@ -26,7 +26,7 @@ security-guidance 플러그인은 Claude가 작업하는 동안 자신의 코드
   플러그인 설치
 </h2>
 
-Claude Code 세션에서 [공식 Anthropic 마켓플레이스](/ko/discover-plugins#official-anthropic-marketplace)에서 설치합니다:
+Claude Code 세션에서 [공식 Anthropic 마켓플레이스](/docs/ko/discover-plugins#official-anthropic-marketplace)에서 설치합니다:
 
 ```text theme={null}
 /plugin install security-guidance@claude-plugins-official
@@ -44,7 +44,7 @@ Claude Code 세션에서 [공식 Anthropic 마켓플레이스](/ko/discover-plug
   클라우드 세션 및 공유 저장소에서 활성화
 </h3>
 
-사용자 범위 플러그인은 [웹의 Claude Code](/ko/claude-code-on-the-web)로 전달되지 않습니다. 왜냐하면 이러한 세션은 머신이 아닌 Anthropic 인프라에서 실행되기 때문입니다. 거기서 플러그인을 활성화하거나 저장소를 복제하는 모든 사람에 대해 켜려면 프로젝트의 체크인된 설정에서 선언합니다:
+사용자 범위 플러그인은 [웹의 Claude Code](/docs/ko/claude-code-on-the-web)로 전달되지 않습니다. 왜냐하면 이러한 세션은 머신이 아닌 Anthropic 인프라에서 실행되기 때문입니다. 거기서 플러그인을 활성화하거나 저장소를 복제하는 모든 사람에 대해 켜려면 프로젝트의 체크인된 설정에서 선언합니다:
 
 ```json .claude/settings.json theme={null}
 {
@@ -54,7 +54,7 @@ Claude Code 세션에서 [공식 Anthropic 마켓플레이스](/ko/discover-plug
 }
 ```
 
-관리자는 [관리 설정](/ko/admin-setup)에서 [`enabledPlugins`](/ko/settings#plugin-settings)를 설정하여 조직 전체에서 플러그인을 활성화할 수 있습니다.
+관리자는 [관리 설정](/docs/ko/admin-setup)에서 [`enabledPlugins`](/docs/ko/settings#plugin-settings)를 설정하여 조직 전체에서 플러그인을 활성화할 수 있습니다.
 
 <h2 id="what-the-plugin-checks">
   플러그인이 확인하는 것
@@ -139,7 +139,7 @@ Claude가 Bash 도구를 통해 `git commit` 또는 `git push`를 실행할 때 
 - `===` 대신 토큰 비교를 위해 `crypto.timingSafeEqual`을 사용합니다.
 ```
 
-이러한 규칙은 결정론적 보호 장치가 아닌 검토자를 위한 지침입니다. 플러그인은 위반을 Claude가 수정할 발견 사항으로 표시하지만 쓰기를 차단하거나 모든 위반이 포착되도록 보장하지 않습니다. 지침은 추가적일 뿐입니다: 취약점 클래스를 무시하도록 말하는 규칙은 이러한 발견을 억제하지 않습니다. 강력한 적용을 위해 플러그인을 [편집을 차단하는 훅](/ko/hooks-guide#block-edits-to-protected-files) 또는 CI 확인과 쌍으로 만듭니다.
+이러한 규칙은 결정론적 보호 장치가 아닌 검토자를 위한 지침입니다. 플러그인은 위반을 Claude가 수정할 발견 사항으로 표시하지만 쓰기를 차단하거나 모든 위반이 포착되도록 보장하지 않습니다. 지침은 추가적일 뿐입니다: 취약점 클래스를 무시하도록 말하는 규칙은 이러한 발견을 억제하지 않습니다. 강력한 적용을 위해 플러그인을 [편집을 차단하는 훅](/docs/ko/hooks-guide#block-edits-to-protected-files) 또는 CI 확인과 쌍으로 만듭니다.
 
 <h3 id="add-custom-per-edit-patterns">
   사용자 정의 편집당 패턴 추가
@@ -187,7 +187,7 @@ patterns:
   사용 비용
 </h2>
 
-[편집당 패턴 확인](#on-each-file-edit)은 모델 호출을 하지 않으며 비용을 추가하지 않습니다. [턴 끝](#at-the-end-of-each-turn) 및 [커밋](#on-each-commit-or-push-claude-makes) 검토는 각각 다른 Claude 요청처럼 [사용](/ko/costs)으로 계산되는 추가 모델 사용을 소비합니다. 커밋 검토는 에이전트이며 커밋당 여러 모델 턴을 걸릴 수 있으며, 롤링 시간당 20개 검토로 제한됩니다. 파일을 변경하는 턴당 대략 하나의 검토 호출과 커밋당 하나의 더 깊은 검토를 예상하며, 둘 다 위의 상한을 따릅니다.
+[편집당 패턴 확인](#on-each-file-edit)은 모델 호출을 하지 않으며 비용을 추가하지 않습니다. [턴 끝](#at-the-end-of-each-turn) 및 [커밋](#on-each-commit-or-push-claude-makes) 검토는 각각 다른 Claude 요청처럼 [사용](/docs/ko/costs)으로 계산되는 추가 모델 사용을 소비합니다. 커밋 검토는 에이전트이며 커밋당 여러 모델 턴을 걸릴 수 있으며, 롤링 시간당 20개 검토로 제한됩니다. 파일을 변경하는 턴당 대략 하나의 검토 호출과 커밋당 하나의 더 깊은 검토를 예상하며, 둘 다 위의 상한을 따릅니다.
 
 두 모델 지원 검토 모두 기본적으로 Claude Opus 4.7을 사용합니다. `SECURITY_REVIEW_MODEL`을 설정하여 턴 끝 검토를 위해 다른 모델을 선택하고 `SG_AGENTIC_MODEL`을 커밋 검토를 위해 선택합니다.
 
@@ -219,13 +219,13 @@ patterns:
 /plugin uninstall security-guidance@claude-plugins-official
 ```
 
-플러그인이 프로젝트의 `.claude/settings.json`을 통해 활성화된 경우 `/plugin`에서 비활성화하면 체크인된 파일을 편집하지 않고 `.claude/settings.local.json`에 재정의를 기록하므로 플러그인이 사용자에게는 꺼져 있고 팀원은 영향을 받지 않습니다. [관리 설정](/ko/admin-setup)을 통해 활성화된 경우 관리자만 비활성화할 수 있습니다.
+플러그인이 프로젝트의 `.claude/settings.json`을 통해 활성화된 경우 `/plugin`에서 비활성화하면 체크인된 파일을 편집하지 않고 `.claude/settings.local.json`에 재정의를 기록하므로 플러그인이 사용자에게는 꺼져 있고 팀원은 영향을 받지 않습니다. {/* min-version: 2.1.203 */}동일한 대화 상자는 공유 `.claude/settings.json`에서 제거하여 모든 사용자를 위해 플러그인을 제거할 수 있는 옵션도 제공합니다. 이 옵션은 Claude Code v2.1.203 이상이 필요합니다. [관리 설정](/docs/ko/admin-setup)을 통해 활성화된 경우 관리자만 비활성화할 수 있습니다.
 
 <h2 id="how-the-plugin-integrates-with-claude-code">
   플러그인이 Claude Code와 통합되는 방식
 </h2>
 
-플러그인은 전적으로 [훅](/ko/hooks)에 구축되어 있으며, 이는 Claude의 루프의 특정 지점에서 자신의 코드를 실행하는 메커니즘입니다. 등록:
+플러그인은 전적으로 [훅](/docs/ko/hooks)에 구축되어 있으며, 이는 Claude의 루프의 특정 지점에서 자신의 코드를 실행하는 메커니즘입니다. 등록:
 
 | 훅 이벤트                                                            | 목적                          |
 | :--------------------------------------------------------------- | :-------------------------- |
@@ -246,8 +246,8 @@ patterns:
 | 단계     | 도구                                                   | 포함 내용                                  |
 | :----- | :--------------------------------------------------- | :------------------------------------- |
 | 세션 내   | Security guidance 플러그인                               | Claude가 작성한 코드의 일반적인 취약점, 동일한 세션에서 수정됨 |
-| 온디맨드   | [`/security-review`](/ko/commands#all-commands)      | 현재 분기에 대한 일회성 보안 통과, 요청할 때 실행          |
-| 풀 요청 시 | [Code Review](/ko/code-review), Team 및 Enterprise 플랜 | 전체 코드베이스 컨텍스트를 사용한 다중 에이전트 정확성 및 보안 검토 |
+| 온디맨드   | [`/security-review`](/docs/ko/commands#all-commands)      | 현재 분기에 대한 일회성 보안 통과, 요청할 때 실행          |
+| 풀 요청 시 | [Code Review](/docs/ko/code-review), Team 및 Enterprise 플랜 | 전체 코드베이스 컨텍스트를 사용한 다중 에이전트 정확성 및 보안 검토 |
 | CI에서   | 기존 정적 분석 및 종속성 스캐너                                   | 플러그인이 시도하지 않는 언어별 규칙, 공급망 확인 및 정책 적용   |
 
 각 이후 단계는 이전 단계가 놓친 것을 포착합니다. 플러그인의 가치는 도달하는 양을 줄이는 것이지, 필요성을 제거하는 것이 아닙니다.
@@ -270,6 +270,6 @@ patterns:
 
 이 페이지가 다루는 부분을 더 깊이 있게 살펴보려면:
 
-* [Code Review](/ko/code-review): PR 시간 다중 에이전트 검토 설정
-* [훅으로 워크플로우 자동화](/ko/hooks-guide): 동일한 라이프사이클 지점에서 자신의 확인 구축
-* [플러그인 발견 및 설치](/ko/discover-plugins#official-anthropic-marketplace): 다른 공식 플러그인 찾아보기
+* [Code Review](/docs/ko/code-review): PR 시간 다중 에이전트 검토 설정
+* [훅으로 워크플로우 자동화](/docs/ko/hooks-guide): 동일한 라이프사이클 지점에서 자신의 확인 구축
+* [플러그인 발견 및 설치](/docs/ko/discover-plugins#official-anthropic-marketplace): 다른 공식 플러그인 찾아보기

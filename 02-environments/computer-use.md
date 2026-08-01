@@ -7,14 +7,12 @@
 > Claude Code CLI에서 컴퓨터 사용을 활성화하여 Claude가 macOS에서 앱을 열고, 클릭하고, 입력하고, 화면을 볼 수 있도록 합니다. 터미널을 떠나지 않고 네이티브 앱을 테스트하고, 시각적 문제를 디버깅하고, GUI 전용 도구를 자동화합니다.
 
 <Note>
-  {/* plan-availability: feature=computer-use plans=pro,max */}
-
-  컴퓨터 사용은 Pro 또는 Max 플랜이 필요한 macOS의 연구 미리보기입니다. Team 또는 Enterprise 플랜에서는 사용할 수 없습니다. Claude Code v2.1.85 이상이 필요하며 대화형 세션이 필요하므로 `-p` 플래그를 사용한 비대화형 모드에서는 사용할 수 없습니다.
+  컴퓨터 사용은 Pro 또는 Max 플랜이 필요한 macOS의 연구 미리보기입니다. Team 또는 Enterprise 플랜에서는 사용할 수 없습니다. 대화형 세션이 필요하므로 `-p` 플래그를 사용한 비대화형 모드에서는 사용할 수 없습니다.
 </Note>
 
 컴퓨터 사용을 통해 Claude는 앱을 열고, 화면을 제어하고, 사용자가 하는 방식으로 컴퓨터에서 작업할 수 있습니다. CLI에서 Claude는 Swift 앱을 컴파일하고, 실행하고, 모든 버튼을 클릭하고, 결과를 스크린샷하는 모든 작업을 코드를 작성한 동일한 대화에서 수행할 수 있습니다.
 
-이 페이지에서는 CLI에서 컴퓨터 사용이 어떻게 작동하는지 설명합니다. Desktop 앱의 경우 [Desktop의 컴퓨터 사용](/ko/desktop#let-claude-use-your-computer)을 참조하세요.
+이 페이지에서는 CLI에서 컴퓨터 사용이 어떻게 작동하는지 설명합니다. Desktop 앱의 경우 [Desktop의 컴퓨터 사용](/docs/ko/desktop#let-claude-use-your-computer)을 참조하세요.
 
 <h2 id="what-you-can-do-with-computer-use">
   컴퓨터 사용으로 할 수 있는 작업
@@ -33,9 +31,9 @@
 
 Claude는 앱이나 서비스와 상호작용하는 여러 방법을 가지고 있습니다. 컴퓨터 사용은 가장 광범위하고 가장 느리므로 Claude는 가장 정확한 도구를 먼저 시도합니다.
 
-* [MCP 서버](/ko/mcp)가 서비스에 있으면 Claude가 그것을 사용합니다.
+* [MCP 서버](/docs/ko/mcp)가 서비스에 있으면 Claude가 그것을 사용합니다.
 * 작업이 셸 명령이면 Claude는 Bash를 사용합니다.
-* 작업이 브라우저 작업이고 [Claude in Chrome](/ko/chrome)이 설정되어 있으면 Claude가 그것을 사용합니다.
+* 작업이 브라우저 작업이고 [Claude in Chrome](/docs/ko/chrome)이 설정되어 있으면 Claude가 그것을 사용합니다.
 * 위의 어느 것도 적용되지 않으면 Claude는 컴퓨터 사용을 사용합니다.
 
 화면 제어는 다른 것이 도달할 수 없는 것들을 위해 예약되어 있습니다. 네이티브 앱, 시뮬레이터, API가 없는 도구입니다.
@@ -100,7 +98,7 @@ Claude는 앱이나 서비스와 상호작용하는 여러 방법을 가지고 �
 
 이러한 앱은 차단되지 않습니다. 경고를 통해 작업이 해당 수준의 액세스를 보장하는지 결정할 수 있습니다.
 
-Claude의 제어 수준은 앱 카테고리에 따라 다릅니다. 브라우저와 거래 플랫폼은 보기 전용이고, 터미널과 IDE는 클릭 전용이며, 다른 모든 것은 전체 제어를 얻습니다. 전체 계층 분석은 [Desktop의 앱 권한](/ko/desktop#app-permissions)을 참조하세요.
+Claude의 제어 수준은 앱 카테고리에 따라 다릅니다. 브라우저와 거래 플랫폼은 보기 전용이고, 터미널과 IDE는 클릭 전용이며, 다른 모든 것은 전체 제어를 얻습니다. 전체 계층 분석은 [Desktop의 앱 권한](/docs/ko/desktop#app-permissions)을 참조하세요.
 
 <h2 id="how-claude-works-on-your-screen">
   Claude가 화면에서 작동하는 방식
@@ -143,7 +141,7 @@ Claude가 완료되면 두 번째 알림이 나타납니다.
 </h2>
 
 <Warning>
-  [샌드박스된 Bash 도구](/ko/sandboxing)와 달리 컴퓨터 사용은 승인한 앱에 액세스할 수 있는 실제 데스크톱에서 실행됩니다. Claude는 각 작업을 확인하고 화면 콘텐츠에서 잠재적 프롬프트 주입을 플래그하지만 신뢰 경계는 다릅니다. 모범 사례는 [컴퓨터 사용 안전 가이드](https://support.claude.com/en/articles/14128542)를 참조하세요.
+  [샌드박스된 Bash 도구](/docs/ko/sandboxing)와 달리 컴퓨터 사용은 승인한 앱에 액세스할 수 있는 실제 데스크톱에서 실행됩니다. Claude는 각 작업을 확인하고 화면 콘텐츠에서 잠재적 프롬프트 주입을 플래그하지만 신뢰 경계는 다릅니다. 모범 사례는 [컴퓨터 사용 안전 가이드](https://support.claude.com/en/articles/14128542)를 참조하세요.
 </Warning>
 
 기본 제공 가드레일은 구성 없이 위험을 줄입니다.
@@ -237,18 +235,17 @@ macOS는 화면 녹화를 부여한 후 요청 프로세스를 다시 시작해�
 
 서버는 적격 설정에서만 나타납니다. 다음을 확인합니다.
 
-* macOS를 사용 중입니다. 컴퓨터 사용은 Linux 또는 Windows에서 사용할 수 없습니다. Windows에서는 [Desktop의 컴퓨터 사용](/ko/desktop#let-claude-use-your-computer)을 대신 사용합니다.
-* Claude Code v2.1.85 이상을 실행 중입니다. `claude --version`을 실행하여 확인합니다.
+* macOS를 사용 중입니다. 컴퓨터 사용은 Linux 또는 Windows에서 사용할 수 없습니다. Windows에서는 [Desktop의 컴퓨터 사용](/docs/ko/desktop#let-claude-use-your-computer)을 대신 사용합니다.
 * Pro 또는 Max 플랜을 사용 중입니다. `/status`를 실행하여 구독을 확인합니다.
-* claude.ai를 통해 인증되었습니다. 컴퓨터 사용은 Amazon Bedrock, Google Cloud Vertex AI 또는 Microsoft Foundry와 같은 타사 제공자에서 사용할 수 없습니다. 타사 제공자를 통해서만 Claude에 액세스하는 경우 이 기능을 사용하려면 별도의 claude.ai 계정이 필요합니다.
+* claude.ai를 통해 인증되었습니다. 컴퓨터 사용은 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry와 같은 타사 제공자에서 사용할 수 없습니다. 타사 제공자를 통해서만 Claude에 액세스하는 경우 이 기능을 사용하려면 별도의 claude.ai 계정이 필요합니다.
 * 대화형 세션에 있습니다. 컴퓨터 사용은 `-p` 플래그를 사용한 비대화형 모드에서 사용할 수 없습니다.
 
 <h2 id="see-also">
   참고 항목
 </h2>
 
-* [Desktop의 컴퓨터 사용](/ko/desktop#let-claude-use-your-computer): 그래픽 설정 페이지가 있는 동일한 기능
-* [Claude in Chrome](/ko/chrome): 웹 기반 작업을 위한 브라우저 자동화
-* [MCP](/ko/mcp): Claude를 구조화된 도구 및 API에 연결
-* [샌드박싱](/ko/sandboxing): Claude의 Bash 도구가 파일 시스템 및 네트워크 액세스를 격리하는 방법
+* [Desktop의 컴퓨터 사용](/docs/ko/desktop#let-claude-use-your-computer): 그래픽 설정 페이지가 있는 동일한 기능
+* [Claude in Chrome](/docs/ko/chrome): 웹 기반 작업을 위한 브라우저 자동화
+* [MCP](/docs/ko/mcp): Claude를 구조화된 도구 및 API에 연결
+* [샌드박싱](/docs/ko/sandboxing): Claude의 Bash 도구가 파일 시스템 및 네트워크 액세스를 격리하는 방법
 * [컴퓨터 사용 안전 가이드](https://support.claude.com/en/articles/14128542): 안전한 컴퓨터 사용을 위한 모범 사례

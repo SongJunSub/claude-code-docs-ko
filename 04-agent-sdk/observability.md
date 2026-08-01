@@ -15,7 +15,7 @@
 
 Agent SDK는 이 데이터를 OpenTelemetry 추적, 메트릭 및 로그 이벤트로 OpenTelemetry Protocol(OTLP)을 지원하는 모든 백엔드(예: Honeycomb, Datadog, Grafana, Langfuse 또는 자체 호스팅 수집기)로 내보낼 수 있습니다.
 
-이 가이드에서는 SDK가 텔레메트리를 내보내는 방식, 내보내기를 구성하는 방법, 데이터가 백엔드에 도달한 후 태그를 지정하고 필터링하는 방법을 설명합니다. 백엔드로 내보내는 대신 SDK 응답 스트림에서 직접 토큰 사용량 및 비용을 읽으려면 [비용 및 사용량 추적](/ko/agent-sdk/cost-tracking)을 참조하세요.
+이 가이드에서는 SDK가 텔레메트리를 내보내는 방식, 내보내기를 구성하는 방법, 데이터가 백엔드에 도달한 후 태그를 지정하고 필터링하는 방법을 설명합니다. 백엔드로 내보내는 대신 SDK 응답 스트림에서 직접 토큰 사용량 및 비용을 읽으려면 [비용 및 사용량 추적](/docs/ko/agent-sdk/cost-tracking)을 참조하세요.
 
 <h2 id="how-telemetry-flows-from-the-sdk">
   SDK에서 텔레메트리가 흐르는 방식
@@ -36,7 +36,7 @@ CLI는 세 가지 독립적인 OpenTelemetry 신호를 내보냅니다. 각각 �
 | 로그 이벤트 | 각 프롬프트, API 요청, API 오류 및 도구 결과에 대한 구조화된 레코드 | `OTEL_LOGS_EXPORTER`                                             |
 | 추적     | 각 상호작용, 모델 요청, 도구 호출 및 훅(베타)에 대한 스팬         | `OTEL_TRACES_EXPORTER` 및 `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1` |
 
-메트릭 이름, 이벤트 이름 및 속성의 전체 목록은 Claude Code [모니터링](/ko/monitoring-usage) 참조를 참조하세요. Agent SDK는 동일한 CLI를 실행하기 때문에 동일한 데이터를 내보냅니다. 스팬 이름은 아래 [에이전트 추적 읽기](#read-agent-traces)에 나열되어 있습니다.
+메트릭 이름, 이벤트 이름 및 속성의 전체 목록은 Claude Code [모니터링](/docs/ko/monitoring-usage) 참조를 참조하세요. Agent SDK는 동일한 CLI를 실행하기 때문에 동일한 데이터를 내보냅니다. 스팬 이름은 아래 [에이전트 추적 읽기](#read-agent-traces)에 나열되어 있습니다.
 
 <h2 id="enable-telemetry-export">
   텔레메트리 내보내기 활성화
@@ -148,14 +148,14 @@ CLI는 텔레메트리를 배치하고 간격에 따라 내보냅니다. 깨끗�
 * **`claude_code.interaction`:** 프롬프트 수신에서 응답 생성까지 에이전트 루프의 단일 턴을 래핑합니다.
 * **`claude_code.llm_request`:** Claude API에 대한 각 호출을 래핑하며, 모델 이름, 지연 시간 및 토큰 수를 속성으로 포함합니다.
 * **`claude_code.tool`:** 각 도구 호출을 래핑하며, 권한 대기(`claude_code.tool.blocked_on_user`)와 실행 자체(`claude_code.tool.execution`)에 대한 자식 스팬을 포함합니다.
-* **`claude_code.hook`:** 각 [훅](/ko/agent-sdk/hooks) 실행을 래핑합니다. 위의 변수 외에 상세 베타 추적(`ENABLE_BETA_TRACING_DETAILED=1` 및 `BETA_TRACING_ENDPOINT`)이 필요합니다.
+* **`claude_code.hook`:** 각 [훅](/docs/ko/agent-sdk/hooks) 실행을 래핑합니다. 위의 변수 외에 상세 베타 추적(`ENABLE_BETA_TRACING_DETAILED=1` 및 `BETA_TRACING_ENDPOINT`)이 필요합니다.
 
 `llm_request`, `tool` 및 `hook` 스팬은 포함하는 `claude_code.interaction` 스팬의 자식입니다. 에이전트가 Task 도구를 통해 하위 에이전트를 생성할 때, 하위 에이전트의 `llm_request` 및 `tool` 스팬은 상위 에이전트의 `claude_code.tool` 스팬 아래에 중첩되므로 전체 위임 체인이 하나의 추적으로 나타납니다.
 
-스팬은 기본적으로 `session.id` 속성을 포함합니다. 동일한 [세션](/ko/agent-sdk/sessions)에 대해 여러 `query()` 호출을 수행할 때 백엔드에서 `session.id`로 필터링하여 이를 하나의 타임라인으로 봅니다. `OTEL_METRICS_INCLUDE_SESSION_ID`가 거짓 값으로 설정되면 속성이 생략됩니다.
+스팬은 기본적으로 `session.id` 속성을 포함합니다. 동일한 [세션](/docs/ko/agent-sdk/sessions)에 대해 여러 `query()` 호출을 수행할 때 백엔드에서 `session.id`로 필터링하여 이를 하나의 타임라인으로 봅니다. `OTEL_METRICS_INCLUDE_SESSION_ID`가 거짓 값으로 설정되면 속성이 생략됩니다.
 
 <Note>
-  추적은 베타 상태입니다. 스팬 이름과 속성은 릴리스 간에 변경될 수 있습니다. 모니터링 참조의 [추적(베타)](/ko/monitoring-usage#traces-beta)을 참조하여 추적 내보내기 구성 변수를 확인하세요.
+  추적은 베타 상태입니다. 스팬 이름과 속성은 릴리스 간에 변경될 수 있습니다. 모니터링 참조의 [추적(베타)](/docs/ko/monitoring-usage#traces-beta)을 참조하여 추적 내보내기 구성 변수를 확인하세요.
 </Note>
 
 <h2 id="link-traces-to-your-application">
@@ -166,7 +166,7 @@ SDK는 W3C 추적 컨텍스트를 CLI 하위 프로세스로 자동으로 전파
 
 추적 컨텍스트 전파가 활성화되면 CLI는 실행하는 모든 Bash 및 PowerShell 명령에 `TRACEPARENT`를 전달합니다. Bash 도구를 통해 시작된 명령이 자체 OpenTelemetry 스팬을 내보내면 해당 스팬은 명령을 래핑하는 `claude_code.tool.execution` 스팬 아래에 중첩됩니다.
 
-`options.env`에서 `TRACEPARENT`를 명시적으로 설정하면 자동 주입이 건너뛰어지므로 필요한 경우 특정 상위 컨텍스트를 고정할 수 있습니다. 대화형 CLI 세션은 인바운드 `TRACEPARENT`를 완전히 무시합니다. Agent SDK 및 `claude -p` 실행만 이를 인정합니다. 모니터링 참조의 [추적(베타)](/ko/monitoring-usage#traces-beta)에서 전체 스팬 및 속성 참조를 확인하세요.
+`options.env`에서 `TRACEPARENT`를 명시적으로 설정하면 자동 주입이 건너뛰어지므로 필요한 경우 특정 상위 컨텍스트를 고정할 수 있습니다. 대화형 CLI 세션은 인바운드 `TRACEPARENT`를 완전히 무시합니다. Agent SDK 및 `claude -p` 실행만 이를 인정합니다. 모니터링 참조의 [추적(베타)](/docs/ko/monitoring-usage#traces-beta)에서 전체 스팬 및 속성 참조를 확인하세요.
 
 <h2 id="tag-telemetry-from-your-agent">
   에이전트에서 텔레메트리 태그 지정
@@ -204,9 +204,9 @@ SDK는 W3C 추적 컨텍스트를 CLI 하위 프로세스로 자동으로 전파
   최종 사용자에게 속성 작업 할당
 </h2>
 
-CLI는 Anthropic을 호출하는 데 사용하는 자격 증명을 기반으로 모든 이벤트에 [ID 속성](/ko/monitoring-usage#standard-attributes)을 첨부합니다. 하나의 배포에서 많은 최종 사용자를 제공하는 애플리케이션을 구축할 때 이러한 속성은 에이전트가 대신 작동한 최종 사용자가 아닌 서비스의 자격 증명을 식별합니다.
+CLI는 Anthropic을 호출하는 데 사용하는 자격 증명을 기반으로 모든 이벤트에 [ID 속성](/docs/ko/monitoring-usage#standard-attributes)을 첨부합니다. 하나의 배포에서 많은 최종 사용자를 제공하는 애플리케이션을 구축할 때 이러한 속성은 에이전트가 대신 작동한 최종 사용자가 아닌 서비스의 자격 증명을 식별합니다.
 
-도구 호출 및 MCP 활동을 애플리케이션의 최종 사용자에게 귀속시키려면 각 `query()` 호출에서 최종 사용자 ID를 리소스 속성으로 주입합니다. `OTEL_RESOURCE_ATTRIBUTES`가 [쉼표, 공백 및 등호 기호를 예약](/ko/monitoring-usage#multi-team-organization-support)하므로 값을 퍼센트 인코딩하세요. 다음 예제는 요청하는 사용자 및 테넌트를 한 요청의 모든 스팬 및 이벤트에 첨부합니다:
+도구 호출 및 MCP 활동을 애플리케이션의 최종 사용자에게 귀속시키려면 각 `query()` 호출에서 최종 사용자 ID를 리소스 속성으로 주입합니다. `OTEL_RESOURCE_ATTRIBUTES`가 [쉼표, 공백 및 등호 기호를 예약](/docs/ko/monitoring-usage#multi-team-organization-support)하므로 값을 퍼센트 인코딩하세요. 다음 예제는 요청하는 사용자 및 테넌트를 한 요청의 모든 스팬 및 이벤트에 첨부합니다. 웹 프레임워크의 `request` 객체가 사용자 및 테넌트 ID를 전달한다고 가정합니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -231,7 +231,7 @@ CLI는 Anthropic을 호출하는 데 사용하는 자격 증명을 기반으로 
   ```
 </CodeGroup>
 
-최종 사용자 ID가 첨부되면 `tool_decision`, `tool_result`, `mcp_server_connection` 및 `permission_mode_changed` 이벤트는 Security Information and Event Management(SIEM) 플랫폼으로 전달할 수 있는 사용자별 감사 추적이 됩니다. 모니터링 참조의 [보안 이벤트 감사](/ko/monitoring-usage#audit-security-events)에서 보안 관련 이벤트의 전체 목록과 각 이벤트가 포함하는 속성을 확인하세요.
+최종 사용자 ID가 첨부되면 `tool_decision`, `tool_result`, `mcp_server_connection` 및 `permission_mode_changed` 이벤트는 `claude_code.` 접두사가 있는 로그 레코드로 내보내지며, Security Information and Event Management(SIEM) 플랫폼으로 전달할 수 있는 사용자별 감사 추적이 됩니다. 모니터링 참조의 [보안 이벤트 감사](/docs/ko/monitoring-usage#audit-security-events)에서 보안 관련 이벤트의 전체 목록과 각 이벤트가 포함하는 속성을 확인하세요.
 
 <h2 id="control-sensitive-data-in-exports">
   내보내기에서 민감한 데이터 제어
@@ -246,7 +246,7 @@ CLI는 Anthropic을 호출하는 데 사용하는 자격 증명을 기반으로 
 | `OTEL_LOG_TOOL_CONTENT=1` | `claude_code.tool`의 스팬 이벤트로 전체 도구 입력 및 출력 본문, 60KB에서 잘림. [추적](#read-agent-traces)이 활성화되어야 함                                                                                                                                                                                                      |
 | `OTEL_LOG_RAW_API_BODIES` | `claude_code.api_request_body` 및 `claude_code.api_response_body` 로그 이벤트로 전체 Anthropic Messages API 요청 및 응답 JSON. 인라인 본문의 경우 `1`로 설정하여 60KB에서 잘리거나, 이벤트의 `body_ref` 경로가 있는 디스크의 잘리지 않은 본문의 경우 `file:<dir>`로 설정합니다. 본문에는 전체 대화 기록이 포함되며 확장 사고 콘텐츠가 수정됩니다. 이를 활성화하면 위의 세 변수가 드러낼 모든 것에 대한 동의를 의미합니다 |
 
-에이전트가 처리하는 데이터를 저장하도록 관찰성 파이프라인이 승인되지 않은 경우 이를 설정하지 마세요. 모니터링 참조의 [보안 및 개인정보](/ko/monitoring-usage#security-and-privacy)에서 모든 속성 및 수정 동작의 전체 목록을 확인하세요.
+에이전트가 처리하는 데이터를 저장하도록 관찰성 파이프라인이 승인되지 않은 경우 이를 설정하지 마세요. 모니터링 참조의 [보안 및 개인정보](/docs/ko/monitoring-usage#security-and-privacy)에서 모든 속성 및 수정 동작의 전체 목록을 확인하세요.
 
 <h2 id="related-documentation">
   관련 문서
@@ -254,6 +254,6 @@ CLI는 Anthropic을 호출하는 데 사용하는 자격 증명을 기반으로 
 
 이 가이드는 에이전트 모니터링 및 배포를 위한 인접 주제를 다룹니다:
 
-* [비용 및 사용량 추적](/ko/agent-sdk/cost-tracking): 외부 백엔드 없이 메시지 스트림에서 토큰 및 비용 데이터를 읽습니다.
-* [Agent SDK 호스팅](/ko/agent-sdk/hosting): 환경 수준에서 OpenTelemetry 변수를 설정할 수 있는 컨테이너에 에이전트를 배포합니다.
-* [모니터링](/ko/monitoring-usage): CLI가 내보내는 모든 환경 변수, 메트릭 및 이벤트에 대한 완전한 참조입니다.
+* [비용 및 사용량 추적](/docs/ko/agent-sdk/cost-tracking): 외부 백엔드 없이 메시지 스트림에서 토큰 및 비용 데이터를 읽습니다.
+* [Agent SDK 호스팅](/docs/ko/agent-sdk/hosting): 환경 수준에서 OpenTelemetry 변수를 설정할 수 있는 컨테이너에 에이전트를 배포합니다.
+* [모니터링](/docs/ko/monitoring-usage): CLI가 내보내는 모든 환경 변수, 메트릭 및 이벤트에 대한 완전한 참조입니다.

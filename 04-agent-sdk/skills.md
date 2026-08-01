@@ -29,7 +29,7 @@ Claude Agent SDK를 사용할 때 Skills는 다음과 같이 작동합니다:
 프로그래밍 방식으로 정의할 수 있는 subagents와 달리 Skills는 파일 시스템 아티팩트로 생성되어야 합니다. SDK는 Skills를 등록하기 위한 프로그래밍 API를 제공하지 않습니다.
 
 <Note>
-  Skills는 파일 시스템 설정 소스를 통해 발견됩니다. 기본 `query()` 옵션을 사용하면 SDK는 사용자 및 프로젝트 소스를 로드하므로 `~/.claude/skills/`, `<cwd>/.claude/skills/` 및 `<cwd>`의 상위 디렉토리부터 저장소 루트까지의 `.claude/skills/`에 있는 Skills를 사용할 수 있습니다. `settingSources`를 명시적으로 설정하는 경우 Skill 발견을 유지하려면 `'user'` 또는 `'project'`를 포함하거나, [`plugins` 옵션](/ko/agent-sdk/plugins)을 사용하여 특정 경로에서 Skills를 로드하십시오.
+  Skills는 파일 시스템 설정 소스를 통해 발견됩니다. 기본 `query()` 옵션을 사용하면 SDK는 사용자 및 프로젝트 소스를 로드하므로 `~/.claude/skills/`, `<cwd>/.claude/skills/` 및 `<cwd>`의 상위 디렉토리부터 저장소 루트까지의 `.claude/skills/`에 있는 Skills를 사용할 수 있습니다. `settingSources`를 명시적으로 설정하는 경우 Skill 발견을 유지하려면 `'user'` 또는 `'project'`를 포함하거나, [`plugins` 옵션](/docs/ko/agent-sdk/plugins)을 사용하여 특정 경로에서 Skills를 로드하십시오.
 </Note>
 
 <h2 id="using-skills-with-the-sdk">
@@ -119,7 +119,7 @@ Skills는 YAML frontmatter 및 Markdown 콘텐츠가 포함된 `SKILL.md` 파일
 
 SKILL.md 구조, 다중 파일 Skills 및 예제를 포함한 Skills 생성에 대한 완전한 지침은 다음을 참조하십시오:
 
-* [Claude Code의 Agent Skills](/ko/skills): 예제가 포함된 완전한 가이드
+* [Claude Code의 Agent Skills](/docs/ko/skills): 예제가 포함된 완전한 가이드
 * [Agent Skills 모범 사례](https://platform.claude.com/docs/ko/agents-and-tools/agent-skills/best-practices): 작성 지침 및 명명 규칙
 
 <h2 id="tool-restrictions">
@@ -270,7 +270,7 @@ Claude는 설명이 요청과 일치하면 관련 Skill을 자동으로 호출�
   ```
 </CodeGroup>
 
-`settingSources`/`setting_sources`에 대한 자세한 내용은 [TypeScript SDK 참조](/ko/agent-sdk/typescript#settingsource) 또는 [Python SDK 참조](/ko/agent-sdk/python#settingsource)를 참조하십시오.
+`settingSources`/`setting_sources`에 대한 자세한 내용은 [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript#settingsource) 또는 [Python SDK 참조](/docs/ko/agent-sdk/python#settingsource)를 참조하십시오.
 
 **작업 디렉토리 확인**: SDK는 `cwd` 옵션의 `.claude/skills/` 및 저장소 루트까지의 모든 상위 디렉토리에서 Skills를 로드합니다. `cwd`가 `.claude/skills/`를 포함하는 디렉토리를 가리키거나 그 아래에 있으며, 동일한 저장소 내에 있는지 확인하십시오:
 
@@ -318,7 +318,7 @@ ls ~/.claude/skills/*/SKILL.md
   추가 문제 해결
 </h3>
 
-일반적인 Skills 문제 해결(YAML 구문, 디버깅 등)은 [Claude Code Skills 문제 해결 섹션](/ko/skills#troubleshooting)을 참조하십시오.
+일반적인 Skills 문제 해결(YAML 구문, 디버깅 등)은 [Claude Code Skills 문제 해결 섹션](/docs/ko/skills#troubleshooting)을 참조하십시오.
 
 <h2 id="related-documentation">
   관련 문서
@@ -328,7 +328,7 @@ ls ~/.claude/skills/*/SKILL.md
   Skills 가이드
 </h3>
 
-* [Claude Code의 Agent Skills](/ko/skills): 생성, 예제 및 문제 해결을 포함한 완전한 Skills 가이드
+* [Claude Code의 Agent Skills](/docs/ko/skills): 생성, 예제 및 문제 해결을 포함한 완전한 Skills 가이드
 * [Agent Skills 개요](https://platform.claude.com/docs/ko/agents-and-tools/agent-skills/overview): 개념적 개요, 이점 및 아키텍처
 * [Agent Skills 모범 사례](https://platform.claude.com/docs/ko/agents-and-tools/agent-skills/best-practices): 효과적인 Skills를 위한 작성 지침
 * [Agent Skills 쿡북](https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction): 예제 Skills 및 템플릿
@@ -337,8 +337,8 @@ ls ~/.claude/skills/*/SKILL.md
   SDK 리소스
 </h3>
 
-* [SDK의 Subagents](/ko/agent-sdk/subagents): 프로그래밍 옵션이 있는 유사한 파일 시스템 기반 에이전트
-* [SDK의 Slash Commands](/ko/agent-sdk/slash-commands): 사용자 호출 명령
-* [SDK 개요](/ko/agent-sdk/overview): 일반 SDK 개념
-* [TypeScript SDK 참조](/ko/agent-sdk/typescript): 완전한 API 문서
-* [Python SDK 참조](/ko/agent-sdk/python): 완전한 API 문서
+* [SDK의 Subagents](/docs/ko/agent-sdk/subagents): 프로그래밍 옵션이 있는 유사한 파일 시스템 기반 에이전트
+* [SDK의 Slash Commands](/docs/ko/agent-sdk/slash-commands): 사용자 호출 명령
+* [SDK 개요](/docs/ko/agent-sdk/overview): 일반 SDK 개념
+* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript): 완전한 API 문서
+* [Python SDK 참조](/docs/ko/agent-sdk/python): 완전한 API 문서

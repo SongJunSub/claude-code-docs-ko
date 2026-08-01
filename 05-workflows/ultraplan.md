@@ -7,10 +7,10 @@
 > CLI에서 계획을 시작하고, 웹의 Claude Code에서 초안을 작성한 다음, 원격으로 또는 터미널로 돌아가서 실행합니다
 
 <Note>
-  Ultraplan은 연구 미리보기 상태이며 Claude Code v2.1.91 이상이 필요합니다. 피드백에 따라 동작 및 기능이 변경될 수 있습니다.
+  Ultraplan은 연구 미리보기 상태입니다. 피드백에 따라 동작 및 기능이 변경될 수 있습니다.
 </Note>
 
-Ultraplan은 로컬 CLI의 계획 작업을 [계획 모드](/ko/permission-modes#analyze-before-you-edit-with-plan-mode)에서 실행 중인 [웹의 Claude Code](/ko/claude-code-on-the-web) 세션으로 전달합니다. Claude는 클라우드에서 계획을 초안하는 동안 터미널에서 계속 작업할 수 있습니다. 계획이 준비되면 브라우저에서 열어 특정 섹션에 대해 의견을 남기고, 수정을 요청하고, 실행할 위치를 선택할 수 있습니다.
+Ultraplan은 로컬 CLI의 계획 작업을 [계획 모드](/docs/ko/permission-modes#analyze-before-you-edit-with-plan-mode)에서 실행 중인 [웹의 Claude Code](/docs/ko/claude-code-on-the-web) 세션으로 전달합니다. Claude는 클라우드에서 계획을 초안하는 동안 터미널에서 계속 작업할 수 있습니다. 계획이 준비되면 브라우저에서 열어 특정 섹션에 대해 의견을 남기고, 수정을 요청하고, 실행할 위치를 선택할 수 있습니다.
 
 이는 터미널이 제공하는 것보다 더 풍부한 검토 표면을 원할 때 유용합니다:
 
@@ -18,7 +18,7 @@ Ultraplan은 로컬 CLI의 계획 작업을 [계획 모드](/ko/permission-modes
 * **자동 초안 작성**: 계획이 원격으로 생성되므로 터미널이 다른 작업을 위해 자유로워집니다
 * **유연한 실행**: 웹에서 실행하고 풀 요청을 열도록 계획을 승인하거나 터미널로 다시 보냅니다
 
-Ultraplan은 [웹의 Claude Code](/ko/claude-code-on-the-web) 계정과 GitHub 저장소가 필요합니다. Anthropic의 클라우드 인프라에서 실행되므로 Amazon Bedrock, Google Cloud Vertex AI 또는 Microsoft Foundry를 사용할 때는 사용할 수 없습니다. 클라우드 세션은 계정의 기본 [클라우드 환경](/ko/claude-code-on-the-web#the-cloud-environment)에서 실행됩니다. 아직 클라우드 환경이 없으면 ultraplan이 처음 시작할 때 자동으로 생성합니다.
+Ultraplan은 [웹의 Claude Code](/docs/ko/claude-code-on-the-web) 계정과 GitHub 저장소가 필요합니다. Anthropic의 클라우드 인프라에서 실행되므로 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry를 사용할 때는 사용할 수 없습니다. 클라우드 세션은 계정의 기본 [클라우드 환경](/docs/ko/claude-code-on-the-web#the-cloud-environment)에서 실행됩니다. 아직 클라우드 환경이 없으면 ultraplan이 처음 시작할 때 자동으로 생성합니다.
 
 <h2 id="launch-ultraplan-from-the-cli">
   CLI에서 ultraplan 시작하기
@@ -36,7 +36,7 @@ Ultraplan은 [웹의 Claude Code](/ko/claude-code-on-the-web) 계정과 GitHub �
 /ultraplan migrate the auth service from sessions to JWTs
 ```
 
-명령어 및 키워드 경로는 시작하기 전에 확인 대화상자를 엽니다. 로컬 계획 경로는 해당 선택이 이미 확인 역할을 하므로 이 대화상자를 건너뜁니다. [Remote Control](/ko/remote-control)이 활성화되어 있으면 두 기능이 claude.ai/code 인터페이스를 차지하고 한 번에 하나만 연결될 수 있으므로 ultraplan이 시작될 때 연결이 끊깁니다.
+명령어 및 키워드 경로는 시작하기 전에 확인 대화상자를 엽니다. 로컬 계획 경로는 해당 선택이 이미 확인 역할을 하므로 이 대화상자를 건너뜁니다. [Remote Control](/docs/ko/remote-control)이 활성화되어 있으면 두 기능이 claude.ai/code 인터페이스를 차지하고 한 번에 하나만 연결될 수 있으므로 ultraplan이 시작될 때 연결이 끊깁니다.
 
 클라우드 세션이 시작된 후 CLI의 프롬프트 입력은 클라우드 세션이 작동하는 동안 상태 표시기를 표시합니다:
 
@@ -70,7 +70,7 @@ Claude에게 댓글을 처리하도록 요청하면 계획을 수정하고 업�
   웹에서 실행
 </h3>
 
-브라우저에서 **Claude의 계획을 승인하고 코딩 시작**을 선택하여 Claude가 동일한 Claude Code 웹 세션에서 구현하도록 합니다. 터미널에 확인이 표시되고, 상태 표시기가 지워지고, 작업이 클라우드에서 계속됩니다. 구현이 완료되면 [변경 사항 검토](/ko/claude-code-on-the-web#review-changes)하고 웹 인터페이스에서 풀 요청을 만듭니다.
+브라우저에서 **Claude의 계획을 승인하고 코딩 시작**을 선택하여 Claude가 동일한 Claude Code 웹 세션에서 구현하도록 합니다. 터미널에 확인이 표시되고, 상태 표시기가 지워지고, 작업이 클라우드에서 계속됩니다. 구현이 완료되면 [변경 사항 검토](/docs/ko/claude-code-on-the-web#review-changes)하고 웹 인터페이스에서 풀 요청을 만듭니다.
 
 <h3 id="send-the-plan-back-to-your-terminal">
   계획을 터미널로 다시 보내기
@@ -90,7 +90,7 @@ Claude에게 댓글을 처리하도록 요청하면 계획을 수정하고 업�
   관련 리소스
 </h2>
 
-* [웹의 Claude Code](/ko/claude-code-on-the-web): ultraplan이 실행되는 클라우드 인프라
-* [계획 모드](/ko/permission-modes#analyze-before-you-edit-with-plan-mode): 로컬 세션에서 계획이 작동하는 방식
-* [ultrareview로 버그 찾기](/ko/ultrareview): 병합 전에 문제를 포착하기 위한 ultraplan의 코드 검토 대응
-* [Remote Control](/ko/remote-control): 자신의 머신에서 실행 중인 세션과 함께 claude.ai/code 인터페이스 사용
+* [웹의 Claude Code](/docs/ko/claude-code-on-the-web): ultraplan이 실행되는 클라우드 인프라
+* [계획 모드](/docs/ko/permission-modes#analyze-before-you-edit-with-plan-mode): 로컬 세션에서 계획이 작동하는 방식
+* [ultrareview로 버그 찾기](/docs/ko/ultrareview): 병합 전에 문제를 포착하기 위한 ultraplan의 코드 검토 대응
+* [Remote Control](/docs/ko/remote-control): 자신의 머신에서 실행 중인 세션과 함께 claude.ai/code 인터페이스 사용

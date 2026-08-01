@@ -8,7 +8,7 @@
 
 플러그인은 Claude Code를 skills, agents, hooks 및 MCP servers로 확장합니다. 플러그인 마켓플레이스는 직접 빌드하지 않고도 이러한 확장 기능을 발견하고 설치할 수 있도록 도와주는 카탈로그입니다.
 
-자신의 마켓플레이스를 만들고 배포하려고 하시나요? [플러그인 마켓플레이스 만들기 및 배포](/ko/plugin-marketplaces)를 참조하세요.
+자신의 마켓플레이스를 만들고 배포하려고 하시나요? [플러그인 마켓플레이스 만들기 및 배포](/docs/ko/plugin-marketplaces)를 참조하세요.
 
 <h2 id="how-marketplaces-work">
   마켓플레이스 작동 방식
@@ -43,7 +43,7 @@
 Claude Code가 플러그인을 어떤 마켓플레이스에서도 찾을 수 없다고 보고하면 마켓플레이스가 누락되었거나 오래되었을 수 있습니다. `/plugin marketplace update claude-plugins-official`을 실행하여 새로 고치거나, 이전에 추가하지 않았다면 `/plugin marketplace add anthropics/claude-plugins-official`을 실행합니다. 그런 다음 설치를 다시 시도합니다.
 
 <Note>
-  공식 마켓플레이스는 Anthropic에서 큐레이션하며, 포함 여부는 Anthropic의 재량입니다. 앱 내 제출 양식은 플러그인을 [커뮤니티 마켓플레이스](#community-marketplace)에 추가하며, 공식 마켓플레이스에는 추가하지 않습니다. 플러그인을 독립적으로 배포하려면 [자신의 마켓플레이스를 만들고](/ko/plugin-marketplaces) 사용자와 공유하세요.
+  공식 마켓플레이스는 Anthropic에서 큐레이션하며, 포함 여부는 Anthropic의 재량입니다. 앱 내 제출 양식은 플러그인을 [커뮤니티 마켓플레이스](#community-marketplace)에 추가하며, 공식 마켓플레이스에는 추가하지 않습니다. 플러그인을 독립적으로 배포하려면 [자신의 마켓플레이스를 만들고](/docs/ko/plugin-marketplaces) 사용자와 공유하세요.
 </Note>
 
 공식 마켓플레이스에는 여러 카테고리의 플러그인이 포함되어 있습니다:
@@ -70,7 +70,7 @@ Claude Code가 플러그인을 어떤 마켓플레이스에서도 찾을 수 없
 | Swift      | `swift-lsp`         | `sourcekit-lsp`              |
 | TypeScript | `typescript-lsp`    | `typescript-language-server` |
 
-[다른 언어를 위한 자신의 LSP 플러그인을 만들](/ko/plugins-reference#lsp-servers) 수도 있습니다.
+[다른 언어를 위한 자신의 LSP 플러그인을 만들](/docs/ko/plugins-reference#lsp-servers) 수도 있습니다.
 
 <Note>
   플러그인을 설치한 후 `/plugin` Errors 탭에서 `Executable not found in $PATH`를 보면 위 표에서 필요한 바이너리를 설치하세요.
@@ -91,7 +91,7 @@ Claude Code가 플러그인을 어떤 마켓플레이스에서도 찾을 수 없
   외부 통합
 </h3>
 
-이러한 플러그인은 미리 구성된 [MCP servers](/ko/mcp)를 번들로 제공하므로 수동 설정 없이 Claude를 외부 서비스에 연결할 수 있습니다:
+이러한 플러그인은 미리 구성된 [MCP servers](/docs/ko/mcp)를 번들로 제공하므로 수동 설정 없이 Claude를 외부 서비스에 연결할 수 있습니다:
 
 * **소스 제어**: `github`, `gitlab`
 * **프로젝트 관리**: `atlassian` (Jira/Confluence), `asana`, `linear`, `notion`
@@ -104,7 +104,7 @@ Claude Code가 플러그인을 어떤 마켓플레이스에서도 찾을 수 없
   자동 보안 검토
 </h3>
 
-`security-guidance` 플러그인은 Claude가 만드는 각 변경 사항을 일반적인 취약점에 대해 검토하고 Claude에게 같은 세션에서 발견한 내용을 수정하도록 지시합니다. [Claude가 코드를 작성할 때 보안 문제 포착](/ko/security-guidance)에서 검사하는 내용과 프로젝트별 규칙을 추가하는 방법을 참조하세요.
+`security-guidance` 플러그인은 Claude가 만드는 각 변경 사항을 일반적인 취약점에 대해 검토하고 Claude에게 같은 세션에서 발견한 내용을 수정하도록 지시합니다. [Claude가 코드를 작성할 때 보안 문제 포착](/docs/ko/security-guidance)에서 검사하는 내용과 프로젝트별 규칙을 추가하는 방법을 참조하세요.
 
 <h3 id="development-workflows">
   개발 워크플로우
@@ -142,7 +142,7 @@ Claude가 응답하는 방식을 사용자 정의합니다:
 /plugin install <plugin-name>@claude-community
 ```
 
-자신의 플러그인을 커뮤니티 마켓플레이스에 제출하려면 플러그인 생성 가이드의 [Submit your plugin to the community marketplace](/ko/plugins#submit-your-plugin-to-the-community-marketplace)를 참조하세요.
+자신의 플러그인을 커뮤니티 마켓플레이스에 제출하려면 플러그인 생성 가이드의 [Submit your plugin to the community marketplace](/docs/ko/plugins#submit-your-plugin-to-the-community-marketplace)를 참조하세요.
 
 <h2 id="try-it-add-the-demo-marketplace">
   시도해보기: 데모 마켓플레이스 추가
@@ -169,13 +169,13 @@ Anthropic은 플러그인 시스템으로 가능한 것들을 보여주는 예�
     * **Marketplaces**: 추가된 마켓플레이스 추가, 제거 또는 업데이트
     * **Errors**: 플러그인 로딩 오류 보기
 
-    방금 추가한 마켓플레이스의 플러그인을 보려면 **Discover** 탭으로 이동합니다. {/* min-version: 2.1.154 */}관리자가 [`pluginSuggestionMarketplaces`](/ko/settings#available-settings) 관리 설정을 통해 마켓플레이스를 허용 목록에 추가한 경우, 현재 작업 디렉토리와 관련이 있는 것으로 표시된 플러그인은 **suggested for this directory** 레이블과 함께 맨 위에 고정됩니다.
+    방금 추가한 마켓플레이스의 플러그인을 보려면 **Discover** 탭으로 이동합니다. {/* min-version: 2.1.154 */}관리자가 [`pluginSuggestionMarketplaces`](/docs/ko/settings#available-settings) 관리 설정을 통해 마켓플레이스를 허용 목록에 추가한 경우, 현재 작업 디렉토리와 관련이 있는 것으로 표시된 플러그인은 **suggested for this directory** 레이블과 함께 맨 위에 고정됩니다.
   </Step>
 
   <Step title="플러그인 설치">
     플러그인을 선택하여 세부 정보를 봅니다. 세부 정보 창에는 플러그인에 포함된 내용과 비용이 표시됩니다:
 
-    * {/* min-version: 2.1.143 */}플러그인이 매 턴마다 [컨텍스트 윈도우](/ko/features-overview#understand-context-costs)에 추가할 토큰 수를 볼 수 있는 **Context cost** 예상치 (Claude Code v2.1.143 이상)
+    * {/* min-version: 2.1.143 */}플러그인이 매 턴마다 [컨텍스트 윈도우](/docs/ko/features-overview#understand-context-costs)에 추가할 토큰 수를 볼 수 있는 **Context cost** 예상치 (Claude Code v2.1.143 이상)
     * {/* min-version: 2.1.144 */}플러그인의 **Last updated** 날짜 (v2.1.144 이상)
     * {/* min-version: 2.1.145 */}플러그인의 명령어, 에이전트, 스킬, 훅 및 MCP와 LSP 서버를 나열하는 **Will install** 섹션으로, 설치 전에 정확히 무엇이 추가되는지 검토할 수 있습니다 (v2.1.145 이상)
 
@@ -193,7 +193,7 @@ Anthropic은 플러그인 시스템으로 가능한 것들을 보여주는 예�
     /plugin install commit-commands@claude-code-plugins
     ```
 
-    범위에 대해 자세히 알아보려면 [Configuration scopes](/ko/settings#configuration-scopes)를 참조하세요.
+    범위에 대해 자세히 알아보려면 [Configuration scopes](/docs/ko/settings#configuration-scopes)를 참조하세요.
   </Step>
 
   <Step title="새 플러그인 사용">
@@ -293,7 +293,7 @@ URL을 통해 원격 `marketplace.json` 파일을 추가합니다:
 ```
 
 <Note>
-  URL 기반 마켓플레이스는 Git 기반 마켓플레이스에 비해 몇 가지 제한 사항이 있습니다. 플러그인을 설치할 때 "경로를 찾을 수 없음" 오류가 발생하면 [문제 해결](/ko/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)을 참조하세요.
+  URL 기반 마켓플레이스는 Git 기반 마켓플레이스에 비해 몇 가지 제한 사항이 있습니다. 플러그인을 설치할 때 "경로를 찾을 수 없음" 오류가 발생하면 [문제 해결](/docs/ko/plugin-marketplaces#plugins-with-relative-paths-fail-in-url-based-marketplaces)을 참조하세요.
 </Note>
 
 <h2 id="install-plugins">
@@ -306,15 +306,15 @@ URL을 통해 원격 `marketplace.json` 파일을 추가합니다:
 /plugin install plugin-name@marketplace-name
 ```
 
-이 명령어는 플러그인의 세부 정보를 열며, 여기서 [설치 범위](/ko/settings#configuration-scopes)를 선택합니다. `/plugin`을 실행하고 **Discover** 탭으로 이동한 후 플러그인에서 **Enter**를 누를 때도 동일한 선택지가 표시됩니다:
+이 명령어는 플러그인의 세부 정보를 열며, 여기서 [설치 범위](/docs/ko/settings#configuration-scopes)를 선택합니다. `/plugin`을 실행하고 **Discover** 탭으로 이동한 후 플러그인에서 **Enter**를 누를 때도 동일한 선택지가 표시됩니다:
 
 * **사용자 범위**(기본값): 모든 프로젝트에서 자신을 위해 설치
 * **프로젝트 범위**: 이 저장소의 모든 협력자를 위해 설치(`.claude/settings.json`에 추가)
 * **로컬 범위**: 이 저장소에서만 자신을 위해 설치(협력자와 공유되지 않음)
 
-대화형 단계 없이 설치하려면 [`claude plugin install`](/ko/plugins-reference#plugin-install) 셸 명령어를 사용하세요. 이 명령어는 `--scope`를 전달하지 않으면 사용자 범위로 설치됩니다.
+대화형 단계 없이 설치하려면 [`claude plugin install`](/docs/ko/plugins-reference#plugin-install) 셸 명령어를 사용하세요. 이 명령어는 `--scope`를 전달하지 않으면 사용자 범위로 설치됩니다.
 
-**관리됨** 범위의 플러그인도 볼 수 있습니다. 이러한 플러그인은 관리자가 [관리 설정](/ko/settings#settings-files)을 통해 설치하며 수정할 수 없습니다.
+**관리됨** 범위의 플러그인도 볼 수 있습니다. 이러한 플러그인은 관리자가 [관리 설정](/docs/ko/settings#settings-files)을 통해 설치하며 수정할 수 없습니다.
 
 <Warning>
   플러그인을 설치하기 전에 신뢰할 수 있는지 확인하세요. Anthropic은 플러그인에 포함된 MCP 서버, 파일 또는 기타 소프트웨어를 제어하지 않으며 의도한 대로 작동하는지 확인할 수 없습니다. 자세한 내용은 각 플러그인의 홈페이지를 확인하세요.
@@ -332,11 +332,22 @@ URL을 통해 원격 `marketplace.json` 파일을 추가합니다:
 * 입력하여 플러그인 이름 또는 설명으로 필터링
 * Enter를 눌러 플러그인의 세부 정보 보기를 열고 활성화, 비활성화 또는 제거
 
+프로젝트의 `.claude/settings.json`이 활성화하는 플러그인을 제거하면 어느 범위를 의도했는지 묻습니다: 자신만 비활성화하면 `.claude/settings.local.json`에 재정의를 작성하고 프로젝트에 플러그인을 설치된 상태로 두거나, 모두를 위해 제거하면 공유 `.claude/settings.json`에서 제거합니다. Claude Code v2.1.203 이상이 필요합니다. v2.1.203 이전에는 대화 상자에서 로컬 비활성화만 제공했습니다.
+
 세부 정보 보기는 플러그인이 제공하는 구성 요소를 표시합니다: commands, skills, agents, hooks, MCP servers 및 LSP servers. 동일한 인벤토리는 `claude plugin details` 명령어로 명령줄에서도 사용할 수 있습니다.
 
-Claude Code v2.1.187 이상에서는 Installed 탭에 **Not used recently** 그룹이 추가되어 마켓플레이스에서 직접 설치했지만 최소 2주 동안 그리고 최소 10개 세션에서 호출하지 않은 플러그인을 표시하며, 세부 정보 보기는 각 플러그인에 대한 **Last used** 줄을 표시합니다. 이를 사용하여 더 이상 사용하지 않지만 여전히 시작 및 컨텍스트 비용을 추가하는 플러그인을 찾은 다음 비활성화하거나 제거합니다.
+**Installed** 탭은 또한 마켓플레이스에서 직접 설치했지만 최소 2주 동안 그리고 최소 10개 세션에 걸쳐 사용하지 않은 플러그인을 **Not used recently** 헤더 아래에 수집합니다. 세부 정보 보기는 각 플러그인에 대한 **Last used** 줄을 표시합니다. 이를 사용하여 더 이상 사용하지 않지만 여전히 시작 및 컨텍스트 비용을 추가하는 플러그인을 찾은 다음 비활성화하거나 제거합니다. Claude Code v2.1.187 이상이 필요합니다.
 
-조직에서 관리하는 플러그인 또는 `--plugin-dir`로 로드하는 플러그인은 사용하지 않는 것으로 나열되지 않으며, LSP server, theme, output style, monitor 또는 workflow를 제공하는 플러그인도 추적할 호출 없이 값을 제공하므로 나열되지 않습니다. 조직이 [`strictKnownMarketplaces`](/ko/settings#strictknownmarketplaces)로 마켓플레이스를 제한할 때 그룹과 **Last used** 줄이 모두 숨겨집니다.
+두 가지 종류의 플러그인은 사용하지 않는 것으로 나열되지 않습니다:
+
+* 조직에서 관리하거나 `--plugin-dir`로 로드하는 플러그인
+* theme, output style, monitor 또는 workflow를 제공하는 플러그인. 이들은 추적할 호출 없이 값을 제공하기 때문입니다
+
+**Not used recently** 헤더와 **Last used** 줄은 조직이 [`strictKnownMarketplaces`](/docs/ko/settings#strictknownmarketplaces)로 마켓플레이스를 제한할 때 모두 숨겨집니다.
+
+플러그인의 [language server](/docs/ko/plugins#add-lsp-servers-to-your-plugin)는 진단을 제공하거나 코드 네비게이션 요청에 응답할 때 사용된 것으로 계산되므로, 서버가 세션에서 활성화된 LSP 플러그인은 사용하지 않는 것으로 나열되지 않습니다. v2.1.203 이전에는 language server 활동을 사용으로 계산할 수 없었으므로, LSP server를 제공하는 플러그인은 theme 및 output style 플러그인과 동일한 방식으로 그룹에서 제외되었습니다.
+
+language server 활동을 계산하는 버전의 첫 번째 세션은 또한 아직 사용 기록을 기록하지 않은 각 LSP 플러그인의 사용 기록을 재설정하므로, Claude Code는 서버 활동이 추적되기 전에 기록된 데이터를 기반으로 이전에 설치한 플러그인을 사용하지 않는 것으로 판단하지 않습니다. v2.1.206 이전에는 해당 첫 번째 세션이 활발히 사용 중인 LSP 플러그인을 **Not used recently** 아래에 나열하고 검토를 제안할 수 있었습니다.
 
 종속성을 선언하는 플러그인을 설치하면 설치 출력에 함께 자동 설치된 종속성이 나열됩니다.
 
@@ -362,7 +373,7 @@ Claude Code v2.1.187 이상에서는 Installed 탭에 **Not used recently** 그�
 /plugin enable plugin-name@marketplace-name
 ```
 
-이 식별자에서 `plugin-name`은 [마켓플레이스 항목](/ko/plugin-marketplaces#plugin-entries)의 플러그인 `name`이며, 플러그인 자체의 `plugin.json`의 `name`과 다를 수 있습니다.
+이 식별자에서 `plugin-name`은 [마켓플레이스 항목](/docs/ko/plugin-marketplaces#plugin-entries)의 플러그인 `name`이며, 플러그인 자체의 `plugin.json`의 `name`과 다를 수 있습니다.
 
 Claude Code v2.1.195부터 `/plugin` 인터페이스의 **Enable** 및 **Disable**은 두 이름이 다른 플러그인에 대해 작동하며, `/plugin enable` 및 `/plugin disable`은 두 이름 중 하나를 허용합니다. 이전 버전에서 이러한 플러그인을 비활성화하면 Claude Code는 `already disabled`를 보고하고 활성화된 상태로 둡니다.
 
@@ -391,7 +402,7 @@ claude plugin uninstall formatter@your-org --scope project
 
 Claude Code는 모든 활성 플러그인을 다시 로드하고 플러그인, skills, agents, hooks, 플러그인 MCP servers 및 플러그인 LSP servers의 개수를 표시합니다.
 
-재로드는 다음 요청에서 토큰 비용이 발생합니다: 새로 로드된 구성 요소는 대화에 추가된 콘텐츠에서 자신을 알리고, 기존 기록은 여전히 프롬프트 캐시에서 읽습니다. MCP servers를 제공하는 플러그인은 [tool search](/ko/mcp#scale-with-mcp-tool-search)에 의해 도구가 지연되지 않을 때 더 많은 비용이 발생합니다: 변경으로 인해 캐시가 무효화되고 다음 요청이 전체 대화를 다시 읽습니다. {/* min-version: 2.1.163 */}이 경우 `/reload-plugins`는 경고를 표시하고 재로드를 적용하지 않습니다. `--force`를 전달하여 어쨌든 적용합니다. 자세한 내용은 [플러그인 활성화 또는 비활성화](/ko/prompt-caching#enabling-or-disabling-a-plugin)를 참조하세요.
+재로드는 다음 요청에서 토큰 비용이 발생합니다: 새로 로드된 구성 요소는 대화에 추가된 콘텐츠에서 자신을 알리고, 기존 기록은 여전히 프롬프트 캐시에서 읽습니다. MCP servers를 제공하는 플러그인은 [tool search](/docs/ko/mcp#scale-with-mcp-tool-search)에 의해 도구가 지연되지 않을 때 더 많은 비용이 발생합니다: 변경으로 인해 캐시가 무효화되고 다음 요청이 전체 대화를 다시 읽습니다. {/* min-version: 2.1.163 */}이 경우 `/reload-plugins`는 경고를 표시하고 재로드를 적용하지 않습니다. `--force`를 전달하여 어쨌든 적용합니다. 자세한 내용은 [플러그인 활성화 또는 비활성화](/docs/ko/prompt-caching#enabling-or-disabling-a-plugin)를 참조하세요.
 
 <h2 id="manage-marketplaces">
   마켓플레이스 관리
@@ -442,7 +453,9 @@ Claude Code는 모든 활성 플러그인을 다시 로드하고 플러그인, s
   자동 업데이트 구성
 </h3>
 
-Claude Code는 시작 시 마켓플레이스 및 설치된 플러그인을 자동으로 업데이트할 수 있습니다. 마켓플레이스에 대해 자동 업데이트가 활성화되면 Claude Code는 마켓플레이스 데이터를 새로 고치고 설치된 플러그인을 최신 버전으로 업데이트합니다. 플러그인이 업데이트된 경우 `/reload-plugins`를 실행하도록 요청하는 알림이 표시됩니다.
+Claude Code는 시작 후 백그라운드에서 마켓플레이스 및 설치된 플러그인을 자동으로 업데이트할 수 있습니다. 마켓플레이스에 대해 자동 업데이트가 활성화되면 Claude Code는 마켓플레이스 데이터를 새로 고치고 설치된 플러그인을 디스크의 최신 버전으로 업데이트합니다.
+
+Claude Code는 세션 시작 후 마켓플레이스 및 플러그인 업데이트를 확인하며, 최대 10분의 무작위 지연이 있으므로 실행 중인 세션은 시작 시 로드된 버전을 계속 사용합니다. 플러그인이 업데이트된 경우 `/reload-plugins`를 실행하도록 요청하는 알림이 표시되거나 다음 시작 시 새 버전이 로드됩니다.
 
 UI를 통해 개별 마켓플레이스에 대한 자동 업데이트를 전환합니다:
 
@@ -453,9 +466,9 @@ UI를 통해 개별 마켓플레이스에 대한 자동 업데이트를 전환�
 
 공식 Anthropic 마켓플레이스는 기본적으로 자동 업데이트가 활성화되어 있습니다. 타사 및 로컬 개발 마켓플레이스는 기본적으로 자동 업데이트가 비활성화되어 있습니다.
 
-관리자는 관리되는 설정에서 각 [`extraKnownMarketplaces`](/ko/settings#extraknownmarketplaces) 항목에 `"autoUpdate": true`를 설정하여 각 사용자가 전환하도록 요구하지 않고 조직 마켓플레이스에 대한 자동 업데이트를 활성화할 수 있습니다.
+관리자는 관리되는 설정에서 각 [`extraKnownMarketplaces`](/docs/ko/settings#extraknownmarketplaces) 항목에 `"autoUpdate": true`를 설정하여 각 사용자가 전환하도록 요구하지 않고 조직 마켓플레이스에 대한 자동 업데이트를 활성화할 수 있습니다.
 
-Claude Code 및 모든 플러그인에 대해 모든 자동 업데이트를 완전히 비활성화하려면 `DISABLE_AUTOUPDATER` 환경 변수를 설정합니다. 자세한 내용은 [자동 업데이트](/ko/setup#auto-updates)를 참조하세요.
+Claude Code 및 모든 플러그인에 대해 모든 자동 업데이트를 완전히 비활성화하려면 `DISABLE_AUTOUPDATER` 환경 변수를 설정합니다. 자세한 내용은 [자동 업데이트](/docs/ko/setup#auto-updates)를 참조하세요.
 
 Claude Code 자동 업데이트를 비활성화하면서 플러그인 자동 업데이트를 활성화된 상태로 유지하려면 `DISABLE_AUTOUPDATER`와 함께 `FORCE_AUTOUPDATE_PLUGINS=1`을 설정합니다:
 
@@ -489,13 +502,13 @@ Claude Code v2.1.195부터 이 설치 단계는 플러그인을 로드하는 모
 }
 ```
 
-`extraKnownMarketplaces` 및 `enabledPlugins`를 포함한 전체 구성 옵션은 [플러그인 설정](/ko/settings#plugin-settings)을 참조하세요.
+`extraKnownMarketplaces` 및 `enabledPlugins`를 포함한 전체 구성 옵션은 [플러그인 설정](/docs/ko/settings#plugin-settings)을 참조하세요.
 
 <h2 id="security">
   보안
 </h2>
 
-플러그인 및 마켓플레이스는 사용자 권한으로 머신에서 임의의 코드를 실행할 수 있는 매우 신뢰할 수 있는 구성 요소입니다. 신뢰할 수 있는 소스에서만 플러그인을 설치하고 마켓플레이스를 추가합니다. 조직은 [관리되는 마켓플레이스 제한](/ko/plugin-marketplaces#managed-marketplace-restrictions)을 사용하여 사용자가 추가할 수 있는 마켓플레이스를 제한할 수 있습니다.
+플러그인 및 마켓플레이스는 사용자 권한으로 머신에서 임의의 코드를 실행할 수 있는 매우 신뢰할 수 있는 구성 요소입니다. 신뢰할 수 있는 소스에서만 플러그인을 설치하고 마켓플레이스를 추가합니다. 조직은 [관리되는 마켓플레이스 제한](/docs/ko/plugin-marketplaces#managed-marketplace-restrictions)을 사용하여 사용자가 추가할 수 있는 마켓플레이스를 제한할 수 있습니다.
 
 <h2 id="troubleshooting">
   문제 해결
@@ -511,7 +524,7 @@ Claude Code v2.1.195부터 이 설치 단계는 플러그인을 로드하는 모
 2. **Claude Code 업데이트**:
    * **Homebrew**: `brew upgrade claude-code`, 또는 해당 cask를 설치한 경우 `brew upgrade claude-code@latest`
    * **npm**: `npm install -g @anthropic-ai/claude-code@latest`
-   * **네이티브 설치 프로그램**: [설정](/ko/setup)에서 설치 명령어를 다시 실행합니다.
+   * **네이티브 설치 프로그램**: [설정](/docs/ko/setup)에서 설치 명령어를 다시 실행합니다.
 3. **Claude Code 재시작**: 업데이트 후 터미널을 재시작하고 `claude`를 다시 실행합니다.
 
 <h3 id="common-issues">
@@ -523,7 +536,7 @@ Claude Code v2.1.195부터 이 설치 단계는 플러그인을 로드하는 모
 * **설치 후 파일을 찾을 수 없음**: 플러그인은 캐시에 복사되므로 플러그인 디렉토리 외부의 파일을 참조하는 경로는 작동하지 않습니다.
 * **플러그인 skills가 나타나지 않음**: `rm -rf ~/.claude/plugins/cache`로 캐시를 지우고, Claude Code를 재시작한 후 플러그인을 다시 설치합니다.
 
-자세한 문제 해결 및 솔루션은 마켓플레이스 가이드의 [문제 해결](/ko/plugin-marketplaces#troubleshooting)을 참조하세요. 디버깅 도구는 [디버깅 및 개발 도구](/ko/plugins-reference#debugging-and-development-tools)를 참조하세요.
+자세한 문제 해결 및 솔루션은 마켓플레이스 가이드의 [문제 해결](/docs/ko/plugin-marketplaces#troubleshooting)을 참조하세요. 디버깅 도구는 [디버깅 및 개발 도구](/docs/ko/plugins-reference#debugging-and-development-tools)를 참조하세요.
 
 <h3 id="code-intelligence-issues">
   코드 인텔리전스 문제
@@ -537,6 +550,6 @@ Claude Code v2.1.195부터 이 설치 단계는 플러그인을 로드하는 모
   다음 단계
 </h2>
 
-* **자신의 플러그인 빌드**: [플러그인](/ko/plugins)을 참조하여 skills, agents 및 hooks를 만듭니다.
-* **마켓플레이스 만들기**: [플러그인 마켓플레이스 만들기](/ko/plugin-marketplaces)를 참조하여 팀 또는 커뮤니티에 플러그인을 배포합니다.
-* **기술 참조**: [플러그인 참조](/ko/plugins-reference)를 참조하여 완전한 사양을 확인합니다.
+* **자신의 플러그인 빌드**: [플러그인](/docs/ko/plugins)을 참조하여 skills, agents 및 hooks를 만듭니다.
+* **마켓플레이스 만들기**: [플러그인 마켓플레이스 만들기](/docs/ko/plugin-marketplaces)를 참조하여 팀 또는 커뮤니티에 플러그인을 배포합니다.
+* **기술 참조**: [플러그인 참조](/docs/ko/plugins-reference)를 참조하여 완전한 사양을 확인합니다.

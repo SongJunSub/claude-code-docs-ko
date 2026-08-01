@@ -51,13 +51,13 @@
   에이전트 동작 사용자 정의
 </h2>
 
-출력 스타일, `append`, 그리고 사용자 정의 프롬프트 문자열은 각각 시스템 프롬프트를 직접 변경합니다. CLAUDE.md는 다른 경로를 따릅니다: SDK가 이를 읽고 그 내용을 시스템 프롬프트가 아닌 프로젝트 컨텍스트로 대화에 주입하므로, 선택한 시스템 프롬프트와 함께 동작을 형성합니다. [Skills](/ko/agent-sdk/skills), [hooks](/ko/agent-sdk/hooks), 그리고 [permissions](/ko/agent-sdk/permissions)도 시스템 프롬프트 외부에서 동작을 형성하며 자체 페이지에서 다룹니다.
+출력 스타일, `append`, 그리고 사용자 정의 프롬프트 문자열은 각각 시스템 프롬프트를 직접 변경합니다. CLAUDE.md는 다른 경로를 따릅니다: SDK가 이를 읽고 그 내용을 시스템 프롬프트가 아닌 프로젝트 컨텍스트로 대화에 주입하므로, 선택한 시스템 프롬프트와 함께 동작을 형성합니다. [Skills](/docs/ko/agent-sdk/skills), [hooks](/docs/ko/agent-sdk/hooks), 그리고 [permissions](/docs/ko/agent-sdk/permissions)도 시스템 프롬프트 외부에서 동작을 형성하며 자체 페이지에서 다룹니다.
 
 <h3 id="claude-md-files-for-project-level-instructions">
   프로젝트 수준 명령을 위한 CLAUDE.md 파일
 </h3>
 
-CLAUDE.md 파일은 Claude에 지속적인 프로젝트 컨텍스트와 명령을 제공합니다. SDK는 그 내용을 시스템 프롬프트가 아닌 대화에 주입하므로, 모든 시스템 프롬프트 구성과 함께 작동합니다. CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 그리고 효과적인 명령을 작성하는 방법에 대해서는 [Claude가 프로젝트를 기억하는 방법](/ko/memory)을 참조하십시오. 이 섹션은 SDK에 특정한 내용을 다룹니다: CLAUDE.md가 로드되는 방식입니다.
+CLAUDE.md 파일은 Claude에 지속적인 프로젝트 컨텍스트와 명령을 제공합니다. SDK는 그 내용을 시스템 프롬프트가 아닌 대화에 주입하므로, 모든 시스템 프롬프트 구성과 함께 작동합니다. CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 그리고 효과적인 명령을 작성하는 방법에 대해서는 [Claude가 프로젝트를 기억하는 방법](/docs/ko/memory)을 참조하십시오. 이 섹션은 SDK에 특정한 내용을 다룹니다: CLAUDE.md가 로드되는 방식입니다.
 
 SDK는 일치하는 설정 소스가 활성화될 때 CLAUDE.md를 읽습니다: `'project'`는 작업 디렉토리에서 `CLAUDE.md` 또는 `.claude/CLAUDE.md`를 로드하고, `'user'`는 `~/.claude/CLAUDE.md`를 로드합니다. 기본 `query()` 옵션은 두 소스를 모두 활성화하므로 CLAUDE.md가 자동으로 로드됩니다. TypeScript에서 `settingSources`를 명시적으로 설정하거나 Python에서 `setting_sources`를 명시적으로 설정하면, 필요한 소스를 포함하십시오. CLAUDE.md 로딩은 `claude_code` 프리셋이 아닌 설정 소스에 의해 제어됩니다.
 
@@ -122,7 +122,7 @@ CLAUDE.md는 프로젝트의 모든 세션에서 지속되며, git을 통해 팀
   출력 스타일 생성
 </h4>
 
-출력 스타일은 [frontmatter](/ko/output-styles#frontmatter)에 메타데이터가 있는 마크다운 파일이며, 그 뒤에 프롬프트 내용이 있습니다. 모든 프로젝트에서 사용 가능한 사용자 수준 스타일의 경우 `~/.claude/output-styles/`에 저장하거나, 팀과 커밋하고 공유할 수 있는 프로젝트 수준 스타일의 경우 저장소의 `.claude/output-styles/`에 저장하십시오.
+출력 스타일은 [frontmatter](/docs/ko/output-styles#frontmatter)에 메타데이터가 있는 마크다운 파일이며, 그 뒤에 프롬프트 내용이 있습니다. 모든 프로젝트에서 사용 가능한 사용자 수준 스타일의 경우 `~/.claude/output-styles/`에 저장하거나, 팀과 커밋하고 공유할 수 있는 프로젝트 수준 스타일의 경우 저장소의 `.claude/output-styles/`에 저장하십시오.
 
 기본적으로, 사용자 정의 출력 스타일은 `claude_code` 프리셋의 소프트웨어 엔지니어링 명령을 자신의 명령으로 바꿉니다. 이를 유지하고 명령을 그 위에 계층화하려면, frontmatter에서 `keep-coding-instructions: true`를 설정하십시오. 에이전트가 여전히 소프트웨어 엔지니어링 작업을 수행할 때 이를 유지하십시오. 역할을 완전히 바꿀 때는 이를 제외하십시오.
 
@@ -152,7 +152,11 @@ For every code submission:
 
 * **CLI**: `/config`를 실행하고 출력 스타일을 선택합니다
 * **설정**: `.claude/settings.local.json`에서 `outputStyle`을 설정합니다
-* **TypeScript SDK**: `query()`에 전달된 인라인 `settings` 객체 내에서 `outputStyle`을 설정하거나, `settings`가 이를 설정하는 설정 파일을 가리키도록 합니다. `outputStyle`은 최상위 `Options` 필드가 아닙니다
+* **TypeScript SDK**: `query()`에 전달된 인라인 `settings` 객체 내에서 `outputStyle`을 설정하거나, `settings`가 이를 설정하는 설정 파일을 가리키도록 합니다. `outputStyle`은 최상위 `Options` 필드가 아닙니다:
+
+  ```typescript theme={null}
+  const options = { settings: { outputStyle: "Explanatory" } };
+  ```
 
 Python SDK는 프로그래밍 방식으로 출력 스타일을 선택하는 옵션이 없습니다. `.claude/settings.local.json`에 쓸 수 없는 코드 전용 배포의 경우, `append` 또는 사용자 정의 프롬프트 문자열을 대신 사용하십시오.
 
@@ -261,7 +265,7 @@ Claude Code 프리셋을 `append` 속성과 함께 사용하여 모든 기본 �
 
 **트레이드오프:** 작업 디렉토리, git 저장소 플래그, 플랫폼, 활성 셸, OS 버전, 그리고 자동 메모리 경로는 여전히 Claude에 도달하지만, 시스템 프롬프트가 아닌 첫 번째 사용자 메시지의 일부로 도달합니다. 사용자 메시지의 명령은 시스템 프롬프트의 동일한 텍스트보다 약간 덜 가중치를 가지므로, Claude는 현재 디렉토리 또는 자동 메모리 경로에 대해 추론할 때 이를 덜 강하게 의존할 수 있습니다. 교차 세션 캐시 재사용이 최대한 권위 있는 환경 컨텍스트보다 더 중요할 때 이 옵션을 활성화하십시오.
 
-비대화형 CLI 모드의 동등한 플래그는 [`--exclude-dynamic-system-prompt-sections`](/ko/cli-reference)를 참조하십시오.
+비대화형 CLI 모드의 동등한 플래그는 [`--exclude-dynamic-system-prompt-sections`](/docs/ko/cli-reference)를 참조하십시오.
 
 <h3 id="custom-system-prompts">
   사용자 정의 시스템 프롬프트
@@ -347,7 +351,7 @@ Claude Code 프리셋을 `append` 속성과 함께 사용하여 모든 기본 �
   CLAUDE.md를 사용할 때
 </h3>
 
-CLAUDE.md는 세션에서 사용하는 시스템 프롬프트와 관계없이 프로젝트의 모든 세션에 적용되어야 하는 지침에 사용합니다: 코딩 표준, 일반적인 명령, 아키텍처 컨텍스트, 팀 규칙. CLAUDE.md는 저장소에 커밋되므로 설명하는 코드와 동기화된 상태를 유지합니다. 전체 지침은 [CLAUDE.md에 추가할 때](/ko/memory#when-to-add-to-claude-md)를 참조하십시오.
+CLAUDE.md는 세션에서 사용하는 시스템 프롬프트와 관계없이 프로젝트의 모든 세션에 적용되어야 하는 지침에 사용합니다: 코딩 표준, 일반적인 명령, 아키텍처 컨텍스트, 팀 규칙. CLAUDE.md는 저장소에 커밋되므로 설명하는 코드와 동기화된 상태를 유지합니다. 전체 지침은 [CLAUDE.md에 추가할 때](/docs/ko/memory#when-to-add-to-claude-md)를 참조하십시오.
 
 CLAUDE.md 파일은 `project` 설정 소스가 활성화될 때 로드되며, 이는 기본 `query()` 옵션에 대해 활성화됩니다. TypeScript에서 `settingSources`를 명시적으로 설정하거나 Python에서 `setting_sources`를 명시적으로 설정하는 경우, 프로젝트 수준 CLAUDE.md 로드를 유지하기 위해 `'project'`를 포함합니다.
 
@@ -467,8 +471,8 @@ CLAUDE.md 파일은 `project` 설정 소스가 활성화될 때 로드되며, �
   참고 항목
 </h2>
 
-* [출력 스타일](/ko/output-styles): CLI용 출력 스타일을 생성, 관리 및 공유합니다. 파일 형식 및 저장 위치를 포함합니다.
-* [Claude가 프로젝트를 기억하는 방식](/ko/memory): CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 효과적인 프로젝트 지침을 작성하는 방법
-* [TypeScript SDK 참조](/ko/agent-sdk/typescript): `systemPrompt`, `settingSources`, `settings`를 포함한 전체 `Options` 타입
-* [Python SDK 참조](/ko/agent-sdk/python): `system_prompt` 및 `setting_sources`를 포함한 전체 `ClaudeAgentOptions` 타입
-* [설정](/ko/settings): 출력 스타일 및 기타 구성이 저장되는 위치를 포함한 `settings.json` 참조
+* [출력 스타일](/docs/ko/output-styles): CLI용 출력 스타일을 생성, 관리 및 공유합니다. 파일 형식 및 저장 위치를 포함합니다.
+* [Claude가 프로젝트를 기억하는 방식](/docs/ko/memory): CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 효과적인 프로젝트 지침을 작성하는 방법
+* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript): `systemPrompt`, `settingSources`, `settings`를 포함한 전체 `Options` 타입
+* [Python SDK 참조](/docs/ko/agent-sdk/python): `system_prompt` 및 `setting_sources`를 포함한 전체 `ClaudeAgentOptions` 타입
+* [설정](/docs/ko/settings): 출력 스타일 및 기타 구성이 저장되는 위치를 포함한 `settings.json` 참조

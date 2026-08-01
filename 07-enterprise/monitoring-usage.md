@@ -47,7 +47,7 @@ claude
   관리자 구성
 </h2>
 
-관리자는 [관리 설정 파일](/ko/settings#settings-files)을 통해 모든 사용자에 대한 OpenTelemetry 설정을 구성할 수 있습니다. 이를 통해 조직 전체에서 원격 측정 설정을 중앙에서 제어할 수 있습니다. 설정이 적용되는 방식에 대한 자세한 내용은 [설정 우선순위](/ko/settings#settings-precedence)를 참조하세요.
+관리자는 [관리 설정 파일](/docs/ko/settings#settings-files)을 통해 모든 사용자에 대한 OpenTelemetry 설정을 구성할 수 있습니다. 이를 통해 조직 전체에서 원격 측정 설정을 중앙에서 제어할 수 있습니다. 설정이 적용되는 방식에 대한 자세한 내용은 [설정 우선순위](/docs/ko/settings#settings-precedence)를 참조하세요.
 
 관리 설정 구성 예:
 
@@ -108,7 +108,7 @@ OTLP 내보내기를 위한 클라이언트 인증서를 구성하는 방법은 
 
 | 프로토콜                         | 클라이언트 인증서 변수                                                                                                                                          | 수집기의 CA 신뢰                       |
 | :--------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------- |
-| `http/protobuf`, `http/json` | `CLAUDE_CODE_CLIENT_CERT`, `CLAUDE_CODE_CLIENT_KEY` 및 선택적으로 `CLAUDE_CODE_CLIENT_KEY_PASSPHRASE`. [네트워크 구성](/ko/network-config#mtls-authentication) 참조 | `NODE_EXTRA_CA_CERTS`            |
+| `http/protobuf`, `http/json` | `CLAUDE_CODE_CLIENT_CERT`, `CLAUDE_CODE_CLIENT_KEY` 및 선택적으로 `CLAUDE_CODE_CLIENT_KEY_PASSPHRASE`. [네트워크 구성](/docs/ko/network-config#mtls-authentication) 참조 | `NODE_EXTRA_CA_CERTS`            |
 | `grpc`                       | `OTEL_EXPORTER_OTLP_CLIENT_KEY` 및 `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE`, 또는 신호별 인증서를 사용하기 위한 `OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY`와 같은 신호별 변형     | `OTEL_EXPORTER_OTLP_CERTIFICATE` |
 
 `grpc`의 경우 OpenTelemetry SDK는 표준 OTLP 변수를 직접 읽으므로 신호별 메트릭 변수를 설정하는 기존 구성은 계속 작동합니다.
@@ -190,32 +190,34 @@ Agent SDK 및 `claude -p` 세션에서 `TRACEPARENT`가 환경에 설정되면 `
 
 **`claude_code.llm_request`**
 
-| 속성                               | 설명                                                                                                         | 게이트 대상 |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------ |
-| `model`                          | 모델 식별자                                                                                                     |        |
-| `gen_ai.system`                  | 항상 `anthropic`. OpenTelemetry GenAI 의미론적 규칙                                                                |        |
-| `gen_ai.request.model`           | `model`과 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                                |        |
-| `query_source`                   | 요청을 발급한 하위 시스템 (예: `repl_main_thread` 또는 하위 에이전트 이름)                                                       |        |
-| `agent_id`                       | 요청을 발급한 하위 에이전트 또는 팀원의 식별자. 주 세션에는 없음                                                                      |        |
-| `parent_agent_id`                | 이 에이전트를 생성한 에이전트의 식별자. 주 세션 및 직접 생성된 에이전트에는 없음                                                             |        |
-| `speed`                          | `fast` 또는 `normal`                                                                                         |        |
-| `llm_request.context`            | 부모 스팬에 따라 `interaction`, `tool` 또는 `standalone`                                                            |        |
-| `duration_ms`                    | 재시도를 포함한 벽시계 지속 시간                                                                                         |        |
-| `ttft_ms`                        | 첫 번째 토큰까지의 시간 (밀리초)                                                                                        |        |
-| `input_tokens`                   | API 사용 블록의 입력 토큰 수                                                                                         |        |
-| `output_tokens`                  | 출력 토큰 수                                                                                                    |        |
-| `cache_read_tokens`              | 프롬프트 캐시에서 읽은 토큰                                                                                            |        |
-| `cache_creation_tokens`          | 프롬프트 캐시에 기록된 토큰                                                                                            |        |
-| `request_id`                     | `request-id` 응답 헤더의 Anthropic API 요청 ID                                                                    |        |
-| `gen_ai.response.id`             | `request_id`와 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                           |        |
-| `client_request_id`              | 최종 시도의 클라이언트 생성 `x-client-request-id`                                                                      |        |
-| `attempt`                        | 이 요청에 대해 수행된 총 시도                                                                                          |        |
-| `success`                        | `true` 또는 `false`                                                                                          |        |
-| `status_code`                    | 요청이 실패했을 때 HTTP 상태 코드                                                                                      |        |
-| `error`                          | 요청이 실패했을 때 오류 메시지                                                                                          |        |
-| `response.has_tool_call`         | 응답에 도구 사용 블록이 포함되었을 때 `true`                                                                               |        |
-| `stop_reason`                    | API 응답 `stop_reason` (예: `end_turn`, `tool_use`, `max_tokens`, `stop_sequence`, `pause_turn` 또는 `refusal`) |        |
-| `gen_ai.response.finish_reasons` | `stop_reason`과 동일한 값 (문자열 배열로 래핑됨). OpenTelemetry GenAI 의미론적 규칙                                            |        |
+| 속성                               | 설명                                                                                                         | 게이트 대상                  |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `model`                          | 모델 식별자                                                                                                     |                         |
+| `gen_ai.system`                  | 항상 `anthropic`. OpenTelemetry GenAI 의미론적 규칙                                                                |                         |
+| `gen_ai.request.model`           | `model`과 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                                |                         |
+| `query_source`                   | 요청을 발급한 하위 시스템 (예: `repl_main_thread` 또는 하위 에이전트 이름)                                                       |                         |
+| `agent_id`                       | 요청을 발급한 하위 에이전트 또는 팀원의 식별자. 주 세션에는 없음                                                                      |                         |
+| `parent_agent_id`                | 이 에이전트를 생성한 에이전트의 식별자. 주 세션 및 직접 생성된 에이전트에는 없음                                                             |                         |
+| `workflow.run_id`                | 이 에이전트를 생성한 [Workflow](/docs/ko/workflows) 도구 실행의 실행 식별자 (접두사 `wf_`). 워크플로우에 의해 생성되지 않은 에이전트의 경우 없음             |                         |
+| `workflow.name`                  | 이 에이전트를 생성한 워크플로우의 이름. 사용자 작성 이름은 게이트가 설정되지 않으면 `custom`으로 대체됩니다                                           | `OTEL_LOG_TOOL_DETAILS` |
+| `speed`                          | `fast` 또는 `normal`                                                                                         |                         |
+| `llm_request.context`            | 부모 스팬에 따라 `interaction`, `tool` 또는 `standalone`                                                            |                         |
+| `duration_ms`                    | 재시도를 포함한 벽시계 지속 시간                                                                                         |                         |
+| `ttft_ms`                        | 첫 번째 토큰까지의 시간 (밀리초)                                                                                        |                         |
+| `input_tokens`                   | API 사용 블록의 입력 토큰 수                                                                                         |                         |
+| `output_tokens`                  | 출력 토큰 수                                                                                                    |                         |
+| `cache_read_tokens`              | 프롬프트 캐시에서 읽은 토큰                                                                                            |                         |
+| `cache_creation_tokens`          | 프롬프트 캐시에 기록된 토큰                                                                                            |                         |
+| `request_id`                     | `request-id` 응답 헤더의 Anthropic API 요청 ID                                                                    |                         |
+| `gen_ai.response.id`             | `request_id`와 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                           |                         |
+| `client_request_id`              | 최종 시도의 클라이언트 생성 `x-client-request-id`                                                                      |                         |
+| `attempt`                        | 이 요청에 대해 수행된 총 시도                                                                                          |                         |
+| `success`                        | `true` 또는 `false`                                                                                          |                         |
+| `status_code`                    | 요청이 실패했을 때 HTTP 상태 코드                                                                                      |                         |
+| `error`                          | 요청이 실패했을 때 오류 메시지                                                                                          |                         |
+| `response.has_tool_call`         | 응답에 도구 사용 블록이 포함되었을 때 `true`                                                                               |                         |
+| `stop_reason`                    | API 응답 `stop_reason` (예: `end_turn`, `tool_use`, `max_tokens`, `stop_sequence`, `pause_turn` 또는 `refusal`) |                         |
+| `gen_ai.response.finish_reasons` | `stop_reason`과 동일한 값 (문자열 배열로 래핑됨). OpenTelemetry GenAI 의미론적 규칙                                            |                         |
 
 각 재시도 시도는 `attempt` 및 `client_request_id` 속성이 있는 `gen_ai.request.attempt` 스팬 이벤트로도 기록됩니다.
 
@@ -228,6 +230,8 @@ Agent SDK 및 `claude -p` 세션에서 `TRACEPARENT`가 환경에 설정되면 `
 | `result_tokens`       | 도구 결과의 대략적인 토큰 크기                                                                                                                                                                  |                         |
 | `agent_id`            | 도구를 실행한 하위 에이전트 또는 팀원의 식별자. 주 세션에는 없음                                                                                                                                              |                         |
 | `parent_agent_id`     | 이 에이전트를 생성한 에이전트의 식별자. 주 세션 및 직접 생성된 에이전트에는 없음                                                                                                                                     |                         |
+| `workflow.run_id`     | 이 에이전트를 생성한 Workflow 도구 실행의 실행 식별자 (접두사 `wf_`). 워크플로우에 의해 생성되지 않은 에이전트의 경우 없음                                                                                                      |                         |
+| `workflow.name`       | 이 에이전트를 생성한 워크플로우의 이름. 사용자 작성 이름은 게이트가 설정되지 않으면 `custom`으로 대체됩니다                                                                                                                   | `OTEL_LOG_TOOL_DETAILS` |
 | `tool_use_id`         | 이 호출에 대한 모델의 `tool_use` 블록 ID. [tool\_result](#tool-result-event) 및 [tool\_decision](#tool-decision-event) 이벤트의 `tool_use_id`와 훅 페이로드의 `tool_use_id`와 일치하므로 스팬을 해당 레코드에 조인할 수 있습니다 |                         |
 | `gen_ai.tool.call.id` | `tool_use_id`와 동일한 값. OpenTelemetry GenAI 의미론적 규칙                                                                                                                                  |                         |
 | `file_path`           | Read, Edit 및 Write 도구의 대상 파일 경로                                                                                                                                                    | `OTEL_LOG_TOOL_DETAILS` |
@@ -309,8 +313,8 @@ echo "{\"Authorization\": \"Bearer $(get-token.sh)\", \"X-API-Key\": \"$(get-api
 
 도우미가 실패하거나 이러한 요구 사항을 충족하지 않는 출력을 인쇄하면 Claude Code는 다음에서 오류를 보고합니다:
 
-* `/doctor` 출력
-* [`--debug`](/ko/cli-reference#cli-flags)로 실행하거나 세션에서 `/debug`를 실행한 후의 디버그 로그
+* `/status` 출력
+* [`--debug`](/docs/ko/cli-reference#cli-flags)로 실행하거나 세션에서 `/debug`를 실행한 후의 디버그 로그
 * `-p`로 시작된 비대화형 세션의 stderr
 
 <h4 id="refresh-behavior">
@@ -437,12 +441,14 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 | `terminal.type`               | 터미널 유형, 예: `iTerm.app`, `vscode`, `cursor` 또는 `tmux`                                                                          | 감지될 때 항상 포함됨                                           |
 | `OTEL_RESOURCE_ATTRIBUTES`의 키 | 설정한 사용자 정의 속성, 예: `department` 또는 `team.id`. [다중 팀 조직 지원](#multi-team-organization-support)을 참조하세요                            | `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` (기본값: true) |
 
-Claude Code가 [Claude 앱 게이트웨이](/ko/claude-apps-gateway)에 로그인되어 있으면 CLI는 게이트웨이 세션의 인증된 ID로 내보내기를 스탬프합니다: `user.id`는 익명 설치 식별자가 아닌 IdP 주체이고, `user.email`은 로그인한 이메일이며, `user.groups`는 쉼표로 구분된 문자열로 IdP 그룹 멤버십을 전달합니다. 각 내보내기는 또한 `identity.source: gateway-oidc`를 전달합니다. 게이트웨이 ID는 마지막에 적용되므로 `OTEL_RESOURCE_ATTRIBUTES`를 통해 설정된 `user.*` 및 `identity.*` 키는 게이트웨이 세션에서 무시됩니다.
+Claude Code가 [Claude 앱 게이트웨이](/docs/ko/claude-apps-gateway)에 로그인되어 있으면 CLI는 게이트웨이 세션의 인증된 ID로 내보내기를 스탬프합니다: `user.id`는 익명 설치 식별자가 아닌 IdP 주체이고, `user.email`은 로그인한 이메일이며, `user.groups`는 쉼표로 구분된 문자열로 IdP 그룹 멤버십을 전달합니다. 각 내보내기는 또한 `identity.source: gateway-oidc`를 전달합니다. 게이트웨이 ID는 마지막에 적용되므로 `OTEL_RESOURCE_ATTRIBUTES`를 통해 설정된 `user.*` 및 `identity.*` 키는 게이트웨이 세션에서 무시됩니다.
 
 이벤트는 추가로 다음 속성을 포함합니다. 이들은 무한 카디널리티를 야기할 수 있으므로 메트릭에 절대 첨부되지 않습니다:
 
 * `prompt.id`: 사용자 프롬프트를 다음 프롬프트까지의 모든 후속 이벤트와 상관시키는 UUID입니다. [이벤트 상관 속성](#event-correlation-attributes)을 참조하세요.
 * `workspace.host_paths`: 데스크톱 앱에서 선택한 호스트 작업 공간 디렉토리 (문자열 배열)
+* `workflow.run_id`: API 및 [Workflow](/docs/ko/workflows) 도구 실행에 속하는 에이전트가 내보낸 도구 이벤트의 실행 식별자 (접두사 `wf_`). 하나의 `workflow.run_id`로 이벤트를 필터링하면 해당 실행의 API 요청 및 도구 결과를 재구성합니다. 식별자는 워크플로우 스크립트가 생성하는 에이전트 및 이들이 차례로 생성하는 모든 에이전트 (예: 스킬 호출)를 포함합니다. Workflow 도구 결과에서 보고된 실행 식별자와 일치합니다. 다른 모든 이벤트에는 없습니다. {/* min-version: 2.1.202 */}Claude Code v2.1.202 이상 필요
+* `workflow.name`: 워크플로우의 이름 (스크립트의 `meta.name`), `workflow.run_id`와 함께 내보내집니다. 기본 제공 워크플로우 이름은 수정되지 않은 기본 제공 스크립트를 실행할 때 그대로 나타납니다. 기본 제공 스크립트의 편집된 복사본을 포함한 사용자 작성 이름은 `OTEL_LOG_TOOL_DETAILS=1`이 설정되지 않으면 `custom`으로 대체됩니다. {/* min-version: 2.1.202 */}Claude Code v2.1.202 이상 필요
 
 <h3 id="metrics">
   메트릭
@@ -522,7 +528,7 @@ Claude Code를 통해 git 커밋을 생성할 때 증가합니다.
 * `model`: 모델 식별자 (예: "claude-sonnet-5")
 * `query_source`: 요청을 발급한 하위 시스템의 범주. `"main"`, `"subagent"` 또는 `"auxiliary"` 중 하나
 * `speed`: 요청이 빠른 모드를 사용했을 때 `"fast"`. 그 외에는 없음
-* `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level): `"low"`, `"medium"`, `"high"`, `"xhigh"` 또는 `"max"`. 모델이 노력을 지원하지 않을 때는 없음
+* `effort`: 요청에 적용된 [노력 수준](/docs/ko/model-config#adjust-effort-level): `"low"`, `"medium"`, `"high"`, `"xhigh"` 또는 `"max"`. 모델이 노력을 지원하지 않을 때는 없음
 * `agent.name`: 요청을 발급한 하위 에이전트 유형. 기본 제공 에이전트 이름 및 공식 마켓플레이스 플러그인의 에이전트는 그대로 나타납니다. 다른 사용자 정의 에이전트 이름은 `"custom"`으로 대체됩니다. 요청이 명명된 하위 에이전트 유형에서 발급되지 않았을 때는 없음
 * `skill.name`: 요청에 대해 활성화된 스킬 (Skill 도구, `/` 명령으로 설정되거나 생성된 하위 에이전트에 의해 상속됨). 기본 제공, 번들, 사용자 정의 및 공식 마켓플레이스 플러그인 스킬 이름은 그대로 나타납니다. 타사 플러그인 스킬 이름은 `"third-party"`로 대체됩니다. 활성 스킬이 없을 때는 없음
 * `plugin.name`: 활성 스킬 또는 하위 에이전트가 플러그인에서 제공될 때 소유 플러그인. 공식 마켓플레이스 플러그인 이름은 그대로 나타납니다. 타사 플러그인 이름은 `"third-party"`로 대체됩니다. 스킬 및 하위 에이전트 모두 소유 플러그인이 없을 때는 없음
@@ -543,7 +549,7 @@ Claude Code를 통해 git 커밋을 생성할 때 증가합니다.
 * `model`: 모델 식별자 (예: "claude-sonnet-5")
 * `query_source`: 요청을 발급한 하위 시스템의 범주. `"main"`, `"subagent"` 또는 `"auxiliary"` 중 하나
 * `speed`: 요청이 빠른 모드를 사용했을 때 `"fast"`. 그 외에는 없음
-* `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level). [비용 카운터](#cost-counter)의 세부 정보를 참조하세요.
+* `effort`: 요청에 적용된 [노력 수준](/docs/ko/model-config#adjust-effort-level). [비용 카운터](#cost-counter)의 세부 정보를 참조하세요.
 * `agent.name`, `skill.name`, `plugin.name`, `marketplace.name`, `mcp_server.name`, `mcp_tool.name`: 요청에 대한 스킬, 플러그인, 에이전트 및 MCP 속성. [비용 카운터](#cost-counter)의 정의 및 수정 동작을 참조하세요.
 
 <h4 id="code-edit-tool-decision-counter">
@@ -628,7 +634,7 @@ Claude Code는 OpenTelemetry 로그/이벤트를 통해 다음 이벤트를 내�
 * `event.sequence`: 세션 내 이벤트 순서 지정을 위한 단조 증가 카운터
 * `response_length`: 응답 텍스트의 길이 (문자)
 * `response`: 응답 텍스트 (60KB에서 잘림). 기본적으로 `<REDACTED>`로 수정됨. `OTEL_LOG_ASSISTANT_RESPONSES=1`로 설정하여 포함. `OTEL_LOG_ASSISTANT_RESPONSES`가 설정되지 않으면 `OTEL_LOG_USER_PROMPTS`가 대신 제어하므로 프롬프트 로깅이 켜져 있는 동안 응답을 수정된 상태로 유지하려면 `OTEL_LOG_ASSISTANT_RESPONSES=0`으로 설정합니다
-* `model`: 모델 식별자 (예: "claude-sonnet-4-6")
+* `model`: 모델 식별자 (예: "claude-sonnet-5")
 * `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID. API가 반환할 때만 표시됩니다
 * `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름
 
@@ -689,7 +695,7 @@ Claude에 대한 각 API 요청에 대해 기록됩니다.
 * `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID, 예: `"req_011..."`. API가 반환할 때만 표시됩니다.
 * `speed`: 빠른 모드가 활성화되었는지 여부를 나타내는 `"fast"` 또는 `"normal"`
 * `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름
-* `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level): `"low"`, `"medium"`, `"high"`, `"xhigh"` 또는 `"max"`. 모델이 노력을 지원하지 않을 때는 없음
+* `effort`: 요청에 적용된 [노력 수준](/docs/ko/model-config#adjust-effort-level): `"low"`, `"medium"`, `"high"`, `"xhigh"` 또는 `"max"`. 모델이 노력을 지원하지 않을 때는 없음
 * `agent.name`, `skill.name`, `plugin.name`, `marketplace.name`, `mcp_server.name`, `mcp_tool.name`: 요청에 대한 스킬, 플러그인, 에이전트 및 MCP 속성. [비용 카운터](#cost-counter)의 정의 및 수정 동작을 참조하세요.
 
 <h4 id="api-error-event">
@@ -714,7 +720,7 @@ Claude에 대한 API 요청이 실패할 때 기록됩니다.
 * `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID, 예: `"req_011..."`. API가 반환할 때만 표시됩니다.
 * `speed`: 빠른 모드가 활성화되었는지 여부를 나타내는 `"fast"` 또는 `"normal"`
 * `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름
-* `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level). 모델이 노력을 지원하지 않을 때는 없음
+* `effort`: 요청에 적용된 [노력 수준](/docs/ko/model-config#adjust-effort-level). 모델이 노력을 지원하지 않을 때는 없음
 * `agent.name`, `skill.name`, `plugin.name`, `marketplace.name`, `mcp_server.name`, `mcp_tool.name`: 요청에 대한 스킬, 플러그인, 에이전트 및 MCP 속성. [비용 카운터](#cost-counter)의 정의 및 수정 동작을 참조하세요.
 
 <h4 id="api-refusal-event">
@@ -734,9 +740,9 @@ API 요청이 `stop_reason: "refusal"`을 반환할 때 기록됩니다. 거부�
 * `model`: 요청의 모델 식별자
 * `request_id`: 응답의 `request-id` 헤더의 Anthropic API 요청 ID, 예: `"req_011..."`. API가 반환할 때만 표시됩니다.
 * `query_source`: 요청을 발급한 하위 시스템, 예: `"repl_main_thread"`, `"compact"` 또는 하위 에이전트 이름. [`api_request`](#api-request-event)의 정의를 참조하세요.
-* `speed`: [빠른 모드](/ko/fast-mode)가 활성화되었을 때 `"fast"`, 또는 `"normal"`
+* `speed`: [빠른 모드](/docs/ko/fast-mode)가 활성화되었을 때 `"fast"`, 또는 `"normal"`
 * `attempt`: 재시도 시도 번호. 첫 번째 시도는 `1`입니다.
-* `effort`: 요청에 적용된 [노력 수준](/ko/model-config#adjust-effort-level). 모델이 노력을 지원하지 않을 때는 없음
+* `effort`: 요청에 적용된 [노력 수준](/docs/ko/model-config#adjust-effort-level). 모델이 노력을 지원하지 않을 때는 없음
 * `server_fallback_hop`: API의 서버 측 모델 폴백이 이미 이 거부를 다른 모델에서 재시도했으므로 사용자가 이 특정 거부를 보지 못했을 때 `true`. 요청이 거부로 끝났을 때 `false`. 단일 턴은 나중에 `false` 최종 이벤트가 있는 `true` 홉 이벤트를 모두 내보낼 수 있습니다.
 * `has_category`: API 응답이 `"cyber"`, `"bio"`, `"frontier_llm"` 또는 `"reasoning_extraction"`의 `stop_details.category`를 전달했을 때 `true`. 응답이 카테고리를 전달하지 않았거나 해당 집합 외부의 값을 전달했을 때 `false`. `server_fallback_hop`이 `true`일 때는 없음 (홉 블록은 `stop_details`를 전달하지 않음).
 * `has_explanation`: API 응답이 `stop_details.explanation`을 전달했을 때 `true`, 그 외에는 `false`. `server_fallback_hop`이 `true`일 때는 없음.
@@ -884,7 +890,7 @@ MCP 서버가 연결, 연결 해제 또는 연결 실패할 때 기록됩니다.
   내부 오류 이벤트
 </h4>
 
-Claude Code가 예상치 못한 내부 오류를 포착할 때 기록됩니다. 오류 클래스 이름과 errno 스타일 코드만 기록됩니다. 오류 메시지 및 스택 추적은 포함되지 않습니다. 이 이벤트는 Bedrock, Vertex 또는 Foundry에 대해 실행하거나 `DISABLE_ERROR_REPORTING`이 설정되어 있을 때는 내보내지지 않습니다.
+Claude Code가 예상치 못한 내부 오류를 포착할 때 기록됩니다. 오류 클래스 이름과 errno 스타일 코드만 기록됩니다. 오류 메시지 및 스택 추적은 포함되지 않습니다. 이 이벤트는 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry에 대해 실행하거나 `DISABLE_ERROR_REPORTING`이 설정되어 있을 때는 내보내지지 않습니다.
 
 **이벤트 이름**: `claude_code.internal_error`
 
@@ -943,7 +949,7 @@ Claude Code가 예상치 못한 내부 오류를 포착할 때 기록됩니다. 
 * `skill_path_count`: 플러그인이 선언하는 스킬 디렉토리 수
 * `command_path_count`: 플러그인이 선언하는 명령 디렉토리 수
 * `agent_path_count`: 플러그인이 선언하는 에이전트 디렉토리 수
-* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. 안전 모드에서 이 이벤트는 구성된 인벤토리만 보고합니다. 플러그인의 명령, 스킬, 훅 및 MCP 서버는 로드되지 않습니다. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. 안전 모드에서 이 이벤트는 구성된 인벤토리만 보고합니다. 플러그인의 명령, 스킬, 훅 및 MCP 서버는 로드되지 않습니다. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 
 <h4 id="skill-activated-event">
   스킬 활성화됨 이벤트
@@ -1021,7 +1027,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `hook_event`: 훅 이벤트 유형, 예: `"PreToolUse"` 또는 `"PostToolUse"`
 * `hook_type`: 훅 구현 유형: `"command"`, `"prompt"`, `"mcp_tool"`, `"http"` 또는 `"agent"`
 * `hook_source`: 훅이 정의된 위치: `"userSettings"`, `"projectSettings"`, `"localSettings"`, `"flagSettings"`, `"policySettings"` 또는 `"pluginHook"`
-* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 * `hook_matcher` (`OTEL_LOG_TOOL_DETAILS=1`일 때): 설정된 경우 훅 구성의 매처 문자열
 * `plugin.name` (`hook_source`가 `"pluginHook"`일 때): 기여하는 플러그인의 이름. 공식 마켓플레이스 및 기본 제공 번들 외부의 플러그인의 경우 `OTEL_LOG_TOOL_DETAILS=1`이 아니면 값은 `"third-party"`입니다
 * `plugin_id_hash` (`hook_source`가 `"pluginHook"`일 때): 플러그인 이름 및 마켓플레이스의 결정론적 해시 (구성된 내보내기로만 전송됨). 이름을 기록하지 않고 기여하는 서로 다른 플러그인을 세는 것을 허용합니다
@@ -1045,7 +1051,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `num_hooks`: 일치하는 훅 명령 수
 * `managed_only`: 관리 정책 훅만 허용될 때 `"true"`
 * `hook_source`: `"policySettings"` 또는 `"merged"`
-* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 * `hook_definitions`: JSON 직렬화된 훅 구성. 상세 베타 추적과 `OTEL_LOG_TOOL_DETAILS=1`이 모두 활성화되어 있을 때만 포함됨
 
 <h4 id="hook-execution-complete-event">
@@ -1072,7 +1078,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `total_duration_ms`: 모든 일치하는 훅의 벽시계 지속 시간
 * `managed_only`: 관리 정책 훅만 허용될 때 `"true"`
 * `hook_source`: `"policySettings"` 또는 `"merged"`
-* `safe_mode`: 세션이 [`--safe-mode`](/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
 * `hook_definitions`: JSON 직렬화된 훅 구성. 상세 베타 추적과 `OTEL_LOG_TOOL_DETAILS=1`이 모두 활성화되어 있을 때만 포함됨
 
 <h4 id="hook-plugin-metrics-event">
@@ -1119,7 +1125,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
   피드백 설문 이벤트
 </h4>
 
-세션 품질 설문이 표시되거나 답변될 때 기록됩니다. [세션 품질 설문](/ko/data-usage#session-quality-surveys)을 참조하여 설문이 수집하는 내용과 제어 방법을 확인하세요.
+세션 품질 설문이 표시되거나 답변될 때 기록됩니다. [세션 품질 설문](/docs/ko/data-usage#session-quality-surveys)을 참조하여 설문이 수집하는 내용과 제어 방법을 확인하세요.
 
 **이벤트 이름**: `claude_code.feedback_survey`
 
@@ -1133,7 +1139,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `appearance_id`: 하나의 설문 인스턴스에 대해 내보내진 이벤트를 연결하는 고유 ID
 * `survey_type`: 이벤트를 생성한 설문. `"session"`은 "Claude가 어떻게 하고 있나요?" 평가 프롬프트입니다
 * `response`: `responded` 이벤트에서 사용자의 선택
-* `enabled_via_override`: [`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL`](/ko/env-vars)이 설정되어 있을 때 `true`. 문자열이 아닌 부울로 내보내집니다. `session` 설문 이벤트에 표시됩니다. 이 속성을 필터링하여 플릿 전체에서 재정의가 적용되었는지 확인합니다
+* `enabled_via_override`: [`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL`](/docs/ko/env-vars)이 설정되어 있을 때 `true`. 문자열이 아닌 부울로 내보내집니다. `session` 설문 이벤트에 표시됩니다. 이 속성을 필터링하여 플릿 전체에서 재정의가 적용되었는지 확인합니다
 
 <h2 id="interpret-metrics-and-events-data">
   메트릭 및 이벤트 데이터 해석
@@ -1163,7 +1169,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `skill.name`, `plugin.name` 및 `agent.name` 속성을 통해 특정 스킬, 플러그인 또는 서브에이전트 유형에 지출 귀속
 
 <Note>
-  비용 메트릭은 근사값입니다. 공식 청구 데이터는 API 제공자(Claude Console, Amazon Bedrock 또는 Google Cloud Vertex)를 참조하세요.
+  비용 메트릭은 근사값입니다. 공식 청구 데이터는 API 제공자(Claude Console, Amazon Bedrock 또는 Google Cloud의 Agent Platform)를 참조하세요.
 </Note>
 
 <h3 id="alerting-and-segmentation">
@@ -1184,7 +1190,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 
 Claude Code는 실패한 API 요청을 내부적으로 재시도하고 포기한 후에만 단일 `claude_code.api_error` 이벤트를 내보내므로 이벤트 자체가 해당 요청의 최종 신호입니다. 중간 재시도 시도는 별도의 이벤트로 기록되지 않습니다.
 
-이벤트의 `attempt` 속성은 총 시도 횟수를 기록합니다. `CLAUDE_CODE_MAX_RETRIES`는 기본값이 10이고 최대 15입니다. 요청이 일시적 오류에 대한 모든 재시도를 소진하면 `attempt`는 해당 유효 제한보다 하나 많습니다: 기본값으로는 11이고 16을 초과하지 않습니다. 더 낮은 값은 `400` 응답과 같은 재시도 불가능한 오류를 나타냅니다.
+이벤트의 `attempt` 속성은 총 시도 횟수를 기록합니다. `CLAUDE_CODE_MAX_RETRIES`는 기본값이 10이고 최대 15입니다. v2.1.199부터 `CLAUDE_CODE_RETRY_WATCHDOG`은 기본값을 높이고 상한을 제거합니다. 요청이 일시적 오류에 대한 모든 재시도를 소진하면 `attempt`는 해당 유효 제한보다 하나 많습니다: 기본값으로는 11이고 감시 기능이 설정되지 않은 경우 16을 초과하지 않습니다. 더 낮은 값은 `400` 응답과 같은 재시도 불가능한 오류를 나타냅니다.
 
 복구된 세션과 정체된 세션을 구분하려면 `session.id`로 이벤트를 그룹화하고 오류 후 나중에 `api_request` 이벤트가 존재하는지 확인합니다.
 
@@ -1213,11 +1219,11 @@ OpenTelemetry 이벤트는 Claude Code 활동의 감사 데이터 소스입니�
   속성 작업을 사용자에게 연결
 </h3>
 
-각 이벤트의 [표준 속성](#standard-attributes)에는 인증된 사용자의 ID가 포함됩니다: Claude 계정으로 로그인할 때 `user.email`, `user.account_uuid`, `user.account_id` 및 `organization.id`, 그리고 설치 범위 `user.id` 및 세션별 `session.id`. `user.id`는 설치 범위 식별자이며, [Claude 앱 게이트웨이](/ko/claude-apps-gateway) 세션에서는 게이트웨이 발급 토큰의 IdP 주체입니다.
+각 이벤트의 [표준 속성](#standard-attributes)에는 인증된 사용자의 ID가 포함됩니다: Claude 계정으로 로그인할 때 `user.email`, `user.account_uuid`, `user.account_id` 및 `organization.id`, 그리고 설치 범위 `user.id` 및 세션별 `session.id`. `user.id`는 설치 범위 식별자이며, [Claude 앱 게이트웨이](/docs/ko/claude-apps-gateway) 세션에서는 게이트웨이 발급 토큰의 IdP 주체입니다.
 
-MCP 도구 호출, Bash 명령 및 파일 편집은 따라서 세션을 시작한 개발자에게 귀속됩니다. Claude Code는 별도의 서비스 계정으로 작동하지 않습니다. 각 이벤트에 기록된 ID는 개발자 자신의 Claude 계정이거나 [Claude 앱 게이트웨이](/ko/claude-apps-gateway) 세션의 개발자 IdP 신원입니다.
+MCP 도구 호출, Bash 명령 및 파일 편집은 따라서 세션을 시작한 개발자에게 귀속됩니다. Claude Code는 별도의 서비스 계정으로 작동하지 않습니다. 각 이벤트에 기록된 ID는 개발자 자신의 Claude 계정이거나 [Claude 앱 게이트웨이](/docs/ko/claude-apps-gateway) 세션의 개발자 IdP 신원입니다.
 
-Claude Code가 직접 API 키로 인증하거나 Bedrock, Vertex AI 또는 Microsoft Foundry에 대해 인증할 때 세션에 Claude 계정이 없으며 `user.id` 및 `session.id`만 채워집니다. 이러한 배포에서는 `OTEL_RESOURCE_ATTRIBUTES`를 사용하여 사용자 ID를 직접 첨부하고, [관리 설정](#administrator-configuration) 파일 또는 시작 래퍼를 통해 사용자별로 설정합니다. Claude 앱 게이트웨이 세션은 이 중 어느 것도 필요하지 않습니다: CLI는 [표준 속성](#standard-attributes)에 설명된 대로 IdP 신원을 자동으로 스탬프합니다.
+Claude Code가 직접 API 키로 인증하거나 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry에 대해 인증할 때 세션에 Claude 계정이 없으며 `user.id` 및 `session.id`만 채워집니다. 이러한 배포에서는 `OTEL_RESOURCE_ATTRIBUTES`를 사용하여 사용자 ID를 직접 첨부하고, [관리 설정](#administrator-configuration) 파일 또는 시작 래퍼를 통해 사용자별로 설정합니다. Claude 앱 게이트웨이 세션은 이 중 어느 것도 필요하지 않습니다: CLI는 [표준 속성](#standard-attributes)에 설명된 대로 IdP 신원을 자동으로 스탬프합니다.
 
 ```bash theme={null}
 export OTEL_RESOURCE_ATTRIBUTES="enduser.id=jdoe@example.com,enduser.directory_id=S-1-5-21-..."
@@ -1335,7 +1341,7 @@ Claude Code의 투자 수익률 측정에 대한 포괄적인 가이드(원격 �
   보안 및 개인 정보 보호
 </h2>
 
-* OpenTelemetry 내보내기는 선택 사항이며 명시적 구성이 필요합니다. Anthropic의 별도 운영 원격 측정 및 이를 비활성화하는 방법에 대해서는 [데이터 사용](/ko/data-usage#telemetry-services)을 참조하세요
+* OpenTelemetry 내보내기는 선택 사항이며 명시적 구성이 필요합니다. Anthropic의 별도 운영 원격 측정 및 이를 비활성화하는 방법에 대해서는 [데이터 사용](/docs/ko/data-usage#telemetry-services)을 참조하세요
 * 원본 파일 콘텐츠 및 코드 스니펫은 메트릭 또는 이벤트에 포함되지 않습니다. 추적 스팬은 별도의 데이터 경로입니다: 아래의 `OTEL_LOG_TOOL_CONTENT` 항목을 참조하세요
 * OAuth를 통해 인증된 경우 `user.email`이 원격 측정 속성에 포함됩니다. 조직에서 이것이 우려 사항인 경우 원격 측정 백엔드와 함께 작업하여 이 필드를 필터링하거나 수정하세요
 * 사용자 프롬프트 콘텐츠는 기본적으로 수집되지 않습니다. 프롬프트 길이만 기록됩니다. 프롬프트 콘텐츠를 포함하려면 `OTEL_LOG_USER_PROMPTS=1`을 설정하세요
@@ -1352,4 +1358,4 @@ Claude Code의 투자 수익률 측정에 대한 포괄적인 가이드(원격 �
   Amazon Bedrock에서 Claude Code 모니터링
 </h2>
 
-Amazon Bedrock의 Claude Code 사용 모니터링에 대한 자세한 지침은 [Claude Code 모니터링 구현 (Bedrock)](https://github.com/aws-solutions-library-samples/guidance-for-claude-code-with-amazon-bedrock/blob/main/assets/docs/MONITORING.md)을 참조하세요.
+Amazon Bedrock의 Claude Code 사용 모니터링에 대한 자세한 지침은 [Claude Code 모니터링 구현 (Amazon Bedrock)](https://github.com/aws-solutions-library-samples/guidance-for-claude-code-with-amazon-bedrock/blob/main/assets/docs/MONITORING.md)을 참조하세요.

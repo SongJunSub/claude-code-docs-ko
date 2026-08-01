@@ -267,23 +267,23 @@ SDK는 자체적으로 저장소에서 삭제하지 않습니다. 보존은 어�
 
 다음 SDK 함수는 `sessionStore` 옵션을 수락하고 제공될 때 로컬 파일 시스템 대신 저장소에 대해 작동합니다:
 
-* [`query()`](/ko/agent-sdk/typescript#query)
-* [`startup()`](/ko/agent-sdk/typescript#startup)
-* [`listSessions()`](/ko/agent-sdk/typescript#listsessions)
-* [`getSessionInfo()`](/ko/agent-sdk/typescript#getsessioninfo)
-* [`getSessionMessages()`](/ko/agent-sdk/typescript#getsessionmessages)
-* [`renameSession()`](/ko/agent-sdk/typescript#renamesession)
-* [`tagSession()`](/ko/agent-sdk/typescript#tagsession)
-* [`deleteSession()`](/ko/agent-sdk/typescript)
-* [`forkSession()`](/ko/agent-sdk/typescript)
-* [`listSubagents()`](/ko/agent-sdk/typescript)
-* [`getSubagentMessages()`](/ko/agent-sdk/typescript)
+* [`query()`](/docs/ko/agent-sdk/typescript#query)
+* [`startup()`](/docs/ko/agent-sdk/typescript#startup)
+* [`listSessions()`](/docs/ko/agent-sdk/typescript#listsessions)
+* [`getSessionInfo()`](/docs/ko/agent-sdk/typescript#getsessioninfo)
+* [`getSessionMessages()`](/docs/ko/agent-sdk/typescript#getsessionmessages)
+* [`renameSession()`](/docs/ko/agent-sdk/typescript#renamesession)
+* [`tagSession()`](/docs/ko/agent-sdk/typescript#tagsession)
+* [`deleteSession()`](/docs/ko/agent-sdk/typescript)
+* [`forkSession()`](/docs/ko/agent-sdk/typescript)
+* [`listSubagents()`](/docs/ko/agent-sdk/typescript)
+* [`getSubagentMessages()`](/docs/ko/agent-sdk/typescript)
 
 <h2 id="related-resources">
   관련 리소스
 </h2>
 
-* [세션 작업하기](/ko/agent-sdk/sessions): 사용자 정의 저장소 없이 계속, 재개 및 포크
-* [SDK 호스팅하기](/ko/agent-sdk/hosting): 다중 호스트 환경을 위한 배포 패턴
-* [TypeScript `Options`](/ko/agent-sdk/typescript#options): 전체 옵션 참조
+* [세션 작업하기](/docs/ko/agent-sdk/sessions): 사용자 정의 저장소 없이 계속, 재개 및 포크
+* [SDK 호스팅하기](/docs/ko/agent-sdk/hosting): 다중 호스트 환경을 위한 배포 패턴
+* [TypeScript `Options`](/docs/ko/agent-sdk/typescript#options): 전체 옵션 참조
 * [`examples/session-stores/`](https://github.com/anthropics/claude-agent-sdk-typescript/tree/main/examples/session-stores): 실행 가능한 S3, Redis 및 Postgres 참조 어댑터

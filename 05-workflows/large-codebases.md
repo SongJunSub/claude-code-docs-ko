@@ -34,7 +34,7 @@
 | 많은 디렉토리별 CLAUDE.md 파일을 모든 사람이 설치하는 하나의 규칙 세트로 대체 | 내부 마켓플레이스의 [플러그인](#centralize-conventions-when-layering-stops-scaling)                  |
 
 <Tip>
-  [서브에이전트에서 탐색 실행](/ko/best-practices#use-subagents-for-investigation)과 같이 모든 저장소에서 컨텍스트를 작게 유지하는 워크플로우 기법은 [Claude Code 모범 사례](/ko/best-practices)를 참조하십시오. 조직의 모든 개발자에게 기본 구성을 배포하려면 [조직을 위해 Claude Code 설정](/ko/admin-setup)을 참조하십시오.
+  [서브에이전트에서 탐색 실행](/docs/ko/best-practices#use-subagents-for-investigation)과 같이 모든 저장소에서 컨텍스트를 작게 유지하는 워크플로우 기법은 [Claude Code 모범 사례](/docs/ko/best-practices)를 참조하십시오. 조직의 모든 개발자에게 기본 구성을 배포하려면 [조직을 위해 Claude Code 설정](/docs/ko/admin-setup)을 참조하십시오.
 </Tip>
 
 <h3 id="the-example-monorepo">
@@ -81,7 +81,7 @@ monorepo/
 
 대규모 코드베이스에서 저장소 루트의 단일 CLAUDE.md는 모든 하위 시스템의 규칙을 다루도록 성장하는 경향이 있어서 현재 작업과 관련 없는 지침에 컨텍스트 비용이 들거나, 너무 일반적이어서 유용하지 않게 됩니다. 지침을 디렉토리별 파일에 분산시키면 Claude는 저장소 전체 규칙과 작업 중인 코드의 규칙만 로드합니다.
 
-Claude Code는 시작 시 작업 디렉토리와 모든 상위 디렉토리의 모든 [CLAUDE.md](/ko/memory) 파일을 로드한 다음, 파일을 읽을 때 요청 시 각 하위 디렉토리의 파일을 로드합니다. 루트 파일은 저장소 전체 규칙을 설정하고 각 하위 디렉토리는 자신의 규칙을 추가합니다.
+Claude Code는 시작 시 작업 디렉토리와 모든 상위 디렉토리의 모든 [CLAUDE.md](/docs/ko/memory) 파일을 로드한 다음, 파일을 읽을 때 요청 시 각 하위 디렉토리의 파일을 로드합니다. 루트 파일은 저장소 전체 규칙을 설정하고 각 하위 디렉토리는 자신의 규칙을 추가합니다.
 
 일반적인 분할은 두 가지 수준입니다:
 
@@ -123,22 +123,22 @@ API 경로는 src/routes/에 있습니다. 각 경로 파일은 Express 라우�
 
 * **풀 요청에서 검토**: CLAUDE.md 편집을 다른 문서 변경처럼 취급하여 규칙이 코드를 추적하도록 합니다.
 * **주요 모델 릴리스 후 재검토**: 이전 모델의 제한을 해결한 지침은 새로운 모델이 경우를 자체적으로 처리하면 오버헤드가 될 수 있습니다. 예를 들어, 단일 파일 리팩토링을 강제하는 규칙은 제한이 없어지면 삭제할 수 있습니다.
-* **업데이트를 제안하는 Stop 훅 추가**: [`Stop` 훅](/ko/hooks#stop)은 Claude가 응답을 마칠 때 세션 기록의 경로를 받으므로 스크립트는 세션을 검토하고 노출된 간격이 신선할 때 CLAUDE.md 업데이트를 제안할 수 있습니다.
+* **업데이트를 제안하는 Stop 훅 추가**: [`Stop` 훅](/docs/ko/hooks#stop)은 Claude가 응답을 마칠 때 세션 기록의 경로를 받으므로 스크립트는 세션을 검토하고 노출된 간격이 신선할 때 CLAUDE.md 업데이트를 제안할 수 있습니다.
 
-CLAUDE.md 파일이 로드되고 상호작용하는 방식에 대한 자세한 내용은 [메모리 및 프로젝트 지침](/ko/memory)을 참조하십시오.
+CLAUDE.md 파일이 로드되고 상호작용하는 방식에 대한 자세한 내용은 [메모리 및 프로젝트 지침](/docs/ko/memory)을 참조하십시오.
 
 <h3 id="choose-between-per-directory-claude-md-and-path-scoped-rules">
   디렉토리별 CLAUDE.md와 경로 범위 규칙 중 선택
 </h3>
 
-디렉토리별 `CLAUDE.md` 파일과 `.claude/rules/` 아래의 [경로 범위 규칙](/ko/memory#path-specific-rules) 모두 트리의 일부에 지침을 대상으로 지정할 수 있습니다. 파일이 있는 위치와 로드되는 시기가 다릅니다.
+디렉토리별 `CLAUDE.md` 파일과 `.claude/rules/` 아래의 [경로 범위 규칙](/docs/ko/memory#path-specific-rules) 모두 트리의 일부에 지침을 대상으로 지정할 수 있습니다. 파일이 있는 위치와 로드되는 시기가 다릅니다.
 
 | 접근 방식                      | 파일 위치                 | 로드 시기                                          | 사용 시기                                    |
 | :------------------------- | :-------------------- | :--------------------------------------------- | :--------------------------------------- |
 | 디렉토리별 `CLAUDE.md`          | 디렉토리 내부, 코드와 함께       | 해당 디렉토리에서 시작할 때 시작 시, 또는 Claude가 파일을 읽을 때 요청 시 | 디렉토리 소유자가 자신의 규칙을 유지; 지침은 코드와 함께 버전 관리됨  |
 | `.claude/rules/`의 경로 범위 규칙 | 저장소 루트의 중앙 `.claude/` | Claude가 규칙의 `paths:` 글로브와 일치하는 파일로 작업할 때       | 모든 규칙을 한 곳에 원하거나, 동일한 규칙이 많은 분산된 경로에 적용됨 |
 
-스킬도 포함하는 비교는 [유사한 기능 비교](/ko/features-overview#compare-similar-features)를 참조하십시오.
+스킬도 포함하는 비교는 [유사한 기능 비교](/docs/ko/features-overview#compare-similar-features)를 참조하십시오.
 
 <h3 id="exclude-irrelevant-claude-md-files">
   관련 없는 CLAUDE.md 파일 제외
@@ -167,9 +167,9 @@ CLAUDE.md 파일이 로드되고 상호작용하는 방식에 대한 자세한 �
 * `"**/packages/web/**"`: 규칙을 포함하여 웹 패키지 아래의 모든 것을 제외
 * `"/home/user/monorepo/legacy/CLAUDE.md"`: 절대 경로로 하나의 특정 파일을 제외
 
-관리되는 정책 CLAUDE.md 파일은 제외할 수 없으므로 조직 전체 지침은 항상 적용됩니다. `claudeMdExcludes`를 모든 [설정 범위](/ko/settings#configuration-scopes)에서 설정할 수 있습니다: 사용자, 프로젝트, 로컬, 또는 관리됨. 배열은 범위 전체에 병합되므로 팀은 프로젝트 수준 기본값을 설정하면서 개인은 로컬 재정의를 추가할 수 있습니다.
+관리되는 정책 CLAUDE.md 파일은 제외할 수 없으므로 조직 전체 지침은 항상 적용됩니다. `claudeMdExcludes`를 모든 [설정 범위](/docs/ko/settings#configuration-scopes)에서 설정할 수 있습니다: 사용자, 프로젝트, 로컬, 또는 관리됨. 배열은 범위 전체에 병합되므로 팀은 프로젝트 수준 기본값을 설정하면서 개인은 로컬 재정의를 추가할 수 있습니다.
 
-전체 제외 문서는 [특정 CLAUDE.md 파일 제외](/ko/memory#exclude-specific-claude-md-files)를 참조하십시오.
+전체 제외 문서는 [특정 CLAUDE.md 파일 제외](/docs/ko/memory#exclude-specific-claude-md-files)를 참조하십시오.
 
 <h2 id="reduce-what-claude-reads">
   Claude가 읽는 것 줄이기
@@ -185,7 +185,7 @@ Claude의 콘텐츠 검색은 기본적으로 `.gitignore`를 존중하므로 `n
 
 벤더된 SDK 또는 커밋된 생성 코드와 같이 체크인된 경로의 경우 `permissions.deny`에 `Read` 거부 규칙을 추가하여 검색이 나열하더라도 Claude가 해당 파일을 열지 못하도록 차단합니다.
 
-이 제외를 저장소에서 작업하는 모든 사람에게 적용하려면 `.claude/settings.json`에 커밋하십시오. 개인적으로 유지하려면 `.claude/settings.local.json`을 대신 사용하십시오. 이 페이지의 다른 프로젝트 설정처럼 이 파일들은 시작 디렉토리에서만 로드됩니다. 루트에서 Claude를 시작하면 저장소 루트에 배치하거나, 하위 디렉토리에서 시작하면 각 패키지의 `.claude/`에 배치하십시오. 시작 디렉토리에 관계없이 모든 세션에서 동일한 거부 규칙을 적용하려면 [관리되는 설정](/ko/settings#settings-files)에서 설정하십시오. 사용자 및 프로젝트 설정은 이를 재정의할 수 없습니다.
+이 제외를 저장소에서 작업하는 모든 사람에게 적용하려면 `.claude/settings.json`에 커밋하십시오. 개인적으로 유지하려면 `.claude/settings.local.json`을 대신 사용하십시오. 이 페이지의 다른 프로젝트 설정처럼 이 파일들은 시작 디렉토리에서만 로드됩니다. 루트에서 Claude를 시작하면 저장소 루트에 배치하거나, 하위 디렉토리에서 시작하면 각 패키지의 `.claude/`에 배치하십시오. 시작 디렉토리에 관계없이 모든 세션에서 동일한 거부 규칙을 적용하려면 [관리되는 설정](/docs/ko/settings#settings-files)에서 설정하십시오. 사용자 및 프로젝트 설정은 이를 재정의할 수 없습니다.
 
 아래 예제는 빌드 아티팩트와 벤더된 SDK를 차단합니다:
 
@@ -202,13 +202,13 @@ Claude의 콘텐츠 검색은 기본적으로 `.gitignore`를 존중하므로 `n
 }
 ```
 
-거부 규칙은 Claude의 기본 제공 파일 도구와 `cat`, `head`, `grep`, `find`를 포함한 인식된 Bash 파일 명령을 다룹니다. 거부된 경로가 인수로 전달될 때입니다. 재귀 검색의 출력에서 거부된 경로를 필터링하지 않으며, 파일을 자체적으로 열기 위해 임의의 하위 프로세스를 다루지 않습니다. 전체 패턴 구문은 [Read 및 Edit 권한 규칙](/ko/permissions#read-and-edit)을 참조하십시오.
+거부 규칙은 Claude의 기본 제공 파일 도구와 `cat`, `head`, `grep`, `find`를 포함한 인식된 Bash 파일 명령을 다룹니다. 거부된 경로가 인수로 전달될 때입니다. 재귀 검색의 출력에서 거부된 경로를 필터링하지 않으며, 파일을 자체적으로 열기 위해 임의의 하위 프로세스를 다루지 않습니다. 전체 패턴 구문은 [Read 및 Edit 권한 규칙](/docs/ko/permissions#read-and-edit)을 참조하십시오.
 
 <h3 id="reduce-file-reads-with-code-intelligence">
   코드 인텔리전스로 파일 읽기 줄이기
 </h3>
 
-대규모 코드베이스에서 기호가 정의되거나 사용되는 위치를 찾는 것은 많은 파일 읽기와 grep 호출이 필요할 수 있습니다. [코드 인텔리전스 플러그인](/ko/discover-plugins#code-intelligence)은 Claude를 언어 서버에 연결하여 트리를 스캔하는 대신 정의로 이동하고, 참조를 찾고, 타입 오류를 직접 표시할 수 있습니다.
+대규모 코드베이스에서 기호가 정의되거나 사용되는 위치를 찾는 것은 많은 파일 읽기와 grep 호출이 필요할 수 있습니다. [코드 인텔리전스 플러그인](/docs/ko/discover-plugins#code-intelligence)은 Claude를 언어 서버에 연결하여 트리를 스캔하는 대신 정의로 이동하고, 참조를 찾고, 타입 오류를 직접 표시할 수 있습니다.
 
 공식 마켓플레이스에는 TypeScript, Python, Go, Rust 및 기타 일반적인 언어용 플러그인이 있습니다. 아래 예제는 TypeScript 플러그인을 설치합니다:
 
@@ -216,9 +216,9 @@ Claude의 콘텐츠 검색은 기본적으로 `.gitignore`를 존중하므로 `n
 /plugin install typescript-lsp@claude-plugins-official
 ```
 
-플러그인을 자신이 설치하는 대신 저장소의 모든 사람에게 활성화하려면 [`enabledPlugins` 프로젝트 설정](/ko/settings#plugin-settings)에 추가하십시오.
+플러그인을 자신이 설치하는 대신 저장소의 모든 사람에게 활성화하려면 [`enabledPlugins` 프로젝트 설정](/docs/ko/settings#plugin-settings)에 추가하십시오.
 
-코드 인텔리전스 플러그인은 각 개발자의 머신에 언어의 언어 서버 바이너리가 필요합니다. [각 언어가 필요로 하는 바이너리](/ko/discover-plugins#code-intelligence)를 참조하십시오. 공식 마켓플레이스에서 설치하려면 마켓플레이스가 호스팅되는 GitHub에 대한 네트워크 액세스가 필요합니다. 제한된 네트워크에서는 [내부 Git 호스트 또는 로컬 경로에서 마켓플레이스를 추가](/ko/discover-plugins#add-from-other-git-hosts)하십시오.
+코드 인텔리전스 플러그인은 각 개발자의 머신에 언어의 언어 서버 바이너리가 필요합니다. [각 언어가 필요로 하는 바이너리](/docs/ko/discover-plugins#code-intelligence)를 참조하십시오. 공식 마켓플레이스에서 설치하려면 마켓플레이스가 호스팅되는 GitHub에 대한 네트워크 액세스가 필요합니다. 제한된 네트워크에서는 [내부 Git 호스트 또는 로컬 경로에서 마켓플레이스를 추가](/docs/ko/discover-plugins#add-from-other-git-hosts)하십시오.
 
 이는 위의 `claudeMdExcludes` 및 `Read` 거부 규칙과 잘 어울립니다. 이들은 관련 없는 콘텐츠를 컨텍스트에서 벗어나게 하고, 코드 인텔리전스는 Claude가 정의를 찾기 위해 남은 것을 읽지 못하도록 합니다.
 
@@ -250,9 +250,11 @@ Claude의 콘텐츠 검색은 기본적으로 `.gitignore`를 존중하므로 `n
 
 Claude가 워크트리를 생성할 때 전체 트리 대신 `.claude/`, `packages/api/`, `packages/shared/`만 체크아웃합니다. `sparsePaths`의 경로는 Claude를 시작하는 하위 디렉토리에 관계없이 저장소 루트에 상대적입니다. 패키지 루트뿐만 아니라 모든 디렉토리 경로가 여기에서 작동합니다.
 
-이는 특히 [서브에이전트 워크트리 격리](/ko/worktrees#isolate-subagents-with-worktrees)에 유용합니다. 서브에이전트는 하위 작업을 위해 생성된 병렬 Claude 인스턴스이며, 워크트리에서 실행되는 각 인스턴스는 전체 트리 대신 경량 체크아웃을 받습니다. 세션의 모든 워크트리는 동일한 `sparsePaths`를 공유하므로 한 서브에이전트가 `packages/api/`를 필요로 하고 다른 하나가 `packages/web/`을 필요로 하면 둘 다 나열하십시오.
+이는 특히 [서브에이전트 워크트리 격리](/docs/ko/worktrees#isolate-subagents-with-worktrees)에 유용합니다. 서브에이전트는 하위 작업을 위해 생성된 병렬 Claude 인스턴스이며, 워크트리에서 실행되는 각 인스턴스는 전체 트리 대신 경량 체크아웃을 받습니다. 세션의 모든 워크트리는 동일한 `sparsePaths`를 공유하므로 한 서브에이전트가 `packages/api/`를 필요로 하고 다른 하나가 `packages/web/`을 필요로 하면 둘 다 나열하십시오.
 
 `sparsePaths`에 개별 파일이 아닌 디렉토리를 나열하십시오. `package.json`, `tsconfig.base.json`, 잠금 파일과 같은 루트 수준 파일은 나열한 디렉토리와 함께 항상 체크아웃됩니다. 루트 수준 디렉토리는 그렇지 않으므로 워크트리 내에서 저장소 루트의 `.claude/settings.json`, `.claude/rules/`, 또는 `.claude/skills/`를 사용 가능하게 하려면 목록에 `.claude`를 포함하십시오.
+
+Sparse checkout을 사용하려면 git이 sparse 워크트리가 존재하는 동안 저장소의 공유 `.git/config`에서 `extensions.worktreeConfig`를 활성화해야 합니다. Claude Code는 마지막 워크트리가 제거된 후 해당 항목을 제거하지만, Claude Code가 추가한 경우에만 제거합니다. 직접 설정한 값은 절대 제거하지 않습니다. v2.1.207 이전에는 마지막 워크트리가 제거된 후에도 항목이 남아 있었으며, `tea`와 같은 go-git 기반 도구가 `git config --unset extensions.worktreeConfig`를 실행할 때까지 저장소를 열지 못했습니다.
 
 `node_modules`와 같은 대규모 디렉토리를 워크트리 전체에 중복되지 않도록 하려면 동일한 `.claude/settings.json`에서 `sparsePaths`를 `symlinkDirectories`와 쌍으로 지정하십시오:
 
@@ -277,7 +279,7 @@ Claude가 워크트리를 생성할 때 전체 트리 대신 `.claude/`, `packag
   `sparsePaths` 및 `symlinkDirectories` 설정은 워크트리가 생성되기 전에 시작 디렉토리에서 읽습니다. 생성 후 세션의 작업 디렉토리는 시작한 하위 디렉토리가 아닌 워크트리 루트입니다. 따라서 워크트리 내의 프로젝트 설정은 워크트리 루트의 `.claude/settings.json`, 저장소 루트 파일의 체크아웃된 복사본에서 로드됩니다. 권한 규칙 또는 훅과 같이 워크트리 내에서 필요한 다른 설정을 저장소 루트의 `.claude/settings.json`에 넣으십시오.
 </Note>
 
-전체 워크트리 설정 참조는 [워크트리 설정](/ko/settings#worktree-settings)을 참조하십시오.
+전체 워크트리 설정 참조는 [워크트리 설정](/docs/ko/settings#worktree-settings)을 참조하십시오.
 
 <h3 id="grant-access-across-packages-or-repositories">
   패키지 또는 저장소 전체에 액세스 권한 부여
@@ -321,7 +323,7 @@ claude --add-dir ../shared
 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared
 ```
 
-환경 변수는 `additionalDirectories` 설정에 나열된 디렉토리에는 영향을 주지 않습니다. 자세한 내용은 [추가 디렉토리에서 로드](/ko/memory#load-from-additional-directories)를 참조하십시오.
+환경 변수는 `additionalDirectories` 설정에 나열된 디렉토리에는 영향을 주지 않습니다. 자세한 내용은 [추가 디렉토리에서 로드](/docs/ko/memory#load-from-additional-directories)를 참조하십시오.
 
 이 영역의 모든 사람이 필요로 하는 형제 디렉토리의 경우 `additionalDirectories`를 `.claude/settings.json`에 커밋하십시오. 개인 선택 또는 일회성 액세스의 경우 `.claude/settings.local.json`을 사용하거나 시작 시 `--add-dir`을 전달하십시오.
 
@@ -329,7 +331,7 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared
   디렉토리별 스킬 추가
 </h2>
 
-모든 하위 디렉토리는 자신의 스택으로 범위가 지정된 [스킬](/ko/skills)을 정의할 수 있습니다. 스킬은 Claude가 관련성이 있다고 판단할 때 요청 시 로드되므로 API 특정 도구는 프론트엔드 작업 중에 컨텍스트를 소비하지 않습니다.
+모든 하위 디렉토리는 자신의 스택으로 범위가 지정된 [스킬](/docs/ko/skills)을 정의할 수 있습니다. 스킬은 Claude가 관련성이 있다고 판단할 때 요청 시 로드되므로 API 특정 도구는 프론트엔드 작업 중에 컨텍스트를 소비하지 않습니다.
 
 스킬은 디렉토리 내의 `.claude/skills/` 아래에 있습니다. 해당 영역의 코드와 함께 커밋하여 저장소를 복제하는 모든 사람이 이를 받도록 하십시오. 모노레포에서는 패키지당 하나의 스킬 세트가 될 수 있습니다. 대규모 단일 트리 코드베이스에서는 `src/db/.claude/skills/`와 같은 하위 시스템당 하나입니다.
 
@@ -372,9 +374,9 @@ description: API 패키지의 테스트 패턴. packages/api/에서 테스트를
 
 다른 하위 디렉토리는 같은 방식으로 다른 스킬을 보유합니다: `packages/web/.claude/skills/component-patterns/`는 테스트 대신 프론트엔드의 컴포넌트 규칙을 설명합니다. Claude가 `packages/api/`의 파일에서 작업할 때 api-testing 스킬을 로드합니다. `packages/web/`에서 작업할 때 component-patterns를 로드합니다. 어느 디렉토리의 스킬도 다른 디렉토리의 작업 중에 로드되지 않습니다.
 
-파일 패턴으로 배치 대신 스킬의 범위를 지정할 수도 있습니다. [`paths` 프론트매터 필드](/ko/skills#frontmatter-reference)는 글로브 패턴을 사용하고, Claude는 일치하는 파일로 작업할 때만 자동으로 스킬을 로드합니다. 저장소 루트의 `.claude/skills/`에 있지만 `**/migrations/**`와 같이 어디든 나타나는 특정 파일에만 적용되는 데이터베이스 마이그레이션 스킬과 같은 스킬에 이를 사용하십시오.
+파일 패턴으로 배치 대신 스킬의 범위를 지정할 수도 있습니다. [`paths` 프론트매터 필드](/docs/ko/skills#frontmatter-reference)는 글로브 패턴을 사용하고, Claude는 일치하는 파일로 작업할 때만 자동으로 스킬을 로드합니다. 저장소 루트의 `.claude/skills/`에 있지만 `**/migrations/**`와 같이 어디든 나타나는 특정 파일에만 적용되는 데이터베이스 마이그레이션 스킬과 같은 스킬에 이를 사용하십시오.
 
-스킬 생성 및 구성에 대한 자세한 내용은 [스킬](/ko/skills)을 참조하십시오.
+스킬 생성 및 구성에 대한 자세한 내용은 [스킬](/docs/ko/skills)을 참조하십시오.
 
 <h3 id="keep-skills-discoverable">
   스킬을 발견 가능하게 유지
@@ -388,11 +390,11 @@ description: API 패키지의 테스트 패턴. packages/api/에서 테스트를
 * **저장소 루트에서**: 세션 중에 Claude가 터치하는 모든 하위 디렉토리의 스킬. 수백 개로 누적될 수 있습니다.
 * **[`--add-dir`](#grant-access-across-packages-or-repositories)으로 형제 추가 후**: 해당 형제의 스킬도 로드됩니다. `additionalDirectories` 설정은 파일 액세스만 부여하고 스킬을 로드하지 않습니다.
 
-이름은 항상 로드되지만 [많은 스킬이 있을 때 설명이 단축되어](/ko/skills#skill-descriptions-are-cut-short) Claude가 스킬 적용 여부를 결정하는 데 사용하는 키워드를 제거할 수 있습니다. 설명을 짧게 유지하고 요청에 포함될 단어로 시작하십시오. 예를 들어 "`packages/api/`에서 테스트 작성 또는 수정".
+이름은 항상 로드되지만 [많은 스킬이 있을 때 설명이 단축되어](/docs/ko/skills#skill-descriptions-are-cut-short) Claude가 스킬 적용 여부를 결정하는 데 사용하는 키워드를 제거할 수 있습니다. 설명을 짧게 유지하고 요청에 포함될 단어로 시작하십시오. 예를 들어 "`packages/api/`에서 테스트 작성 또는 수정".
 
-많은 디렉토리가 공유하는 스킬(예: PR 규칙 또는 배포 체크리스트)의 경우 저장소 루트의 `.claude/skills/`에 배치하여 모든 시작 디렉토리에서 로드되도록 하십시오. 공유 스킬이 자신의 버전 기록이 필요하거나 저장소 전체에서 작동해야 하면 대신 [플러그인](/ko/plugins)으로 패키징하십시오. 플러그인 스킬은 `plugin-name:skill-name` 네임스페이스를 사용하므로 디렉토리별 스킬과 충돌하지 않습니다. 플랫폼 팀은 한 곳에서 버전 관리하고 업데이트할 수 있습니다.
+많은 디렉토리가 공유하는 스킬(예: PR 규칙 또는 배포 체크리스트)의 경우 저장소 루트의 `.claude/skills/`에 배치하여 모든 시작 디렉토리에서 로드되도록 하십시오. 공유 스킬이 자신의 버전 기록이 필요하거나 저장소 전체에서 작동해야 하면 대신 [플러그인](/docs/ko/plugins)으로 패키징하십시오. 플러그인 스킬은 `plugin-name:skill-name` 네임스페이스를 사용하므로 디렉토리별 스킬과 충돌하지 않습니다. 플랫폼 팀은 한 곳에서 버전 관리하고 업데이트할 수 있습니다.
 
-사용되지 않는 스킬을 찾으려면 OpenTelemetry [로그 내보내기](/ko/monitoring-usage)를 활성화하고 `OTEL_LOG_TOOL_DETAILS=1`을 설정하여 스킬 이름이 수정되지 않고 그대로 기록되도록 하십시오. [`skill_activated` 이벤트](/ko/monitoring-usage#skill-activated-event)는 `skill.name` 속성에 모든 호출을 기록하고, `invocation_trigger`는 명령, Claude, 또는 중첩된 스킬이 호출했는지 기록하여 통합하거나 폐기할 항목을 알려줍니다.
+사용되지 않는 스킬을 찾으려면 OpenTelemetry [로그 내보내기](/docs/ko/monitoring-usage)를 활성화하고 `OTEL_LOG_TOOL_DETAILS=1`을 설정하여 스킬 이름이 수정되지 않고 그대로 기록되도록 하십시오. [`skill_activated` 이벤트](/docs/ko/monitoring-usage#skill-activated-event)는 `skill.name` 속성에 모든 호출을 기록하고, `invocation_trigger`는 명령, Claude, 또는 중첩된 스킬이 호출했는지 기록하여 통합하거나 폐기할 항목을 알려줍니다.
 
 <h2 id="centralize-conventions-when-layering-stops-scaling">
   계층화가 확장을 멈출 때 규칙 중앙화
@@ -402,19 +404,19 @@ description: API 패키지의 테스트 패턴. packages/api/에서 테스트를
 
 항상 로드되는 CLAUDE.md에서 규칙 및 참조 콘텐츠를 작업과 관련이 있을 때만 로드되는 메커니즘으로 이동하십시오:
 
-* [Skills](/ko/skills): Claude가 작업과 관련이 있을 때만 로드하는 참조 자료
-* [Plugins](/ko/plugins): 플랫폼 팀이 중앙에서 소유하는 스킬, 훅, 명령의 버전 관리 번들
-* [MCP servers](/ko/mcp): 조직이 이미 저장소에 대한 코드 검색 또는 RAG 인덱스를 실행하면 MCP 도구로 노출하여 Claude가 파일을 직접 읽는 대신 쿼리하도록 합니다.
+* [Skills](/docs/ko/skills): Claude가 작업과 관련이 있을 때만 로드하는 참조 자료
+* [Plugins](/docs/ko/plugins): 플랫폼 팀이 중앙에서 소유하는 스킬, 훅, 명령의 버전 관리 번들
+* [MCP servers](/docs/ko/mcp): 조직이 이미 저장소에 대한 코드 검색 또는 RAG 인덱스를 실행하면 MCP 도구로 노출하여 Claude가 파일을 직접 읽는 대신 쿼리하도록 합니다.
 
-플랫폼 팀이 이를 중앙에서 적용하는 방법은 [server-managed or endpoint-managed settings](/ko/server-managed-settings#choose-between-server-managed-and-endpoint-managed-settings)을 참조하십시오.
+플랫폼 팀이 이를 중앙에서 적용하는 방법은 [server-managed or endpoint-managed settings](/docs/ko/server-managed-settings#choose-between-server-managed-and-endpoint-managed-settings)을 참조하십시오.
 
 <h3 id="recommend-the-right-plugin-at-session-start">
   세션 시작 시 올바른 플러그인 권장
 </h3>
 
-규칙이 플러그인에 있으면 팀원이 트리의 낯선 부분에서 Claude를 시작할 때 해당 영역의 소유자가 유지하는 플러그인에 대한 신호가 없습니다. [`SessionStart` hook](/ko/hooks#sessionstart)은 훅이 stdout에 인쇄하는 모든 것이 첫 번째 프롬프트 전에 Claude의 컨텍스트에 추가되므로 이 간격을 닫을 수 있습니다.
+규칙이 플러그인에 있으면 팀원이 트리의 낯선 부분에서 Claude를 시작할 때 해당 영역의 소유자가 유지하는 플러그인에 대한 신호가 없습니다. [`SessionStart` hook](/docs/ko/hooks#sessionstart)은 훅이 stdout에 인쇄하는 모든 것이 첫 번째 프롬프트 전에 Claude의 컨텍스트에 추가되므로 이 간격을 닫을 수 있습니다.
 
-예를 들어 [hook input](/ko/hooks#common-input-fields)에서 시작 디렉토리를 읽고, 저장소에 커밋된 경로-플러그인 맵에서 조회하고, Claude가 첫 번째 응답에서 전달할 권장 사항을 인쇄하는 스크립트를 작성할 수 있습니다. 훅을 작성하고 등록하려면 [Automate actions with hooks](/ko/hooks-guide)를 참조하십시오.
+예를 들어 [hook input](/docs/ko/hooks#common-input-fields)에서 시작 디렉토리를 읽고, 저장소에 커밋된 경로-플러그인 맵에서 조회하고, Claude가 첫 번째 응답에서 전달할 권장 사항을 인쇄하는 스크립트를 작성할 수 있습니다. 훅을 작성하고 등록하려면 [Automate actions with hooks](/docs/ko/hooks-guide)를 참조하십시오.
 
 <h2 id="put-it-together">
   모두 함께 사용
@@ -498,7 +500,7 @@ monorepo/
 두 가지 기법은 패키지 간 변경을 일관되게 유지하는 데 도움이 됩니다:
 
 * **전체 변경을 한 세션에서 Claude에 제공**: 공유 편집과 호출 사이트를 함께 전달하면 각 편집 뒤의 결정이 일관되게 유지되어 패키지별로 다시 도출하지 않습니다.
-* **편집 전에 계획을 파일에 저장**: [먼저 계획](/ko/best-practices#explore-first-then-plan-then-code)하고 Claude에게 계획을 저장소의 마크다운 파일에 작성하도록 요청하십시오. 긴 패키지 간 세션은 진행 중에 [컨텍스트를 압축](/ko/context-window#what-survives-compaction)하고, 저장된 계획은 대화 기록이 없을 수 있는 곳에서 생존합니다.
+* **편집 전에 계획을 파일에 저장**: [먼저 계획](/docs/ko/best-practices#explore-first-then-plan-then-code)하고 Claude에게 계획을 저장소의 마크다운 파일에 작성하도록 요청하십시오. 긴 패키지 간 세션은 진행 중에 [컨텍스트를 압축](/docs/ko/context-window#what-survives-compaction)하고, 저장된 계획은 대화 기록이 없을 수 있는 곳에서 생존합니다.
 
 <h2 id="next-steps">
   다음 단계
@@ -506,6 +508,6 @@ monorepo/
 
 이 구성이 준비되면 이를 개선할 수 있습니다:
 
-* [훅](/ko/hooks-guide)을 사용하여 Claude가 파일을 편집한 후 디렉토리별 린터 또는 타입 체커 실행
-* [비용 효과적으로 관리](/ko/costs)를 검토하여 코드베이스 크기가 토큰 사용에 어떻게 영향을 미치는지, 더 넓은 배포 전에 지출 한도를 설정하는 방법을 이해합니다.
+* [훅](/docs/ko/hooks-guide)을 사용하여 Claude가 파일을 편집한 후 디렉토리별 린터 또는 타입 체커 실행
+* [비용 효과적으로 관리](/docs/ko/costs)를 검토하여 코드베이스 크기가 토큰 사용에 어떻게 영향을 미치는지, 더 넓은 배포 전에 지출 한도를 설정하는 방법을 이해합니다.
 * Claude 블로그의 [Claude Code가 대규모 코드베이스에서 어떻게 작동하는지](https://claude.com/blog/how-claude-code-works-in-large-codebases-best-practices-and-where-to-start)를 읽어 조직 배포 패턴 및 이 페이지의 저장소별 구성 위에 있는 소유권 모델을 확인합니다.

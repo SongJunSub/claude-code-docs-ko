@@ -20,7 +20,7 @@ export const ClaudeExplorer = () => {
     background: 'var(--ce-surface)',
     border: '0.5px solid var(--ce-border-subtle)'
   }}>{children}</code>, []);
-  const commandsNote = useMemo(() => <>Commands and skills are now the same mechanism. For new workflows, use <A href="/en/skills">skills/</A> instead: same <C>/name</C> invocation, plus you can bundle supporting files.</>, []);
+  const commandsNote = useMemo(() => <>Commands and skills are now the same mechanism. For new workflows, use <A href="/docs/en/skills">skills/</A> instead: same <C>/name</C> invocation, plus you can bundle supporting files.</>, []);
   const FILE_TREE = useMemo(() => ({
     project: {
       label: 'your-project/',
@@ -34,7 +34,7 @@ export const ClaudeExplorer = () => {
         oneLiner: 'Project instructions Claude reads every session',
         when: 'Loaded into context at the start of every session',
         description: 'Project-specific instructions that shape how Claude works in this repository. Put your conventions, common commands, and architectural context here so Claude operates with the same assumptions your team does.',
-        tips: ['Target under 200 lines. Longer files still load in full but may reduce adherence', <>CLAUDE.md loads into every session. If something only matters for specific tasks, move it to a <A href="/en/skills">skill</A> or a path-scoped <A href="/en/memory#organize-rules-with-claude/rules/">rule</A> so it loads only when needed</>, 'List the commands you run most, like build, test, and format, so Claude knows them without you spelling them out each time', <>Run <C>/memory</C> to open and edit CLAUDE.md from within a session</>, <>Also works at <C>.claude/CLAUDE.md</C> if you prefer to keep the project root clean</>],
+        tips: ['Target under 200 lines. Longer files still load in full but may reduce adherence', <>CLAUDE.md loads into every session. If something only matters for specific tasks, move it to a <A href="/docs/en/skills">skill</A> or a path-scoped <A href="/docs/en/memory#organize-rules-with-claude/rules/">rule</A> so it loads only when needed</>, 'List the commands you run most, like build, test, and format, so Claude knows them without you spelling them out each time', <>Run <C>/memory</C> to open and edit CLAUDE.md from within a session</>, <>Also works at <C>.claude/CLAUDE.md</C> if you prefer to keep the project root clean</>],
         exampleIntro: 'This example is for a TypeScript and React project. It lists the build and test commands, the framework conventions Claude should follow, and project-specific rules like export style and file layout.',
         example: `# Project conventions
 
@@ -60,17 +60,17 @@ export const ClaudeExplorer = () => {
         color: '#9B7BC4',
         badge: 'committed',
         oneLiner: 'Project-scoped MCP servers, shared with your team',
-        when: <>Servers connect when the session begins. Tool schemas are deferred by default and load on demand via <A href="/en/mcp#scale-with-mcp-tool-search">tool search</A></>,
+        when: <>Servers connect when the session begins. Tool schemas are deferred by default and load on demand via <A href="/docs/en/mcp#scale-with-mcp-tool-search">tool search</A></>,
         description: <>Configures Model Context Protocol (MCP) servers that give Claude access to external tools: databases, APIs, browsers, and more. This file holds the project-scoped servers your whole team uses. Personal servers you want to keep to yourself go in <C>~/.claude.json</C> instead.</>,
-        tips: [<>Use environment variable references for secrets: <C>{'${GITHUB_TOKEN}'}</C></>, <>Lives at the project root, not inside <C>.claude/</C></>, <>For servers only you need, run <C>claude mcp add --scope user</C>. This writes to <C>~/.claude.json</C> instead of <C>.mcp.json</C></>],
-        exampleIntro: <>This example configures the GitHub MCP server so Claude can read issues and open pull requests. The <C>{'${GITHUB_TOKEN}'}</C> reference is read from your shell environment when Claude Code starts the server, so the token never lands in the file.</>,
+        tips: [<>Use environment variable references for secrets: <C>{'${NOTION_TOKEN}'}</C></>, <>Lives at the project root, not inside <C>.claude/</C></>, <>For servers only you need, run <C>claude mcp add --scope user</C>. This writes to <C>~/.claude.json</C> instead of <C>.mcp.json</C></>],
+        exampleIntro: <>This example configures the Notion MCP server so Claude can read and update pages in your workspace. The <C>{'${NOTION_TOKEN}'}</C> reference is read from your shell environment when Claude Code starts the server, so the token never lands in the file.</>,
         example: `{
   "mcpServers": {
-    "github": {
+    "notion": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "args": ["-y", "@notionhq/notion-mcp-server"],
       "env": {
-        "GITHUB_TOKEN": "\${GITHUB_TOKEN}"
+        "NOTION_TOKEN": "\${NOTION_TOKEN}"
       }
     }
   }
@@ -86,7 +86,7 @@ export const ClaudeExplorer = () => {
         oneLiner: 'Gitignored files to copy into new worktrees',
         when: <>Read when Claude creates a git worktree via <C>--worktree</C>, the <C>EnterWorktree</C> tool, or subagent <C>isolation: worktree</C></>,
         description: <>Lists gitignored files to copy from your main repository into each new worktree. Worktrees are fresh checkouts, so untracked files like <C>.env</C> are missing by default. Patterns here use <C>.gitignore</C> syntax. Only files that match a pattern and are also gitignored get copied, so tracked files are never duplicated.</>,
-        tips: [<>Lives at the project root, not inside <C>.claude/</C></>, <>Git-only: if you configure a <A href="/en/hooks#worktreecreate">WorktreeCreate hook</A> for a different VCS, this file is not read. Copy files inside your hook script instead</>, <>Also applies to parallel sessions in the <A href="/en/desktop#work-in-parallel-with-sessions">desktop app</A></>],
+        tips: [<>Lives at the project root, not inside <C>.claude/</C></>, <>Git-only: if you configure a <A href="/docs/en/hooks#worktreecreate">WorktreeCreate hook</A> for a different VCS, this file is not read. Copy files inside your hook script instead</>, <>Also applies to parallel sessions in the <A href="/docs/en/desktop#work-in-parallel-with-sessions">desktop app</A></>],
         exampleIntro: 'This example copies your local environment files and a secrets config into every worktree Claude creates. Comments start with # and blank lines are ignored, same as .gitignore.',
         example: `# Local environment
 .env
@@ -102,7 +102,7 @@ config/secrets.json`,
         icon: 'folder',
         color: 'var(--ce-accent)',
         oneLiner: 'Project-level configuration, rules, and extensions',
-        description: 'Everything Claude Code reads that is specific to this project. If you use git, commit most files here so your team shares them; a few, like settings.local.json, are automatically gitignored. Each file badge shows which.',
+        description: 'Everything Claude Code reads that is specific to this project. If you use git, commit most files here so your team shares them; a few, like settings.local.json, are gitignored when Claude Code saves settings to them. Each file badge shows which.',
         children: [{
           id: 'settings-json',
           label: 'settings.json',
@@ -113,7 +113,7 @@ config/secrets.json`,
           oneLiner: 'Permissions, hooks, and configuration',
           when: <>Overrides global <C>~/.claude/settings.json</C>. Local settings, CLI flags, and managed settings override this</>,
           description: 'Settings that Claude Code applies directly. Permissions control which commands and tools Claude can use; hooks run your scripts at specific points in a session. Unlike CLAUDE.md, which Claude reads as guidance, these are enforced whether Claude follows them or not.',
-          contains: [<><A href="/en/permissions">permissions</A>: allow, deny, or prompt before Claude uses specific tools or commands</>, <><A href="/en/hooks">hooks</A>: run your own scripts on events like before a tool call or after a file edit</>, <><A href="/en/statusline">statusLine</A>: customize the line shown at the bottom while Claude works</>, <><A href="/en/settings#available-settings">model</A>: pick a default model for this project</>, <><A href="/en/settings#environment-variables">env</A>: environment variables set in every session</>, <><A href="/en/output-styles">outputStyle</A>: select a custom system-prompt style from output-styles/</>],
+          contains: [<><A href="/docs/en/permissions">permissions</A>: allow, deny, or prompt before Claude uses specific tools or commands</>, <><A href="/docs/en/hooks">hooks</A>: run your own scripts on events like before a tool call or after a file edit</>, <><A href="/docs/en/statusline">statusLine</A>: customize the line shown at the bottom while Claude works</>, <><A href="/docs/en/settings#available-settings">model</A>: pick a default model for this project</>, <><A href="/docs/en/settings#environment-variables">env</A>: environment variables set in every session</>, <><A href="/docs/en/output-styles">outputStyle</A>: select a custom system-prompt style from output-styles/</>],
           tips: [<>Bash permission patterns support wildcards: <C>Bash(npm test *)</C> matches any command starting with <C>npm test</C></>, <>Array settings like <C>permissions.allow</C> combine across all scopes; scalar settings like <C>model</C> use the most specific value</>],
           exampleIntro: <>This example allows <C>npm test</C> and <C>npm run</C> commands without prompting, blocks <C>rm -rf</C>, and runs Prettier on files after Claude edits or writes them.</>,
           example: `{
@@ -146,8 +146,8 @@ config/secrets.json`,
           badge: 'gitignored',
           oneLiner: 'Your personal settings overrides for this project',
           when: 'Highest of the user-editable settings files; CLI flags and managed settings still take precedence',
-          description: 'Personal settings that take precedence over the project defaults. Same JSON format as settings.json, but not committed. Use this when you need different permissions or defaults than the team config.',
-          tips: [<>Same schema as settings.json. Array settings like <C>permissions.allow</C> combine across scopes; scalar settings like <C>model</C> use the local value</>, <>Claude Code adds this file to <C>~/.config/git/ignore</C> the first time it writes one. If you use a custom <C>core.excludesFile</C>, add the pattern there too. To share the ignore rule with your team, also add it to the project <C>.gitignore</C></>],
+          description: 'Personal settings that take precedence over the project defaults. Same JSON format as settings.json, gitignored when Claude Code saves a setting to it. Use this when you need different permissions or defaults than the team config.',
+          tips: [<>Same schema as settings.json. Array settings like <C>permissions.allow</C> combine across scopes; scalar settings like <C>model</C> use the local value</>, <>When Claude Code saves a setting to this file in a repository that doesn't already ignore it, it adds <C>**/.claude/settings.local.json</C> to your global git excludes file: <C>core.excludesFile</C> from your global git config when it's set to an absolute or <C>~</C>-prefixed path, otherwise <C>$XDG_CONFIG_HOME/git/ignore</C>, or <C>~/.config/git/ignore</C>. To share the ignore rule with your team, also add it to the project <C>.gitignore</C></>],
           exampleIntro: 'This example adds Docker permissions on top of whatever the team settings.json allows.',
           example: `{
   "permissions": {
@@ -165,7 +165,7 @@ config/secrets.json`,
           color: '#9B7BC4',
           oneLiner: 'Topic-scoped instructions, optionally gated by file paths',
           when: <>Rules without <C>paths:</C> load at session start. Rules with <C>paths:</C> load when a matching file enters context</>,
-          description: [<>Project instructions split into topic files that can load conditionally based on file paths. A rule without <C>paths:</C> frontmatter loads at session start like CLAUDE.md; a rule with <C>paths:</C> loads only when Claude reads a matching file.</>, <>Like CLAUDE.md, rules are guidance Claude reads, not configuration Claude Code enforces. For guaranteed behavior use <A href="/en/hooks">hooks</A> or <A href="/en/permissions">permissions</A>.</>],
+          description: [<>Project instructions split into topic files that can load conditionally based on file paths. A rule without <C>paths:</C> frontmatter loads at session start like CLAUDE.md; a rule with <C>paths:</C> loads only when Claude reads a matching file.</>, <>Like CLAUDE.md, rules are guidance Claude reads, not configuration Claude Code enforces. For guaranteed behavior use <A href="/docs/en/hooks">hooks</A> or <A href="/docs/en/permissions">permissions</A>.</>],
           tips: [<>Use <C>paths:</C> frontmatter with globs to scope rules to directories or file types</>, <>Subdirectories work: <C>.claude/rules/frontend/react.md</C> is discovered automatically</>, 'When CLAUDE.md approaches 200 lines, start splitting into rules'],
           docsLink: '/en/memory#organize-rules-with-claude/rules/',
           children: [{
@@ -369,7 +369,7 @@ Every finding must include a concrete fix.`
           color: '#C46686',
           oneLiner: 'Dynamic workflow scripts that orchestrate many subagents',
           when: 'Loaded at startup; each file becomes a /<name> command',
-          description: <>Each <C>.js</C> file is a <A href="/en/workflows">dynamic workflow</A>: a script the runtime executes to spawn and coordinate many subagents. Workflows are written by Claude and saved here from <C>/workflows</C> rather than authored from scratch.</>,
+          description: <>Each <C>.js</C> file is a <A href="/docs/en/workflows">dynamic workflow</A>: a script the runtime executes to spawn and coordinate many subagents. Workflows are written by Claude and saved here from <C>/workflows</C> rather than authored from scratch.</>,
           tips: [<>Save a run from <C>/workflows</C> with <C>s</C> to create one of these</>, <>A project workflow takes precedence over a personal one in <C>~/.claude/workflows/</C> with the same name</>],
           docsLink: '/en/workflows'
         }, {
@@ -382,7 +382,7 @@ Every finding must include a concrete fix.`
           autogen: true,
           oneLiner: 'Subagent persistent memory, separate from your main session auto memory',
           when: 'First 200 lines (capped at 25KB) of MEMORY.md loaded into the subagent system prompt when it runs',
-          description: <>Subagents with <C>memory: project</C> in their frontmatter get a dedicated memory directory here. This is distinct from your <A href="/en/memory#auto-memory">main session auto memory</A> at <C>~/.claude/projects/</C>: each subagent reads and writes its own MEMORY.md, not yours.</>,
+          description: <>Subagents with <C>memory: project</C> in their frontmatter get a dedicated memory directory here. This is distinct from your <A href="/docs/en/memory#auto-memory">main session auto memory</A> at <C>~/.claude/projects/</C>: each subagent reads and writes its own MEMORY.md, not yours.</>,
           tips: [<>Only created for subagents that set the <C>memory:</C> frontmatter field</>, <>This directory holds project-scoped subagent memory, meant to be shared with your team. To keep memory out of version control use <C>memory: local</C>, which writes to <C>.claude/agent-memory-local/</C> instead. For cross-project memory use <C>memory: user</C>, which writes to <C>~/.claude/agent-memory/</C></>, <>The main session auto memory is a different feature; see <C>~/.claude/projects/</C> in the Global tab</>],
           docsLink: '/en/sub-agents#enable-persistent-memory',
           children: [{
@@ -402,7 +402,7 @@ Every finding must include a concrete fix.`
               autogen: true,
               oneLiner: 'The subagent writes and maintains this file automatically',
               when: 'Loaded into the subagent system prompt when the subagent starts',
-              description: <>Works the same as your <A href="/en/memory#auto-memory">main auto memory</A>: the subagent creates and updates this file itself. You do not write it. The subagent reads it at the start of each task and writes back what it learns.</>,
+              description: <>Works the same as your <A href="/docs/en/memory#auto-memory">main auto memory</A>: the subagent creates and updates this file itself. You do not write it. The subagent reads it at the start of each task and writes back what it learns.</>,
               example: `# code-reviewer memory
 
 ## Patterns seen
@@ -1432,7 +1432,7 @@ themselves by leaving a TODO(human) marker instead of writing it.`
 
 Claude Code는 프로젝트 디렉토리와 홈 디렉토리의 `~/.claude`에서 지침, 설정, skills, subagents, 메모리를 읽습니다. 프로젝트 파일을 git에 커밋하여 팀과 공유합니다. `~/.claude`의 파일은 모든 프로젝트에 적용되는 개인 설정입니다.
 
-Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUDE_CONFIG_DIR`](/ko/env-vars)을 설정하면, 이 페이지의 모든 `~/.claude` 경로가 대신 해당 디렉토리 아래에 있습니다.
+Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUDE_CONFIG_DIR`](/docs/ko/env-vars)을 설정하면, 이 페이지의 모든 `~/.claude` 경로가 대신 해당 디렉토리 아래에 있습니다.
 
 대부분의 사용자는 `CLAUDE.md`와 `settings.json`만 편집합니다. 디렉토리의 나머지는 선택 사항입니다. 필요에 따라 skills, rules, subagents를 추가합니다.
 
@@ -1452,9 +1452,9 @@ Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUD
 
 | 파일                      | 위치                  | 목적                                                                                                                                                                                 |
 | ----------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `managed-settings.json` | 시스템 수준, OS에 따라 다름   | 재정의할 수 없는 엔터프라이즈 강제 설정입니다. [서버 관리 설정](/ko/server-managed-settings)을 참조하세요.                                                                                                         |
+| `managed-settings.json` | 시스템 수준, OS에 따라 다름   | 재정의할 수 없는 엔터프라이즈 강제 설정입니다. [서버 관리 설정](/docs/ko/server-managed-settings)을 참조하세요.                                                                                                         |
 | `CLAUDE.local.md`       | 프로젝트 루트             | 이 프로젝트에 대한 개인 기본 설정으로, CLAUDE.md와 함께 로드됩니다. 수동으로 생성하고 `.gitignore`에 추가합니다.                                                                                                         |
-| 설치된 플러그인                | `~/.claude/plugins` | 복제된 마켓플레이스, 설치된 플러그인 버전, 플러그인별 데이터로, `claude plugin` 명령으로 관리됩니다. 고아 버전은 플러그인 업데이트 또는 제거 후 7일 후에 삭제됩니다. [플러그인 캐싱](/ko/plugins-reference#plugin-caching-and-file-resolution)을 참조하세요. |
+| 설치된 플러그인                | `~/.claude/plugins` | 복제된 마켓플레이스, 설치된 플러그인 버전, 플러그인별 데이터로, `claude plugin` 명령으로 관리됩니다. 고아 버전은 플러그인 업데이트 또는 제거 후 7일 후에 삭제됩니다. [플러그인 캐싱](/docs/ko/plugins-reference#plugin-caching-and-file-resolution)을 참조하세요. |
 
 `~/.claude`는 또한 작업할 때 Claude Code가 작성하는 데이터를 보유합니다. 트랜스크립트, 프롬프트 기록, 파일 스냅샷, 캐시, 로그입니다. 아래의 [애플리케이션 데이터](#application-data)를 참조하세요.
 
@@ -1466,16 +1466,16 @@ Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUD
 
 | 원하는 작업                       | 편집                                       | 범위         | 참조                                        |
 | :--------------------------- | :--------------------------------------- | :--------- | :---------------------------------------- |
-| Claude에 프로젝트 컨텍스트 및 규칙 제공    | `CLAUDE.md`                              | 프로젝트 또는 전역 | [메모리](/ko/memory)                         |
-| 특정 도구 호출 허용 또는 차단            | `settings.json` `permissions` 또는 `hooks` | 프로젝트 또는 전역 | [권한](/ko/permissions), [Hooks](/ko/hooks) |
-| 도구 호출 전후에 스크립트 실행            | `settings.json` `hooks`                  | 프로젝트 또는 전역 | [Hooks](/ko/hooks)                        |
-| 세션에 대한 환경 변수 설정              | `settings.json` `env`                    | 프로젝트 또는 전역 | [설정](/ko/settings#available-settings)     |
-| 개인 재정의를 git에서 제외             | `settings.local.json`                    | 프로젝트만      | [설정 범위](/ko/settings#settings-files)      |
-| `/name`으로 호출하는 프롬프트 또는 기능 추가 | `skills/<name>/SKILL.md`                 | 프로젝트 또는 전역 | [Skills](/ko/skills)                      |
-| 자신의 도구가 있는 특화된 subagent 정의   | `agents/*.md`                            | 프로젝트 또는 전역 | [Subagents](/ko/sub-agents)               |
-| 스크립트에서 많은 subagent 조율        | `workflows/*.js`                         | 프로젝트 또는 전역 | [동적 워크플로우](/ko/workflows)                 |
-| MCP를 통해 외부 도구 연결             | `.mcp.json`                              | 프로젝트만      | [MCP](/ko/mcp)                            |
-| Claude가 응답을 포맷하는 방식 변경       | `output-styles/*.md`                     | 프로젝트 또는 전역 | [출력 스타일](/ko/output-styles)               |
+| Claude에 프로젝트 컨텍스트 및 규칙 제공    | `CLAUDE.md`                              | 프로젝트 또는 전역 | [메모리](/docs/ko/memory)                         |
+| 특정 도구 호출 허용 또는 차단            | `settings.json` `permissions` 또는 `hooks` | 프로젝트 또는 전역 | [권한](/docs/ko/permissions), [Hooks](/docs/ko/hooks) |
+| 도구 호출 전후에 스크립트 실행            | `settings.json` `hooks`                  | 프로젝트 또는 전역 | [Hooks](/docs/ko/hooks)                        |
+| 세션에 대한 환경 변수 설정              | `settings.json` `env`                    | 프로젝트 또는 전역 | [설정](/docs/ko/settings#available-settings)     |
+| 개인 재정의를 git에서 제외             | `settings.local.json`                    | 프로젝트만      | [설정 범위](/docs/ko/settings#settings-files)      |
+| `/name`으로 호출하는 프롬프트 또는 기능 추가 | `skills/<name>/SKILL.md`                 | 프로젝트 또는 전역 | [Skills](/docs/ko/skills)                      |
+| 자신의 도구가 있는 특화된 subagent 정의   | `agents/*.md`                            | 프로젝트 또는 전역 | [Subagents](/docs/ko/sub-agents)               |
+| 스크립트에서 많은 subagent 조율        | `workflows/*.js`                         | 프로젝트 또는 전역 | [동적 워크플로우](/docs/ko/workflows)                 |
+| MCP를 통해 외부 도구 연결             | `.mcp.json`                              | 프로젝트만      | [MCP](/docs/ko/mcp)                            |
+| Claude가 응답을 포맷하는 방식 변경       | `output-styles/*.md`                     | 프로젝트 또는 전역 | [출력 스타일](/docs/ko/output-styles)               |
 
 <h2 id="file-reference">
   파일 참조
@@ -1486,39 +1486,39 @@ Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUD
 <Note>
   이 파일에 입력한 내용을 재정의할 수 있는 여러 가지가 있습니다.
 
-  * 조직에서 배포한 [관리 설정](/ko/server-managed-settings)이 모든 것보다 우선합니다.
+  * 조직에서 배포한 [관리 설정](/docs/ko/server-managed-settings)이 모든 것보다 우선합니다.
   * `--permission-mode` 또는 `--settings`와 같은 CLI 플래그는 해당 세션에 대해 `settings.json`을 재정의합니다.
-  * 일부 환경 변수는 동등한 설정보다 우선하지만, 이는 다양합니다. 각각에 대해 [환경 변수 참조](/ko/env-vars)를 확인하세요.
+  * 일부 환경 변수는 동등한 설정보다 우선하지만, 이는 다양합니다. 각각에 대해 [환경 변수 참조](/docs/ko/env-vars)를 확인하세요.
 
-  전체 순서는 [설정 우선순위](/ko/settings#settings-precedence)를 참조하세요.
+  전체 순서는 [설정 우선순위](/docs/ko/settings#settings-precedence)를 참조하세요.
 </Note>
 
 파일 이름을 클릭하여 위의 탐색기에서 해당 노드를 엽니다.
 
 | 파일                                                  | 범위        | 커밋 | 기능                                                                      | 참조                                                              |
 | --------------------------------------------------- | --------- | -- | ----------------------------------------------------------------------- | --------------------------------------------------------------- |
-| [`CLAUDE.md`](#ce-claude-md)                        | 프로젝트 및 전역 | ✓  | 매 세션마다 로드되는 지침                                                          | [메모리](/ko/memory)                                               |
-| [`rules/*.md`](#ce-rules)                           | 프로젝트 및 전역 | ✓  | 주제 범위 지침, 선택적으로 경로 제한                                                   | [규칙](/ko/memory#organize-rules-with-claude/rules/)              |
-| [`settings.json`](#ce-settings-json)                | 프로젝트 및 전역 | ✓  | 권한, hooks, 환경 변수, 모델 기본값                                                | [설정](/ko/settings)                                              |
-| [`settings.local.json`](#ce-settings-local-json)    | 프로젝트만     |    | 개인 재정의, 자동 gitignored                                                   | [설정 범위](/ko/settings#settings-files)                            |
-| [`.mcp.json`](#ce-mcp-json)                         | 프로젝트만     | ✓  | 팀 공유 MCP 서버                                                             | [MCP 범위](/ko/mcp#mcp-installation-scopes)                       |
-| [`.worktreeinclude`](#ce-worktreeinclude)           | 프로젝트만     | ✓  | 새 worktrees로 복사할 Gitignored 파일                                          | [Worktrees](/ko/worktrees#copy-gitignored-files-into-worktrees) |
-| [`skills/<name>/SKILL.md`](#ce-skills)              | 프로젝트 및 전역 | ✓  | `/name`으로 호출되거나 자동 호출되는 재사용 가능한 프롬프트                                    | [Skills](/ko/skills)                                            |
-| [`commands/*.md`](#ce-commands)                     | 프로젝트 및 전역 | ✓  | 단일 파일 프롬프트; skills와 동일한 메커니즘                                            | [Skills](/ko/skills)                                            |
-| [`output-styles/*.md`](#ce-output-styles)           | 프로젝트 및 전역 | ✓  | 사용자 정의 시스템 프롬프트 섹션                                                      | [출력 스타일](/ko/output-styles)                                     |
-| [`agents/*.md`](#ce-agents)                         | 프로젝트 및 전역 | ✓  | 자신의 프롬프트와 도구가 있는 subagent 정의                                            | [Subagents](/ko/sub-agents)                                     |
-| [`workflows/*.js`](#ce-workflows)                   | 프로젝트 및 전역 | ✓  | Claude가 작성하고 `/workflows`에서 저장한 동적 워크플로우 스크립트; 각 파일은 `/<name>` 명령어가 됩니다 | [동적 워크플로우](/ko/workflows)                                       |
-| [`agent-memory/<name>/`](#ce-agent-memory)          | 프로젝트 및 전역 | ✓  | Subagents의 지속적 메모리                                                      | [지속적 메모리](/ko/sub-agents#enable-persistent-memory)              |
-| [`~/.claude.json`](#ce-claude-json)                 | 전역만       |    | 앱 상태, OAuth, UI 토글, 개인 MCP 서버                                           | [전역 설정](/ko/settings#global-config-settings)                    |
-| [`projects/<project>/memory/`](#ce-global-projects) | 전역만       |    | 자동 메모리: Claude의 세션 간 자체 메모                                              | [자동 메모리](/ko/memory#auto-memory)                                |
-| [`keybindings.json`](#ce-keybindings)               | 전역만       |    | 사용자 정의 키보드 단축키                                                          | [키바인딩](/ko/keybindings)                                         |
-| [`themes/*.json`](#ce-themes)                       | 전역만       |    | 사용자 정의 색상 테마                                                            | [사용자 정의 테마](/ko/terminal-config#create-a-custom-theme)          |
+| [`CLAUDE.md`](#ce-claude-md)                        | 프로젝트 및 전역 | ✓  | 매 세션마다 로드되는 지침                                                          | [메모리](/docs/ko/memory)                                               |
+| [`rules/*.md`](#ce-rules)                           | 프로젝트 및 전역 | ✓  | 주제 범위 지침, 선택적으로 경로 제한                                                   | [규칙](/docs/ko/memory#organize-rules-with-claude/rules/)              |
+| [`settings.json`](#ce-settings-json)                | 프로젝트 및 전역 | ✓  | 권한, hooks, 환경 변수, 모델 기본값                                                | [설정](/docs/ko/settings)                                              |
+| [`settings.local.json`](#ce-settings-local-json)    | 프로젝트만     |    | 개인 재정의, 자동 gitignored                                                   | [설정 범위](/docs/ko/settings#settings-files)                            |
+| [`.mcp.json`](#ce-mcp-json)                         | 프로젝트만     | ✓  | 팀 공유 MCP 서버                                                             | [MCP 범위](/docs/ko/mcp#mcp-installation-scopes)                       |
+| [`.worktreeinclude`](#ce-worktreeinclude)           | 프로젝트만     | ✓  | 새 worktrees로 복사할 Gitignored 파일                                          | [Worktrees](/docs/ko/worktrees#copy-gitignored-files-into-worktrees) |
+| [`skills/<name>/SKILL.md`](#ce-skills)              | 프로젝트 및 전역 | ✓  | `/name`으로 호출되거나 자동 호출되는 재사용 가능한 프롬프트                                    | [Skills](/docs/ko/skills)                                            |
+| [`commands/*.md`](#ce-commands)                     | 프로젝트 및 전역 | ✓  | 단일 파일 프롬프트; skills와 동일한 메커니즘                                            | [Skills](/docs/ko/skills)                                            |
+| [`output-styles/*.md`](#ce-output-styles)           | 프로젝트 및 전역 | ✓  | 사용자 정의 시스템 프롬프트 섹션                                                      | [출력 스타일](/docs/ko/output-styles)                                     |
+| [`agents/*.md`](#ce-agents)                         | 프로젝트 및 전역 | ✓  | 자신의 프롬프트와 도구가 있는 subagent 정의                                            | [Subagents](/docs/ko/sub-agents)                                     |
+| [`workflows/*.js`](#ce-workflows)                   | 프로젝트 및 전역 | ✓  | Claude가 작성하고 `/workflows`에서 저장한 동적 워크플로우 스크립트; 각 파일은 `/<name>` 명령어가 됩니다 | [동적 워크플로우](/docs/ko/workflows)                                       |
+| [`agent-memory/<name>/`](#ce-agent-memory)          | 프로젝트 및 전역 | ✓  | Subagents의 지속적 메모리                                                      | [지속적 메모리](/docs/ko/sub-agents#enable-persistent-memory)              |
+| [`~/.claude.json`](#ce-claude-json)                 | 전역만       |    | 앱 상태, OAuth, UI 토글, 개인 MCP 서버                                           | [전역 설정](/docs/ko/settings#global-config-settings)                    |
+| [`projects/<project>/memory/`](#ce-global-projects) | 전역만       |    | 자동 메모리: Claude의 세션 간 자체 메모                                              | [자동 메모리](/docs/ko/memory#auto-memory)                                |
+| [`keybindings.json`](#ce-keybindings)               | 전역만       |    | 사용자 정의 키보드 단축키                                                          | [키바인딩](/docs/ko/keybindings)                                         |
+| [`themes/*.json`](#ce-themes)                       | 전역만       |    | 사용자 정의 색상 테마                                                            | [사용자 정의 테마](/docs/ko/terminal-config#create-a-custom-theme)          |
 
 <h2 id="troubleshoot-configuration">
   설정 문제 해결
 </h2>
 
-설정, hook, 파일이 적용되지 않으면, [설정 디버그](/ko/debug-your-config)에서 검사 명령과 증상 우선 조회 표를 참조하세요.
+설정, hook, 파일이 적용되지 않으면, [설정 디버그](/docs/ko/debug-your-config)에서 검사 명령과 증상 우선 조회 표를 참조하세요.
 
 <h2 id="application-data">
   애플리케이션 데이터
@@ -1530,23 +1530,23 @@ Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUD
   자동으로 정리됨
 </h3>
 
-아래 경로의 파일은 [`cleanupPeriodDays`](/ko/settings#available-settings)보다 오래되면 시작 시 삭제됩니다. 기본값은 30일입니다.
+아래 경로의 파일은 [`cleanupPeriodDays`](/docs/ko/settings#available-settings)보다 오래되면 시작 시 삭제됩니다. 기본값은 30일입니다.
 
-| `~/.claude/` 아래 경로                           | 내용                                                                                    |
-| -------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `projects/<project>/<session>.jsonl`         | 전체 대화 트랜스크립트: 모든 메시지, 도구 호출, 도구 결과                                                    |
-| `projects/<project>/<session>/subagents/`    | [Subagent](/ko/sub-agents) 대화 트랜스크립트로, 상위 세션 트랜스크립트가 만료될 때 함께 제거됨                     |
-| `projects/<project>/<session>/tool-results/` | 별도 파일로 유출된 대형 도구 출력                                                                   |
-| `file-history/<session>/`                    | Claude가 변경한 파일의 편집 전 스냅샷으로, [checkpoint 복원](/ko/checkpointing)에 사용됨                   |
-| `plans/`                                     | [plan mode](/ko/permission-modes#analyze-before-you-edit-with-plan-mode) 중에 작성된 계획 파일 |
-| `debug/`                                     | 세션별 디버그 로그로, `--debug`로 시작하거나 `/debug`를 실행할 때만 작성됨                                    |
-| `paste-cache/`, `image-cache/`               | 대형 붙여넣기 및 첨부 이미지의 내용                                                                  |
-| `session-env/`                               | 세션별 환경 메타데이터                                                                          |
-| `tasks/`                                     | 작업 도구로 작성된 세션별 작업 목록                                                                  |
-| `shell-snapshots/`                           | Bash 도구에서 사용하는 캡처된 셸 환경입니다. 정상 종료 시 제거됩니다. 스윕은 충돌 후 남겨진 항목을 정리합니다.                    |
-| `backups/`                                   | 설정 마이그레이션 전에 `~/.claude.json`의 타임스탬프 복사본                                              |
-| `feedback-bundles/`                          | 제3자 공급자에서 `/feedback`으로 작성된 수정된 트랜스크립트 아카이브로, Anthropic 계정 팀에 전송하기 위함                 |
-| `todos/`, `statsig/`, `logs/`                | 이전 버전의 레거시 디렉토리입니다. 더 이상 작성되지 않습니다. 스윕은 내용을 제거한 후 빈 디렉토리를 제거합니다.                      |
+| `~/.claude/` 아래 경로                           | 내용                                                                                                                                                                     |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `projects/<project>/<session>.jsonl`         | 전체 대화 트랜스크립트: 모든 메시지, 도구 호출, 도구 결과                                                                                                                                     |
+| `projects/<project>/<session>/subagents/`    | [Subagent](/docs/ko/sub-agents) 대화 트랜스크립트로, 상위 세션 트랜스크립트가 만료될 때 함께 제거됨                                                                                                      |
+| `projects/<project>/<session>/tool-results/` | 별도 파일로 유출된 대형 도구 출력                                                                                                                                                    |
+| `file-history/<session>/`                    | Claude가 변경한 파일의 편집 전 스냅샷으로, [checkpoint 복원](/docs/ko/checkpointing)에 사용됨. 가장 최근의 100개 checkpoint에 대한 스냅샷을 보유하며, 보유된 checkpoint가 참조하지 않는 스냅샷 파일은 각 파일의 첫 번째 스냅샷을 제외하고 삭제됩니다. |
+| `plans/`                                     | [plan mode](/docs/ko/permission-modes#analyze-before-you-edit-with-plan-mode) 중에 작성된 계획 파일                                                                                  |
+| `debug/`                                     | 세션별 디버그 로그로, `--debug`로 시작하거나 `/debug`를 실행할 때만 작성됨                                                                                                                     |
+| `paste-cache/`, `image-cache/`               | 대형 붙여넣기 및 첨부 이미지의 내용                                                                                                                                                   |
+| `session-env/`                               | 세션별 환경 메타데이터                                                                                                                                                           |
+| `tasks/`                                     | 작업 도구로 작성된 세션별 작업 목록                                                                                                                                                   |
+| `shell-snapshots/`                           | 시작 시 캡처되고 [Bash tool](/docs/ko/tools-reference#bash-tool-behavior)에 의해 각 명령에 적용되는 별칭, 함수, 셸 옵션입니다. 정상 종료 시 제거됩니다. 스윕은 충돌 후 남겨진 항목을 정리합니다.                                   |
+| `backups/`                                   | 설정 마이그레이션 전에 `~/.claude.json`의 타임스탬프 복사본                                                                                                                               |
+| `feedback-bundles/`                          | 제3자 공급자에서 `/feedback`으로 작성되거나 Anthropic 자격 증명이 구성되지 않은 경우 작성된 수정된 트랜스크립트 아카이브로, Anthropic 계정 팀에 전송하기 위함                                                                |
+| `todos/`, `statsig/`, `logs/`                | 이전 버전의 레거시 디렉토리입니다. 더 이상 작성되지 않습니다. 스윕은 내용을 제거한 후 빈 디렉토리를 제거합니다.                                                                                                       |
 
 <h3 id="kept-until-you-delete-them">
   삭제할 때까지 유지됨
@@ -1558,7 +1558,7 @@ Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUD
 | ---------------------- | -------------------------------------------------------------------------------------------- |
 | `history.jsonl`        | 입력한 모든 프롬프트로, 타임스탬프 및 프로젝트 경로 포함. 위쪽 화살표 회상에 사용됨.                                            |
 | `stats-cache.json`     | `/usage`로 표시된 집계 토큰 및 비용 계산                                                                  |
-| `remote-settings.json` | 조직의 [서버 관리 설정](/ko/server-managed-settings)의 캐시된 복사본입니다. 조직이 설정한 경우에만 존재합니다. 각 시작 시 새로고침됩니다. |
+| `remote-settings.json` | 조직의 [서버 관리 설정](/docs/ko/server-managed-settings)의 캐시된 복사본입니다. 조직이 설정한 경우에만 존재합니다. 각 시작 시 새로고침됩니다. |
 
 기타 작은 캐시 및 잠금 파일은 사용하는 기능에 따라 나타나며 안전하게 삭제할 수 있습니다.
 
@@ -1569,8 +1569,8 @@ Windows에서 `~/.claude`는 `%USERPROFILE%\.claude`로 확인됩니다. [`CLAUD
 트랜스크립트 및 기록은 저장 시 암호화되지 않습니다. OS 파일 권한이 유일한 보호입니다. 도구가 `.env` 파일을 읽거나 명령이 자격 증명을 인쇄하면, 해당 값이 `projects/<project>/<session>.jsonl`에 작성됩니다. 노출을 줄이려면:
 
 * `cleanupPeriodDays`를 낮춰 트랜스크립트를 유지하는 기간을 단축합니다.
-* [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/ko/env-vars) 환경 변수를 설정하여 모든 모드에서 트랜스크립트 및 프롬프트 기록 작성을 건너뜁니다. 비대화형 모드에서는 대신 `-p`와 함께 `--no-session-persistence`를 전달하거나 Agent SDK에서 `persistSession: false`를 설정할 수 있습니다.
-* [권한 규칙](/ko/permissions)을 사용하여 자격 증명 파일의 읽기를 거부합니다.
+* [`CLAUDE_CODE_SKIP_PROMPT_HISTORY`](/docs/ko/env-vars) 환경 변수를 설정하여 모든 모드에서 트랜스크립트 및 프롬프트 기록 작성을 건너뜁니다. 비대화형 모드에서는 대신 `-p`와 함께 `--no-session-persistence`를 전달하거나 Agent SDK에서 `persistSession: false`를 설정할 수 있습니다.
+* [권한 규칙](/docs/ko/permissions)을 사용하여 자격 증명 파일의 읽기를 거부합니다.
 
 <h3 id="clear-local-data">
   로컬 데이터 지우기
@@ -1627,7 +1627,7 @@ claude project purge ~/work/my-repo --yes
   관련 리소스
 </h2>
 
-* [Claude의 메모리 관리](/ko/memory): CLAUDE.md, rules, auto memory 작성 및 구성
-* [설정 구성](/ko/settings): 권한, hooks, 환경 변수, 모델 기본값 설정
-* [Skills 생성](/ko/skills): 재사용 가능한 프롬프트 및 워크플로우 구축
-* [Subagents 구성](/ko/sub-agents): 자신의 컨텍스트가 있는 특화된 에이전트 정의
+* [Claude의 메모리 관리](/docs/ko/memory): CLAUDE.md, rules, auto memory 작성 및 구성
+* [설정 구성](/docs/ko/settings): 권한, hooks, 환경 변수, 모델 기본값 설정
+* [Skills 생성](/docs/ko/skills): 재사용 가능한 프롬프트 및 워크플로우 구축
+* [Subagents 구성](/docs/ko/sub-agents): 자신의 컨텍스트가 있는 특화된 에이전트 정의

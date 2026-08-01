@@ -7,7 +7,7 @@
 > 웹훅, 알림, 채팅 메시지를 Claude Code 세션으로 푸시하는 MCP 서버를 구축합니다. 채널 계약 참조: 기능 선언, 알림 이벤트, 회신 도구, 발신자 게이팅, 권한 릴레이.
 
 <Note>
-  채널은 [연구 미리보기](/ko/channels#research-preview)에 있으며 Claude Code v2.1.80 이상이 필요합니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](/ko/channels#enterprise-controls)해야 합니다.
+  채널은 [연구 미리보기](/docs/ko/channels#research-preview)에 있습니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](/docs/ko/channels#enterprise-controls)해야 합니다.
 </Note>
 
 채널은 Claude Code 세션으로 이벤트를 푸시하는 MCP 서버이므로 Claude는 터미널 외부에서 발생하는 일에 반응할 수 있습니다.
@@ -25,7 +25,7 @@
 * [인바운드 메시지 게이팅](#gate-inbound-messages): 프롬프트 주입을 방지하기 위한 발신자 확인
 * [권한 프롬프트 릴레이](#relay-permission-prompts): 도구 승인 프롬프트를 원격 채널로 전달
 
-기존 채널을 사용하는 대신 구축하려면 [채널](/ko/channels)을 참조하세요. Telegram, Discord, iMessage 및 fakechat은 연구 미리보기에 포함되어 있습니다.
+기존 채널을 사용하는 대신 구축하려면 [채널](/docs/ko/channels)을 참조하세요. Telegram, Discord, iMessage 및 fakechat은 연구 미리보기에 포함되어 있습니다.
 
 <h2 id="overview">
   개요
@@ -36,7 +36,7 @@
 * **채팅 플랫폼** (Telegram, Discord): 플러그인이 로컬에서 실행되고 플랫폼의 API를 폴링하여 새 메시지를 확인합니다. 누군가 봇에 DM을 보내면 플러그인이 메시지를 수신하고 Claude로 전달합니다. 노출할 URL이 없습니다.
 * **웹훅** (CI, 모니터링): 서버가 로컬 HTTP 포트에서 수신합니다. 외부 시스템이 해당 포트에 POST하고 서버가 페이로드를 Claude로 푸시합니다.
 
-<img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/ko/images/channel-architecture.svg" alt="외부 시스템이 로컬 채널 서버에 연결되고 stdio를 통해 Claude Code와 통신하는 아키텍처 다이어그램" />
+<img src="https://mintcdn.com/claude-code/9FG0ZKj9uKYiHmbi/images/channel-architecture.svg?fit=max&auto=format&n=9FG0ZKj9uKYiHmbi&q=85&s=9a037b7da80184ae49015c0256b21a1f" alt="외부 시스템이 로컬 채널 서버에 연결되고 stdio를 통해 Claude Code와 통신하는 아키텍처 다이어그램" width="600" height="220" data-path="images/channel-architecture.svg" />
 
 <h2 id="what-you-need">
   필요한 것
@@ -52,7 +52,7 @@
 
 [서버 옵션](#server-options) 및 [알림 형식](#notification-format) 섹션에서 각각을 자세히 다룹니다. 전체 연습은 [예: 웹훅 수신기 구축](#example-build-a-webhook-receiver)을 참조하세요.
 
-연구 미리보기 중에 사용자 정의 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없습니다. `--dangerously-load-development-channels`를 사용하여 로컬에서 테스트합니다. 자세한 내용은 [연구 미리보기 중 테스트](#test-during-the-research-preview)를 참조하세요.
+연구 미리보기 중에 사용자 정의 채널은 [승인된 허용 목록](/docs/ko/channels#supported-channels)에 없습니다. `--dangerously-load-development-channels`를 사용하여 로컬에서 테스트합니다. 자세한 내용은 [연구 미리보기 중 테스트](#test-during-the-research-preview)를 참조하세요.
 
 <h2 id="example-build-a-webhook-receiver">
   예: 웹훅 수신기 구축
@@ -148,7 +148,7 @@
 
     시작 배너 아래의 흐린 공지는 채널이 등록되었음을 확인합니다: `Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`.
 
-    "조직 정책에 의해 차단됨"이 표시되면 조직 관리자가 먼저 [채널을 활성화](/ko/channels#enterprise-controls)해야 합니다.
+    "조직 정책에 의해 차단됨"이 표시되면 조직 관리자가 먼저 [채널을 활성화](/docs/ko/channels#enterprise-controls)해야 합니다.
 
     별도의 터미널에서 HTTP POST를 메시지와 함께 서버로 보내 웹훅을 시뮬레이션합니다. 이 예제는 CI 실패 알림을 포트 8788로 보냅니다 (또는 구성한 포트):
 
@@ -177,7 +177,7 @@
   연구 미리보기 중 테스트
 </h2>
 
-연구 미리보기 중에 모든 채널은 등록하기 위해 [승인된 허용 목록](/ko/channels#research-preview)에 있어야 합니다. 개발 플래그는 확인 프롬프트 후 특정 항목에 대한 허용 목록을 우회합니다. 이 예제는 두 항목 유형을 모두 보여줍니다:
+연구 미리보기 중에 모든 채널은 등록하기 위해 [승인된 허용 목록](/docs/ko/channels#research-preview)에 있어야 합니다. 개발 플래그는 확인 프롬프트 후 특정 항목에 대한 허용 목록을 우회합니다. 이 예제는 두 항목 유형을 모두 보여줍니다:
 
 ```bash theme={null}
 # 개발 중인 플러그인 테스트
@@ -453,10 +453,6 @@ await mcp.notification({ ... })
   권한 프롬프트 릴레이
 </h2>
 
-<Note>
-  권한 릴레이는 Claude Code v2.1.81 이상이 필요합니다. 이전 버전은 `claude/channel/permission` 기능을 무시합니다.
-</Note>
-
 Claude가 승인이 필요한 도구를 호출할 때 로컬 터미널 대화가 열리고 세션이 대기합니다. 양방향 채널은 동일한 프롬프트를 병렬로 수신하고 다른 장치의 사용자에게 릴레이하도록 선택할 수 있습니다. 둘 다 활성 상태로 유지됩니다: 터미널 또는 휴대폰에서 답변할 수 있으며 Claude Code는 먼저 도착하는 답변을 적용하고 다른 답변을 닫습니다.
 
 릴레이는 `Bash`, `Write` 및 `Edit`과 같은 도구 사용 승인을 다룹니다. 프로젝트 신뢰 및 MCP 서버 동의 대화는 릴레이되지 않습니다. 이들은 로컬 터미널에만 나타납니다.
@@ -474,7 +470,7 @@ Claude가 승인이 필요한 도구를 호출할 때 로컬 터미널 대화가
 
 로컬 터미널 대화는 이 모든 과정을 통해 열려 있습니다. 터미널의 누군가가 원격 판정이 도착하기 전에 답변하면 해당 답변이 대신 적용되고 보류 중인 원격 요청이 삭제됩니다.
 
-<img src="https://mintlify.s3.us-west-1.amazonaws.com/claude-code/ko/images/channel-permission-relay.svg" alt="시퀀스 다이어그램: Claude Code가 permission_request 알림을 채널 서버로 보내고, 서버가 프롬프트를 채팅 앱으로 포맷하고 보내며, 인간이 판정으로 회신하고, 서버가 해당 회신을 Claude Code로 다시 권한 알림으로 구문 분석합니다" />
+<img src="https://mintcdn.com/claude-code/9FG0ZKj9uKYiHmbi/images/channel-permission-relay.svg?fit=max&auto=format&n=9FG0ZKj9uKYiHmbi&q=85&s=97d57f128f0da55f105ab1e3a7e10240" alt="시퀀스 다이어그램: Claude Code가 permission_request 알림을 채널 서버로 보내고, 서버가 프롬프트를 채팅 앱으로 포맷하고 보내며, 인간이 판정으로 회신하고, 서버가 해당 회신을 Claude Code로 다시 권한 알림으로 구문 분석합니다" width="600" height="230" data-path="images/channel-permission-relay.svg" />
 
 <h3 id="permission-request-fields">
   권한 요청 필드
@@ -775,17 +771,17 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
   플러그인으로 패키징
 </h2>
 
-채널을 설치 가능하고 공유 가능하게 하려면 [플러그인](/ko/plugins)으로 래핑하고 [마켓플레이스](/ko/plugin-marketplaces)에 게시합니다. 사용자는 `/plugin install`로 설치한 다음 `--channels plugin:<name>@<marketplace>`로 세션별로 활성화합니다.
+채널을 설치 가능하고 공유 가능하게 하려면 [플러그인](/docs/ko/plugins)으로 래핑하고 [마켓플레이스](/docs/ko/plugin-marketplaces)에 게시합니다. 사용자는 `/plugin install`로 설치한 다음 `--channels plugin:<name>@<marketplace>`로 세션별로 활성화합니다.
 
-자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 기본 허용 목록은 `claude-plugins-official`의 채널 플러그인이며, Anthropic이 재량에 따라 관리합니다. [인앱 제출 양식](/ko/plugins#submit-your-plugin-to-the-community-marketplace)은 플러그인을 커뮤니티 마켓플레이스에 추가하며, 이는 채널 허용 목록에 없습니다.
+자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/docs/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 기본 허용 목록은 `claude-plugins-official`의 채널 플러그인이며, Anthropic이 재량에 따라 관리합니다. [인앱 제출 양식](/docs/ko/plugins#submit-your-plugin-to-the-community-marketplace)은 플러그인을 커뮤니티 마켓플레이스에 추가하며, 이는 채널 허용 목록에 없습니다.
 
-Anthropic 파트너 담당자와 함께 작업 중인 경우 공식 마켓플레이스 목록을 조정하기 위해 연락합니다. Team 및 Enterprise 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
+Anthropic 파트너 담당자와 함께 작업 중인 경우 공식 마켓플레이스 목록을 조정하기 위해 연락합니다. Team 및 Enterprise 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/docs/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
 
 <h2 id="see-also">
   참고 항목
 </h2>
 
-* [채널](/ko/channels)을 설치하고 Telegram, Discord, iMessage 또는 fakechat 데모를 사용하며 팀 또는 엔터프라이즈 조직에 대해 채널을 활성화합니다
+* [채널](/docs/ko/channels)을 설치하고 Telegram, Discord, iMessage 또는 fakechat 데모를 사용하며 팀 또는 엔터프라이즈 조직에 대해 채널을 활성화합니다
 * [작동하는 채널 구현](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)은 페어링 흐름, 회신 도구 및 파일 첨부가 있는 완전한 서버 코드입니다
-* [MCP](/ko/mcp)는 채널 서버가 구현하는 기본 프로토콜입니다
-* [플러그인](/ko/plugins)을 사용하여 채널을 패키징하면 사용자가 `/plugin install`로 설치할 수 있습니다
+* [MCP](/docs/ko/mcp)는 채널 서버가 구현하는 기본 프로토콜입니다
+* [플러그인](/docs/ko/plugins)을 사용하여 채널을 패키징하면 사용자가 `/plugin install`로 설치할 수 있습니다

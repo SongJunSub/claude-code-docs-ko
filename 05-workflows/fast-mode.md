@@ -18,10 +18,6 @@
   Opus 4.7의 빠른 모드는 2026년 6월 25일부터 더 이상 사용되지 않으며 2026년 7월 24일에 제거될 예정입니다. 제거 후 Opus 4.7의 빠른 모드 요청은 오류를 반환하며 표준 Opus 4.7로 폴백되지 않습니다. 속도 향상을 유지하려면 Opus 4.8로 마이그레이션하십시오.
 </Warning>
 
-<Note>
-  빠른 모드는 Claude Code v2.1.36 이상이 필요합니다. `claude --version`으로 버전을 확인하십시오.
-</Note>
-
 알아야 할 사항:
 
 * Claude Code CLI에서 `/fast`를 사용하여 빠른 모드를 전환합니다. 빠른 모드는 VS Code 확장 프로그램에서 지원되지 않습니다.
@@ -36,9 +32,9 @@
 빠른 모드를 다음 중 한 가지 방법으로 전환합니다:
 
 * `/fast`를 입력하고 Tab을 눌러 켜거나 끕니다
-* [사용자 설정 파일](/ko/settings)에서 `"fastMode": true`를 설정합니다
+* [사용자 설정 파일](/docs/ko/settings)에서 `"fastMode": true`를 설정합니다
 
-기본적으로 빠른 모드는 세션 간에 유지됩니다. 관리자는 빠른 모드를 각 세션마다 재설정하도록 구성할 수 있습니다. 자세한 내용은 [세션별 옵트인 필요](#require-per-session-opt-in)를 참조합니다.
+기본적으로 빠른 모드는 대화형 세션에서 켜면 세션 간에 유지됩니다. {/* min-version: 2.1.205 */}[비대화형 모드](/docs/ko/headless)에서 `-p` 플래그를 사용하면, `/fast`는 [`--settings`](/docs/ko/cli-reference#cli-flags) 값에 빠른 모드가 켜져 있는 상태로 시작된 세션에서만 작동합니다. 예를 들어 `claude -p --settings '{"fastMode": true}'`와 같이 사용하면, 토글이 해당 세션에만 적용되며 기본값으로 저장되지 않으며, 다른 비대화형 세션에서는 빠른 모드를 사용할 수 없다는 명령 보고가 나타납니다. 빠른 모드를 각 세션마다 재설정하도록 구성할 수 있습니다. 자세한 내용은 [세션별 옵트인 필요](#require-per-session-opt-in)를 참조합니다.
 
 최상의 비용 효율성을 위해 대화 중간에 전환하기보다는 세션 시작 시 빠른 모드를 활성화합니다. 자세한 내용은 [비용 트레이드오프 이해](#understand-the-cost-tradeoff)를 참조합니다.
 
@@ -50,6 +46,8 @@
 * 언제든지 `/fast`를 다시 실행하여 빠른 모드가 켜져 있는지 꺼져 있는지 확인합니다
 
 `/fast`를 다시 실행하여 빠른 모드를 비활성화하면 Opus에 유지됩니다. 모델이 이전 모델로 되돌아가지 않습니다. 다른 모델로 전환하려면 `/model`을 사용합니다.
+
+빠른 모드를 지원하지 않는 모델로 전환하면 빠른 모드가 꺼집니다. {/* min-version: 2.1.208 */}지원되는 Opus 모델로 다시 전환하면 저장된 빠른 모드 기본 설정이 켜져 있을 때 다시 켜집니다. 이는 새 세션이 기본적으로 시작되는 것과 동일한 기본 설정입니다. [세션별 옵트인](#require-per-session-opt-in)이 구성된 경우, 다시 전환해도 빠른 모드가 다시 켜지지 않습니다. `/fast`를 실행하여 다시 활성화합니다. 저장된 기본 설정이 꺼져 있는 세션에서는 빠른 모드가 절대 켜지지 않으며, `↯` 아이콘과 `Fast mode ON` 확인이 활성화될 때마다 나타납니다. v2.1.208 이전에는 다시 전환한 후 `/fast`를 다시 실행할 때까지 빠른 모드가 꺼진 상태로 유지되었습니다.
 
 Opus 4.8은 Claude Code v2.1.154 이상에서 빠른 모드 기본값입니다. v2.1.142부터 v2.1.153까지는 빠른 모드가 Opus 4.7로 기본 설정됩니다.
 
@@ -66,7 +64,7 @@ Opus 4.8은 Claude Code v2.1.154 이상에서 빠른 모드 기본값입니다. 
 
 빠른 모드 가격은 전체 1M 토큰 컨텍스트 윈도우에 걸쳐 고정입니다. 표준 Opus 요금을 비교하려면 [Claude 가격 책정 참고](https://platform.claude.com/docs/ko/about-claude/pricing)를 참조하십시오.
 
-대화 중간에 빠른 모드를 처음 활성화하면 전체 대화 컨텍스트에 대해 전체 빠른 모드 캐시되지 않은 입력 토큰 가격을 지불합니다. 대화가 진행될수록 비용이 더 많이 들므로, 처음부터 빠른 모드를 활성화하는 것이 더 저렴합니다. 비용은 대화당 한 번만 적용되므로, 나중에 빠른 모드를 끄고 다시 켜도 반복되지 않습니다. 메커니즘에 대해서는 [빠른 모드가 프롬프트 캐시와 상호작용하는 방식](/ko/prompt-caching#turning-on-fast-mode)을 참조하십시오.
+대화 중간에 빠른 모드를 처음 활성화하면 전체 대화 컨텍스트에 대해 전체 빠른 모드 캐시되지 않은 입력 토큰 가격을 지불합니다. 대화가 진행될수록 비용이 더 많이 들므로, 처음부터 빠른 모드를 활성화하는 것이 더 저렴합니다. 비용은 대화당 한 번만 적용되므로, 나중에 빠른 모드를 끄고 다시 켜도 반복되지 않습니다. 메커니즘에 대해서는 [빠른 모드가 프롬프트 캐시와 상호작용하는 방식](/docs/ko/prompt-caching#turning-on-fast-mode)을 참조하십시오.
 
 <h2 id="decide-when-to-use-fast-mode">
   빠른 모드 사용 시기 결정
@@ -95,7 +93,7 @@ Opus 4.8은 Claude Code v2.1.154 이상에서 빠른 모드 기본값입니다. 
 | **빠른 모드**    | 동일한 모델 품질, 낮은 지연 시간, 높은 비용                |
 | **낮은 노력 수준** | 더 적은 생각 시간, 더 빠른 응답, 복잡한 작업에서 잠재적으로 낮은 품질 |
 
-둘 다 결합할 수 있습니다: 간단한 작업에서 최대 속도를 위해 낮은 [노력 수준](/ko/model-config#adjust-effort-level)과 함께 빠른 모드를 사용합니다.
+둘 다 결합할 수 있습니다: 간단한 작업에서 최대 속도를 위해 낮은 [노력 수준](/docs/ko/model-config#adjust-effort-level)과 함께 빠른 모드를 사용합니다.
 
 <h2 id="requirements">
   요구사항
@@ -103,8 +101,8 @@ Opus 4.8은 Claude Code v2.1.154 이상에서 빠른 모드 기본값입니다. 
 
 빠른 모드는 다음 모두를 필요로 합니다:
 
-* **Anthropic API 또는 구독만 해당**: 빠른 모드는 Anthropic Console API 및 사용 크레딧을 사용하는 Claude 구독 요금제를 통해 사용할 수 있습니다. Amazon Bedrock, Google Vertex AI, Microsoft Azure Foundry 또는 AWS의 Claude Platform에서는 사용할 수 없습니다.
-* **사용 크레딧 활성화**: 계정에 사용 크레딧이 활성화되어 있어야 하며, 이를 통해 요금제의 포함된 사용량을 초과하여 청구할 수 있습니다. 개인 계정의 경우 [Console 청구 설정](https://platform.claude.com/settings/organization/billing)에서 활성화합니다. Team 및 Enterprise의 경우 관리자가 조직에 대해 사용 크레딧을 활성화해야 합니다.
+* **Anthropic API 또는 구독만 해당**: 빠른 모드는 Anthropic Console API 및 사용 크레딧을 사용하는 Claude 구독 요금제를 통해 사용할 수 있습니다. Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry 또는 AWS의 Claude Platform에서는 사용할 수 없습니다.
+* **사용 크레딧 활성화**: 계정에 사용 크레딧이 활성화되어 있어야 하며, 이를 통해 요금제의 포함된 사용량을 초과하여 청구할 수 있습니다. 개인 계정의 경우 [Console 청구 설정](https://platform.claude.com/settings/billing)에서 활성화합니다. Team 및 Enterprise의 경우 관리자가 조직에 대해 사용 크레딧을 활성화해야 합니다.
 
 <Note>
   빠른 모드 사용량은 요금제에 남은 사용량이 있더라도 사용 크레딧에서 직접 인출됩니다. 이는 빠른 모드 토큰이 요금제의 포함된 사용량에 포함되지 않으며 첫 번째 토큰부터 빠른 모드 요금으로 청구됨을 의미합니다.
@@ -113,7 +111,7 @@ Opus 4.8은 Claude Code v2.1.154 이상에서 빠른 모드 기본값입니다. 
 * **Team 및 Enterprise의 관리자 활성화**: 빠른 모드는 Team 및 Enterprise 조직에 대해 기본적으로 비활성화됩니다. 사용자가 액세스할 수 있으려면 관리자가 명시적으로 [빠른 모드를 활성화](#enable-fast-mode-for-your-organization)해야 합니다.
 
 <Note>
-  관리자가 조직에 대해 빠른 모드를 활성화하지 않은 경우 `/fast` 명령은 "Fast mode has been disabled by your organization."을 표시합니다. 조직의 [`availableModels`](/ko/model-config#restrict-model-selection) 허용 목록이 빠른 모드 Opus 모델을 제외하는 경우 `/fast`는 "is not in your organization's allowed models"로 거부됩니다. 예외는 빠른 모드를 지원하는 허용된 Opus 모델에서 이미 실행 중인 세션입니다: `/fast`는 모델을 전환하는 대신 현재 모델에서 빠른 모드를 활성화합니다.
+  관리자가 조직에 대해 빠른 모드를 활성화하지 않은 경우 `/fast` 명령은 "Fast mode has been disabled by your organization."을 표시합니다. 조직의 [`availableModels`](/docs/ko/model-config#restrict-model-selection) 허용 목록이 빠른 모드 Opus 모델을 제외하는 경우 `/fast`는 "is not in your organization's allowed models"로 거부됩니다. 예외는 빠른 모드를 지원하는 허용된 Opus 모델에서 이미 실행 중인 세션입니다: `/fast`는 모델을 전환하는 대신 현재 모델에서 빠른 모드를 활성화합니다.
 </Note>
 
 <h3 id="enable-fast-mode-for-your-organization">
@@ -125,13 +123,13 @@ Opus 4.8은 Claude Code v2.1.154 이상에서 빠른 모드 기본값입니다. 
 * **Console** (API 고객): 관리자가 [Claude Code 기본 설정](https://platform.claude.com/claude-code/preferences)에서 활성화합니다
 * **Claude AI** (Team 및 Enterprise): 관리자가 [관리자 설정 > Claude Code](https://claude.ai/admin-settings/claude-code)에서 활성화합니다
 
-빠른 모드를 완전히 비활성화하는 또 다른 옵션은 `CLAUDE_CODE_DISABLE_FAST_MODE=1`을 설정하는 것입니다. [환경 변수](/ko/env-vars)를 참조합니다.
+빠른 모드를 완전히 비활성화하는 또 다른 옵션은 `CLAUDE_CODE_DISABLE_FAST_MODE=1`을 설정하는 것입니다. [환경 변수](/docs/ko/env-vars)를 참조합니다.
 
 <h3 id="require-per-session-opt-in">
   세션별 옵트인 필요
 </h3>
 
-기본적으로 빠른 모드는 세션 간에 유지됩니다: 사용자가 빠른 모드를 활성화하면 향후 세션에서도 켜져 있습니다. [Team](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_teams#team-&-enterprise) 또는 [Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_enterprise) 요금제의 관리자는 [관리되는 설정](/ko/settings#settings-files) 또는 [서버 관리 설정](/ko/server-managed-settings)에서 `fastModePerSessionOptIn`을 `true`로 설정하여 이를 방지할 수 있습니다. 이로 인해 각 세션이 빠른 모드가 꺼진 상태로 시작되며, 사용자가 `/fast`로 명시적으로 활성화해야 합니다.
+기본적으로 빠른 모드는 세션 간에 유지됩니다: 사용자가 빠른 모드를 활성화하면 향후 세션에서도 켜져 있습니다. 이를 변경하려면 [설정 파일](/docs/ko/settings#settings-files)에서 `fastModePerSessionOptIn`을 `true`로 설정합니다. 이로 인해 각 세션이 빠른 모드가 꺼진 상태로 시작되며, 사용자가 `/fast`로 명시적으로 활성화해야 합니다. [Team](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_teams#team-&-enterprise) 또는 [Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_enterprise) 요금제의 관리자는 [서버 관리 설정](/docs/ko/server-managed-settings)을 통해 조직 전체에 배포할 수 있습니다.
 
 ```json theme={null}
 {
@@ -170,6 +168,6 @@ Opus 4.8은 Claude Code v2.1.154 이상에서 빠른 모드 기본값입니다. 
   참고 항목
 </h2>
 
-* [모델 구성](/ko/model-config): 모델 전환 및 노력 수준 조정
-* [비용 효과적으로 관리](/ko/costs): 토큰 사용량 추적 및 비용 감소
-* [상태 줄 구성](/ko/statusline): 모델 및 컨텍스트 정보 표시
+* [모델 구성](/docs/ko/model-config): 모델 전환 및 노력 수준 조정
+* [비용 효과적으로 관리](/docs/ko/costs): 토큰 사용량 추적 및 비용 감소
+* [상태 줄 구성](/docs/ko/statusline): 모델 및 컨텍스트 정보 표시

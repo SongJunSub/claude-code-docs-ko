@@ -8,7 +8,7 @@
 
 예약된 작업은 선택한 시간과 빈도에 따라 새 세션을 자동으로 시작합니다. 일일 코드 리뷰, 종속성 업데이트 확인 또는 캘린더와 받은편지함에서 정보를 가져오는 아침 브리핑과 같은 반복 작업에 사용합니다.
 
-Desktop 앱의 **Routines** 페이지를 통해 로컬 예약된 작업과 원격 [routines](/ko/routines)을 모두 만들 수 있습니다. 로컬 작업은 사용자의 머신에서 실행되며 파일과 도구에 직접 접근할 수 있지만, 앱이 열려 있고 컴퓨터가 깨어 있을 때만 실행됩니다. 원격 routine은 컴퓨터가 꺼져 있어도 Anthropic 관리 클라우드 인프라에서 실행되며, API 호출이나 GitHub 이벤트에 대해서도 실행될 수 있습니다. 이 페이지는 로컬 예약된 작업을 다룹니다. 원격 routine과 해당 트리거 옵션에 대해서는 [Routines](/ko/routines)을 참조하세요.
+Desktop 앱의 **Routines** 페이지를 통해 로컬 예약된 작업과 원격 [routines](/docs/ko/routines)을 모두 만들 수 있습니다. 로컬 작업은 사용자의 머신에서 실행되며 파일과 도구에 직접 접근할 수 있지만, 앱이 열려 있고 컴퓨터가 깨어 있을 때만 실행됩니다. 원격 routine은 컴퓨터가 꺼져 있어도 Anthropic 관리 클라우드 인프라에서 실행되며, API 호출이나 GitHub 이벤트에 대해서도 실행될 수 있습니다. 이 페이지는 로컬 예약된 작업을 다룹니다. 원격 routine과 해당 트리거 옵션에 대해서는 [Routines](/docs/ko/routines)을 참조하세요.
 
 <h2 id="compare-scheduling-options">
   예약 옵션 비교
@@ -16,14 +16,14 @@ Desktop 앱의 **Routines** 페이지를 통해 로컬 예약된 작업과 원�
 
 Claude Code offers three ways to schedule recurring or one-off work:
 
-|                            | [Cloud](/en/routines)          | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks)      |
+|                            | [Cloud](/docs/en/routines)          | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
 | :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
 | Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
 | Requires machine on        | No                             | Yes                                    | Yes                                 |
 | Requires open session      | No                             | No                                     | Yes                                 |
 | Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
 | Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
-| MCP servers                | Connectors configured per task | [Config files](/en/mcp) and connectors | Inherits from session               |
+| MCP servers                | Connectors configured per task | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
 | Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
 | Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
 | Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
@@ -33,7 +33,7 @@ Claude Code offers three ways to schedule recurring or one-off work:
 </Tip>
 
 <Note>
-  기본적으로 예약된 작업은 커밋되지 않은 변경 사항을 포함하여 작업 디렉토리의 현재 상태에 대해 실행됩니다. 작업을 만들 때 worktree 토글을 활성화하여 각 실행이 자신의 격리된 Git worktree를 갖도록 하면, [병렬 세션](/ko/desktop#work-in-parallel-with-sessions)과 동일한 방식으로 작동합니다.
+  기본적으로 예약된 작업은 커밋되지 않은 변경 사항을 포함하여 작업 디렉토리의 현재 상태에 대해 실행됩니다. 작업을 만들 때 worktree 토글을 활성화하여 각 실행이 자신의 격리된 Git worktree를 갖도록 하면, [병렬 세션](/docs/ko/desktop#work-in-parallel-with-sessions)과 동일한 방식으로 작동합니다.
 </Note>
 
 <h2 id="create-a-scheduled-task">
@@ -75,7 +75,7 @@ Schedule 컨트롤에서 사전 설정을 선택합니다:
 
 작업이 실행되면 데스크톱 알림을 받고 새 세션이 사이드바의 **Scheduled** 섹션 아래에 나타납니다. 이를 열어 Claude가 수행한 작업을 확인하고, 변경 사항을 검토하거나, 권한 프롬프트에 응답합니다. 세션은 다른 세션처럼 작동합니다: Claude는 파일을 편집하고, 명령을 실행하고, 커밋을 만들고, 풀 요청을 열 수 있습니다.
 
-작업은 desktop 앱이 실행 중이고 컴퓨터가 깨어 있을 때만 실행됩니다. 컴퓨터가 예약된 시간을 통해 절전 모드로 전환되면 실행이 건너뜁니다. 유휴 절전을 방지하려면 **Desktop app → General** 아래의 Settings에서 **Keep computer awake**를 활성화합니다. 노트북 뚜껑을 닫으면 여전히 절전 모드로 전환됩니다. 컴퓨터가 꺼져 있어도 실행되어야 하거나 API 호출이나 GitHub 이벤트에 대해 트리거되어야 하는 작업의 경우, 대신 원격 [routine](/ko/routines)을 만듭니다.
+작업은 desktop 앱이 실행 중이고 컴퓨터가 깨어 있을 때만 실행됩니다. 컴퓨터가 예약된 시간을 통해 절전 모드로 전환되면 실행이 건너뜁니다. 유휴 절전을 방지하려면 **Desktop app → General** 아래의 Settings에서 **Keep computer awake**를 활성화합니다. 노트북 뚜껑을 닫으면 여전히 절전 모드로 전환됩니다. 컴퓨터가 꺼져 있어도 실행되어야 하거나 API 호출이나 GitHub 이벤트에 대해 트리거되어야 하는 작업의 경우, 대신 원격 [routine](/docs/ko/routines)을 만듭니다.
 
 <h2 id="missed-runs">
   놓친 실행
@@ -92,6 +92,8 @@ Schedule 컨트롤에서 사전 설정을 선택합니다:
 각 작업에는 자신의 권한 모드가 있으며, 이는 작업을 만들거나 편집할 때 설정합니다. `~/.claude/settings.json`의 Allow 규칙도 예약된 작업 세션에 적용됩니다. 작업이 Ask 모드에서 실행되고 권한이 없는 도구를 실행해야 하는 경우, 승인할 때까지 실행이 정지됩니다. 세션은 사이드바에 열려 있으므로 나중에 답변할 수 있습니다.
 
 정지를 방지하려면 작업을 만든 후 **Run now**를 클릭하고 권한 프롬프트를 확인한 다음 각 프롬프트에 대해 "always allow"를 선택합니다. 해당 작업의 향후 실행은 프롬프트 없이 동일한 도구를 자동으로 승인합니다. 작업의 세부 정보 페이지에서 이러한 승인을 검토하고 취소할 수 있습니다.
+
+Connector 도구 [조직에서 `ask`로 설정](/docs/ko/mcp#organization-controls-on-connector-tools)된 도구와 [`requiresUserInteraction`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시된 MCP 도구는 매번 호출할 때마다 프롬프트를 표시하며 always-allow 옵션을 제공하지 않습니다. 이러한 도구를 호출하는 실행은 매번 정지됩니다.
 
 <h2 id="manage-scheduled-tasks">
   예약된 작업 관리
@@ -110,13 +112,13 @@ Desktop의 모든 세션에서 Claude에게 요청하여 작업을 나열, 만�
 
 예약된 작업은 실행 중인 세션 내에서 `update_scheduled_task` MCP 도구를 사용하여 자신의 일정이나 프롬프트를 수정할 수도 있습니다. 이를 통해 작업은 발견한 내용에 따라 자신을 재예약할 수 있습니다. 예를 들어, 릴리스 브랜치가 생성되었음을 감지할 때 코드 리뷰를 더 일찍 실행하도록 재예약합니다.
 
-디스크에서 작업의 프롬프트를 편집하려면 `~/.claude/scheduled-tasks/<task-name>/SKILL.md`를 엽니다 (설정된 경우 [`CLAUDE_CONFIG_DIR`](/ko/env-vars) 아래). 파일은 `name` 및 `description`에 대해 YAML frontmatter를 사용하며, 프롬프트는 본문입니다. 변경 사항은 다음 실행에 적용됩니다. Schedule, folder, model 및 enabled state는 이 파일에 없습니다: Edit 양식을 통해 변경하거나 Claude에게 요청합니다.
+디스크에서 작업의 프롬프트를 편집하려면 `~/.claude/scheduled-tasks/<task-name>/SKILL.md`를 엽니다 (설정된 경우 [`CLAUDE_CONFIG_DIR`](/docs/ko/env-vars) 아래). 파일은 `name` 및 `description`에 대해 YAML frontmatter를 사용하며, 프롬프트는 본문입니다. 변경 사항은 다음 실행에 적용됩니다. Schedule, folder, model 및 enabled state는 이 파일에 없습니다: Edit 양식을 통해 변경하거나 Claude에게 요청합니다.
 
 <h2 id="related-resources">
   관련 리소스
 </h2>
 
-* [Routines](/ko/routines): Anthropic 관리 인프라에서 일정에 따라, API 호출을 통해 또는 GitHub 이벤트에 대응하여 작업을 실행합니다. 컴퓨터가 꺼져 있어도 실행됩니다.
-* [Run prompts on a schedule](/ko/scheduled-tasks): CLI에서 `/loop`를 사용한 세션 범위 예약
-* [Claude Code GitHub Actions](/ko/github-actions): 머신에서가 아닌 CI에서 일정에 따라 Claude를 실행합니다.
-* [Use Claude Code Desktop](/ko/desktop): 전체 Desktop 앱 가이드
+* [Routines](/docs/ko/routines): Anthropic 관리 인프라에서 일정에 따라, API 호출을 통해 또는 GitHub 이벤트에 대응하여 작업을 실행합니다. 컴퓨터가 꺼져 있어도 실행됩니다.
+* [Run prompts on a schedule](/docs/ko/scheduled-tasks): CLI에서 `/loop`를 사용한 세션 범위 예약
+* [Claude Code GitHub Actions](/docs/ko/github-actions): 머신에서가 아닌 CI에서 일정에 따라 Claude를 실행합니다.
+* [Use Claude Code Desktop](/docs/ko/desktop): 전체 Desktop 앱 가이드

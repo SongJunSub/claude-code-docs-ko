@@ -8,7 +8,7 @@
 
 플러그인을 사용하면 프로젝트와 팀 전체에서 공유할 수 있는 사용자 정의 기능으로 Claude Code를 확장할 수 있습니다. 이 가이드에서는 skills, agents, hooks, MCP servers를 사용하여 자신의 플러그인을 만드는 방법을 다룹니다.
 
-기존 플러그인을 설치하려고 하시나요? [플러그인 발견 및 설치](/ko/discover-plugins)를 참조하세요. 완전한 기술 사양은 [플러그인 참조](/ko/plugins-reference)를 참조하세요.
+기존 플러그인을 설치하려고 하시나요? [플러그인 발견 및 설치](/docs/ko/discover-plugins)를 참조하세요. 완전한 기술 사양은 [플러그인 참조](/docs/ko/plugins-reference)를 참조하세요.
 
 <h2 id="when-to-use-plugins-vs-standalone-configuration">
   플러그인 대 독립 실행형 구성 사용 시기
@@ -50,10 +50,10 @@ Claude Code는 사용자 정의 skills, agents, hooks를 추가하는 두 가지
   필수 조건
 </h3>
 
-* Claude Code [설치 및 인증](/ko/quickstart#step-1-install-claude-code)
+* Claude Code [설치 및 인증](/docs/ko/quickstart#step-1-install-claude-code)
 
 <Note>
-  `/plugin` 명령이 보이지 않으면 Claude Code를 최신 버전으로 업데이트하세요. 업그레이드 지침은 [문제 해결](/ko/troubleshooting)을 참조하세요.
+  `/plugin` 명령이 보이지 않으면 Claude Code를 최신 버전으로 업데이트하세요. 업그레이드 지침은 [문제 해결](/docs/ko/troubleshooting)을 참조하세요.
 </Note>
 
 <h3 id="create-your-first-plugin">
@@ -62,11 +62,13 @@ Claude Code는 사용자 정의 skills, agents, hooks를 추가하는 두 가지
 
 <Steps>
   <Step title="플러그인 디렉토리 만들기">
-    모든 플러그인은 skills, agents 또는 hooks를 포함하는 자체 디렉토리에 있으며, 선택적으로 `.claude-plugin/plugin.json` 매니페스트와 함께 있습니다. 지금 만들어보세요:
+    모든 플러그인은 skills, agents 또는 hooks를 포함하는 자체 디렉토리에 있으며, 선택적으로 `.claude-plugin/plugin.json` 매니페스트와 함께 있습니다. 이 빠른 시작에서는 `--plugin-dir`을 사용하여 테스트 단계에서 Claude Code가 디렉토리를 가리키기 때문에 위치는 중요하지 않습니다. 스크래치 폴더나 프로젝트 디렉토리와 같이 편리한 곳 어디든 만들 수 있습니다:
 
     ```bash theme={null}
     mkdir my-first-plugin
     ```
+
+    나머지 단계는 상위 디렉토리에서 실행되며 `my-first-plugin/...`과 같은 경로를 상대 경로로 참조합니다.
   </Step>
 
   <Step title="플러그인 매니페스트 만들기">
@@ -95,10 +97,10 @@ Claude Code는 사용자 정의 skills, agents, hooks를 추가하는 두 가지
     | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | `name`        | 고유 식별자 및 skill 네임스페이스. Skills는 이것으로 접두사가 붙습니다 (예: `/my-first-plugin:hello`).                                                                                       |
     | `description` | 플러그인을 검색하거나 설치할 때 플러그인 관리자에 표시됩니다.                                                                                                                                 |
-    | `version`     | 선택 사항. 설정된 경우 사용자는 이 필드를 변경할 때만 업데이트를 받습니다. 생략되고 플러그인이 git을 통해 배포되는 경우 커밋 SHA가 사용되며 모든 커밋이 새 버전으로 계산됩니다. [버전 관리](/ko/plugins-reference#version-management)를 참조하세요. |
+    | `version`     | 선택 사항. 설정된 경우 사용자는 이 필드를 변경할 때만 업데이트를 받습니다. 생략되고 플러그인이 git을 통해 배포되는 경우 커밋 SHA가 사용되며 모든 커밋이 새 버전으로 계산됩니다. [버전 관리](/docs/ko/plugins-reference#version-management)를 참조하세요. |
     | `author`      | 선택 사항. 속성에 유용합니다.                                                                                                                                                  |
 
-    `homepage`, `repository`, `license`와 같은 추가 필드는 [전체 매니페스트 스키마](/ko/plugins-reference#plugin-manifest-schema)를 참조하세요.
+    `homepage`, `repository`, `license`와 같은 추가 필드는 [전체 매니페스트 스키마](/docs/ko/plugins-reference#plugin-manifest-schema)를 참조하세요.
   </Step>
 
   <Step title="Skill 추가">
@@ -165,7 +167,7 @@ Claude Code는 사용자 정의 skills, agents, hooks를 추가하는 두 가지
     /my-first-plugin:hello Alex
     ```
 
-    Claude가 이름으로 인사할 것입니다. skills에 인수를 전달하는 방법에 대한 자세한 내용은 [Skills](/ko/skills#pass-arguments-to-skills)를 참조하세요.
+    Claude가 이름으로 인사할 것입니다. skills에 인수를 전달하는 방법에 대한 자세한 내용은 [Skills](/docs/ko/skills#pass-arguments-to-skills)를 참조하세요.
   </Step>
 </Steps>
 
@@ -176,7 +178,7 @@ Claude Code는 사용자 정의 skills, agents, hooks를 추가하는 두 가지
 * **Skill 인수** (`$ARGUMENTS`): 동적 동작을 위해 사용자 입력을 캡처합니다
 
 <Tip>
-  `--plugin-dir` 플래그는 개발 및 테스트에 유용합니다. 플러그인을 다른 사람과 공유할 준비가 되면 [플러그인 마켓플레이스 만들기 및 배포](/ko/plugin-marketplaces)를 참조하세요.
+  `--plugin-dir` 플래그는 개발 및 테스트에 유용합니다. 플러그인을 다른 사람과 공유할 준비가 되면 [플러그인 마켓플레이스 만들기 및 배포](/docs/ko/plugin-marketplaces)를 참조하세요.
 </Tip>
 
 <h2 id="develop-a-plugin-in-your-skills-directory">
@@ -191,7 +193,7 @@ claude plugin init my-tool
 
 이는 `.claude-plugin/plugin.json` 매니페스트와 시작 `SKILL.md`를 포함하는 `~/.claude/skills/my-tool/`을 만듭니다. 다음 세션에서는 마켓플레이스나 설치 단계 없이 `my-tool@skills-dir`로 로드됩니다.
 
-자동 로드 규칙, 개인 대 프로젝트 범위, 작업 공간 신뢰 요구 사항, 업데이트 또는 제거 방법은 [기술 디렉토리 플러그인](/ko/plugins-reference#skills-directory-plugins)을 참조하세요.
+자동 로드 규칙, 개인 대 프로젝트 범위, 작업 공간 신뢰 요구 사항, 업데이트 또는 제거 방법은 [기술 디렉토리 플러그인](/docs/ko/plugins-reference#skills-directory-plugins)을 참조하세요.
 
 <h2 id="plugin-structure-overview">
   플러그인 구조 개요
@@ -201,6 +203,8 @@ skill을 사용하여 플러그인을 만들었지만, 플러그인에는 훨씬
 
 <Warning>
   **일반적인 실수**: `commands/`, `agents/`, `skills/`, `hooks/`를 `.claude-plugin/` 디렉토리 내에 넣지 마세요. `.claude-plugin/` 내에는 `plugin.json`만 들어갑니다. 다른 모든 디렉토리는 플러그인 루트 수준에 있어야 합니다.
+
+  플러그인 루트는 개별 플러그인의 자체 디렉토리입니다: `.claude-plugin/plugin.json`을 포함하는 디렉토리입니다. 절대 `~/.claude/`가 아닙니다. 예를 들어, Claude Code는 `~/.claude/.mcp.json`에 배치된 `.mcp.json`을 읽지 않습니다.
 </Warning>
 
 | 디렉토리              | 위치      | 목적                                                       |
@@ -214,12 +218,12 @@ skill을 사용하여 플러그인을 만들었지만, 플러그인에는 훨씬
 | `.lsp.json`       | 플러그인 루트 | 코드 인텔리전스를 위한 LSP server 구성                               |
 | `monitors/`       | 플러그인 루트 | `monitors.json`의 백그라운드 모니터 구성                            |
 | `bin/`            | 플러그인 루트 | 플러그인이 활성화된 동안 Bash tool의 `PATH`에 추가되는 실행 파일              |
-| `settings.json`   | 플러그인 루트 | 플러그인이 활성화될 때 적용되는 기본 [설정](/ko/settings)                  |
+| `settings.json`   | 플러그인 루트 | 플러그인이 활성화될 때 적용되는 기본 [설정](/docs/ko/settings)                  |
 
 정확히 하나의 skill을 제공하는 플러그인은 `skills/` 디렉토리를 만드는 대신 `SKILL.md`를 플러그인 루트에 직접 배치할 수 있습니다. Claude Code는 이를 단일 skill로 로드하고 frontmatter `name` 필드를 호출 이름으로 사용합니다. 플러그인이 하나 이상의 skill로 성장할 수 있는 경우 `skills/` 레이아웃을 사용하세요.
 
 <Note>
-  **다음 단계**: 더 많은 기능을 추가할 준비가 되셨나요? [더 복잡한 플러그인 개발](#develop-more-complex-plugins)로 이동하여 agents, hooks, MCP servers, LSP servers를 추가하세요. 모든 플러그인 구성 요소의 완전한 기술 사양은 [플러그인 참조](/ko/plugins-reference)를 참조하세요.
+  **다음 단계**: 더 많은 기능을 추가할 준비가 되셨나요? [더 복잡한 플러그인 개발](#develop-more-complex-plugins)로 이동하여 agents, hooks, MCP servers, LSP servers를 추가하세요. 모든 플러그인 구성 요소의 완전한 기술 사양은 [플러그인 참조](/docs/ko/plugins-reference)를 참조하세요.
 </Note>
 
 <h2 id="develop-more-complex-plugins">
@@ -232,7 +236,7 @@ skill을 사용하여 플러그인을 만들었지만, 플러그인에는 훨씬
   플러그인에 Skills 추가
 </h3>
 
-플러그인은 Claude의 기능을 확장하기 위해 [Agent Skills](/ko/skills)를 포함할 수 있습니다. Skills는 모델 호출입니다: Claude는 작업 컨텍스트에 따라 자동으로 사용합니다.
+플러그인은 Claude의 기능을 확장하기 위해 [Agent Skills](/docs/ko/skills)를 포함할 수 있습니다. Skills는 모델 호출입니다: Claude는 작업 컨텍스트에 따라 자동으로 사용합니다.
 
 플러그인 루트에 `SKILL.md` 파일을 포함하는 Skill 폴더가 있는 `skills/` 디렉토리를 추가합니다:
 
@@ -259,7 +263,7 @@ When reviewing code, check for:
 4. Test coverage
 ```
 
-플러그인을 설치한 후 `/reload-plugins`를 실행하여 Skills를 로드합니다. 점진적 공개 및 도구 제한을 포함한 완전한 Skill 작성 지침은 [Agent Skills](/ko/skills)를 참조하세요.
+플러그인을 설치한 후 `/reload-plugins`를 실행하여 Skills를 로드합니다. 점진적 공개 및 도구 제한을 포함한 완전한 Skill 작성 지침은 [Agent Skills](/docs/ko/skills)를 참조하세요.
 
 <h3 id="add-lsp-servers-to-your-plugin">
   플러그인에 LSP servers 추가
@@ -285,7 +289,7 @@ LSP (Language Server Protocol) 플러그인은 Claude에 실시간 코드 인텔
 
 플러그인을 설치하는 사용자는 자신의 머신에 언어 server 바이너리를 설치해야 합니다.
 
-완전한 LSP 구성 옵션은 [LSP servers](/ko/plugins-reference#lsp-servers)를 참조하세요.
+완전한 LSP 구성 옵션은 [LSP servers](/docs/ko/plugins-reference#lsp-servers)를 참조하세요.
 
 <h3 id="add-background-monitors-to-your-plugin">
   플러그인에 백그라운드 모니터 추가
@@ -305,7 +309,7 @@ LSP (Language Server Protocol) 플러그인은 Claude에 실시간 코드 인텔
 ]
 ```
 
-`command`의 각 stdout 줄은 세션 중에 Claude에 알림으로 전달됩니다. `when` 트리거 및 변수 대체를 포함한 전체 스키마는 [Monitors](/ko/plugins-reference#monitors)를 참조하세요.
+`command`의 각 stdout 줄은 세션 중에 Claude에 알림으로 전달됩니다. `when` 트리거 및 변수 대체를 포함한 전체 스키마는 [Monitors](/docs/ko/plugins-reference#monitors)를 참조하세요.
 
 <h3 id="ship-default-settings-with-your-plugin">
   플러그인과 함께 기본 설정 제공
@@ -313,7 +317,7 @@ LSP (Language Server Protocol) 플러그인은 Claude에 실시간 코드 인텔
 
 플러그인은 플러그인 루트에 `settings.json` 파일을 포함하여 플러그인이 활성화될 때 기본 구성을 적용할 수 있습니다. 현재 `agent` 및 `subagentStatusLine` 키만 지원됩니다.
 
-`agent`를 설정하면 플러그인의 [사용자 정의 agents](/ko/sub-agents) 중 하나를 주 스레드로 활성화하여 시스템 프롬프트, 도구 제한, 모델을 적용합니다. 이를 통해 플러그인은 활성화될 때 Claude Code의 동작 방식을 기본적으로 변경할 수 있습니다.
+`agent`를 설정하면 플러그인의 [사용자 정의 agents](/docs/ko/sub-agents) 중 하나를 주 스레드로 활성화하여 시스템 프롬프트, 도구 제한, 모델을 적용합니다. 이를 통해 플러그인은 활성화될 때 Claude Code의 동작 방식을 기본적으로 변경할 수 있습니다.
 
 ```json settings.json theme={null}
 {
@@ -327,7 +331,7 @@ LSP (Language Server Protocol) 플러그인은 Claude에 실시간 코드 인텔
   복잡한 플러그인 구성
 </h3>
 
-많은 구성 요소가 있는 플러그인의 경우 기능별로 디렉토리 구조를 구성합니다. 완전한 디렉토리 레이아웃 및 구성 패턴은 [플러그인 디렉토리 구조](/ko/plugins-reference#plugin-directory-structure)를 참조하세요.
+많은 구성 요소가 있는 플러그인의 경우 기능별로 디렉토리 구조를 구성합니다. 완전한 디렉토리 레이아웃 및 구성 패턴은 [플러그인 디렉토리 구조](/docs/ko/plugins-reference#plugin-directory-structure)를 참조하세요.
 
 <h3 id="test-your-plugins-locally">
   플러그인을 로컬에서 테스트
@@ -350,7 +354,7 @@ claude --plugin-dir ./my-plugin.zip
 플러그인을 변경할 때 `/reload-plugins`를 실행하여 다시 시작하지 않고 업데이트를 적용합니다. 이는 플러그인, skills, agents, hooks, 플러그인 MCP servers, 플러그인 LSP servers를 다시 로드합니다. 플러그인 구성 요소를 테스트합니다:
 
 * `/plugin-name:skill-name`으로 skills를 시도해보세요
-* agents가 `/agents`에 나타나는지 확인하세요
+* agents가 `/context`의 Custom Agents 아래에 나타나는지 확인하거나 범위가 지정된 이름으로 @-mention하세요
 * hooks가 예상대로 작동하는지 확인하세요
 
 <Tip>
@@ -361,7 +365,7 @@ claude --plugin-dir ./my-plugin.zip
   ```
 </Tip>
 
-URL에서 호스팅되는 `.zip` 아카이브로 이미 패키징된 플러그인을 테스트하려면(예: CI 빌드 아티팩트) 대신 `--plugin-url`을 사용하세요. Claude Code는 시작 시 아카이브를 가져오고 해당 세션에만 로드합니다. 가져오기가 실패하거나 아카이브가 유효하지 않으면 Claude Code는 플러그인 로드 오류를 보고하고 이를 제외하고 시작합니다. 모든 플러그인 소스에 대해 동일한 [신뢰 고려 사항](/ko/discover-plugins#security)이 적용됩니다: 이 플래그를 제어하거나 신뢰하는 아카이브에만 지정하세요.
+URL에서 호스팅되는 `.zip` 아카이브로 이미 패키징된 플러그인을 테스트하려면(예: CI 빌드 아티팩트) 대신 `--plugin-url`을 사용하세요. Claude Code는 시작 시 아카이브를 가져오고 해당 세션에만 로드합니다. 가져오기가 실패하거나 아카이브가 유효하지 않으면 Claude Code는 플러그인 로드 오류를 보고하고 이를 제외하고 시작합니다. 모든 플러그인 소스에 대해 동일한 [신뢰 고려 사항](/docs/ko/discover-plugins#security)이 적용됩니다: 이 플래그를 제어하거나 신뢰하는 아카이브에만 지정하세요.
 
 여러 플러그인을 로드하려면 각 URL에 대해 플래그를 반복합니다:
 
@@ -383,7 +387,7 @@ claude --plugin-url "https://example.com/my-plugin.zip https://example.com/other
 
 1. **구조 확인**: 디렉토리가 `.claude-plugin/` 내부가 아닌 플러그인 루트에 있는지 확인하세요
 2. **구성 요소를 개별적으로 테스트**: 각 skill, agent, hook을 별도로 확인하세요
-3. **검증 및 디버깅 도구 사용**: CLI 명령 및 문제 해결 기법은 [디버깅 및 개발 도구](/ko/plugins-reference#debugging-and-development-tools)를 참조하세요
+3. **검증 및 디버깅 도구 사용**: CLI 명령 및 문제 해결 기법은 [디버깅 및 개발 도구](/docs/ko/plugins-reference#debugging-and-development-tools)를 참조하세요
 
 <h3 id="share-your-plugins">
   플러그인 공유
@@ -392,11 +396,11 @@ claude --plugin-url "https://example.com/my-plugin.zip https://example.com/other
 플러그인을 공유할 준비가 되면:
 
 1. **문서 추가**: 설치 및 사용 지침이 포함된 `README.md`를 포함하세요
-2. **버전 관리 전략 선택**: 명시적 `version`을 설정할지 또는 git 커밋 SHA에 의존할지 결정하세요. [버전 관리](/ko/plugins-reference#version-management)를 참조하세요
-3. **마켓플레이스 만들기 또는 사용**: [플러그인 마켓플레이스](/ko/plugin-marketplaces)를 통해 배포하여 설치하세요
+2. **버전 관리 전략 선택**: 명시적 `version`을 설정할지 또는 git 커밋 SHA에 의존할지 결정하세요. [버전 관리](/docs/ko/plugins-reference#version-management)를 참조하세요
+3. **마켓플레이스 만들기 또는 사용**: [플러그인 마켓플레이스](/docs/ko/plugin-marketplaces)를 통해 배포하여 설치하세요
 4. **다른 사람과 테스트**: 더 광범위한 배포 전에 팀원이 플러그인을 테스트하도록 하세요
 
-플러그인이 마켓플레이스에 있으면 다른 사람들이 [플러그인 발견 및 설치](/ko/discover-plugins)의 지침을 사용하여 설치할 수 있습니다. 플러그인을 팀 내부로만 유지하려면 [비공개 저장소](/ko/plugin-marketplaces#private-repositories)에서 마켓플레이스를 호스팅하세요.
+플러그인이 마켓플레이스에 있으면 다른 사람들이 [플러그인 발견 및 설치](/docs/ko/discover-plugins)의 지침을 사용하여 설치할 수 있습니다. 플러그인을 팀 내부로만 유지하려면 [비공개 저장소](/docs/ko/plugin-marketplaces#private-repositories)에서 마켓플레이스를 호스팅하세요.
 
 <h3 id="submit-your-plugin-to-the-community-marketplace">
   플러그인을 커뮤니티 마켓플레이스에 제출
@@ -420,10 +424,10 @@ claude.ai 양식은 Team 또는 Enterprise 조직과 디렉토리 관리 액세�
 
 공식 마켓플레이스인 `claude-plugins-official`은 별도로 엄선됩니다. Anthropic은 자신의 재량에 따라 포함할 플러그인을 결정합니다. 신청 절차가 없으며, 제출 양식은 플러그인을 공식 마켓플레이스에 추가하지 않습니다.
 
-Anthropic이 플러그인을 공식 마켓플레이스에 나열하면 CLI에서 Claude Code 사용자에게 설치를 권장할 수 있습니다. [CLI에서 플러그인 권장](/ko/plugin-hints)을 참조하세요.
+Anthropic이 플러그인을 공식 마켓플레이스에 나열하면 CLI에서 Claude Code 사용자에게 설치를 권장할 수 있습니다. [CLI에서 플러그인 권장](/docs/ko/plugin-hints)을 참조하세요.
 
 <Note>
-  완전한 기술 사양, 디버깅 기법, 배포 전략은 [플러그인 참조](/ko/plugins-reference)를 참조하세요.
+  완전한 기술 사양, 디버깅 기법, 배포 전략은 [플러그인 참조](/docs/ko/plugins-reference)를 참조하세요.
 </Note>
 
 <h2 id="convert-existing-configurations-to-plugins">
@@ -438,7 +442,7 @@ Anthropic이 플러그인을 공식 마켓플레이스에 나열하면 CLI에서
 
 <Steps>
   <Step title="플러그인 구조 만들기">
-    새 플러그인 디렉토리를 만듭니다:
+    프로젝트 루트에 새 플러그인 디렉토리를 만듭니다. 기존 `.claude/` 폴더와 함께 배치하여 다음 단계의 상대 `cp` 경로가 올바르게 해석되도록 합니다:
 
     ```bash theme={null}
     mkdir -p my-plugin/.claude-plugin
@@ -500,7 +504,7 @@ Anthropic이 플러그인을 공식 마켓플레이스에 나열하면 CLI에서
     claude --plugin-dir ./my-plugin
     ```
 
-    각 구성 요소를 테스트합니다: 명령을 실행하고, agents가 `/agents`에 나타나는지 확인하고, hooks가 올바르게 트리거되는지 확인합니다.
+    각 구성 요소를 테스트합니다: 명령을 실행하고, agents가 `/context`에 나타나는지 확인하고, hooks가 올바르게 트리거되는지 확인합니다.
   </Step>
 </Steps>
 
@@ -516,7 +520,7 @@ Anthropic이 플러그인을 공식 마켓플레이스에 나열하면 CLI에서
 | 공유하려면 수동으로 복사해야 함       | `/plugin install`로 설치       |
 
 <Note>
-  마이그레이션 후 중복을 피하기 위해 `.claude/`에서 원본 파일을 제거합니다. 프로젝트 및 사용자 `.claude/agents/` 정의는 같은 이름의 플러그인 agents를 재정의하므로, 원본이 제거되면 플러그인 버전만 적용됩니다.
+  마이그레이션 후 중복을 피하기 위해 `.claude/`에서 원본 파일을 제거합니다. 프로젝트 및 사용자 `.claude/agents/` 정의는 같은 이름의 플러그인 agents를 재정의하므로, 원본이 제거되면 플러그인 버전만 적용됩니다. 플러그인 skills는 `/plugin-name:skill-name`으로 네임스페이스되므로, 원본 `/skill-name`과 플러그인 복사본이 모두 사용 가능하게 유지되며 하나가 다른 하나를 재정의하지 않습니다.
 </Note>
 
 <h2 id="next-steps">
@@ -529,17 +533,17 @@ Anthropic이 플러그인을 공식 마켓플레이스에 나열하면 CLI에서
   플러그인 사용자의 경우
 </h3>
 
-* [플러그인 발견 및 설치](/ko/discover-plugins): 마켓플레이스를 검색하고 플러그인을 설치합니다
-* [팀 마켓플레이스 구성](/ko/discover-plugins#configure-team-marketplaces): 팀을 위한 저장소 수준 플러그인을 설정합니다
+* [플러그인 발견 및 설치](/docs/ko/discover-plugins): 마켓플레이스를 검색하고 플러그인을 설치합니다
+* [팀 마켓플레이스 구성](/docs/ko/discover-plugins#configure-team-marketplaces): 팀을 위한 저장소 수준 플러그인을 설정합니다
 
 <h3 id="for-plugin-developers">
   플러그인 개발자의 경우
 </h3>
 
-* [마켓플레이스 만들기 및 배포](/ko/plugin-marketplaces): 플러그인을 패키징하고 공유합니다
-* [플러그인 참조](/ko/plugins-reference): 완전한 기술 사양
+* [마켓플레이스 만들기 및 배포](/docs/ko/plugin-marketplaces): 플러그인을 패키징하고 공유합니다
+* [플러그인 참조](/docs/ko/plugins-reference): 완전한 기술 사양
 * 특정 플러그인 구성 요소에 대해 더 깊이 있게 살펴보세요:
-  * [Skills](/ko/skills): skill 개발 세부 사항
-  * [Subagents](/ko/sub-agents): agent 구성 및 기능
-  * [Hooks](/ko/hooks): 이벤트 처리 및 자동화
-  * [MCP](/ko/mcp): 외부 도구 통합
+  * [Skills](/docs/ko/skills): skill 개발 세부 사항
+  * [Subagents](/docs/ko/sub-agents): agent 구성 및 기능
+  * [Hooks](/docs/ko/hooks): 이벤트 처리 및 자동화
+  * [MCP](/docs/ko/mcp): 외부 도구 통합

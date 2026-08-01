@@ -22,7 +22,7 @@
   CLAUDE.md vs 자동 메모리
 </h2>
 
-Claude Code에는 두 가지 상호 보완적인 메모리 시스템이 있습니다. 둘 다 모든 대화의 시작 시 로드됩니다. Claude는 이들을 강제된 구성이 아닌 컨텍스트로 취급합니다. 작업을 차단하려면 어떤 Claude의 결정과 관계없이 [PreToolUse 훅](/ko/hooks-guide)을 사용합니다. 지침이 더 구체적이고 간결할수록 Claude가 더 일관되게 따릅니다.
+Claude Code에는 두 가지 상호 보완적인 메모리 시스템이 있습니다. 둘 다 모든 대화의 시작 시 로드됩니다. Claude는 이들을 강제된 구성이 아닌 컨텍스트로 취급합니다. 작업을 차단하려면 어떤 Claude의 결정과 관계없이 [PreToolUse 훅](/docs/ko/hooks-guide)을 사용합니다. 지침이 더 구체적이고 간결할수록 Claude가 더 일관되게 따릅니다.
 
 |           | CLAUDE.md 파일            | 자동 메모리                           |
 | :-------- | :---------------------- | :------------------------------- |
@@ -34,7 +34,7 @@ Claude Code에는 두 가지 상호 보완적인 메모리 시스템이 있습�
 
 Claude의 동작을 안내하려면 CLAUDE.md 파일을 사용합니다. 자동 메모리를 통해 Claude는 수동 작업 없이 수정 사항에서 학습할 수 있습니다.
 
-Subagent도 자신의 자동 메모리를 유지할 수 있습니다. 자세한 내용은 [subagent 구성](/ko/sub-agents#enable-persistent-memory)을 참조하세요.
+Subagent도 자신의 자동 메모리를 유지할 수 있습니다. 자세한 내용은 [subagent 구성](/docs/ko/sub-agents#enable-persistent-memory)을 참조하세요.
 
 <h2 id="claude-md-files">
   CLAUDE.md 파일
@@ -53,7 +53,7 @@ CLAUDE.md를 다시 설명해야 할 내용을 적어두는 장소로 취급합�
 * 지난 세션에 입력한 것과 같은 수정 또는 설명을 채팅에 입력합니다
 * 새로운 팀원이 생산성을 높이기 위해 같은 컨텍스트가 필요합니다
 
-모든 세션에서 Claude가 보유해야 할 사실로 유지합니다: 빌드 명령, 규칙, 프로젝트 레이아웃, "항상 X를 수행합니다" 규칙. 항목이 다단계 절차이거나 코드베이스의 한 부분에만 중요한 경우 대신 [skill](/ko/skills) 또는 [경로 범위 규칙](#organize-rules-with-claude/rules/)으로 이동합니다. [확장 개요](/ko/features-overview#build-your-setup-over-time)에서 각 메커니즘을 사용할 시기를 다룹니다.
+모든 세션에서 Claude가 보유해야 할 사실로 유지합니다: 빌드 명령, 규칙, 프로젝트 레이아웃, "항상 X를 수행합니다" 규칙. 항목이 다단계 절차이거나 코드베이스의 한 부분에만 중요한 경우 대신 [skill](/docs/ko/skills) 또는 [경로 범위 규칙](#organize-rules-with-claude/rules/)으로 이동합니다. [확장 개요](/docs/ko/features-overview#build-your-setup-over-time)에서 각 메커니즘을 사용할 시기를 다룹니다.
 
 <h3 id="choose-where-to-put-claude-md-files">
   CLAUDE.md 파일을 어디에 배치할지 선택
@@ -88,7 +88,7 @@ CLAUDE.md 파일은 여러 위치에 있을 수 있으며, 각각 다른 범위�
   효과적인 지침 작성
 </h3>
 
-CLAUDE.md 파일은 모든 세션의 시작 시 컨텍스트 윈도우에 로드되어 대화와 함께 토큰을 소비합니다. [컨텍스트 윈도우 시각화](/ko/context-window)는 CLAUDE.md가 나머지 시작 컨텍스트를 기준으로 어디에 로드되는지 보여줍니다. 강제된 구성이 아닌 컨텍스트이기 때문에 지침을 작성하는 방식이 Claude가 얼마나 안정적으로 따르는지에 영향을 미칩니다. 구체적이고 간결하며 잘 구조화된 지침이 가장 잘 작동합니다.
+CLAUDE.md 파일은 모든 세션의 시작 시 컨텍스트 윈도우에 로드되어 대화와 함께 토큰을 소비합니다. [컨텍스트 윈도우 시각화](/docs/ko/context-window)는 CLAUDE.md가 나머지 시작 컨텍스트를 기준으로 어디에 로드되는지 보여줍니다. 강제된 구성이 아닌 컨텍스트이기 때문에 지침을 작성하는 방식이 Claude가 얼마나 안정적으로 따르는지에 영향을 미칩니다. 구체적이고 간결하며 잘 구조화된 지침이 가장 잘 작동합니다.
 
 **크기**: CLAUDE.md 파일당 200줄 이하를 목표로 합니다. 더 긴 파일은 더 많은 컨텍스트를 소비하고 준수를 줄입니다. 지침이 커지면 [경로 범위 규칙](#path-specific-rules)을 사용하여 Claude가 일치하는 파일로 작업할 때만 지침이 로드되도록 하여 노이즈를 줄이고 컨텍스트 공간을 절약할 수 있습니다. [가져오기](#import-additional-files)를 사용하여 조직을 위해 콘텐츠를 분할할 수도 있지만, 가져온 파일은 여전히 로드되고 시작 시 컨텍스트 윈도우에 들어갑니다.
 
@@ -158,7 +158,7 @@ ln -s AGENTS.md CLAUDE.md
 
 Windows에서 심볼릭 링크를 만들려면 관리자 권한 또는 개발자 모드가 필요하므로 대신 `@AGENTS.md` 가져오기를 사용합니다.
 
-이미 `AGENTS.md`가 있는 저장소에서 [`/init`](/ko/commands)을 실행하면 이를 읽고 관련 부분을 생성된 `CLAUDE.md`에 통합합니다. 또한 `.cursorrules`, `.devin/rules/` 및 `.windsurfrules`과 같은 다른 도구 구성을 읽습니다.
+이미 `AGENTS.md`가 있는 저장소에서 [`/init`](/docs/ko/commands)을 실행하면 이를 읽고 관련 부분을 생성된 `CLAUDE.md`에 통합합니다. 또한 `.cursorrules`, `.devin/rules/` 및 `.windsurfrules`과 같은 다른 도구 구성을 읽습니다.
 
 <h3 id="how-claude-md-files-load">
   CLAUDE.md 파일이 로드되는 방식
@@ -170,7 +170,7 @@ Claude Code는 현재 작업 디렉토리에서 디렉토리 트리를 따라 �
 
 Claude는 또한 현재 작업 디렉토리 아래의 하위 디렉토리에서 `CLAUDE.md` 및 `CLAUDE.local.md` 파일을 발견합니다. 시작 시 로드하는 대신 Claude가 해당 하위 디렉토리의 파일을 읽을 때 포함됩니다.
 
-대규모 모노레포에서 작업하고 다른 팀의 CLAUDE.md 파일이 선택되는 경우 [`claudeMdExcludes`](#exclude-specific-claude-md-files)를 사용하여 건너뜁니다. 루트 및 디렉토리별 CLAUDE.md 파일과 규칙의 전체 레이아웃은 [모노레포 및 대규모 저장소](/ko/large-codebases)를 참조하세요.
+대규모 모노레포에서 작업하고 다른 팀의 CLAUDE.md 파일이 선택되는 경우 [`claudeMdExcludes`](#exclude-specific-claude-md-files)를 사용하여 건너뜁니다. 루트 및 디렉토리별 CLAUDE.md 파일과 규칙의 전체 레이아웃은 [모노레포 및 대규모 저장소](/docs/ko/large-codebases)를 참조하세요.
 
 CLAUDE.md 파일의 블록 수준 HTML 주석(`<!-- maintainer notes -->`)은 콘텐츠가 Claude의 컨텍스트에 주입되기 전에 제거됩니다. 컨텍스트 토큰을 소비하지 않고 인간 유지보수자를 위한 노트를 남기는 데 사용합니다. 코드 블록 내의 주석은 보존됩니다. Read 도구로 CLAUDE.md 파일을 직접 열 때 주석이 표시된 상태로 유지됩니다.
 
@@ -186,7 +186,7 @@ CLAUDE.md 파일의 블록 수준 HTML 주석(`<!-- maintainer notes -->`)은 �
 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config
 ```
 
-이는 추가 디렉토리에서 `CLAUDE.md`, `.claude/CLAUDE.md`, `.claude/rules/*.md` 및 `CLAUDE.local.md`를 로드합니다. [`--setting-sources`](/ko/cli-reference)에서 `local`을 제외하면 `CLAUDE.local.md`는 건너뜁니다.
+이는 추가 디렉토리에서 `CLAUDE.md`, `.claude/CLAUDE.md`, `.claude/rules/*.md` 및 `CLAUDE.local.md`를 로드합니다. [`--setting-sources`](/docs/ko/cli-reference)에서 `local`을 제외하면 `CLAUDE.local.md`는 건너뜁니다.
 
 <h3 id="organize-rules-with-claude/rules/">
   `.claude/rules/`로 규칙 구성
@@ -195,7 +195,7 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config
 대규모 프로젝트의 경우 `.claude/rules/` 디렉토리를 사용하여 지침을 여러 파일로 구성할 수 있습니다. 이렇게 하면 지침이 모듈식이 되고 팀이 유지 관리하기 쉬워집니다. 규칙을 [특정 파일 경로로 범위 지정](#path-specific-rules)할 수도 있으므로 Claude가 일치하는 파일로 작업할 때만 컨텍스트에 로드되어 노이즈를 줄이고 컨텍스트 공간을 절약합니다.
 
 <Note>
-  규칙은 모든 세션 또는 일치하는 파일이 열릴 때 컨텍스트에 로드됩니다. 항상 컨텍스트에 있을 필요가 없는 작업별 지침의 경우 대신 [skills](/ko/skills)를 사용하세요. 이는 호출할 때 또는 Claude가 프롬프트와 관련이 있다고 판단할 때만 로드됩니다.
+  규칙은 모든 세션 또는 일치하는 파일이 열릴 때 컨텍스트에 로드됩니다. 항상 컨텍스트에 있을 필요가 없는 작업별 지침의 경우 대신 [skills](/docs/ko/skills)를 사용하세요. 이는 호출할 때 또는 Claude가 프롬프트와 관련이 있다고 판단할 때만 로드됩니다.
 </Note>
 
 <h4 id="set-up-rules">
@@ -235,7 +235,7 @@ paths:
 - OpenAPI 문서 주석을 포함합니다
 ```
 
-`paths` 필드가 없는 규칙은 무조건 로드되며 모든 파일에 적용됩니다. 경로 범위 규칙은 모든 도구 사용 시가 아니라 Claude가 패턴과 일치하는 파일을 읽을 때 트리거됩니다.
+`paths` 필드가 없는 규칙은 무조건 로드되며 모든 파일에 적용됩니다. 경로 범위 규칙은 모든 도구 사용 시가 아니라 Claude가 패턴과 일치하는 파일을 읽을 때 트리거됩니다. v2.1.198 이상에서는 예를 들어 프로젝트 디렉토리에 대한 심볼릭 링크된 경로를 통해 Claude가 파일에 도달할 때도 일치가 작동합니다.
 
 `paths` 필드에서 glob 패턴을 사용하여 확장명, 디렉토리 또는 조합으로 파일을 일치시킵니다:
 
@@ -256,6 +256,8 @@ paths:
   - "tests/**/*.test.ts"
 ---
 ```
+
+Glob 구문은 `[`를 `[abc]`와 같은 괄호 표현식의 시작으로 취급합니다. `photos [2024/**`와 같이 괄호 표현식으로 읽을 수 없는 `[`가 있는 패턴은 유효하지 않습니다: 아무것도 일치하지 않으며 규칙의 다른 패턴은 계속 작동합니다. 파일 이름에서 리터럴 `[`를 일치시키려면 `photos \[2024/**`로 이스케이프합니다. v2.1.207 이전에는 하나의 유효하지 않은 패턴으로 인해 규칙이 평가된 모든 파일에 대해 Read 도구가 실패했으며, 대신 아무것도 일치하지 않습니다.
 
 <h4 id="share-rules-across-projects-with-symlinks">
   심볼릭 링크로 프로젝트 간 규칙 공유
@@ -304,7 +306,7 @@ ln -s ~/company-standards/security.md .claude/rules/security.md
   </Step>
 
   <Step title="구성 관리 시스템으로 배포">
-    MDM, 그룹 정책, Ansible 또는 유사한 도구를 사용하여 개발자 컴퓨터 전체에 파일을 배포합니다. 다른 조직 전체 구성 옵션은 [관리 설정](/ko/permissions#managed-settings)을 참조하세요.
+    MDM, 그룹 정책, Ansible 또는 유사한 도구를 사용하여 개발자 컴퓨터 전체에 파일을 배포합니다. 다른 조직 전체 구성 옵션은 [관리 설정](/docs/ko/permissions#managed-settings)을 참조하세요.
   </Step>
 </Steps>
 
@@ -324,7 +326,7 @@ ln -s ~/company-standards/security.md .claude/rules/security.md
 }
 ```
 
-관리 CLAUDE.md와 [관리 설정](/ko/settings#settings-files)은 다른 목적을 제공합니다. 기술적 강제를 위해 설정을 사용하고 CLAUDE.md를 행동 지침으로 사용합니다:
+관리 CLAUDE.md와 [관리 설정](/docs/ko/settings#settings-files)은 다른 목적을 제공합니다. 기술적 강제를 위해 설정을 사용하고 CLAUDE.md를 행동 지침으로 사용합니다:
 
 | 관심사                   | 구성 대상                                          |
 | :-------------------- | :--------------------------------------------- |
@@ -355,7 +357,7 @@ ln -s ~/company-standards/security.md .claude/rules/security.md
 }
 ```
 
-패턴은 glob 구문을 사용하여 절대 파일 경로와 일치합니다. `claudeMdExcludes`를 [설정 레이어](/ko/settings#settings-files): 사용자, 프로젝트, 로컬 또는 관리 정책에서 구성할 수 있습니다. 배열은 레이어 전체에서 병합됩니다.
+패턴은 glob 구문을 사용하여 절대 파일 경로와 일치합니다. `claudeMdExcludes`를 [설정 레이어](/docs/ko/settings#settings-files): 사용자, 프로젝트, 로컬 또는 관리 정책에서 구성할 수 있습니다. 배열은 레이어 전체에서 병합됩니다.
 
 관리 정책 CLAUDE.md 파일은 제외될 수 없습니다. 이렇게 하면 개별 설정에 관계없이 조직 전체 지침이 항상 적용됩니다.
 
@@ -364,10 +366,6 @@ ln -s ~/company-standards/security.md .claude/rules/security.md
 </h2>
 
 자동 메모리를 통해 Claude는 아무것도 작성하지 않고도 세션 간에 지식을 축적할 수 있습니다. Claude는 작업할 때 자신을 위해 노트를 저장합니다: 빌드 명령, 디버깅 인사이트, 아키텍처 노트, 코드 스타일 선호도 및 워크플로우 습관. Claude는 모든 세션마다 뭔가를 저장하지 않습니다. 정보가 향후 대화에서 유용할지 여부에 따라 기억할 가치가 있는지 결정합니다.
-
-<Note>
-  자동 메모리는 Claude Code v2.1.59 이상이 필요합니다. `claude --version`으로 버전을 확인합니다.
-</Note>
 
 <h3 id="enable-or-disable-auto-memory">
   자동 메모리 활성화 또는 비활성화
@@ -389,7 +387,7 @@ ln -s ~/company-standards/security.md .claude/rules/security.md
 
 각 프로젝트는 `~/.claude/projects/<project>/memory/`에서 자신의 메모리 디렉토리를 가집니다. `<project>` 경로는 git 저장소에서 파생되므로 동일한 저장소 내의 모든 worktree 및 하위 디렉토리는 하나의 자동 메모리 디렉토리를 공유합니다. git 저장소 외부에서는 프로젝트 루트가 대신 사용됩니다.
 
-자동 메모리를 다른 위치에 저장하려면 `settings.json`에서 `autoMemoryDirectory`를 설정합니다. 이는 모든 [설정 범위](/ko/settings#settings-precedence)에서 읽혀집니다: 사용자, 프로젝트, 로컬, 정책 또는 `--settings`.
+자동 메모리를 다른 위치에 저장하려면 `settings.json`에서 `autoMemoryDirectory`를 설정합니다. 이는 모든 [설정 범위](/docs/ko/settings#settings-precedence)에서 읽혀집니다: 사용자, 프로젝트, 로컬, 정책 또는 `--settings`.
 
 ```json theme={null}
 {
@@ -458,12 +456,12 @@ CLAUDE.md 콘텐츠는 시스템 프롬프트의 일부가 아니라 시스템 �
 * 지침을 더 구체적으로 만듭니다. "2칸 들여쓰기 사용"이 "코드를 제대로 포맷합니다"보다 더 잘 작동합니다.
 * CLAUDE.md 파일 전체에서 충돌하는 지침을 찾습니다. 두 파일이 동일한 동작에 대해 다른 지침을 제공하면 Claude가 하나를 임의로 선택할 수 있습니다.
 
-명령이 모든 커밋 전이나 각 파일 편집 후와 같이 특정 시점에 실행되어야 하는 경우, 대신 [hook](/ko/hooks-guide)으로 작성합니다. Hook은 고정된 라이프사이클 이벤트에서 셸 명령으로 실행되며 Claude가 무엇을 하기로 결정하든 관계없이 적용됩니다.
+명령이 모든 커밋 전이나 각 파일 편집 후와 같이 특정 시점에 실행되어야 하는 경우, 대신 [hook](/docs/ko/hooks-guide)으로 작성합니다. Hook은 고정된 라이프사이클 이벤트에서 셸 명령으로 실행되며 Claude가 무엇을 하기로 결정하든 관계없이 적용됩니다.
 
-시스템 프롬프트 수준의 지침의 경우 [`--append-system-prompt`](/ko/cli-reference#system-prompt-flags)를 사용합니다. 이는 모든 호출 시 전달되어야 하므로 대화형 사용보다는 스크립트 및 자동화에 더 적합합니다.
+시스템 프롬프트 수준의 지침의 경우 [`--append-system-prompt`](/docs/ko/cli-reference#system-prompt-flags)를 사용합니다. 이는 모든 호출 시 전달되어야 하므로 대화형 사용보다는 스크립트 및 자동화에 더 적합합니다.
 
 <Tip>
-  [`InstructionsLoaded` hook](/ko/hooks#instructionsloaded)을 사용하여 로드된 지침 파일, 로드 시기 및 이유를 정확히 기록합니다. 이는 경로별 규칙 또는 하위 디렉토리의 지연 로드 파일을 디버깅하는 데 유용합니다.
+  [`InstructionsLoaded` hook](/docs/ko/hooks#instructionsloaded)을 사용하여 로드된 지침 파일, 로드 시기 및 이유를 정확히 기록합니다. 이는 경로별 규칙 또는 하위 디렉토리의 지연 로드 파일을 디버깅하는 데 유용합니다.
 </Tip>
 
 <h3 id="i-don’t-know-what-auto-memory-saved">
@@ -478,13 +476,15 @@ CLAUDE.md 콘텐츠는 시스템 프롬프트의 일부가 아니라 시스템 �
 
 200줄을 초과하는 파일은 더 많은 컨텍스트를 소비하고 준수를 줄일 수 있습니다. [경로별 규칙](#path-specific-rules)을 사용하여 Claude가 일치하는 파일로 작업할 때만 지침을 로드하거나 모든 세션에서 필요하지 않은 콘텐츠를 정리합니다. [`@path` 가져오기](#import-additional-files)로 분할하면 조직화에 도움이 되지만 가져온 파일이 시작 시 로드되므로 컨텍스트를 줄이지는 않습니다.
 
+[`/doctor`](/docs/ko/commands#all-commands) 점검은 체크인된 CLAUDE.md에 대한 정리를 제안합니다: 디렉토리 레이아웃, 종속성 목록, 아키텍처 개요와 같이 Claude가 코드베이스에서 파생할 수 있는 콘텐츠를 제거하고 도구 기본값과 다른 함정, 근거 및 규칙을 유지합니다. 정리 확인에는 Claude Code v2.1.206 이상이 필요합니다.
+
 <h3 id="instructions-seem-lost-after-/compact">
   `/compact` 후 지침이 손실된 것 같습니다
 </h3>
 
 프로젝트 루트 CLAUDE.md는 압축을 완전히 생존합니다: `/compact` 후 Claude는 디스크에서 CLAUDE.md를 다시 읽고 세션에 새로 다시 주입합니다. 하위 디렉토리의 중첩된 CLAUDE.md 파일은 자동으로 다시 주입되지 않습니다. 해당 하위 디렉토리의 파일을 다시 읽을 때 다음에 다시 로드됩니다.
 
-압축 후 지침이 사라진 경우 CLAUDE.md에 작성되지 않고 대화에서만 제공되었거나 아직 다시 로드되지 않은 중첩된 CLAUDE.md에 있습니다. 세션 간에 지속되도록 CLAUDE.md에 대화 전용 지침을 추가합니다. 압축 후 생존하는 항목의 전체 분석은 [압축 후 생존하는 항목](/ko/context-window#what-survives-compaction)을 참조하세요.
+압축 후 지침이 사라진 경우 CLAUDE.md에 작성되지 않고 대화에서만 제공되었거나 아직 다시 로드되지 않은 중첩된 CLAUDE.md에 있습니다. 세션 간에 지속되도록 CLAUDE.md에 대화 전용 지침을 추가합니다. 압축 후 생존하는 항목의 전체 분석은 [압축 후 생존하는 항목](/docs/ko/context-window#what-survives-compaction)을 참조하세요.
 
 [효과적인 지침 작성](#write-effective-instructions)을 참조하여 크기, 구조 및 구체성에 대한 지침을 확인합니다.
 
@@ -492,7 +492,7 @@ CLAUDE.md 콘텐츠는 시스템 프롬프트의 일부가 아니라 시스템 �
   관련 리소스
 </h2>
 
-* [구성 디버깅](/ko/debug-your-config): CLAUDE.md 또는 설정이 적용되지 않는 이유 진단
-* [Skills](/ko/skills): 필요에 따라 로드되는 반복 가능한 워크플로우 패키지
-* [설정](/ko/settings): 설정 파일로 Claude Code 동작 구성
-* [Subagent 메모리](/ko/sub-agents#enable-persistent-memory): subagent가 자신의 자동 메모리를 유지하도록 허용
+* [구성 디버깅](/docs/ko/debug-your-config): CLAUDE.md 또는 설정이 적용되지 않는 이유 진단
+* [Skills](/docs/ko/skills): 필요에 따라 로드되는 반복 가능한 워크플로우 패키지
+* [설정](/docs/ko/settings): 설정 파일로 Claude Code 동작 구성
+* [Subagent 메모리](/docs/ko/sub-agents#enable-persistent-memory): subagent가 자신의 자동 메모리를 유지하도록 허용

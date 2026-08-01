@@ -28,15 +28,15 @@
 | 접근 방식                                                               | 다음 턴 시작 시기   | 중지 시기                               |
 | :------------------------------------------------------------------ | :----------- | :---------------------------------- |
 | `/goal`                                                             | 이전 턴이 완료될 때  | 모델이 조건이 충족되었음을 확인할 때                |
-| [`/loop`](/ko/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop) | 시간 간격이 경과할 때 | 사용자가 중지하거나 Claude가 작업이 완료되었다고 판단할 때 |
-| [Stop hook](/ko/hooks-guide#prompt-based-hooks)                     | 이전 턴이 완료될 때  | 사용자의 스크립트 또는 프롬프트가 결정할 때            |
+| [`/loop`](/docs/ko/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop) | 시간 간격이 경과할 때 | 사용자가 중지하거나 Claude가 작업이 완료되었다고 판단할 때 |
+| [Stop hook](/docs/ko/hooks-guide#prompt-based-hooks)                     | 이전 턴이 완료될 때  | 사용자의 스크립트 또는 프롬프트가 결정할 때            |
 
 `/goal`과 Stop hook은 모두 매 턴 후에 실행됩니다. `/goal`은 세션 범위의 단축키입니다: 조건을 입력하면 현재 세션에서만 활성화됩니다. Stop hook은 설정 파일에 있고 범위 내의 모든 세션에 적용되며 결정론적 확인을 위해 스크립트를 실행하거나 모델 평가를 위해 프롬프트를 실행할 수 있습니다.
 
-[자동 모드](/ko/auto-mode-config)는 단일 턴 내에서 도구 호출을 승인하지만 새로운 턴을 시작하지는 않습니다. Claude는 작업이 완료되었다고 판단할 때 중지합니다. `/goal`은 매 턴 후에 조건을 확인하는 별도의 평가자를 추가하므로 완료는 작업을 수행하는 모델이 아닌 새로운 모델에 의해 결정됩니다. 두 가지는 상호 보완적입니다: 자동 모드는 도구별 프롬프트를 제거하고 `/goal`은 턴별 프롬프트를 제거합니다.
+[자동 모드](/docs/ko/auto-mode-config)는 단일 턴 내에서 도구 호출을 승인하지만 새로운 턴을 시작하지는 않습니다. Claude는 작업이 완료되었다고 판단할 때 중지합니다. `/goal`은 매 턴 후에 조건을 확인하는 별도의 평가자를 추가하므로 완료는 작업을 수행하는 모델이 아닌 새로운 모델에 의해 결정됩니다. 두 가지는 상호 보완적입니다: 자동 모드는 도구별 프롬프트를 제거하고 `/goal`은 턴별 프롬프트를 제거합니다.
 
 <Tip>
-  위의 접근 방식은 현재 세션을 계속 실행합니다. 야간 테스트나 아침 분류와 같이 열린 세션과 무관하게 실행되는 작업을 예약할 수도 있습니다. 클라우드 루틴 및 데스크톱 예약된 작업에 대해 [예약 옵션](/ko/scheduled-tasks#compare-scheduling-options)을 참조하세요.
+  위의 접근 방식은 현재 세션을 계속 실행합니다. 야간 테스트나 아침 분류와 같이 열린 세션과 무관하게 실행되는 작업을 예약할 수도 있습니다. 클라우드 루틴 및 데스크톱 예약된 작업에 대해 [예약 옵션](/docs/ko/scheduled-tasks#compare-scheduling-options)을 참조하세요.
 </Tip>
 
 <h2 id="use-/goal">
@@ -56,6 +56,8 @@
 ```
 
 목표를 설정하면 조건 자체를 지시문으로 하여 즉시 턴을 시작합니다. 별도의 프롬프트를 보낼 필요가 없습니다. 목표가 활성화되어 있는 동안 `◎ /goal active` 표시기가 목표가 실행된 시간을 표시합니다.
+
+목표는 권한을 변경하지 않습니다. 기본 권한 모드에서 Claude는 설정에서 이미 허용하지 않는 테스트 명령과 같은 도구 호출 전에 여전히 확인을 요청합니다. 목표 턴이 무인으로 실행되도록 하려면 `/goal`을 [자동 모드](/docs/ko/auto-mode-config)와 함께 사용합니다.
 
 각 턴 후에 평가자는 조건이 충족되었는지 여부를 설명하는 짧은 이유를 반환합니다. 가장 최근의 이유는 상태 보기 및 대화 기록에 나타나므로 Claude가 다음에 작업할 내용을 볼 수 있습니다.
 
@@ -97,6 +99,8 @@
 * 현재 토큰 소비
 * 평가자의 가장 최근 이유
 
+턴 수와 가장 최근 이유는 첫 번째 평가가 실행된 후에 나타납니다.
+
 목표가 활성화되지 않았지만 세션 초반에 달성된 경우 상태는 달성된 조건과 함께 지속 시간, 턴 수, 토큰 소비를 표시합니다.
 
 <h3 id="clear-a-goal">
@@ -108,6 +112,8 @@
 ```text theme={null}
 /goal clear
 ```
+
+Claude는 `Goal cleared:` 다음에 조건을 출력하여 확인하거나, 활성 상태인 것이 없으면 `No goal set`을 출력합니다.
 
 `stop`, `off`, `reset`, `none`, `cancel`은 `clear`의 별칭으로 허용됩니다. `/clear`를 실행하여 새 대화를 시작하면 활성 목표도 제거됩니다.
 
@@ -121,11 +127,13 @@
   비대화형으로 실행
 </h3>
 
-`/goal`은 [비대화형 모드](/ko/headless), [데스크톱 앱](/ko/desktop), [원격 제어](/ko/remote-control)에서 작동합니다. `-p`로 목표를 설정하면 단일 호출에서 루프를 완료까지 실행합니다:
+`/goal`은 [비대화형 모드](/docs/ko/headless), [데스크톱 앱](/docs/ko/desktop), [원격 제어](/docs/ko/remote-control)에서 작동합니다. `-p`로 목표를 설정하면 단일 호출에서 루프를 완료까지 실행합니다:
 
 ```bash theme={null}
 claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"
 ```
+
+기본 텍스트 출력을 사용하면 조건이 충족될 때까지 아무것도 출력되지 않으므로 많은 턴을 실행하는 목표는 멈춘 것처럼 보일 수 있습니다. 루프가 실행되는 동안 각 메시지를 내보내려면 `--output-format stream-json --verbose`를 추가합니다.
 
 Ctrl+C로 프로세스를 중단하여 조건이 충족되기 전에 비대화형 목표를 중지합니다.
 
@@ -133,7 +141,7 @@ Ctrl+C로 프로세스를 중단하여 조건이 충족되기 전에 비대화�
   평가 작동 방식
 </h2>
 
-`/goal`은 세션 범위의 [프롬프트 기반 Stop hook](/ko/hooks#prompt-based-hooks) 주위의 래퍼입니다. Claude가 턴을 완료할 때마다 조건과 지금까지의 대화가 구성된 [작은 빠른 모델](/ko/model-config)로 전송되며, 기본값은 Haiku입니다. 모델은 예 또는 아니오 결정과 짧은 이유를 반환합니다. "아니오"는 Claude에게 계속 작동하도록 지시하고 다음 턴의 지침으로 이유를 포함합니다. "예"는 목표를 지우고 대화 기록에 달성된 항목을 기록합니다.
+`/goal`은 세션 범위의 [프롬프트 기반 Stop hook](/docs/ko/hooks#prompt-based-hooks) 주위의 래퍼입니다. Claude가 턴을 완료할 때마다 조건과 지금까지의 대화가 구성된 [작은 빠른 모델](/docs/ko/model-config)로 전송되며, 기본값은 Haiku입니다. 모델은 예 또는 아니오 결정과 짧은 이유를 반환합니다. "아니오"는 Claude에게 계속 작동하도록 지시하고 다음 턴의 지침으로 이유를 포함합니다. "예"는 목표를 지우고 대화 기록에 달성된 항목을 기록합니다.
 
 평가자는 세션이 구성된 공급자에서 실행됩니다. 도구를 호출하지 않으므로 Claude가 이미 대화에서 표시한 내용만 판단할 수 있습니다.
 
@@ -145,13 +153,13 @@ Ctrl+C로 프로세스를 중단하여 조건이 충족되기 전에 비대화�
   요구 사항
 </h2>
 
-`/goal`은 평가자가 hooks 시스템의 일부이기 때문에 신뢰 대화를 수락한 워크스페이스에서만 실행됩니다. [`disableAllHooks`](/ko/hooks#disable-or-remove-hooks)가 모든 설정 수준에서 설정되거나 관리 설정에서 [`allowManagedHooksOnly`](/ko/settings#hook-configuration)가 설정되면 `/goal`을 사용할 수 없습니다. 각 경우에 명령은 조용히 아무것도 하지 않는 대신 이유를 알려줍니다.
+`/goal`은 평가자가 hooks 시스템의 일부이기 때문에 신뢰 대화를 수락한 워크스페이스에서만 실행됩니다. [`disableAllHooks`](/docs/ko/hooks#disable-or-remove-hooks)가 모든 설정 수준에서 설정되거나 관리 설정에서 [`allowManagedHooksOnly`](/docs/ko/settings#hook-configuration)가 설정되면 `/goal`을 사용할 수 없습니다. 각 경우에 명령은 조용히 아무것도 하지 않는 대신 이유를 알려줍니다.
 
 <h2 id="see-also">
   참고 항목
 </h2>
 
-* [프롬프트를 `/loop`로 반복 실행](/ko/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop): 조건이 충족될 때까지가 아닌 시간 간격으로 다시 실행
-* [프롬프트 기반 hooks](/ko/hooks-guide#prompt-based-hooks): 사용자 정의 평가 로직이 필요할 때 자신의 Stop hook 작성
-* [자동 모드](/ko/auto-mode-config): 도구 호출을 자동으로 승인하여 각 목표 턴이 무인으로 실행되도록 함
-* [예약 비교](/ko/scheduled-tasks#compare-scheduling-options): 열린 세션과 무관하게 일정에 따라 작업 실행
+* [프롬프트를 `/loop`로 반복 실행](/docs/ko/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop): 조건이 충족될 때까지가 아닌 시간 간격으로 다시 실행
+* [프롬프트 기반 hooks](/docs/ko/hooks-guide#prompt-based-hooks): 사용자 정의 평가 로직이 필요할 때 자신의 Stop hook 작성
+* [자동 모드](/docs/ko/auto-mode-config): 도구 호출을 자동으로 승인하여 각 목표 턴이 무인으로 실행되도록 함
+* [예약 비교](/docs/ko/scheduled-tasks#compare-scheduling-options): 열린 세션과 무관하게 일정에 따라 작업 실행

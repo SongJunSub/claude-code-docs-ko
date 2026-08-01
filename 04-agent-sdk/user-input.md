@@ -12,7 +12,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 
 명확화 질문의 경우 Claude가 질문과 옵션을 생성합니다. 사용자의 역할은 이를 사용자에게 제시하고 선택 사항을 반환하는 것입니다. 이 흐름에 자신의 질문을 추가할 수 없습니다. 사용자에게 직접 물어봐야 할 사항이 있으면 애플리케이션 로직에서 별도로 수행하십시오.
 
-콜백은 무기한 대기 상태로 유지될 수 있습니다. 콜백이 반환될 때까지 실행이 일시 중지되며, SDK는 쿼리 자체가 취소될 때만 대기를 취소합니다. 사용자가 프로세스가 합리적으로 실행 상태를 유지할 수 있는 것보다 더 오래 응답하는 데 시간이 걸릴 수 있다면, [`defer` 훅 결정](/ko/hooks#defer-a-tool-call-for-later)을 반환하십시오. 이를 통해 프로세스를 종료하고 나중에 지속된 세션에서 재개할 수 있습니다.
+콜백은 무기한 대기 상태로 유지될 수 있습니다. 콜백이 반환될 때까지 실행이 일시 중지되며, SDK는 쿼리 자체가 취소될 때만 대기를 취소합니다. 사용자가 프로세스가 합리적으로 실행 상태를 유지할 수 있는 것보다 더 오래 응답하는 데 시간이 걸릴 수 있다면, [`defer` 훅 결정](/docs/ko/hooks#defer-a-tool-call-for-later)을 반환하십시오. 이를 통해 프로세스를 종료하고 나중에 지속된 세션에서 재개할 수 있습니다.
 
 이 가이드는 각 유형의 요청을 감지하고 적절하게 응답하는 방법을 보여줍니다.
 
@@ -44,14 +44,16 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 
 콜백은 두 가지 경우에 실행됩니다.
 
-1. **도구가 승인 필요**: Claude가 [권한 규칙](/ko/agent-sdk/permissions) 또는 권한 모드에 의해 자동 승인되지 않은 도구를 사용하려고 합니다. 도구에 대해 `tool_name`을 확인합니다(예: `"Bash"`, `"Write"`).
+1. **도구가 승인 필요**: Claude가 [권한 규칙](/docs/ko/agent-sdk/permissions) 또는 권한 모드에 의해 자동 승인되지 않은 도구를 사용하려고 합니다. 도구에 대해 `tool_name`을 확인합니다(예: `"Bash"`, `"Write"`).
 2. **Claude가 질문함**: Claude가 `AskUserQuestion` 도구를 호출합니다. `tool_name == "AskUserQuestion"`을 확인하여 다르게 처리합니다. `tools` 배열을 지정하는 경우 이것이 작동하려면 `AskUserQuestion`을 포함하십시오. 자세한 내용은 [명확화 질문 처리](#handle-clarifying-questions)를 참조하십시오.
 
 <Warning>
-  **콜백은 자동 승인된 도구에 대해서는 실행되지 않습니다.** [권한 평가 흐름](/ko/agent-sdk/permissions#how-permissions-are-evaluated)의 이전 단계에서 허용 규칙이나 `acceptEdits` 또는 `bypassPermissions`와 같은 모드가 `canUseTool`을 확인하기 전에 호출을 해결합니다. `allowed_tools`에 도구를 나열하면, 요청이 질문 규칙이나 `plan` 모드에 의해 프롬프트로 다시 라우팅되지 않는 한 해당 도구에 대한 `canUseTool` 확인이 실행되지 않습니다. 모든 도구 호출에 적용되어야 하는 로직의 경우 흐름의 나머지 부분 전에 실행되고 요청을 허용, 거부 또는 수정할 수 있는 [`PreToolUse` 훅](/ko/agent-sdk/hooks)을 사용하십시오.
+  **콜백은 자동 승인된 도구에 대해서는 실행되지 않습니다.** [권한 평가 흐름](/docs/ko/agent-sdk/permissions#how-permissions-are-evaluated)의 이전 단계에서 허용 규칙이나 `acceptEdits` 또는 `bypassPermissions`와 같은 모드가 `canUseTool`을 확인하기 전에 호출을 해결합니다. `allowed_tools`에 도구를 나열하면, 요청이 질문 규칙이나 `plan` 모드에 의해 프롬프트로 다시 라우팅되지 않는 한 해당 도구에 대한 `canUseTool` 확인이 실행되지 않습니다. 모든 도구 호출에 적용되어야 하는 로직의 경우 흐름의 나머지 부분 전에 실행되고 요청을 허용, 거부 또는 수정할 수 있는 [`PreToolUse` 훅](/docs/ko/agent-sdk/hooks)을 사용하십시오.
+
+  `AskUserQuestion`, MCP 도구가 [`requiresUserInteraction`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시되고, 커넥터 도구가 [조직에서 `ask`로 설정](/docs/ko/mcp#organization-controls-on-connector-tools)된 경우 허용 규칙이 일치하더라도 콜백에 도달합니다. `dontAsk` 모드에서는 콜백을 호출하지 않고 이러한 호출이 거부됩니다.
 </Warning>
 
-또한 [`PermissionRequest` 훅](/ko/agent-sdk/hooks#available-hooks)을 사용하여 Claude가 승인을 기다리고 있을 때 외부 알림(Slack, 이메일, 푸시)을 보낼 수 있습니다.
+또한 [`PermissionRequest` 훅](/docs/ko/agent-sdk/hooks#available-hooks)을 사용하여 Claude가 승인을 기다리고 있을 때 외부 알림(Slack, 이메일, 푸시)을 보낼 수 있습니다.
 
 <h2 id="handle-tool-approval-requests">
   도구 승인 요청 처리
@@ -63,7 +65,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `toolName`                          | Claude가 사용하려는 도구의 이름(예: `"Bash"`, `"Write"`, `"Edit"`)                                                                                                                                                                                                     |
 | `input`                             | Claude가 도구에 전달하는 매개변수입니다. 내용은 도구에 따라 다릅니다.                                                                                                                                                                                                                 |
-| `options` (TS) / `context` (Python) | 선택적 `suggestions`(재프롬프트를 피하기 위한 제안된 `PermissionUpdate` 항목)과 취소 신호를 포함한 추가 컨텍스트입니다. TypeScript에서 `signal`은 `AbortSignal`입니다. Python에서 신호 필드는 향후 사용을 위해 예약되어 있습니다. Python의 경우 [`ToolPermissionContext`](/ko/agent-sdk/python#toolpermissioncontext)를 참조하십시오. |
+| `options` (TS) / `context` (Python) | 선택적 `suggestions`(재프롬프트를 피하기 위한 제안된 `PermissionUpdate` 항목)과 취소 신호를 포함한 추가 컨텍스트입니다. TypeScript에서 `signal`은 `AbortSignal`입니다. Python에서 신호 필드는 향후 사용을 위해 예약되어 있습니다. Python의 경우 [`ToolPermissionContext`](/docs/ko/agent-sdk/python#toolpermissioncontext)를 참조하십시오. |
 
 `input` 객체에는 도구별 매개변수가 포함됩니다. 일반적인 예:
 
@@ -74,7 +76,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 | `Edit`  | `file_path`, `old_string`, `new_string` |
 | `Read`  | `file_path`, `offset`, `limit`          |
 
-완전한 입력 스키마는 SDK 참조를 참조하십시오. [Python](/ko/agent-sdk/python#tool-input%2Foutput-types) | [TypeScript](/ko/agent-sdk/typescript#tool-input-types).
+완전한 입력 스키마는 SDK 참조를 참조하십시오. [Python](/docs/ko/agent-sdk/python#tool-input%2Foutput-types) | [TypeScript](/docs/ko/agent-sdk/typescript#tool-input-types).
 
 이 정보를 사용자에게 표시하여 작업을 허용할지 거부할지 결정한 후 적절한 응답을 반환할 수 있습니다.
 
@@ -198,7 +200,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 </CodeGroup>
 
 <Note>
-  Python에서 `can_use_tool`은 [스트리밍 모드](/ko/agent-sdk/streaming-vs-single-mode)와 스트림을 열어 두기 위해 `{"continue_": True}`를 반환하는 `PreToolUse` 훅이 필요합니다. 이 훅이 없으면 권한 콜백이 호출되기 전에 스트림이 닫힙니다.
+  Python에서 `can_use_tool`은 [스트리밍 모드](/docs/ko/agent-sdk/streaming-vs-single-mode)가 필요합니다. `query(prompt=generator)` 또는 `ClaudeSDKClient.connect(prompt=async_iterable)`을 통해 유한한 메시지 스트림을 전달하면, 등록된 훅이나 프로세스 내 MCP 서버가 스트림을 열어 두지 않는 한 권한 콜백이 호출되기 전에 SDK가 입력 스트림을 닫습니다. 위의 예제는 `{"continue_": True}`를 반환하는 `PreToolUse` 훅으로 스트림을 열어 둡니다. 프롬프트 없이 연결하고 `ClaudeSDKClient.query()`를 통해 메시지를 보내면 스트림이 자동으로 열려 있으며 훅이 필요하지 않습니다.
 </Note>
 
 이 예제는 `y` 이외의 모든 입력이 거부로 처리되는 y/n 흐름을 사용합니다. 실제로는 사용자가 요청을 수정하거나, 피드백을 제공하거나, Claude를 완전히 리디렉션할 수 있는 더 풍부한 UI를 구축할 수 있습니다. 응답할 수 있는 모든 방법은 [도구 요청에 응답](#respond-to-tool-requests)을 참조하십시오.
@@ -214,7 +216,9 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 | **허용** | `PermissionResultAllow(updated_input=...)` | `{ behavior: "allow", updatedInput }` |
 | **거부** | `PermissionResultDeny(message=...)`        | `{ behavior: "deny", message }`       |
 
-허용할 때 도구 입력(원본 또는 수정됨)을 전달합니다. 거부할 때 이유를 설명하는 메시지를 제공합니다. Claude는 이 메시지를 보고 접근 방식을 조정할 수 있습니다.
+허용할 때 도구는 Claude가 요청한 입력으로 실행되며, 수정된 입력을 반환하지 않는 한 그렇습니다. TypeScript에서는 `updatedInput`, Python에서는 `updated_input`입니다. {/* min-version: 2.1.207 */}v2.1.207 이전에는 Claude Code가 `updatedInput`을 생략한 허용 결과를 거부하고 검증 오류로 도구 호출을 거부했습니다.
+
+거부할 때 이유를 설명하는 메시지를 제공합니다. Claude는 이 메시지를 보고 접근 방식을 조정할 수 있습니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -243,7 +247,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 * **승인 및 기억**: 제안된 권한 규칙을 다시 에코하여 일치하는 호출이 다음 번에 프롬프트를 건너뛰도록 함
 * **거부**: 도구를 차단하고 이유를 Claude에 알림
 * **대안 제안**: 차단하지만 사용자가 원하는 것으로 Claude를 안내
-* **완전히 리디렉션**: [스트리밍 입력](/ko/agent-sdk/streaming-vs-single-mode)을 사용하여 Claude에 완전히 새로운 지시를 보냄
+* **완전히 리디렉션**: [스트리밍 입력](/docs/ko/agent-sdk/streaming-vs-single-mode)을 사용하여 Claude에 완전히 새로운 지시를 보냄
 
 <Tabs>
   <Tab title="승인">
@@ -307,7 +311,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
   </Tab>
 
   <Tab title="승인 및 기억">
-    사용자가 승인하고 이런 종류의 호출에 대해 다시 묻지 않기를 원합니다. 세 번째 콜백 인수는 `suggestions`을 포함하며, 이는 준비된 [`PermissionUpdate`](/ko/agent-sdk/typescript#permissionupdate) 항목의 배열입니다. `updatedPermissions`에서 하나를 다시 에코하여 적용합니다. `localSettings` 대상이 있는 제안은 규칙을 `.claude/settings.local.json`에 작성하므로 향후 세션에서 일치하는 호출에 대한 프롬프트를 건너뜁니다.
+    사용자가 승인하고 이런 종류의 호출에 대해 다시 묻지 않기를 원합니다. 세 번째 콜백 인수는 `suggestions`을 포함하며, 이는 준비된 [`PermissionUpdate`](/docs/ko/agent-sdk/typescript#permissionupdate) 항목의 배열입니다. `updatedPermissions`에서 하나를 다시 에코하여 적용합니다. `localSettings` 대상이 있는 제안은 규칙을 `.claude/settings.local.json`에 작성하므로 향후 세션에서 일치하는 호출에 대한 프롬프트를 건너뜁니다.
 
     Python 예제는 `claude-agent-sdk` 0.1.80 이상이 필요합니다.
 
@@ -411,7 +415,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
   </Tab>
 
   <Tab title="완전히 리디렉션">
-    방향의 완전한 변경(단순한 밀어붙이기가 아닌)의 경우 [스트리밍 입력](/ko/agent-sdk/streaming-vs-single-mode)을 사용하여 Claude에 새로운 지시를 직접 보냅니다. 이는 현재 도구 요청을 우회하고 Claude에 완전히 새로운 지시를 따르도록 합니다.
+    방향의 완전한 변경(단순한 밀어붙이기가 아닌)의 경우 [스트리밍 입력](/docs/ko/agent-sdk/streaming-vs-single-mode)을 사용하여 Claude에 새로운 지시를 직접 보냅니다. 이는 현재 도구 요청을 우회하고 Claude에 완전히 새로운 지시를 따르도록 합니다.
   </Tab>
 </Tabs>
 
@@ -422,7 +426,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 Claude가 여러 유효한 접근 방식이 있는 작업에 대해 더 많은 방향이 필요할 때 `AskUserQuestion` 도구를 호출합니다. 이는 `toolName`이 `AskUserQuestion`으로 설정된 `canUseTool` 콜백을 트리거합니다. 입력에는 Claude의 질문이 객관식 옵션으로 포함되어 있으며, 이를 사용자에게 표시하고 선택 사항을 반환합니다.
 
 <Tip>
-  명확화 질문은 특히 [`plan` 모드](/ko/agent-sdk/permissions#plan-mode-plan)에서 흔하며, Claude가 코드베이스를 탐색하고 계획을 제안하기 전에 질문합니다. 이는 계획 모드를 Claude가 변경하기 전에 요구 사항을 수집하기를 원하는 대화형 워크플로우에 이상적으로 만듭니다.
+  명확화 질문은 특히 [`plan` 모드](/docs/ko/agent-sdk/permissions#plan-mode-plan)에서 흔하며, Claude가 코드베이스를 탐색하고 계획을 제안하기 전에 질문합니다. 이는 계획 모드를 Claude가 변경하기 전에 요구 사항을 수집하기를 원하는 대화형 워크플로우에 이상적으로 만듭니다.
 </Tip>
 
 다음 단계는 명확화 질문을 처리하는 방법을 보여줍니다.
@@ -686,6 +690,8 @@ Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문
 4. **답변 매핑**: 코드는 입력이 숫자(옵션의 레이블 사용)인지 자유 텍스트(텍스트 직접 사용)인지 확인합니다.
 5. **Claude에 반환**: 응답에는 원본 `questions` 배열과 `answers` 매핑이 모두 포함됩니다.
 
+TypeScript 버전을 `ask.ts`로 저장하고 `npx tsx ask.ts`로 실행하거나, Python 버전을 `ask.py`로 저장하고 `python ask.py`로 실행합니다.
+
 <CodeGroup>
   ```python Python theme={null}
   import asyncio
@@ -858,7 +864,7 @@ Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문
   스트리밍 입력
 </h3>
 
-다음이 필요할 때 [스트리밍 입력](/ko/agent-sdk/streaming-vs-single-mode)을 사용하십시오.
+다음이 필요할 때 [스트리밍 입력](/docs/ko/agent-sdk/streaming-vs-single-mode)을 사용하십시오.
 
 * **에이전트 중간에 중단**: Claude가 작업 중일 때 취소 신호를 보내거나 방향을 변경합니다.
 * **추가 컨텍스트 제공**: Claude가 물어볼 때까지 기다리지 않고 필요한 정보를 추가합니다.
@@ -870,7 +876,7 @@ Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문
   사용자 정의 도구
 </h3>
 
-다음이 필요할 때 [사용자 정의 도구](/ko/agent-sdk/custom-tools)를 사용하십시오.
+다음이 필요할 때 [사용자 정의 도구](/docs/ko/agent-sdk/custom-tools)를 사용하십시오.
 
 * **구조화된 입력 수집**: `AskUserQuestion`의 객관식 형식을 넘어서는 양식, 마법사 또는 다단계 워크플로우를 구축합니다.
 * **외부 승인 시스템 통합**: 기존 티켓팅, 워크플로우 또는 승인 플랫폼에 연결합니다.
@@ -882,6 +888,6 @@ Claude는 진행하기 위해 사용자 입력이 필요할 때 명확화 질문
   관련 리소스
 </h2>
 
-* [권한 구성](/ko/agent-sdk/permissions): 권한 모드 및 규칙 설정
-* [훅으로 실행 제어](/ko/agent-sdk/hooks): 에이전트 수명 주기의 주요 지점에서 사용자 정의 코드 실행
-* [TypeScript SDK 참조](/ko/agent-sdk/typescript#canusetool): 전체 canUseTool API 문서
+* [권한 구성](/docs/ko/agent-sdk/permissions): 권한 모드 및 규칙 설정
+* [훅으로 실행 제어](/docs/ko/agent-sdk/hooks): 에이전트 수명 주기의 주요 지점에서 사용자 정의 코드 실행
+* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript#canusetool): 전체 canUseTool API 문서

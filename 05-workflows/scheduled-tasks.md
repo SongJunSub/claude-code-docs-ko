@@ -6,13 +6,9 @@
 
 > /loop와 cron 스케줄링 도구를 사용하여 Claude Code 세션 내에서 프롬프트를 반복 실행하거나, 상태를 폴링하거나, 일회성 알림을 설정합니다.
 
-<Note>
-  스케줄된 작업을 사용하려면 Claude Code v2.1.72 이상이 필요합니다. `claude --version`으로 버전을 확인하세요.
-</Note>
+스케줄된 작업을 사용하면 Claude가 일정한 간격으로 프롬프트를 자동으로 다시 실행할 수 있습니다. 배포를 폴링하거나, PR을 감시하거나, 오래 실행되는 빌드를 확인하거나, 나중에 세션에서 무언가를 하도록 자신에게 알림을 설정하는 데 사용합니다. 이벤트가 발생할 때 폴링하는 대신 반응하려면 [Channels](/docs/ko/channels)를 참조하세요. CI가 실패를 세션에 직접 푸시할 수 있습니다. 세션이 조건이 충족될 때까지 한 번에 한 번씩 계속 작동하도록 하려면 일정한 간격이 아닌 경우 [`/goal`](/docs/ko/goal)을 참조하세요.
 
-스케줄된 작업을 사용하면 Claude가 일정한 간격으로 프롬프트를 자동으로 다시 실행할 수 있습니다. 배포를 폴링하거나, PR을 감시하거나, 오래 실행되는 빌드를 확인하거나, 나중에 세션에서 무언가를 하도록 자신에게 알림을 설정하는 데 사용합니다. 이벤트가 발생할 때 폴링하는 대신 반응하려면 [Channels](/ko/channels)를 참조하세요. CI가 실패를 세션에 직접 푸시할 수 있습니다. 세션이 조건이 충족될 때까지 한 번에 한 번씩 계속 작동하도록 하려면 일정한 간격이 아닌 경우 [`/goal`](/ko/goal)을 참조하세요.
-
-작업은 세션 범위입니다. 현재 대화에 존재하며 새로운 대화를 시작할 때 중지됩니다. `--resume` 또는 `--continue`로 재개하면 [만료](#seven-day-expiry)되지 않은 모든 작업이 복원됩니다. 지난 7일 이내에 생성된 반복 작업이거나 스케줄된 시간이 아직 지나지 않은 일회성 작업입니다. 세션과 독립적으로 지속되는 스케줄링의 경우 [Routines](/ko/routines)을 사용하여 Anthropic 관리 인프라에서 루틴을 생성하거나, [Desktop scheduled tasks](/ko/desktop-scheduled-tasks)를 설정하거나, [GitHub Actions](/ko/github-actions)를 사용하세요.
+작업은 세션 범위입니다. 현재 대화에 존재하며 새로운 대화를 시작할 때 중지됩니다. `--resume` 또는 `--continue`로 재개하면 [만료](#seven-day-expiry)되지 않은 모든 작업이 복원됩니다. 지난 7일 이내에 생성된 반복 작업이거나 스케줄된 시간이 아직 지나지 않은 일회성 작업입니다. 세션과 독립적으로 지속되는 스케줄링의 경우 [Routines](/docs/ko/routines)을 사용하여 Anthropic 관리 인프라에서 루틴을 생성하거나, [Desktop scheduled tasks](/docs/ko/desktop-scheduled-tasks)를 설정하거나, [GitHub Actions](/docs/ko/github-actions)를 사용하세요.
 
 <h2 id="compare-scheduling-options">
   스케줄링 옵션 비교하기
@@ -20,14 +16,14 @@
 
 Claude Code offers three ways to schedule recurring or one-off work:
 
-|                            | [Cloud](/en/routines)          | [Desktop](/en/desktop-scheduled-tasks) | [`/loop`](/en/scheduled-tasks)      |
+|                            | [Cloud](/docs/en/routines)          | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
 | :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
 | Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
 | Requires machine on        | No                             | Yes                                    | Yes                                 |
 | Requires open session      | No                             | No                                     | Yes                                 |
 | Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
 | Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
-| MCP servers                | Connectors configured per task | [Config files](/en/mcp) and connectors | Inherits from session               |
+| MCP servers                | Connectors configured per task | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
 | Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
 | Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
 | Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
@@ -40,7 +36,7 @@ Claude Code offers three ways to schedule recurring or one-off work:
   /loop로 반복 프롬프트 실행하기
 </h2>
 
-`/loop` [번들 스킬](/ko/commands)은 세션이 열려 있는 동안 프롬프트를 반복 실행하는 가장 빠른 방법입니다. 간격과 프롬프트는 모두 선택 사항이며, 제공하는 내용에 따라 루프의 동작이 결정됩니다.
+`/loop` [번들 스킬](/docs/ko/commands)은 세션이 열려 있는 동안 프롬프트를 반복 실행하는 가장 빠른 방법입니다. 간격과 프롬프트는 모두 선택 사항이며, 제공하는 내용에 따라 루프의 동작이 결정됩니다.
 
 | 제공하는 내용        | 예시                          | 동작                                                                                    |
 | :------------- | :-------------------------- | :------------------------------------------------------------------------------------ |
@@ -48,12 +44,12 @@ Claude Code offers three ways to schedule recurring or one-off work:
 | 프롬프트만          | `/loop check the deploy`    | 프롬프트가 각 반복에서 [Claude가 선택한 간격](#let-claude-choose-the-interval)으로 실행됩니다                |
 | 간격만 또는 아무것도 없음 | `/loop`                     | [내장 유지보수 프롬프트](#run-the-built-in-maintenance-prompt)가 실행되거나, 존재하는 경우 `loop.md`가 실행됩니다 |
 
-또한 스킬을 프롬프트로 전달할 수 있습니다. 예를 들어 `/loop 20m /review-pr 1234`는 각 반복에서 해당 스킬을 다시 실행합니다. {/* min-version: 2.1.196 */}v2.1.196부터 스케줄된 실행은 Claude가 [자체적으로 호출할 수 있도록 허용된](/ko/skills#control-who-invokes-a-skill) 스킬만 실행합니다. 다음은 Claude에 일반 텍스트로 전달되며 실행되지 않습니다.
+또한 스킬을 프롬프트로 전달할 수 있습니다. 예를 들어 `/loop 20m /review-pr 1234`는 각 반복에서 해당 스킬을 다시 실행합니다. {/* min-version: 2.1.196 */}v2.1.196부터 스케줄된 실행은 Claude가 [자체적으로 호출할 수 있도록 허용된](/docs/ko/skills#control-who-invokes-a-skill) 스킬만 실행합니다. 다음은 Claude에 일반 텍스트로 전달되며 실행되지 않습니다.
 
 * `/permissions`, `/model`, `/clear`와 같은 내장 명령어
-* [`disable-model-invocation: true`](/ko/skills#frontmatter-reference)로 표시된 스킬
-* [`skillOverrides`](/ko/skills#override-skill-visibility-from-settings) 설정이나 `Skill` [거부 규칙](/ko/skills#restrict-claude’s-skill-access)으로 Claude에서 제외된 스킬
-* [MCP 프롬프트](/ko/mcp#use-mcp-prompts-as-commands) (예: `/mcp__github__list_prs`); MCP 서버가 노출하는 스킬은 여전히 실행됩니다
+* [`disable-model-invocation: true`](/docs/ko/skills#frontmatter-reference)로 표시된 스킬
+* [`skillOverrides`](/docs/ko/skills#override-skill-visibility-from-settings) 설정이나 `Skill` [거부 규칙](/docs/ko/skills#restrict-claude’s-skill-access)으로 Claude에서 제외된 스킬
+* [MCP 프롬프트](/docs/ko/mcp#use-mcp-prompts-as-commands) (예: `/mcp__github__list_prs`); MCP 서버가 노출하는 스킬은 여전히 실행됩니다
 
 <h3 id="run-on-a-fixed-interval">
   고정 간격으로 실행하기
@@ -81,12 +77,12 @@ cron은 1분 단위의 세분성을 가지므로 초는 가장 가까운 분으�
 /loop check whether CI passed and address any review comments
 ```
 
-동적 `/loop` 스케줄을 요청하면 Claude는 [Monitor tool](/ko/tools-reference#monitor-tool)을 직접 사용할 수 있습니다. Monitor는 백그라운드 스크립트를 실행하고 각 출력 줄을 다시 스트리밍하므로 폴링을 완전히 피하고 프롬프트를 간격으로 다시 실행하는 것보다 토큰 효율적이고 반응성이 더 좋은 경우가 많습니다.
+동적 `/loop` 스케줄을 요청하면 Claude는 [Monitor tool](/docs/ko/tools-reference#monitor-tool)을 직접 사용할 수 있습니다. Monitor는 백그라운드 스크립트를 실행하고 각 출력 줄을 다시 스트리밍하므로 폴링을 완전히 피하고 프롬프트를 간격으로 다시 실행하는 것보다 토큰 효율적이고 반응성이 더 좋은 경우가 많습니다.
 
 동적으로 스케줄된 루프는 다른 작업처럼 [스케줄된 작업 목록](#manage-scheduled-tasks)에 나타나므로 동일한 방식으로 나열하거나 취소할 수 있습니다. [지터 규칙](#jitter)은 적용되지 않지만 [7일 만료](#seven-day-expiry)는 적용됩니다. 루프는 시작 후 7일 후 자동으로 종료됩니다.
 
 <Note>
-  Bedrock, Vertex AI, Microsoft Foundry에서는 간격이 없는 프롬프트가 고정 10분 스케줄로 실행됩니다.
+  Amazon Bedrock, Claude Platform on AWS, Google Cloud의 Agent Platform, Microsoft Foundry에서는 간격이 없는 프롬프트가 고정 10분 스케줄로 실행됩니다.
 </Note>
 
 <h3 id="run-the-built-in-maintenance-prompt">
@@ -108,7 +104,7 @@ Claude는 해당 범위 외의 새로운 이니셔티브를 시작하지 않으�
 단순한 `/loop`는 [동적으로 선택된 간격](#let-claude-choose-the-interval)에서 이 프롬프트를 실행합니다. 고정 스케줄에서 실행하려면 `/loop 15m`과 같이 간격을 추가하세요. 내장 프롬프트를 자신의 기본값으로 바꾸려면 [loop.md로 기본 프롬프트 사용자 정의하기](#customize-the-default-prompt-with-loop-md)를 참조하세요.
 
 <Note>
-  Bedrock, Vertex AI, Microsoft Foundry에서는 프롬프트가 없는 `/loop`가 유지보수 프롬프트를 실행하는 대신 사용 메시지를 출력합니다.
+  Amazon Bedrock, Claude Platform on AWS, Google Cloud의 Agent Platform, Microsoft Foundry에서는 프롬프트가 없는 `/loop`가 유지보수 프롬프트를 실행하는 대신 사용 메시지를 출력합니다.
 </Note>
 
 <h3 id="customize-the-default-prompt-with-loop-md">
@@ -136,7 +132,7 @@ quiet, say so in one line.
 `loop.md`에 대한 편집은 다음 반복에서 적용되므로 루프가 실행 중인 동안 지침을 개선할 수 있습니다. 두 위치 중 어디에도 `loop.md`가 없으면 루프는 내장 유지보수 프롬프트로 폴백됩니다. 파일을 간결하게 유지하세요. 25,000바이트를 초과하는 내용은 잘립니다.
 
 <Note>
-  Bedrock, Vertex AI, Microsoft Foundry에서는 `loop.md`가 읽혀지지 않으며 프롬프트가 없는 `/loop`가 유지보수 프롬프트를 실행하는 대신 사용 메시지를 출력합니다.
+  Amazon Bedrock, Claude Platform on AWS, Google Cloud의 Agent Platform, Microsoft Foundry에서는 `loop.md`가 읽혀지지 않으며 프롬프트가 없는 `/loop`가 유지보수 프롬프트를 실행하는 대신 사용 메시지를 출력합니다.
 </Note>
 
 <h3 id="stop-a-loop">
@@ -145,7 +141,9 @@ quiet, say so in one line.
 
 `/loop`가 다음 반복을 기다리는 동안 중지하려면 `Esc`를 누르세요. 이는 보류 중인 웨이크업을 지우므로 루프가 다시 실행되지 않습니다. [Claude에게 직접 요청](#manage-scheduled-tasks)하여 스케줄한 작업은 `Esc`의 영향을 받지 않으며 삭제할 때까지 유지됩니다.
 
-[자기 속도 모드](#let-claude-choose-the-interval)에서 Claude는 작업이 명백히 완료되면 다음 웨이크업을 스케줄하지 않음으로써 루프를 직접 종료할 수도 있습니다. 고정 간격의 루프는 중지하거나 [7일이 경과](#seven-day-expiry)할 때까지 계속 실행됩니다.
+[자기 속도 모드](#let-claude-choose-the-interval)에서 Claude는 작업이 완료되면 루프를 직접 종료할 수도 있습니다. Claude는 `stop: true`로 [`ScheduleWakeup` tool](/docs/ko/tools-reference)을 호출하여 보류 중인 웨이크업을 즉시 취소합니다. 반복이 재스케줄링이나 중지 없이 끝나면 Claude Code는 약 20분 후에 하나의 폴백 웨이크업을 스케줄하고 해당 반복이 재스케줄링하지 않으면 루프를 종료합니다. v2.1.202 이전에는 재스케줄링하지 않는 것이 Claude가 루프를 직접 종료할 수 있는 유일한 방법이었습니다.
+
+고정 간격의 루프는 중지하거나 [7일이 경과](#seven-day-expiry)할 때까지 계속 실행됩니다.
 
 <h2 id="set-a-one-time-reminder">
   일회성 알림 설정하기
@@ -210,7 +208,7 @@ cancel the deploy check job
   7일 만료
 </h3>
 
-반복 작업은 생성 후 7일 후 자동으로 만료됩니다. 작업은 마지막으로 한 번 실행된 후 자신을 삭제합니다. 이는 잊혀진 루프가 실행될 수 있는 기간을 제한합니다. 반복 작업이 더 오래 지속되어야 하는 경우 만료되기 전에 취소하고 다시 만들거나 지속적인 스케줄링을 위해 [Routines](/ko/routines) 또는 [Desktop scheduled tasks](/ko/desktop-scheduled-tasks)를 사용하세요.
+반복 작업은 생성 후 7일 후 자동으로 만료됩니다. 작업은 마지막으로 한 번 실행된 후 자신을 삭제합니다. 이는 잊혀진 루프가 실행될 수 있는 기간을 제한합니다. 반복 작업이 더 오래 지속되어야 하는 경우 만료되기 전에 취소하고 다시 만들거나 지속적인 스케줄링을 위해 [Routines](/docs/ko/routines) 또는 [Desktop scheduled tasks](/docs/ko/desktop-scheduled-tasks)를 사용하세요.
 
 <h2 id="cron-expression-reference">
   Cron 표현식 참조
@@ -235,7 +233,7 @@ cancel the deploy check job
   스케줄된 작업 비활성화하기
 </h2>
 
-환경에서 `CLAUDE_CODE_DISABLE_CRON=1`을 설정하여 스케줄러를 완전히 비활성화합니다. cron 도구와 `/loop`를 사용할 수 없게 되며, 이미 스케줄된 모든 작업이 실행을 중지합니다. 비활성화 플래그의 전체 목록은 [Environment variables](/ko/env-vars)를 참조하세요.
+환경에서 `CLAUDE_CODE_DISABLE_CRON=1`을 설정하여 스케줄러를 완전히 비활성화합니다. cron 도구와 `/loop`를 사용할 수 없게 되며, 이미 스케줄된 모든 작업이 실행을 중지합니다. 비활성화 플래그의 전체 목록은 [Environment variables](/docs/ko/env-vars)를 참조하세요.
 
 <h2 id="limitations">
   제한 사항
@@ -243,12 +241,12 @@ cancel the deploy check job
 
 세션 범위 스케줄링에는 고유한 제약이 있습니다.
 
-* 작업은 Claude Code가 실행 중이고 유휴 상태일 때만 실행됩니다. 터미널을 닫거나 세션을 종료하면 작업 실행이 중지됩니다. [세션을 백그라운드로 전환](/ko/agent-view#from-inside-a-session)하면 `/loop` 작업이 백그라운드 세션으로 이동되어 터미널 없이 계속 실행됩니다.
+* 작업은 Claude Code가 실행 중이고 유휴 상태일 때만 실행됩니다. 터미널을 닫거나 세션을 종료하면 작업 실행이 중지됩니다. [세션을 백그라운드로 전환](/docs/ko/agent-view#from-inside-a-session)하면 `/loop` 작업이 백그라운드 세션으로 이동되어 터미널 없이 계속 실행됩니다.
 * 놓친 실행에 대한 추적 없음. 작업의 스케줄된 시간이 Claude가 오래 실행되는 요청에 바쁠 때 지나가면 Claude가 유휴 상태가 될 때 한 번 실행되며, 놓친 각 간격마다 한 번씩 실행되지 않습니다.
 * 새로운 대화를 시작하면 모든 세션 범위 작업이 지워집니다. `claude --resume` 또는 `claude --continue`로 재개하면 만료되지 않은 작업이 복원됩니다. 생성 후 7일 이내의 반복 작업, 스케줄된 시간이 아직 지나지 않은 일회성 작업입니다. 백그라운드 Bash 및 모니터 작업은 재개 시 복원되지 않습니다.
 
 무인으로 실행해야 하는 cron 기반 자동화의 경우:
 
-* [Routines](/ko/routines): Anthropic 관리 인프라에서 스케줄에 따라, API 호출을 통해, 또는 GitHub 이벤트에서 실행
-* [GitHub Actions](/ko/github-actions): CI에서 `schedule` 트리거 사용
-* [Desktop scheduled tasks](/ko/desktop-scheduled-tasks): 머신에서 로컬로 실행
+* [Routines](/docs/ko/routines): Anthropic 관리 인프라에서 스케줄에 따라, API 호출을 통해, 또는 GitHub 이벤트에서 실행
+* [GitHub Actions](/docs/ko/github-actions): CI에서 `schedule` 트리거 사용
+* [Desktop scheduled tasks](/docs/ko/desktop-scheduled-tasks): 머신에서 로컬로 실행

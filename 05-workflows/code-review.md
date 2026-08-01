@@ -7,14 +7,14 @@
 > 다중 에이전트 분석을 통해 전체 코드베이스를 검토하여 논리 오류, 보안 취약점 및 회귀를 감지하는 자동화된 PR 검토를 설정합니다
 
 <Note>
-  Code Review는 연구 미리보기 상태이며 [Team 및 Enterprise](https://claude.ai/admin-settings/claude-code) 구독에서 사용 가능합니다. [Zero Data Retention](/ko/zero-data-retention)이 활성화된 조직에서는 사용할 수 없습니다.
+  Code Review는 연구 미리보기 상태이며 [Team 및 Enterprise](https://claude.ai/admin-settings/claude-code) 구독에서 사용 가능합니다. [Zero Data Retention](/docs/ko/zero-data-retention)이 활성화된 조직에서는 사용할 수 없습니다.
 </Note>
 
 Code Review는 GitHub 풀 요청을 분석하고 문제를 발견한 코드 라인에 인라인 댓글로 결과를 게시합니다. 전문화된 에이전트 집합이 전체 코드베이스의 맥락에서 코드 변경 사항을 검토하여 논리 오류, 보안 취약점, 손상된 엣지 케이스 및 미묘한 회귀를 찾습니다.
 
 결과는 심각도별로 태그가 지정되며 PR을 승인하거나 차단하지 않으므로 기존 검토 워크플로우는 그대로 유지됩니다. 리포지토리에 `CLAUDE.md` 또는 `REVIEW.md` 파일을 추가하여 Claude가 플래그하는 항목을 조정할 수 있습니다.
 
-관리되는 서비스 대신 자신의 CI 인프라에서 Claude를 실행하려면 [GitHub Actions](/ko/github-actions) 또는 [GitLab CI/CD](/ko/gitlab-ci-cd)를 참조하십시오. 자체 호스팅 GitHub 인스턴스의 리포지토리의 경우 [GitHub Enterprise Server](/ko/github-enterprise-server)를 참조하십시오.
+관리되는 서비스 대신 자신의 CI 인프라에서 Claude를 실행하려면 [GitHub Actions](/docs/ko/github-actions) 또는 [GitLab CI/CD](/docs/ko/gitlab-ci-cd)를 참조하십시오. 자체 호스팅 GitHub 인스턴스의 리포지토리의 경우 [GitHub Enterprise Server](/docs/ko/github-enterprise-server)를 참조하십시오.
 
 이 페이지에서 다루는 내용:
 
@@ -112,7 +112,7 @@ gh api repos/OWNER/REPO/check-runs/CHECK_RUN_ID \
     * **Issues**: 읽기 및 쓰기
     * **Pull requests**: 읽기 및 쓰기
 
-    Code Review는 콘텐츠에 대한 읽기 액세스와 풀 요청에 대한 쓰기 액세스를 사용합니다. 더 광범위한 권한 집합은 나중에 활성화하는 경우 [GitHub Actions](/ko/github-actions)도 지원합니다.
+    Code Review는 콘텐츠에 대한 읽기 액세스와 풀 요청에 대한 쓰기 액세스를 사용합니다. 더 광범위한 권한 집합은 나중에 활성화하는 경우 [GitHub Actions](/docs/ko/github-actions)도 지원합니다.
   </Step>
 
   <Step title="리포지토리 선택">
@@ -173,7 +173,7 @@ Code Review는 리포지토리에서 두 개의 파일을 읽어 플래그할 �
 
 Code Review는 리포지토리의 `CLAUDE.md` 파일을 읽고 새로 도입된 위반을 [nit 수준](#severity-levels) 결과로 처리합니다. 이는 양방향으로 작동합니다: PR이 `CLAUDE.md` 문을 오래된 것으로 만드는 방식으로 코드를 변경하면 Claude는 문서도 업데이트해야 한다고 플래그합니다.
 
-Claude는 디렉토리 계층 구조의 모든 수준에서 `CLAUDE.md` 파일을 읽으므로 하위 디렉토리의 `CLAUDE.md`의 규칙은 해당 경로 아래의 파일에만 적용됩니다. `CLAUDE.md` 작동 방식에 대한 자세한 내용은 [메모리 설명서](/ko/memory)를 참조하십시오.
+Claude는 디렉토리 계층 구조의 모든 수준에서 `CLAUDE.md` 파일을 읽으므로 하위 디렉토리의 `CLAUDE.md`의 규칙은 해당 경로 아래의 파일에만 적용됩니다. `CLAUDE.md` 작동 방식에 대한 자세한 내용은 [메모리 설명서](/docs/ko/memory)를 참조하십시오.
 
 일반 Claude Code 세션에 적용하지 않으려는 검토 전용 지침의 경우 대신 [`REVIEW.md`](#review-md)를 사용하십시오.
 
@@ -183,7 +183,7 @@ Claude는 디렉토리 계층 구조의 모든 수준에서 `CLAUDE.md` 파일�
 
 `REVIEW.md`는 리포지토리 루트의 파일로 Code Review가 리포지토리에서 어떻게 작동하는지를 재정의합니다. 그 내용은 검토 파이프라인의 모든 에이전트의 시스템 프롬프트에 최우선 순위 지침 블록으로 주입되어 기본 검토 지침보다 우선합니다.
 
-그것이 그대로 붙여넣어지기 때문에 `REVIEW.md`는 일반 지침입니다: [`@` import 구문](/ko/memory#import-additional-files)은 확장되지 않으며 참조된 파일은 프롬프트로 읽혀지지 않습니다. 적용하려는 규칙을 파일에 직접 입력합니다.
+그것이 그대로 붙여넣어지기 때문에 `REVIEW.md`는 일반 지침입니다: [`@` import 구문](/docs/ko/memory#import-additional-files)은 확장되지 않으며 참조된 파일은 프롬프트로 읽혀지지 않습니다. 적용하려는 규칙을 파일에 직접 입력합니다.
 
 <h4 id="what-you-can-tune">
   조정할 수 있는 항목
@@ -270,7 +270,7 @@ Code Review는 토큰 사용량을 기반으로 청구됩니다. 각 검토는 �
 
 모든 모드에서 `@claude review`를 [댓글로 작성](#manually-trigger-reviews)하면 PR이 푸시 트리거 검토에 옵트인되므로 해당 댓글 이후 푸시당 추가 비용이 발생합니다. 향후 푸시에 구독하지 않고 단일 검토를 실행하려면 대신 `@claude review once`를 댓글로 작성하십시오.
 
-비용은 조직이 다른 Claude Code 기능에 Amazon Bedrock 또는 Google Vertex AI를 사용하는지 여부와 관계없이 Anthropic 청구서에 나타납니다. Code Review의 월간 지출 한도를 설정하려면 [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage)로 이동하여 Claude Code Review 서비스의 한도를 구성합니다.
+비용은 조직이 다른 Claude Code 기능에 Amazon Bedrock 또는 Google Cloud의 Agent Platform을 사용하는지 여부와 관계없이 Anthropic 청구서에 나타납니다. Code Review의 월간 지출 한도를 설정하려면 [claude.ai/admin-settings/usage](https://claude.ai/admin-settings/usage)로 이동하여 Claude Code Review 서비스의 한도를 구성합니다.
 
 [분석](#view-usage)의 주간 비용 차트 또는 관리자 설정의 리포지토리별 평균 비용 열을 통해 지출을 모니터링합니다.
 
@@ -310,11 +310,11 @@ GitHub의 Checks 탭의 **Re-run** 버튼은 Code Review를 재트리거하지 �
   로컬에서 diff 검토
 </h2>
 
-[`/code-review` 명령](/ko/commands)은 GitHub 앱을 설치하지 않고 터미널에서 diff를 검토합니다. Claude Code 세션에서 실행하십시오: 정확성 버그 및 {/* min-version: 2.1.151 */}재사용, 단순화 및 효율성 정리를 보고합니다. 기본적으로 로컬 검토는 업스트림보다 앞선 브랜치의 커밋과 작업 트리의 커밋되지 않은 변경 사항을 포함합니다. `--comment`를 전달하여 결과를 인라인 PR 댓글로 게시하거나 `--fix`를 전달하여 검토 후 결과를 작업 트리에 적용합니다.
+[`/code-review` 명령](/docs/ko/commands)은 GitHub 앱을 설치하지 않고 터미널에서 diff를 검토합니다. Claude Code 세션에서 실행하십시오: 정확성 버그 및 {/* min-version: 2.1.151 */}재사용, 단순화 및 효율성 정리를 보고합니다. 기본적으로 로컬 검토는 업스트림보다 앞선 브랜치의 커밋과 작업 트리의 커밋되지 않은 변경 사항을 포함합니다. `--comment`를 전달하여 결과를 인라인 PR 댓글로 게시하거나 `--fix`를 전달하여 검토 후 결과를 작업 트리에 적용합니다.
 
-낮은 [노력 수준](/ko/model-config#adjust-effort-level)은 더 적은 수의 높은 신뢰도 결과를 반환하는 반면, `high`부터 `max`까지는 더 광범위한 범위를 제공하며 불확실한 결과를 포함할 수 있습니다. 노력 인수 없이 검토는 세션의 현재 노력을 사용합니다. 기본 diff 대신 다른 항목을 검토하려면 대상을 전달합니다: 파일 경로, PR 번호, 브랜치 이름 또는 `main...my-feature`와 같은 ref 범위입니다. ref 범위 형식은 브랜치의 업스트림이 어떻게 구성되어 있는지와 관계없이 `my-feature`에서 `main`으로의 풀 요청이 포함할 커밋된 diff를 검토합니다.
+낮은 [노력 수준](/docs/ko/model-config#adjust-effort-level)은 더 적은 수의 높은 신뢰도 결과를 반환하는 반면, `high`부터 `max`까지는 더 광범위한 범위를 제공하며 불확실한 결과를 포함할 수 있습니다. 노력 인수 없이 검토는 세션의 현재 노력을 사용합니다. 기본 diff 대신 다른 항목을 검토하려면 대상을 전달합니다: 파일 경로, PR 번호, 브랜치 이름 또는 `main...my-feature`와 같은 ref 범위입니다. ref 범위 형식은 브랜치의 업스트림이 어떻게 구성되어 있는지와 관계없이 `my-feature`에서 `main`으로의 풀 요청이 포함할 커밋된 diff를 검토합니다.
 
-`/code-review ultra --fix`는 클라우드에서 더 깊은 [ultrareview](/ko/ultrareview)를 실행한 다음 세션으로 돌아올 때 결과를 작업 트리에 적용합니다. Ultrareview는 자체 범위를 사용합니다: 현재 브랜치와 저장소의 기본 브랜치, 그리고 작업 트리의 커밋되지 않은 및 스테이징된 변경 사항입니다.
+`/code-review ultra --fix`는 클라우드에서 더 깊은 [ultrareview](/docs/ko/ultrareview)를 실행한 다음 세션으로 돌아올 때 결과를 작업 트리에 적용합니다. Ultrareview는 자체 범위를 사용합니다: 현재 브랜치와 저장소의 기본 브랜치, 그리고 작업 트리의 커밋되지 않은 및 스테이징된 변경 사항입니다.
 
 이 명령은 v2.1.147 이전에 `/simplify`로 명명되었으며 기본적으로 수정 사항을 적용했습니다. {/* min-version: 2.1.154 */}v2.1.154부터 `/simplify`는 버그를 찾지 않고 수정 사항을 적용하는 별도의 정리 전용 검토를 실행합니다. 버그 찾기를 위해 `/simplify`를 스크립트했다면 변경되지 않은 `/code-review --fix`로 전환하십시오.
 
@@ -324,8 +324,8 @@ GitHub의 Checks 탭의 **Re-run** 버튼은 Code Review를 재트리거하지 �
 
 Code Review는 Claude Code의 나머지 부분과 함께 작동하도록 설계되었습니다. PR을 열기 전에 로컬에서 검토를 실행하거나, 자체 호스팅 설정이 필요하거나, `CLAUDE.md`가 도구 전체에서 Claude의 동작을 형성하는 방식에 대해 더 깊이 알고 싶다면 다음 페이지가 좋은 다음 단계입니다:
 
-* [Commands](/ko/commands): 로컬 Claude Code 세션에서 `/code-review`를 실행하여 푸시 전에 diff를 확인합니다
-* [GitHub Actions](/ko/github-actions): 코드 검토 이상의 사용자 정의 자동화를 위해 자신의 GitHub Actions 워크플로우에서 Claude를 실행합니다
-* [GitLab CI/CD](/ko/gitlab-ci-cd): GitLab 파이프라인을 위한 자체 호스팅 Claude 통합
-* [Memory](/ko/memory): Claude Code 전체에서 `CLAUDE.md` 파일이 작동하는 방식
-* [Analytics](/ko/analytics): 코드 검토 이상으로 Claude Code 사용량을 추적합니다
+* [Commands](/docs/ko/commands): 로컬 Claude Code 세션에서 `/code-review`를 실행하여 푸시 전에 diff를 확인합니다
+* [GitHub Actions](/docs/ko/github-actions): 코드 검토 이상의 사용자 정의 자동화를 위해 자신의 GitHub Actions 워크플로우에서 Claude를 실행합니다
+* [GitLab CI/CD](/docs/ko/gitlab-ci-cd): GitLab 파이프라인을 위한 자체 호스팅 Claude 통합
+* [Memory](/docs/ko/memory): Claude Code 전체에서 `CLAUDE.md` 파일이 작동하는 방식
+* [Analytics](/docs/ko/analytics): 코드 검토 이상으로 Claude Code 사용량을 추적합니다

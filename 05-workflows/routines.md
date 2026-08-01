@@ -10,7 +10,7 @@
   루틴은 연구 미리보기 상태입니다. 동작, 제한 사항 및 API 표면이 변경될 수 있습니다.
 </Note>
 
-루틴은 저장된 Claude Code 구성입니다. 프롬프트, 하나 이상의 저장소, 그리고 [커넥터](/ko/mcp) 세트를 한 번에 패키징하여 자동으로 실행합니다. 루틴은 Anthropic 관리 클라우드 인프라에서 실행되므로 노트북을 닫아도 계속 작동합니다.
+루틴은 저장된 Claude Code 구성입니다. 프롬프트, 하나 이상의 저장소, 그리고 [커넥터](/docs/ko/mcp) 세트를 한 번에 패키징하여 자동으로 실행합니다. 루틴은 Anthropic 관리 클라우드 인프라에서 실행되므로 노트북을 닫아도 계속 작동합니다.
 
 각 루틴에는 하나 이상의 트리거를 연결할 수 있습니다.
 
@@ -20,7 +20,7 @@
 
 단일 루틴은 트리거를 결합할 수 있습니다. 예를 들어 PR 검토 루틴은 야간에 실행되고, 배포 스크립트에서 트리거되며, 모든 새로운 PR에도 반응할 수 있습니다.
 
-루틴은 [웹에서 Claude Code](/ko/claude-code-on-the-web)가 활성화된 Pro, Max, Team 및 Enterprise 플랜에서 사용할 수 있습니다. [claude.ai/code/routines](https://claude.ai/code/routines)에서 생성 및 관리하거나 CLI에서 `/schedule`로 관리하세요.
+루틴은 [웹에서 Claude Code](/docs/ko/claude-code-on-the-web)가 활성화된 Pro, Max, Team 및 Enterprise 플랜에서 사용할 수 있습니다. [claude.ai/code/routines](https://claude.ai/code/routines)에서 생성 및 관리하거나 CLI에서 `/schedule`로 관리하세요.
 
 Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)의 루틴 토글로 모든 구성원에 대해 루틴을 비활성화할 수 있습니다. 비활성화되면 기존 루틴이 실행을 중지하고 구성원은 새로운 루틴을 생성할 수 없습니다.
 
@@ -50,11 +50,11 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
   루틴 생성
 </h2>
 
-웹의 [claude.ai/code/routines](https://claude.ai/code/routines), 데스크톱 앱 또는 CLI에서 루틴을 생성합니다. 세 가지 표면 모두 동일한 클라우드 계정에 쓰므로 한 곳에서 생성한 루틴이 즉시 다른 곳에 표시됩니다. 데스크톱 앱에서 사이드바의 **루틴**을 클릭한 다음 **새 루틴**을 클릭하고 **원격**을 선택합니다. 대신 **로컬**을 선택하면 머신에서 실행되는 [데스크톱 예약 작업](/ko/desktop-scheduled-tasks)이 생성되며, 클라우드에서 실행되지 않습니다.
+웹의 [claude.ai/code/routines](https://claude.ai/code/routines), 데스크톱 앱 또는 CLI에서 루틴을 생성합니다. 세 가지 표면 모두 동일한 클라우드 계정에 쓰므로 한 곳에서 생성한 루틴이 즉시 다른 곳에 표시됩니다. 데스크톱 앱에서 사이드바의 **루틴**을 클릭한 다음 **새 루틴**을 클릭하고 **원격**을 선택합니다. 대신 **로컬**을 선택하면 머신에서 실행되는 [데스크톱 예약 작업](/docs/ko/desktop-scheduled-tasks)이 생성되며, 클라우드에서 실행되지 않습니다.
 
 생성 양식은 루틴의 프롬프트, 저장소, 환경, 커넥터 및 트리거를 설정합니다.
 
-루틴은 완전한 Claude Code 클라우드 세션으로 자율적으로 실행됩니다. 권한 모드 선택기나 실행 중 승인 프롬프트가 없습니다. 세션은 셸 명령을 실행하고, 복제된 저장소에 커밋된 [스킬](/ko/skills)을 사용하고, 포함된 모든 커넥터를 호출할 수 있습니다. 루틴이 도달할 수 있는 것은 선택한 저장소와 해당 브랜치 푸시 설정, [환경의](/ko/claude-code-on-the-web#the-cloud-environment) 네트워크 액세스 및 변수, 그리고 포함된 커넥터에 의해 결정됩니다. 루틴이 실제로 필요한 것으로 각각을 범위 지정합니다.
+루틴은 완전한 Claude Code 클라우드 세션으로 자율적으로 실행됩니다. 권한 모드 선택기나 실행 중 승인 프롬프트가 없습니다. 세션은 셸 명령을 실행하고, 복제된 저장소에 커밋된 [스킬](/docs/ko/skills)을 사용하고, 포함된 모든 커넥터를 호출할 수 있습니다. 루틴이 도달할 수 있는 것은 선택한 저장소와 해당 브랜치 푸시 설정, [환경의](/docs/ko/claude-code-on-the-web#the-cloud-environment) 네트워크 액세스 및 변수, 그리고 포함된 커넥터에 의해 결정됩니다. 루틴이 실제로 필요한 것으로 각각을 범위 지정합니다.
 
 루틴은 개별 claude.ai 계정에 속합니다. 팀원과 공유되지 않으며 계정의 일일 실행 허용량에 대해 계산됩니다. 루틴이 연결된 GitHub 신원 또는 커넥터를 통해 수행하는 모든 작업은 사용자로 표시됩니다. 커밋 및 풀 요청은 GitHub 사용자를 전달하고, Slack 메시지, Linear 티켓 또는 기타 커넥터 작업은 해당 서비스에 대해 연결된 계정을 사용합니다.
 
@@ -78,13 +78,13 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
   </Step>
 
   <Step title="환경 선택">
-    루틴에 대해 [클라우드 환경](/ko/claude-code-on-the-web#the-cloud-environment)을 선택합니다. 환경은 클라우드 세션이 액세스할 수 있는 것을 제어합니다.
+    루틴에 대해 [클라우드 환경](/docs/ko/claude-code-on-the-web#the-cloud-environment)을 선택합니다. 환경은 클라우드 세션이 액세스할 수 있는 것을 제어합니다.
 
     * **네트워크 액세스**: 각 실행 중에 사용 가능한 인터넷 액세스 수준 설정
     * **환경 변수**: Claude가 사용할 수 있는 API 키, 토큰 또는 기타 비밀 제공
-    * **설정 스크립트**: 루틴이 필요한 종속성 및 도구를 설치합니다. 결과는 [캐시됩니다](/ko/claude-code-on-the-web#environment-caching). 따라서 스크립트는 모든 세션에서 다시 실행되지 않습니다.
+    * **설정 스크립트**: 루틴이 필요한 종속성 및 도구를 설치합니다. 결과는 [캐시됩니다](/docs/ko/claude-code-on-the-web#environment-caching). 따라서 스크립트는 모든 세션에서 다시 실행되지 않습니다.
 
-    **기본** 환경이 제공되며 **신뢰할 수 있는** 네트워크 액세스가 있습니다. 이는 [기본 설정](/ko/claude-code-on-the-web#default-allowed-domains) 패키지 레지스트리, 클라우드 공급자 API, 컨테이너 레지스트리 및 일반적인 개발 도메인을 허용하지만 다른 모든 것을 차단합니다. 루틴이 자신의 서비스나 해당 목록 외의 도메인에 도달해야 하는 경우 실행하기 전에 환경의 [네트워크 액세스](/ko/claude-code-on-the-web#network-access)를 편집합니다. 별도의 환경을 사용하려면 먼저 [하나를 생성](/ko/claude-code-on-the-web#configure-your-environment)합니다.
+    **기본** 환경이 제공되며 **신뢰할 수 있는** 네트워크 액세스가 있습니다. 이는 [기본 설정](/docs/ko/claude-code-on-the-web#default-allowed-domains) 패키지 레지스트리, 클라우드 공급자 API, 컨테이너 레지스트리 및 일반적인 개발 도메인을 허용하지만 다른 모든 것을 차단합니다. 루틴이 자신의 서비스나 해당 목록 외의 도메인에 도달해야 하는 경우 실행하기 전에 환경의 [네트워크 액세스](/docs/ko/claude-code-on-the-web#network-access)를 편집합니다. 별도의 환경을 사용하려면 먼저 [하나를 생성](/docs/ko/claude-code-on-the-web#configure-your-environment)합니다.
   </Step>
 
   <Step title="트리거 선택">
@@ -108,7 +108,7 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
   <Step title="커넥터 및 권한 검토">
     양식 하단의 **커넥터** 및 **권한** 탭은 루틴이 도달할 수 있는 것을 제어합니다.
 
-    커넥터 아래에서 연결된 모든 [MCP 커넥터](/ko/mcp)는 기본적으로 포함됩니다. 루틴이 필요하지 않은 것을 제거합니다. Claude는 실행 중에 권한을 요청하지 않고 포함된 커넥터의 모든 도구(쓰기 포함)를 사용할 수 있습니다.
+    커넥터 아래에서 연결된 모든 [MCP 커넥터](/docs/ko/mcp)는 기본적으로 포함됩니다. 루틴이 필요하지 않은 것을 제거합니다. Claude는 실행 중에 권한을 요청하지 않고 포함된 커넥터의 모든 도구(쓰기 포함)를 사용할 수 있습니다.
 
     권한 아래에서 Claude가 `claude/` 접두사가 붙은 브랜치만 푸시하는 대신 기존 브랜치로 푸시할 수 있어야 하는 모든 저장소에 대해 **제한 없는 브랜치 푸시 허용**을 활성화합니다.
   </Step>
@@ -125,6 +125,8 @@ Team 및 Enterprise 관리자는 [claude.ai/admin-settings/claude-code](https://
 </h3>
 
 모든 세션에서 `/schedule`을 실행하여 예약된 루틴을 대화식으로 생성합니다. `/schedule daily PR review at 9am`과 같은 반복 루틴이나 `/schedule clean up feature flag in one week`과 같은 일회성 루틴에 대해 설명을 직접 전달할 수도 있습니다. Claude는 웹 양식이 수집하는 동일한 정보를 안내한 다음 루틴을 계정에 저장합니다.
+
+성공적인 시작은 대화처럼 보입니다. Claude는 저장하기 전에 일정, 저장소 및 프롬프트에 대한 후속 질문을 합니다. Claude가 대신 인증이 필요하거나 원격 claude.ai 계정에 연결할 수 없다고 회신하면 루틴이 생성되지 않았습니다. [문제 해결](#troubleshooting)을 참조합니다.
 
 CLI의 `/schedule`은 예약된 루틴만 생성합니다. API 또는 GitHub 트리거를 추가하려면 [claude.ai/code/routines](https://claude.ai/code/routines)의 웹에서 루틴을 편집합니다.
 
@@ -151,6 +153,10 @@ CLI는 기존 루틴 관리도 지원합니다. `/schedule list`를 실행하여
 </h4>
 
 일회성 일정은 특정 타임스탬프에서 루틴을 한 번만 실행합니다. 이를 사용하여 주 후반에 자신에게 상기시키거나, 롤아웃이 완료된 후 정리 PR을 열거나, 업스트림 변경이 도착할 때 후속 작업을 시작하세요. 루틴이 실행된 후 자동으로 비활성화되고 웹 UI는 이를 **실행됨**으로 표시합니다. 다시 실행하려면 루틴을 편집하고 새로운 일회성 시간을 설정하세요.
+
+<Note>
+  CLI에서의 일회성 스케줄링은 점진적으로 출시 중이며 아직 계정에서 사용할 수 없을 수 있습니다. `/schedule`이 반복 일정만 제공하는 경우 [claude.ai/code/routines](https://claude.ai/code/routines)의 웹에서 일회성 실행을 만드세요.
+</Note>
 
 CLI에서 자연어로 시간을 설명하여 일회성 실행을 만드세요. Claude는 현재 시간에 대해 구문을 해석하고 저장하기 전에 절대 타임스탬프를 확인합니다.
 
@@ -200,7 +206,7 @@ API 트리거는 웹에서 기존 루틴에 추가됩니다. CLI는 현재 토�
 
 `/fire` 엔드포인트에 `Authorization` 헤더의 베어러 토큰으로 POST 요청을 보내세요. 요청 본문은 경고 본문 또는 실패한 로그와 같은 실행별 컨텍스트에 대한 선택적 `text` 필드를 수락하며, 저장된 프롬프트와 함께 루틴에 전달됩니다. 값은 자유 형식 텍스트이며 구문 분석되지 않습니다. JSON 또는 다른 구조화된 페이로드를 보내면 루틴은 이를 리터럴 문자열로 받습니다.
 
-아래 예시는 셸에서 루틴을 트리거합니다.
+아래 예시는 셸에서 루틴을 트리거합니다. 표시된 루틴 ID와 토큰은 자리 표시자입니다. [API 트리거 추가](#add-an-api-trigger) 시 복사한 URL과 토큰으로 바꾸거나, 요청이 `401` 인증 오류로 실패합니다.
 
 ```bash theme={null}
 curl -X POST https://api.anthropic.com/v1/claude_code/routines/trig_01ABCDEFGHJKLMNOPQRSTUVW/fire \
@@ -344,7 +350,7 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
   저장소 및 브랜치 권한
 </h3>
 
-루틴은 저장소를 복제하기 위해 GitHub 액세스가 필요합니다. CLI에서 `/schedule`로 루틴을 생성할 때 Claude는 계정에 GitHub이 연결되어 있는지 확인하고 연결되지 않은 경우 `/web-setup`을 실행하도록 요청합니다. [GitHub 인증 옵션](/ko/claude-code-on-the-web#github-authentication-options)을 참조하여 액세스 권한을 부여하는 두 가지 방법을 확인하세요.
+루틴은 저장소를 복제하기 위해 GitHub 액세스가 필요합니다. CLI에서 `/schedule`로 루틴을 생성할 때 Claude는 계정에 GitHub이 연결되어 있는지 확인하고 연결되지 않은 경우 `/web-setup`을 실행하도록 요청합니다. [GitHub 인증 옵션](/docs/ko/claude-code-on-the-web#github-authentication-options)을 참조하여 액세스 권한을 부여하는 두 가지 방법을 확인하세요.
 
 추가하는 각 저장소는 모든 실행에서 복제됩니다. Claude는 프롬프트에서 달리 지정하지 않는 한 저장소의 기본 브랜치에서 시작합니다.
 
@@ -356,7 +362,7 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
 
 루틴은 연결된 MCP 커넥터를 사용하여 각 실행 중에 외부 서비스에서 읽고 쓸 수 있습니다. 예를 들어 지원 요청을 분류하는 루틴은 Slack 채널에서 읽고 Linear에서 이슈를 생성할 수 있습니다.
 
-커넥터는 계정의 [claude.ai 통합](/ko/mcp#use-mcp-servers-from-claude-ai)입니다. CLI에서 `claude mcp add`로 로컬에 추가한 MCP 서버는 claude.ai 계정이 아닌 컴퓨터에 저장되므로 커넥터 목록에 나타나지 않습니다. 루틴에서 이러한 서버 중 하나를 사용하려면 [claude.ai/customize/connectors](https://claude.ai/customize/connectors)에서 커넥터로 추가하거나 커밋된 [`.mcp.json`](/ko/mcp#project-scope)에서 선언하여 복제된 저장소의 일부가 되도록 하세요.
+커넥터는 계정의 [claude.ai 통합](/docs/ko/mcp#use-mcp-servers-from-claude-ai)입니다. CLI에서 `claude mcp add`로 로컬에 추가한 MCP 서버는 claude.ai 계정이 아닌 컴퓨터에 저장되므로 커넥터 목록에 나타나지 않습니다. 루틴에서 이러한 서버 중 하나를 사용하려면 [claude.ai/customize/connectors](https://claude.ai/customize/connectors)에서 커넥터로 추가하거나 커밋된 [`.mcp.json`](/docs/ko/mcp#project-scope)에서 선언하여 복제된 저장소의 일부가 되도록 하세요.
 
 루틴을 생성할 때 현재 연결된 모든 커넥터가 기본적으로 포함됩니다. 실행 중에 Claude가 액세스할 수 있는 도구를 제한하려면 필요하지 않은 것을 제거하세요. 루틴 양식에서 직접 커넥터를 추가할 수도 있습니다.
 
@@ -366,9 +372,9 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
   환경 및 네트워크 액세스
 </h3>
 
-각 루틴은 네트워크 액세스, 환경 변수 및 설정 스크립트를 제어하는 [클라우드 환경](/ko/claude-code-on-the-web#the-cloud-environment)에서 실행됩니다. 루틴은 모든 실행에서 환경의 네트워크 정책을 상속합니다.
+각 루틴은 네트워크 액세스, 환경 변수 및 설정 스크립트를 제어하는 [클라우드 환경](/docs/ko/claude-code-on-the-web#the-cloud-environment)에서 실행됩니다. 루틴은 모든 실행에서 환경의 네트워크 정책을 상속합니다.
 
-**기본** 환경은 **신뢰할 수 있는** 네트워크 액세스를 사용합니다. [기본 허용 목록](/ko/claude-code-on-the-web#default-allowed-domains)의 패키지 레지스트리, 클라우드 공급자 API, 컨테이너 레지스트리 및 일반적인 개발 도메인에 도달할 수 있지만 임의의 도메인에는 도달할 수 없습니다. 다른 호스트로의 아웃바운드 요청은 `403` 및 `x-deny-reason: host_not_allowed`로 실패합니다. MCP 커넥터 트래픽은 Anthropic의 서버를 통해 라우팅되므로 루틴에 추가하는 커넥터는 **허용된 도메인**에 호스트를 추가하지 않고도 작동합니다. [커넥터](#connectors) 아래에서 필요하지 않은 커넥터를 제거하세요.
+**기본** 환경은 **신뢰할 수 있는** 네트워크 액세스를 사용합니다. [기본 허용 목록](/docs/ko/claude-code-on-the-web#default-allowed-domains)의 패키지 레지스트리, 클라우드 공급자 API, 컨테이너 레지스트리 및 일반적인 개발 도메인에 도달할 수 있지만 임의의 도메인에는 도달할 수 없습니다. 다른 호스트로의 아웃바운드 요청은 `403` 및 `x-deny-reason: host_not_allowed`로 실패합니다. MCP 커넥터 트래픽은 Anthropic의 서버를 통해 라우팅되므로 루틴에 추가하는 커넥터는 **허용된 도메인**에 호스트를 추가하지 않고도 작동합니다. [커넥터](#connectors) 아래에서 필요하지 않은 커넥터를 제거하세요.
 
 추가 도메인을 허용하려면:
 
@@ -386,7 +392,7 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
   </Step>
 
   <Step title="네트워크 액세스 수준 변경">
-    **클라우드 환경 업데이트** 대화 상자에서 **네트워크 액세스**를 **사용자 정의**로 변경하고 **허용된 도메인**에 도메인을 입력합니다. **기본 패키지 관리자 목록도 포함**을 확인하여 [기본 허용 목록](/ko/claude-code-on-the-web#default-allowed-domains)을 사용자 정의 도메인과 함께 유지합니다. 제한 없는 액세스를 위해 **전체**를 대신 선택합니다.
+    **클라우드 환경 업데이트** 대화 상자에서 **네트워크 액세스**를 **사용자 정의**로 변경하고 **허용된 도메인**에 도메인을 입력합니다. **기본 패키지 관리자 목록도 포함**을 확인하여 [기본 허용 목록](/docs/ko/claude-code-on-the-web#default-allowed-domains)을 사용자 정의 도메인과 함께 유지합니다. 제한 없는 액세스를 위해 **전체**를 대신 선택합니다.
   </Step>
 
   <Step title="저장">
@@ -394,7 +400,7 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
   </Step>
 </Steps>
 
-액세스 수준 및 기본 허용 목록에 대한 자세한 내용은 [네트워크 액세스](/ko/claude-code-on-the-web#network-access)를 참조하세요.
+액세스 수준 및 기본 허용 목록에 대한 자세한 내용은 [네트워크 액세스](/docs/ko/claude-code-on-the-web#network-access)를 참조하세요.
 
 <h2 id="usage-and-limits">
   사용 및 제한
@@ -410,18 +416,23 @@ GitHub 트리거는 다음 이벤트 범주 중 하나를 구독할 수 있습�
   문제 해결
 </h2>
 
-<h3 id="/schedule-shows-no-commands-match-or-unknown-command">
-  `/schedule` "알 수 없는 명령" 또는 "명령이 일치하지 않음" 표시
+<h3 id="/schedule-returns-unknown-command">
+  `/schedule` "알 수 없는 명령" 반환
 </h3>
 
-CLI는 요구 사항 중 하나가 충족되지 않으면 `/schedule`을 숨깁니다. 따라서 명령 메뉴는 입력 중에 `명령이 일치하지 않음 "/schedule"`을 표시하고, 제출하면 `알 수 없는 명령: /schedule`을 반환합니다. 원인은 일반적으로 다음 중 하나입니다.
+CLI는 요구 사항 중 하나가 충족되지 않으면 `/schedule`을 숨깁니다. 입력 중에 명령 메뉴는 `"/schedule"과 일치하는 명령이 없습니다`를 표시하고, 제출하면 `알 수 없는 명령: /schedule`을 반환합니다. 원인은 일반적으로 다음 중 하나입니다.
 
-* Console API 키 또는 Bedrock, Vertex, Foundry와 같은 클라우드 공급자로 인증되어 있습니다. `/schedule`은 claude.ai 구독 로그인이 필요합니다. 셸에서 `ANTHROPIC_API_KEY` 또는 `ANTHROPIC_AUTH_TOKEN`이 설정되어 있거나 `settings.json`에서 `apiKeyHelper`가 설정되어 있으면 먼저 제거하세요. 이들이 claude.ai 로그인보다 우선하기 때문입니다.
-* `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 또는 `DISABLE_GROWTHBOOK`이 셸 환경 또는 [`settings.json` 파일](/ko/settings#available-settings)의 `env` 블록에 설정되어 있습니다. 이들은 `/schedule`이 의존하는 기능 플래그 가져오기를 비활성화합니다.
+* Console API 키 또는 Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry와 같은 클라우드 공급자로 인증되어 있습니다. `/schedule`은 claude.ai 구독 로그인이 필요합니다. 셸에서 `ANTHROPIC_API_KEY` 또는 `ANTHROPIC_AUTH_TOKEN`이 설정되어 있거나 `settings.json`에서 `apiKeyHelper`가 설정되어 있으면 먼저 제거하세요. 이들이 claude.ai 로그인보다 우선하기 때문입니다.
+* `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 또는 `DISABLE_GROWTHBOOK`이 셸 환경 또는 [`settings.json` 파일](/docs/ko/settings#available-settings)의 `env` 블록에 설정되어 있습니다. 이들은 `/schedule`이 의존하는 기능 플래그 가져오기를 비활성화합니다.
 * Claude Code 웹 세션 내부에 있습니다. 대신 [웹 UI](https://claude.ai/code/routines)에서 루틴을 관리하세요.
-* {/* min-version: 2.1.81 */}CLI가 v2.1.81보다 오래되었습니다. `claude update`를 실행하세요.
 
 CLI가 어떻게 구성되어 있든 관계없이 [claude.ai/code/routines](https://claude.ai/code/routines)에서 언제든지 루틴을 생성하고 관리할 수 있습니다.
+
+<h3 id="/schedule-asks-you-to-authenticate">
+  `/schedule`이 인증을 요청합니다.
+</h3>
+
+`/schedule`이 실행되지만 Claude가 먼저 claude.ai 계정으로 인증해야 한다고 응답하면, CLI에 저장된 claude.ai 로그인이 없습니다. API 계정은 루틴에 지원되지 않습니다. `/login`을 실행하고, claude.ai 계정으로 로그인한 다음, `/schedule`을 다시 실행하세요.
 
 <h3 id="routines-are-disabled-by-your-organization’s-policy">
   "루틴이 조직의 정책에 의해 비활성화되었습니다"
@@ -433,8 +444,8 @@ Team 또는 Enterprise 조직의 Owner가 [claude.ai/admin-settings/claude-code]
   관련 리소스
 </h2>
 
-* [`/loop` 및 세션 내 예약](/ko/scheduled-tasks): 열린 CLI 세션 내에서 로컬 작업 예약
-* [데스크톱 예약 작업](/ko/desktop-scheduled-tasks): 로컬 파일에 액세스할 수 있는 머신에서 실행되는 로컬 예약 작업
-* [클라우드 환경](/ko/claude-code-on-the-web#the-cloud-environment): 클라우드 세션의 런타임 환경 구성
-* [MCP 커넥터](/ko/mcp): Slack, Linear 및 Google Drive와 같은 외부 서비스 연결
-* [GitHub Actions](/ko/github-actions): 저장소 이벤트에서 CI 파이프라인에서 Claude 실행
+* [`/loop` 및 세션 내 예약](/docs/ko/scheduled-tasks): 열린 CLI 세션 내에서 로컬 작업 예약
+* [데스크톱 예약 작업](/docs/ko/desktop-scheduled-tasks): 로컬 파일에 액세스할 수 있는 머신에서 실행되는 로컬 예약 작업
+* [클라우드 환경](/docs/ko/claude-code-on-the-web#the-cloud-environment): 클라우드 세션의 런타임 환경 구성
+* [MCP 커넥터](/docs/ko/mcp): Slack, Linear 및 Google Drive와 같은 외부 서비스 연결
+* [GitHub Actions](/docs/ko/github-actions): 저장소 이벤트에서 CI 파이프라인에서 Claude 실행

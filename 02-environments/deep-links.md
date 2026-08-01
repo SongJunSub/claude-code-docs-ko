@@ -19,10 +19,6 @@
 
 이 페이지에서는 [링크를 빌드하는 방법](#build-a-link), [런북에 포함하거나 셸에서 트리거하는 방법](#examples), 그리고 [각 플랫폼에서 핸들러 등록을 관리하거나 비활성화하는 방법](#registration-and-supported-platforms)을 다룹니다.
 
-<Note>
-  딥 링크는 Claude Code v2.1.91 이상이 필요합니다.
-</Note>
-
 <h2 id="how-it-works">
   작동 방식
 </h2>
@@ -176,13 +172,13 @@ Claude Code는 macOS, Linux 및 Windows에서 대화형 세션을 처음 시작�
 
 핸들러는 감지된 터미널 에뮬레이터에서 Claude Code를 시작합니다. macOS에서 Claude Code는 가장 최근의 대화형 세션에서 터미널을 기억하고 재사용하며, iTerm2, Ghostty, kitty, Alacritty, WezTerm 및 Terminal.app을 지원합니다. Linux에서는 `$TERMINAL` 환경 변수를 준수한 다음 `x-terminal-emulator`, 그 다음 일반적인 에뮬레이터 목록을 준수합니다. Windows에서는 Windows Terminal을 선호한 다음 PowerShell, 그 다음 `cmd.exe`를 선호합니다.
 
-등록을 완전히 방지하려면 `settings.json`에서 [`disableDeepLinkRegistration`](/ko/settings)을 `"disable"`로 설정합니다. 조직 전체에 이를 적용하여 사용자가 다시 활성화할 수 없도록 하려면 [관리되는 설정](/ko/server-managed-settings)에서 대신 설정합니다.
+등록을 완전히 방지하려면 `settings.json`에서 [`disableDeepLinkRegistration`](/docs/ko/settings)을 `"disable"`로 설정합니다. 조직 전체에 이를 적용하여 사용자가 다시 활성화할 수 없도록 하려면 [관리되는 설정](/docs/ko/server-managed-settings)에서 대신 설정합니다.
 
 <h2 id="open-a-vs-code-tab-instead-of-a-terminal">
   터미널 대신 VS Code 탭 열기
 </h2>
 
-VS Code 확장은 `vscode://anthropic.claude-code/open`에서 자체 핸들러를 등록하며, 이는 터미널 창 대신 Claude Code 편집기 탭을 엽니다. 해당 URL의 매개변수는 [다른 도구에서 VS Code 탭 시작하기](/ko/vs-code#launch-a-vs-code-tab-from-other-tools)를 참조하세요.
+VS Code 확장은 `vscode://anthropic.claude-code/open`에서 자체 핸들러를 등록하며, 이는 터미널 창 대신 Claude Code 편집기 탭을 엽니다. 해당 URL의 매개변수는 [다른 도구에서 VS Code 탭 시작하기](/docs/ko/vs-code#launch-a-vs-code-tab-from-other-tools)를 참조하세요.
 
 <h2 id="troubleshooting">
   문제 해결
@@ -218,5 +214,5 @@ macOS에서 선호하는 터미널에서 `claude`를 시작하면 다음 딥 링
 
 이 페이지들은 Claude Code 세션을 시작하거나 확장하는 관련 방법을 다룹니다:
 
-* [Skills](/ko/skills): 긴 런북 프롬프트를 저장소의 `/skill`로 저장하여 딥 링크의 `q` 매개변수가 이름만 지정하면 됩니다
-* [Non-interactive mode](/ko/headless): 스크립트에서 Claude를 실행하고 터미널을 열지 않고 출력을 캡처합니다
+* [Skills](/docs/ko/skills): 긴 런북 프롬프트를 저장소의 `/skill`로 저장하여 딥 링크의 `q` 매개변수가 이름만 지정하면 됩니다
+* [Non-interactive mode](/docs/ko/headless): 스크립트에서 Claude를 실행하고 터미널을 열지 않고 출력을 캡처합니다

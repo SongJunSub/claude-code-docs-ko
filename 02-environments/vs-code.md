@@ -19,10 +19,10 @@ VS Code 확장 프로그램은 Claude Code를 위한 기본 그래픽 인터페�
 설치하기 전에 다음을 확인하십시오:
 
 * VS Code 1.98.0 이상
-* Anthropic 계정: 모든 유료 Claude 구독(Pro, Max, Team 또는 Enterprise) 또는 Claude Console 계정이 작동하며, API 키가 필요하지 않습니다. 확장 프로그램을 처음 열 때 이 계정으로 [로그인](/ko/authentication#log-in-to-claude-code)합니다. Amazon Bedrock이나 Google Vertex AI와 같은 타사 공급자를 통해 Claude에 액세스하는 경우 설정 지침은 [타사 공급자 사용](#use-third-party-providers)을 참조하십시오.
+* Anthropic 계정: 모든 유료 Claude 구독(Pro, Max, Team 또는 Enterprise) 또는 Claude Console 계정이 작동하며, API 키가 필요하지 않습니다. 확장 프로그램을 처음 열 때 이 계정으로 [로그인](/docs/ko/authentication#log-in-to-claude-code)합니다. Amazon Bedrock이나 Google Cloud의 Agent Platform과 같은 타사 공급자를 통해 Claude에 액세스하는 경우 설정 지침은 [타사 공급자 사용](#use-third-party-providers)을 참조하십시오.
 
 <Tip>
-  확장 프로그램에는 채팅 패널용 CLI(명령줄 인터페이스)의 자체 복사본이 포함되어 있습니다. VS Code의 통합 터미널에서 `claude`를 실행하려면 [독립 실행형 CLI 설치](/ko/setup)도 필요합니다. 자세한 내용은 [VS Code 확장 프로그램 vs. Claude Code CLI](#vs-code-extension-vs-claude-code-cli)를 참조하십시오.
+  확장 프로그램에는 채팅 패널용 CLI(명령줄 인터페이스)의 자체 복사본이 포함되어 있습니다. VS Code의 통합 터미널에서 `claude`를 실행하려면 [독립 실행형 CLI 설치](/docs/ko/setup)도 필요합니다. 자세한 내용은 [VS Code 확장 프로그램 vs. Claude Code CLI](#vs-code-extension-vs-claude-code-cli)를 참조하십시오.
 </Tip>
 
 <h2 id="install-the-extension">
@@ -36,7 +36,7 @@ IDE에 대한 링크를 클릭하여 직접 설치합니다:
 
 또는 VS Code에서 `Cmd+Shift+X`(Mac) 또는 `Ctrl+Shift+X`(Windows/Linux)를 눌러 확장 프로그램 보기를 열고, "Claude Code"를 검색한 후 **설치**를 클릭합니다.
 
-확장 프로그램은 Devin Desktop 또는 Kiro와 같은 다른 VS Code 포크에도 설치됩니다. 편집기의 확장 프로그램 보기에서 "Claude Code"를 검색하거나 [Open VSX 레지스트리](https://open-vsx.org/extension/Anthropic/claude-code)에서 설치합니다. 편집기에서 확장 프로그램을 설치할 수 없는 경우 [CLI](/ko/quickstart)를 설치하고 통합 터미널에서 `claude`를 실행합니다. CLI는 모든 터미널에서 작동합니다.
+확장 프로그램은 Devin Desktop 또는 Kiro와 같은 다른 VS Code 포크에도 설치됩니다. 편집기의 확장 프로그램 보기에서 "Claude Code"를 검색하거나 [Open VSX 레지스트리](https://open-vsx.org/extension/Anthropic/claude-code)에서 설치합니다. 편집기에서 확장 프로그램을 설치할 수 없는 경우 [CLI](/docs/ko/quickstart)를 설치하고 통합 터미널에서 `claude`를 실행합니다. CLI는 모든 터미널에서 작동합니다.
 
 <Note>설치 후 확장 프로그램이 나타나지 않으면 VS Code를 다시 시작하거나 명령 팔레트에서 "Developer: Reload Window"를 실행합니다.</Note>
 
@@ -90,7 +90,7 @@ IDE에 대한 링크를 클릭하여 직접 설치합니다:
   </Step>
 </Steps>
 
-Claude Code로 수행할 수 있는 작업에 대한 더 많은 아이디어는 [일반적인 워크플로우](/ko/common-workflows)를 참조하십시오.
+Claude Code로 수행할 수 있는 작업에 대한 더 많은 아이디어는 [일반적인 워크플로우](/docs/ko/common-workflows)를 참조하십시오.
 
 <Tip>
   명령 팔레트에서 "Claude Code: Open Walkthrough"를 실행하여 기본 사항에 대한 안내 투어를 받습니다.
@@ -102,11 +102,15 @@ Claude Code로 수행할 수 있는 작업에 대한 더 많은 아이디어는 
 
 프롬프트 상자는 여러 기능을 지원합니다:
 
-* **권한 모드**: 프롬프트 상자 하단의 모드 표시기를 클릭하여 모드를 전환합니다. 일반 모드에서 Claude는 각 작업 전에 권한을 요청합니다. Plan Mode에서 Claude는 수행할 작업을 설명하고 변경을 수행하기 전에 승인을 기다립니다. VS Code는 자동으로 계획을 전체 markdown 문서로 열어서 Claude가 시작하기 전에 피드백을 제공하기 위해 인라인 주석을 추가할 수 있습니다. 자동 수락 모드에서 Claude는 요청 없이 편집을 수행합니다. VS Code 설정의 `claudeCode.initialPermissionMode`에서 기본값을 설정합니다.
-* **명령 메뉴**: `/`를 클릭하거나 입력하여 명령 메뉴를 엽니다. 옵션에는 파일 첨부, 모델 전환, 확장 사고 토글, 계획 사용량 보기(`/usage`) 및 [Remote Control](/ko/remote-control) 세션 시작(`/remote-control`)이 포함됩니다. 사용자 정의 섹션은 MCP 서버, hooks, 메모리, 권한 및 플러그인에 대한 액세스를 제공합니다. 터미널 아이콘이 있는 항목은 통합 터미널에서 열립니다.
+* **권한 모드**: 프롬프트 상자 하단의 모드 표시기를 클릭하여 모드를 전환하거나 VS Code 설정의 `claudeCode.initialPermissionMode`에서 기본값을 설정합니다. 표시기가 제공하는 모든 모드는 [권한 모드](/docs/ko/permission-modes#switch-permission-modes)를 참조하십시오.
+  * **Manual**: Claude는 파일 편집 및 대부분의 셸 명령 전에 권한을 요청합니다.
+  * **Plan**: Claude는 수행할 작업을 설명하고 변경을 수행하기 전에 승인을 기다립니다. VS Code는 자동으로 계획을 전체 Markdown 문서로 열어서 Claude가 시작하기 전에 피드백을 제공하기 위해 인라인 주석을 추가할 수 있습니다.
+  * **Edit automatically**: Claude는 요청 없이 편집을 수행합니다.
+* **명령 메뉴**: `/`를 클릭하거나 입력하여 명령 메뉴를 엽니다. 옵션에는 파일 첨부, 모델 전환, 확장 사고 토글, 계획 사용량 보기(`/usage`) 및 [Remote Control](/docs/ko/remote-control) 세션 시작(`/remote-control`)이 포함됩니다. Customize 섹션은 MCP 서버, hooks, 메모리, 권한 및 플러그인에 대한 액세스를 제공합니다. 터미널 아이콘이 있는 항목은 통합 터미널에서 열립니다.
+  * {/* min-version: 2.1.203 */}Settings 섹션에는 **Enable Remote Control for all sessions**이 포함되어 있으며, 이는 [`remoteControlAtStartup`](/docs/ko/settings#available-settings)을 설정하므로 [모든 새로운 대화형 세션이 Remote Control에 자동으로 연결됩니다](/docs/ko/remote-control#enable-remote-control-for-all-sessions). Claude Code v2.1.203 이상이 필요합니다.
 * **컨텍스트 표시기**: 프롬프트 상자는 Claude의 context window를 얼마나 사용하고 있는지 표시합니다. Claude는 필요할 때 자동으로 압축하거나 `/compact`를 수동으로 실행할 수 있습니다.
-* **확장 사고**: Claude가 복잡한 문제를 추론하는 데 더 많은 시간을 소비할 수 있습니다. 명령 메뉴(`/`)를 통해 켭니다. Claude의 추론은 대화에 축소된 블록으로 나타납니다: 블록을 클릭하여 읽거나 `Ctrl+O`를 눌러 세션의 모든 사고 블록을 확장하거나 축소합니다. 자세한 내용은 [확장 사고](/ko/model-config#extended-thinking)를 참조하십시오.
-* **여러 줄 입력**: `Shift+Enter`를 눌러 보내지 않고 새 줄을 추가합니다. 이것은 질문 대화의 "기타" 자유 텍스트 입력에서도 작동합니다.
+* **확장 사고**: Claude가 복잡한 문제를 추론하는 데 더 많은 시간을 소비할 수 있습니다. 명령 메뉴(`/`)를 통해 켭니다. Claude의 추론은 대화에 축소된 블록으로 나타납니다: 블록을 클릭하여 읽거나 `Ctrl+O`를 눌러 세션의 모든 사고 블록을 확장하거나 축소합니다. 자세한 내용은 [확장 사고](/docs/ko/model-config#extended-thinking)를 참조하십시오.
+* **여러 줄 입력**: `Shift+Enter`를 눌러 보내지 않고 새 줄을 추가합니다. 이것은 질문 대화의 "Other" 자유 텍스트 입력에서도 작동합니다.
 
 <h3 id="reference-files-and-folders">
   파일 및 폴더 참조
@@ -129,21 +133,21 @@ Claude Code로 수행할 수 있는 작업에 대한 더 많은 아이디어는 
   과거 대화 재개
 </h3>
 
-Claude Code 패널 상단의 **세션 기록** 버튼을 클릭하여 대화 기록에 액세스합니다. 키워드로 검색하거나 시간별로 찾아볼 수 있습니다(오늘, 어제, 지난 7일 등). 대화를 클릭하여 전체 메시지 기록으로 재개합니다. 새 세션은 첫 번째 메시지를 기반으로 AI가 생성한 제목을 받습니다. 세션 위에 마우스를 올려 이름 바꾸기 및 제거 작업을 표시합니다: 설명적인 제목으로 이름을 바꾸거나 목록에서 삭제하려면 제거합니다. 세션 재개에 대한 자세한 내용은 [세션 관리](/ko/sessions)를 참조하십시오.
+Claude Code 패널 상단의 **Session history** 버튼을 클릭하여 대화 기록에 액세스합니다. 키워드로 검색하거나 시간별로 찾아볼 수 있습니다(Today, Yesterday, Last 7 days 등). 대화를 클릭하여 전체 메시지 기록으로 재개합니다. 새 세션은 첫 번째 메시지를 기반으로 AI가 생성한 제목을 받습니다. 세션 위에 마우스를 올려 이름 바꾸기 및 제거 작업을 표시합니다: 설명적인 제목으로 이름을 바꾸거나 목록에서 삭제하려면 제거합니다. 세션 재개에 대한 자세한 내용은 [세션 관리](/docs/ko/sessions)를 참조하십시오.
 
 <h3 id="resume-cloud-sessions-from-claude-ai">
   Claude.ai에서 원격 세션 재개
 </h3>
 
-[웹에서 Claude Code](/ko/claude-code-on-the-web)를 사용하는 경우 VS Code에서 직접 해당 원격 세션을 재개할 수 있습니다. 이를 위해서는 Anthropic Console이 아닌 **Claude.ai Subscription**으로 로그인해야 합니다.
+[웹에서 Claude Code](/docs/ko/claude-code-on-the-web)를 사용하는 경우 VS Code에서 직접 해당 원격 세션을 재개할 수 있습니다. 이를 위해서는 Anthropic Console이 아닌 **Claude.ai Subscription**으로 로그인해야 합니다.
 
 <Steps>
   <Step title="세션 기록 열기">
-    Claude Code 패널 상단의 **세션 기록** 버튼을 클릭합니다.
+    Claude Code 패널 상단의 **Session history** 버튼을 클릭합니다.
   </Step>
 
-  <Step title="원격 탭 선택">
-    대화 상자에는 로컬 및 원격의 두 탭이 표시됩니다. **원격**을 클릭하여 claude.ai의 세션을 봅니다.
+  <Step title="Remote 탭 선택">
+    대화 상자에는 Local 및 Remote의 두 탭이 표시됩니다. **Remote**를 클릭하여 claude.ai의 세션을 봅니다.
   </Step>
 
   <Step title="재개할 세션 선택">
@@ -159,11 +163,11 @@ Claude Code 패널 상단의 **세션 기록** 버튼을 클릭하여 대화 기
   계정 및 사용량 확인
 </h3>
 
-명령 메뉴에서 `/usage`를 실행하여 계정 및 사용량 대화 상자를 엽니다. 로그인한 계정, 요금제 및 현재 세션과 주간 사용량 막대를 표시하며 각 제한이 재설정될 때까지의 시간을 보여줍니다.
+명령 메뉴에서 `/usage`를 실행하여 Account & usage 대화 상자를 엽니다. 로그인한 계정, 요금제 및 현재 세션과 주간 사용량 막대를 표시하며 각 제한이 재설정될 때까지의 시간을 보여줍니다.
 
-대화 상자는 또한 요금제 제한에 기여하는 것을 분석합니다. 캐시 미스, 긴 컨텍스트, 서브에이전트 집약적 또는 고도로 병렬 세션 등 최근 사용량의 10% 이상을 차지하는 동작에 플래그를 지정하며, 각각에 대해 이를 줄이기 위한 팁을 제공합니다. 속성 테이블은 각 스킬, 서브에이전트, 플러그인 및 MCP 서버에서 얼마나 많은 사용량이 발생했는지 보여줍니다. Claude Code v2.1.174 이상이 필요합니다.
+대화 상자는 또한 요금제 제한에 기여하는 것을 분석합니다. 캐시 미스, 긴 컨텍스트, 서브에이전트 집약적 또는 고도로 병렬 세션 등 최근 사용량의 10% 이상을 차지하는 동작에 플래그를 지정하며, 각각에 대해 이를 줄이기 위한 팁을 제공합니다. Attribution 테이블은 각 skill, subagent, plugin 및 MCP 서버에서 얼마나 많은 사용량이 발생했는지 보여줍니다. Claude Code v2.1.174 이상이 필요합니다.
 
-일일 및 주간 토글을 사용하여 지난 24시간과 지난 7일 사이를 전환합니다. 수치는 대략적이며 이 컴퓨터의 로컬 세션에서 계산되므로 다른 기기 또는 claude.ai의 사용량은 포함되지 않습니다. 사용량 추적 및 감소에 대한 자세한 내용은 [비용 추적](/ko/costs#track-your-costs)을 참조하십시오.
+Day 및 Week 토글을 사용하여 지난 24시간과 지난 7일 사이를 전환합니다. 수치는 대략적이며 이 컴퓨터의 로컬 세션에서 계산되므로 다른 기기 또는 claude.ai의 사용량은 포함되지 않습니다. 사용량 추적 및 감소에 대한 자세한 내용은 [비용 추적](/docs/ko/costs#track-your-costs)을 참조하십시오.
 
 <h2 id="customize-your-workflow">
   워크플로우 사용자 정의
@@ -205,7 +209,7 @@ VS Code 설정(`Cmd+,` Mac 또는 `Ctrl+,` Windows/Linux)을 열고 확장 프�
   플러그인 관리
 </h2>
 
-VS Code 확장 프로그램에는 [플러그인](/ko/plugins)을 설치하고 관리하기 위한 그래픽 인터페이스가 포함되어 있습니다. 프롬프트 상자에 `/plugins`를 입력하여 **플러그인 관리** 인터페이스를 엽니다.
+VS Code 확장 프로그램에는 [플러그인](/docs/ko/plugins)을 설치하고 관리하기 위한 그래픽 인터페이스가 포함되어 있습니다. 프롬프트 상자에 `/plugins`를 입력하여 **플러그인 관리** 인터페이스를 엽니다.
 
 <h3 id="install-plugins">
   플러그인 설치
@@ -242,7 +246,7 @@ VS Code 확장 프로그램에는 [플러그인](/ko/plugins)을 설치하고 �
   VS Code의 플러그인 관리는 내부적으로 동일한 CLI 명령을 사용합니다. 확장 프로그램에서 구성한 플러그인 및 마켓플레이스는 CLI에서도 사용 가능하며 그 반대도 마찬가지입니다.
 </Note>
 
-플러그인 시스템에 대한 자세한 내용은 [플러그인](/ko/plugins) 및 [플러그인 마켓플레이스](/ko/plugin-marketplaces)를 참조하십시오.
+플러그인 시스템에 대한 자세한 내용은 [플러그인](/docs/ko/plugins) 및 [플러그인 마켓플레이스](/docs/ko/plugin-marketplaces)를 참조하십시오.
 
 <h2 id="automate-browser-tasks-with-chrome">
   Chrome으로 브라우저 작업 자동화
@@ -260,7 +264,7 @@ Claude를 Chrome 브라우저에 연결하여 웹 앱을 테스트하고, 콘솔
 
 Claude는 브라우저 작업을 위해 새 탭을 열고 브라우저의 로그인 상태를 공유하므로 이미 로그인한 모든 사이트에 액세스할 수 있습니다.
 
-설정 지침, 전체 기능 목록 및 문제 해결은 [Chrome에서 Claude Code 사용](/ko/chrome)을 참조하십시오.
+설정 지침, 전체 기능 목록 및 문제 해결은 [Chrome에서 Claude Code 사용](/docs/ko/chrome)을 참조하십시오.
 
 <h2 id="vs-code-commands-and-shortcuts">
   VS Code 명령 및 단축키
@@ -328,7 +332,7 @@ Claude는 브라우저 작업을 위해 새 탭을 열고 브라우저의 로그
 | 매개변수      | 설명                                                                                                                                                                                                         |
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `prompt`  | 프롬프트 상자에 미리 채울 텍스트입니다. URL 인코딩되어야 합니다. 프롬프트는 미리 채워지지만 자동으로 제출되지 않습니다.                                                                                                                                      |
-| `session` | 새 대화를 시작하는 대신 재개할 세션 ID입니다. 세션은 VS Code에서 현재 열려 있는 작업 공간에 속해야 합니다. 세션을 찾을 수 없으면 새 대화가 시작됩니다. 세션이 이미 탭에서 열려 있으면 해당 탭이 포커스됩니다. 프로그래밍 방식으로 세션 ID를 캡처하려면 [대화 계속](/ko/headless#continue-conversations)을 참조하십시오. |
+| `session` | 새 대화를 시작하는 대신 재개할 세션 ID입니다. 세션은 VS Code에서 현재 열려 있는 작업 공간에 속해야 합니다. 세션을 찾을 수 없으면 새 대화가 시작됩니다. 세션이 이미 탭에서 열려 있으면 해당 탭이 포커스됩니다. 프로그래밍 방식으로 세션 ID를 캡처하려면 [대화 계속](/docs/ko/headless#continue-conversations)을 참조하십시오. |
 
 예를 들어 "review my changes"로 미리 채워진 탭을 열려면:
 
@@ -336,7 +340,7 @@ Claude는 브라우저 작업을 위해 새 탭을 열고 브라우저의 로그
 vscode://anthropic.claude-code/open?prompt=review%20my%20changes
 ```
 
-터미널 세션을 VS Code 탭 대신 시작하려면 CLI의 `claude-cli://` 핸들러를 사용합니다. [링크에서 세션 시작](/ko/deep-links)을 참조하십시오.
+터미널 세션을 VS Code 탭 대신 시작하려면 CLI의 `claude-cli://` 핸들러를 사용합니다. [링크에서 세션 시작](/docs/ko/deep-links)을 참조하십시오.
 
 <h2 id="configure-settings">
   설정 구성
@@ -345,7 +349,7 @@ vscode://anthropic.claude-code/open?prompt=review%20my%20changes
 확장 프로그램에는 두 가지 유형의 설정이 있습니다:
 
 * **확장 프로그램 설정** VS Code에서: VS Code 내에서 확장 프로그램의 동작을 제어합니다. `Cmd+,`(Mac) 또는 `Ctrl+,`(Windows/Linux)로 열고 확장 프로그램 → Claude Code로 이동합니다. `/`를 입력하고 **General Config**를 선택하여 설정을 열 수도 있습니다.
-* **Claude Code 설정** `~/.claude/settings.json`에서: 확장 프로그램과 CLI 간에 공유됩니다. 허용된 명령, 환경 변수, hooks 및 MCP 서버에 사용합니다. 자세한 내용은 [설정](/ko/settings)을 참조하십시오.
+* **Claude Code 설정** `~/.claude/settings.json`에서: 확장 프로그램과 CLI 간에 공유됩니다. 허용된 명령, 환경 변수, hooks 및 MCP 서버에 사용합니다. 자세한 내용은 [설정](/docs/ko/settings)을 참조하십시오.
 
 <Tip>
   `"$schema": "https://json.schemastore.org/claude-code-settings.json"`을 `settings.json`에 추가하여 VS Code에서 직접 사용 가능한 모든 설정에 대한 자동 완성 및 인라인 유효성 검사를 받습니다.
@@ -355,32 +359,32 @@ vscode://anthropic.claude-code/open?prompt=review%20my%20changes
   확장 프로그램 설정
 </h3>
 
-| 설정                                  | 기본값       | 설명                                                                                                                               |
-| ----------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `useTerminal`                       | `false`   | 그래픽 패널 대신 터미널 모드에서 Claude 시작                                                                                                     |
-| `initialPermissionMode`             | `default` | 새 대화에 대한 승인 프롬프트 제어: `default`, `plan`, `acceptEdits` 또는 `bypassPermissions`. [권한 모드](/ko/permission-modes)를 참조하십시오.             |
-| `preferredLocation`                 | `panel`   | Claude가 열리는 위치: `sidebar`(오른쪽) 또는 `panel`(새 탭)                                                                                   |
-| `autosave`                          | `true`    | Claude가 파일을 읽거나 쓰기 전에 자동 저장                                                                                                      |
-| `useCtrlEnterToSend`                | `false`   | Enter 대신 Ctrl/Cmd+Enter를 사용하여 프롬프트 보내기                                                                                           |
-| `enableNewConversationShortcut`     | `false`   | Cmd/Ctrl+N을 사용하여 새 대화 시작 활성화                                                                                                     |
-| `enableReopenClosedSessionShortcut` | `true`    | Cmd/Ctrl+Shift+T를 사용하여 가장 최근에 닫은 Claude 세션 탭을 다시 엽니다. 마지막으로 닫은 탭이 Claude 세션이 아닌 경우 바로 가기는 VS Code의 일반 닫힌 편집기 다시 열기 명령을 대신 실행합니다. |
-| `hideOnboarding`                    | `false`   | 온보딩 체크리스트 숨기기(졸업 모자 아이콘)                                                                                                         |
-| `respectGitIgnore`                  | `true`    | 파일 검색에서 .gitignore 패턴 제외                                                                                                         |
-| `usePythonEnvironment`              | `true`    | Claude를 실행할 때 작업 공간의 Python 환경을 활성화합니다. Python 확장 프로그램이 필요합니다.                                                                   |
-| `environmentVariables`              | `[]`      | Claude 프로세스에 대한 환경 변수 설정. 공유 구성을 위해 Claude Code 설정을 대신 사용합니다.                                                                    |
-| `disableLoginPrompt`                | `false`   | 인증 프롬프트 건너뛰기(타사 공급자 설정용)                                                                                                         |
-| `allowDangerouslySkipPermissions`   | `false`   | 모드 선택기에 Bypass 권한을 추가합니다. 인터넷 액세스가 없는 샌드박스에서만 사용합니다.                                                                             |
-| `claudeProcessWrapper`              | -         | Claude 프로세스를 시작하는 데 사용되는 실행 파일입니다. 번들된 바이너리 경로는 존재할 때 인수로 전달됩니다. 확장 프로그램 빌드에 플랫폼용 바이너리가 포함되지 않은 경우 별도로 설치된 `claude` 바이너리로 설정합니다. |
+| 설정                                  | 기본값       | 설명                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useTerminal`                       | `false`   | 그래픽 패널 대신 터미널 모드에서 Claude 시작                                                                                                                                                                                                                                                                         |
+| `initialPermissionMode`             | `default` | 새 대화에 대한 승인 프롬프트 제어: `default`, `plan`, `acceptEdits` 또는 `bypassPermissions`. {/* min-version: 2.1.200 */}`manual`은 `default`의 별칭이며 모드 표시기에서 **Manual**로 표시된 모드를 선택합니다. Claude Code v2.1.200 이상이 필요합니다. [권한 모드](/docs/ko/permission-modes)를 참조하십시오.                                                       |
+| `preferredLocation`                 | `panel`   | Claude가 열리는 위치: `sidebar`(오른쪽) 또는 `panel`(새 탭)                                                                                                                                                                                                                                                       |
+| `autosave`                          | `true`    | Claude가 파일을 읽거나 쓰기 전에 자동 저장                                                                                                                                                                                                                                                                          |
+| `useCtrlEnterToSend`                | `false`   | Enter 대신 Ctrl/Cmd+Enter를 사용하여 프롬프트 보내기                                                                                                                                                                                                                                                               |
+| `enableNewConversationShortcut`     | `false`   | Cmd/Ctrl+N을 사용하여 새 대화 시작 활성화                                                                                                                                                                                                                                                                         |
+| `enableReopenClosedSessionShortcut` | `true`    | Cmd/Ctrl+Shift+T를 사용하여 가장 최근에 닫은 Claude 세션 탭을 다시 엽니다. 마지막으로 닫은 탭이 Claude 세션이 아닌 경우 바로 가기는 VS Code의 일반 닫힌 편집기 다시 열기 명령을 대신 실행합니다.                                                                                                                                                                     |
+| `hideOnboarding`                    | `false`   | 온보딩 체크리스트 숨기기(졸업 모자 아이콘)                                                                                                                                                                                                                                                                             |
+| `respectGitIgnore`                  | `true`    | 파일 검색에서 .gitignore 패턴 제외                                                                                                                                                                                                                                                                             |
+| `usePythonEnvironment`              | `true`    | Claude를 실행할 때 작업 공간의 Python 환경을 활성화합니다. Python 확장 프로그램이 필요합니다.                                                                                                                                                                                                                                       |
+| `environmentVariables`              | `[]`      | Claude 프로세스에 대한 환경 변수 설정. 공유 구성을 위해 Claude Code 설정을 대신 사용합니다.                                                                                                                                                                                                                                        |
+| `disableLoginPrompt`                | `false`   | 인증 프롬프트 건너뛰기(타사 공급자 설정용)                                                                                                                                                                                                                                                                             |
+| `allowDangerouslySkipPermissions`   | `false`   | 모드 선택기에 Bypass 권한을 추가합니다. 인터넷 액세스가 없는 샌드박스에서만 사용합니다.                                                                                                                                                                                                                                                 |
+| `claudeProcessWrapper`              | -         | Claude 프로세스를 시작하는 데 사용되는 실행 파일입니다. 번들된 바이너리 경로는 존재할 때 인수로 전달됩니다. 확장 프로그램 빌드에 플랫폼용 바이너리가 포함되지 않은 경우 별도로 설치된 `claude` 바이너리로 설정합니다. "지원되지 않는 플랫폼" 오류가 활성화 시 나타나면 플랫폼용 바이너리가 번들되지 않았다는 의미입니다. [npm 설치 후 네이티브 바이너리를 찾을 수 없음](/docs/ko/troubleshoot-install#native-binary-not-found-after-npm-install)을 참조하십시오. |
 
 <h2 id="vs-code-extension-vs-claude-code-cli">
   VS Code 확장 프로그램 vs. Claude Code CLI
 </h2>
 
-Claude Code는 VS Code 확장 프로그램(그래픽 패널)과 CLI(터미널의 명령줄 인터페이스) 모두로 사용 가능합니다. 일부 기능은 CLI에서만 사용 가능합니다. CLI 전용 기능이 필요한 경우 VS Code의 통합 터미널에서 `claude`를 실행합니다. 이를 위해서는 [독립 실행형 CLI 설치](/ko/setup)가 필요합니다. 확장 프로그램은 `claude`를 PATH에 추가하지 않습니다. [VS Code에서 CLI 실행](#run-cli-in-vs-code)을 참조하십시오.
+Claude Code는 VS Code 확장 프로그램(그래픽 패널)과 CLI(터미널의 명령줄 인터페이스) 모두로 사용 가능합니다. 일부 기능은 CLI에서만 사용 가능합니다. CLI 전용 기능이 필요한 경우 VS Code의 통합 터미널에서 `claude`를 실행합니다. 이를 위해서는 [독립 실행형 CLI 설치](/docs/ko/setup)가 필요합니다. 확장 프로그램은 `claude`를 PATH에 추가하지 않습니다. [VS Code에서 CLI 실행](#run-cli-in-vs-code)을 참조하십시오.
 
 | 기능           | CLI                | VS Code 확장 프로그램                             |
 | ------------ | ------------------ | ------------------------------------------- |
-| 명령 및 skills  | [모두](/ko/commands) | 부분 집합(`/`를 입력하여 사용 가능한 항목 보기)               |
+| 명령 및 skills  | [모두](/docs/ko/commands) | 부분 집합(`/`를 입력하여 사용 가능한 항목 보기)               |
 | MCP 서버 구성    | 예                  | 부분(CLI를 통해 서버 추가; 채팅 패널에서 `/mcp`로 기존 서버 관리) |
 | Checkpoints  | 예                  | 예                                           |
 | `!` bash 단축키 | 예                  | 아니요                                         |
@@ -396,7 +400,7 @@ VS Code 확장 프로그램은 Claude의 파일 편집을 추적하고 이전 �
 * **여기로 코드 되감기**: 전체 대화 기록을 유지하면서 파일 변경 사항을 이 지점으로 되돌리기
 * **대화 분기 및 코드 되감기**: 새 대화 분기 시작 및 파일 변경 사항을 이 지점으로 되돌리기
 
-checkpoints 작동 방식 및 제한 사항에 대한 전체 세부 정보는 [Checkpointing](/ko/checkpointing)을 참조하십시오.
+checkpoints 작동 방식 및 제한 사항에 대한 전체 세부 정보는 [Checkpointing](/docs/ko/checkpointing)을 참조하십시오.
 
 <h3 id="run-cli-in-vs-code">
   VS Code에서 CLI 실행
@@ -404,7 +408,7 @@ checkpoints 작동 방식 및 제한 사항에 대한 전체 세부 정보는 [C
 
 VS Code에 머물면서 CLI를 사용하려면 통합 터미널(Windows/Linux에서 `` Ctrl+` `` 또는 Mac에서 `` Cmd+` ``)을 열고 `claude`를 실행합니다. CLI는 diff 보기 및 진단 공유와 같은 기능을 위해 IDE와 자동으로 통합됩니다.
 
-확장 프로그램을 설치해도 `claude`가 셸 PATH에 추가되지 않습니다. 확장 프로그램은 채팅 패널을 위해 CLI의 비공개 복사본을 번들로 제공하지만, 터미널에서 `claude`를 입력하려면 [독립 실행형 CLI 설치](/ko/setup)가 필요합니다. 설치를 한 번 실행하면 이 페이지의 명령(예: `claude mcp add` 및 `claude --resume`)이 모든 터미널에서 작동합니다. 설치 후에도 `claude`를 찾을 수 없으면 [PATH 확인](/ko/troubleshoot-install#verify-your-path)을 참조하십시오.
+확장 프로그램을 설치해도 `claude`가 셸 PATH에 추가되지 않습니다. 확장 프로그램은 채팅 패널을 위해 CLI의 비공개 복사본을 번들로 제공하지만, 터미널에서 `claude`를 입력하려면 [독립 실행형 CLI 설치](/docs/ko/setup)가 필요합니다. 설치를 한 번 실행하면 이 페이지의 명령(예: `claude mcp add` 및 `claude --resume`)이 모든 터미널에서 작동합니다. 설치 후에도 `claude`를 찾을 수 없으면 [PATH 확인](/docs/ko/troubleshoot-install#verify-your-path)을 참조하십시오.
 
 외부 터미널을 사용하는 경우 Claude Code 내에서 `/ide`를 실행하여 VS Code에 연결합니다.
 
@@ -441,7 +445,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 
 구성되면 Claude에게 도구를 사용하도록 요청합니다(예: "Review PR #456").
 
-VS Code를 떠나지 않고 MCP 서버를 관리하려면 채팅 패널에 `/mcp`를 입력합니다. MCP 관리 대화 상자를 사용하면 서버를 활성화 또는 비활성화하고, 서버에 다시 연결하고, OAuth 인증을 관리할 수 있습니다. 사용 가능한 서버는 [MCP 문서](/ko/mcp)를 참조하십시오.
+VS Code를 떠나지 않고 MCP 서버를 관리하려면 채팅 패널에 `/mcp`를 입력합니다. MCP 관리 대화 상자를 사용하면 서버를 활성화 또는 비활성화하고, 서버에 다시 연결하고, OAuth 인증을 관리할 수 있습니다. 사용 가능한 서버는 [MCP 문서](/docs/ko/mcp)를 참조하십시오.
 
 <h2 id="work-with-git">
   git으로 작업
@@ -473,13 +477,13 @@ Claude는 변경 사항을 스테이징하고, 커밋 메시지를 작성하고,
 claude --worktree feature-auth
 ```
 
-각 worktree는 git 기록을 공유하면서 독립적인 파일 상태를 유지합니다. 이렇게 하면 Claude 인스턴스가 다양한 작업을 수행할 때 서로 간섭하지 않습니다. 자세한 내용은 [Git worktrees를 사용하여 병렬 세션 실행](/ko/worktrees)을 참조하십시오.
+각 worktree는 git 기록을 공유하면서 독립적인 파일 상태를 유지합니다. 이렇게 하면 Claude 인스턴스가 다양한 작업을 수행할 때 서로 간섭하지 않습니다. 자세한 내용은 [Git worktrees를 사용하여 병렬 세션 실행](/docs/ko/worktrees)을 참조하십시오.
 
 <h2 id="use-third-party-providers">
   타사 공급자 사용
 </h2>
 
-기본적으로 Claude Code는 Anthropic의 API에 직접 연결됩니다. 조직에서 Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry를 사용하여 Claude에 액세스하는 경우 대신 공급자를 사용하도록 확장 프로그램을 구성합니다:
+기본적으로 Claude Code는 Anthropic의 API에 직접 연결됩니다. 조직에서 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry를 사용하여 Claude에 액세스하는 경우 대신 공급자를 사용하도록 확장 프로그램을 구성합니다:
 
 <Steps>
   <Step title="로그인 프롬프트 비활성화">
@@ -491,9 +495,9 @@ claude --worktree feature-auth
   <Step title="공급자 구성">
     공급자에 대한 설정 가이드를 따릅니다:
 
-    * [Amazon Bedrock의 Claude Code](/ko/amazon-bedrock)
-    * [Google Vertex AI의 Claude Code](/ko/google-vertex-ai)
-    * [Microsoft Foundry의 Claude Code](/ko/microsoft-foundry)
+    * [Amazon Bedrock의 Claude Code](/docs/ko/amazon-bedrock)
+    * [Google Cloud의 Agent Platform의 Claude Code](/docs/ko/google-vertex-ai)
+    * [Microsoft Foundry의 Claude Code](/docs/ko/microsoft-foundry)
 
     이 가이드는 `~/.claude/settings.json`에서 공급자를 구성하는 방법을 다루며, 이는 VS Code 확장 프로그램과 CLI 간에 설정이 공유되도록 합니다.
   </Step>
@@ -503,7 +507,7 @@ claude --worktree feature-auth
   보안 및 개인 정보 보호
 </h2>
 
-코드는 비공개로 유지됩니다. Claude Code는 코드를 처리하여 지원을 제공하지만 모델 학습에 사용하지 않습니다. 데이터 처리 및 로깅을 거부하는 방법에 대한 자세한 내용은 [데이터 및 개인 정보 보호](/ko/data-usage)를 참조하십시오.
+코드는 비공개로 유지됩니다. Claude Code는 코드를 처리하여 지원을 제공하지만 모델 학습에 사용하지 않습니다. 데이터 처리 및 로깅을 거부하는 방법에 대한 자세한 내용은 [데이터 및 개인 정보 보호](/docs/ko/data-usage)를 참조하십시오.
 
 자동 편집 권한이 활성화되면 Claude Code는 VS Code가 자동으로 실행할 수 있는 VS Code 구성 파일(예: `settings.json` 또는 `tasks.json`)을 수정할 수 있습니다. 신뢰할 수 없는 코드로 작업할 때 위험을 줄이려면:
 
@@ -519,16 +523,16 @@ claude --worktree feature-auth
 
 서버의 이름은 `ide`이며 구성할 것이 없으므로 `/mcp`에서 숨겨져 있습니다. 그러나 조직에서 `PreToolUse` hook을 사용하여 MCP 도구를 허용 목록에 추가하는 경우 이것이 존재한다는 것을 알아야 합니다.
 
-**선택 및 열린 파일 컨텍스트.** 연결되어 있는 동안 CLI는 현재 편집기 선택 및 활성 파일의 경로를 각 프롬프트에 컨텍스트로 포함합니다. 트랜스크립트는 이것이 발생할 때 `⧉ <파일>에서 N줄 선택됨` 줄을 표시합니다. `.env`와 같은 민감한 파일을 제외하려면 해당 경로에 대한 [`Read` 거부 규칙](/ko/permissions#read-and-edit)을 추가합니다. 일치하는 거부 규칙은 선택된 텍스트와 해당 파일에 대한 열린 파일 공지가 Claude에 도달하는 것을 모두 방지합니다.
+**선택 및 열린 파일 컨텍스트.** 연결되어 있는 동안 CLI는 현재 편집기 선택 및 활성 파일의 경로를 각 프롬프트에 컨텍스트로 포함합니다. 트랜스크립트는 이것이 발생할 때 `⧉ <파일>에서 N줄 선택됨` 줄을 표시합니다. `.env`와 같은 민감한 파일을 제외하려면 해당 경로에 대한 [`Read` 거부 규칙](/docs/ko/permissions#read-and-edit)을 추가합니다. 일치하는 거부 규칙은 선택된 텍스트와 해당 파일에 대한 열린 파일 공지가 Claude에 도달하는 것을 모두 방지합니다.
 
-**전송 및 인증.** 서버는 `127.0.0.1`에 바인드되고 임의의 높은 포트에서 다른 머신에서 도달할 수 없습니다. 각 확장 프로그램 활성화는 CLI가 연결하기 위해 제시해야 하는 새로운 임의의 인증 토큰을 생성합니다. 토큰은 `0600` 권한이 있는 `0700` 디렉토리 아래 `~/.claude/ide/`의 잠금 파일에 기록되므로 VS Code를 실행하는 사용자만 읽을 수 있습니다.
+**전송 및 인증.** 서버는 `127.0.0.1`에 바인드되고 10000–65535 범위의 임의의 포트에서 실행됩니다. 포트는 구성할 수 없습니다. 전송은 암호화되지 않은 `ws://`입니다. 소켓이 루프백 전용이므로 트래픽을 캡처할 수 있는 모든 프로세스는 잠금 파일에서 토큰을 읽을 수도 있으므로 TLS는 보호를 추가하지 않습니다. 각 확장 프로그램 활성화는 새로운 임의의 인증 토큰을 생성하고 `~/.claude/ide/<port>.lock`의 잠금 파일에 기록하며, CLI는 이를 `X-Claude-Code-Ide-Authorization` 헤더로 제시하여 연결해야 합니다. 잠금 파일은 `0700` 디렉토리에서 `0600` 권한을 가지므로 VS Code를 실행하는 사용자만 읽을 수 있습니다. `CLAUDE_CONFIG_DIR`이 설정된 경우 잠금 파일은 `$CLAUDE_CONFIG_DIR/ide/`에 대신 기록됩니다.
 
 **모델에 노출된 도구.** 서버는 약 12개의 도구를 호스팅하지만 모델에만 2개가 표시됩니다. 나머지는 CLI가 자체 UI(diff 열기, 선택 읽기, 파일 저장)에 사용하는 내부 RPC이며 도구 목록이 Claude에 도달하기 전에 필터링됩니다.
 
-| 도구 이름(hooks에서 보이는 대로)      | 수행하는 작업                                                          | 쓰기? |
-| -------------------------- | ---------------------------------------------------------------- | --- |
-| `mcp__ide__getDiagnostics` | 언어 서버 진단을 반환합니다 — VS Code의 문제 패널의 오류 및 경고. 선택적으로 한 파일로 범위 지정됩니다. | 아니요 |
-| `mcp__ide__executeCode`    | 활성 Jupyter 노트북의 커널에서 Python 코드를 실행합니다. 아래 확인 흐름을 참조하십시오.         | 예   |
+| 도구 이름(hooks에서 보이는 대로)      | 수행하는 작업                                                          | 읽기 전용 |
+| -------------------------- | ---------------------------------------------------------------- | ----- |
+| `mcp__ide__getDiagnostics` | 언어 서버 진단을 반환합니다 — VS Code의 문제 패널의 오류 및 경고. 선택적으로 한 파일로 범위 지정됩니다. | 예     |
+| `mcp__ide__executeCode`    | 활성 Jupyter 노트북의 커널에서 Python 코드를 실행합니다. 아래 확인 흐름을 참조하십시오.         | 아니요   |
 
 **Jupyter 실행은 항상 먼저 묻습니다.** `mcp__ide__executeCode`는 아무것도 조용히 실행할 수 없습니다. 각 호출에서 코드는 활성 노트북의 끝에 새 셀로 삽입되고, VS Code는 이를 보기로 스크롤하고, 기본 Quick Pick은 **실행** 또는 **취소**를 요청합니다. 취소하거나 `Esc`로 선택기를 닫으면 Claude에 오류를 반환하고 아무것도 실행되지 않습니다. 도구는 활성 노트북이 없을 때, Jupyter 확장 프로그램(`ms-toolsai.jupyter`)이 설치되지 않았을 때 또는 커널이 Python이 아닐 때 완전히 거부합니다.
 
@@ -598,6 +602,8 @@ Claude Code 확장 프로그램을 제거하려면:
 2. "Claude Code" 검색
 3. **제거** 클릭
 
+VS Code 통합 터미널에서 `claude`를 실행하면 확장 프로그램이 자동으로 다시 설치됩니다. 확장 프로그램을 설치된 상태로 유지하지 않으려면 `/config`에서 **Auto-install IDE extension**을 끄거나 [`autoInstallIdeExtension`](/docs/ko/settings#global-config-settings)을 `false`로 설정하십시오. [`CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`](/docs/ko/env-vars) 환경 변수를 `1`로 설정할 수도 있습니다.
+
 확장 프로그램 데이터를 제거하고 모든 설정을 재설정하려면 플랫폼에 해당하는 확장 프로그램의 저장소 디렉터리를 삭제하십시오.
 
 macOS에서:
@@ -618,7 +624,7 @@ Windows에서 PowerShell에서:
 Remove-Item -Recurse -Force "$env:APPDATA\Code\User\globalStorage\anthropic.claude-code"
 ```
 
-추가 도움말은 [문제 해결 가이드](/ko/troubleshooting)를 참조하십시오.
+추가 도움말은 [문제 해결 가이드](/docs/ko/troubleshooting)를 참조하십시오.
 
 <h2 id="next-steps">
   다음 단계
@@ -626,6 +632,6 @@ Remove-Item -Recurse -Force "$env:APPDATA\Code\User\globalStorage\anthropic.clau
 
 이제 VS Code에서 Claude Code를 설정했습니다:
 
-* [일반적인 워크플로우 탐색](/ko/common-workflows)하여 Claude Code를 최대한 활용합니다.
-* [MCP 서버 설정](/ko/mcp)하여 외부 도구로 Claude의 기능을 확장합니다. CLI를 사용하여 서버를 추가한 후 채팅 패널에서 `/mcp`로 관리합니다.
-* [Claude Code 설정 구성](/ko/settings)하여 허용된 명령, hooks 등을 사용자 정의합니다. 이 설정은 확장 프로그램과 CLI 간에 공유됩니다.
+* [일반적인 워크플로우 탐색](/docs/ko/common-workflows)하여 Claude Code를 최대한 활용합니다.
+* [MCP 서버 설정](/docs/ko/mcp)하여 외부 도구로 Claude의 기능을 확장합니다. CLI를 사용하여 서버를 추가한 후 채팅 패널에서 `/mcp`로 관리합니다.
+* [Claude Code 설정 구성](/docs/ko/settings)하여 허용된 명령, hooks 등을 사용자 정의합니다. 이 설정은 확장 프로그램과 CLI 간에 공유됩니다.

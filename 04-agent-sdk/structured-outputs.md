@@ -247,6 +247,10 @@ JSON Schema를 직접 작성하는 대신 [Zod](https://zod.dev/)(TypeScript) �
 
 SDK는 모든 기본 타입(object, array, string, number, boolean, null), `enum`, `const`, `required`, 중첩 객체 및 `$ref` 정의를 포함한 표준 JSON Schema 기능을 지원합니다. 지원되는 기능 및 제한사항의 전체 목록은 [JSON Schema 제한사항](https://platform.claude.com/docs/ko/build-with-claude/structured-outputs#json-schema-limitations)을 참조하세요.
 
+유효한 JSON Schema가 아닌 스키마는 문제를 명시하는 오류와 함께 시작 시 실행에 실패합니다. v2.1.205 이전에는 유효하지 않은 스키마가 자동으로 무시되었고 에이전트가 구조화되지 않은 텍스트를 반환했습니다.
+
+`"format": "email"`과 같은 `format` 키워드는 주석으로 허용되며 SDK의 유효성 검사기에 의해 적용되지 않습니다. v2.1.205 이전에는 `format`을 포함하는 모든 스키마가 유효하지 않은 것으로 처리되었습니다.
+
 <h2 id="example-todo-tracking-agent">
   예제: TODO 추적 에이전트
 </h2>
@@ -358,7 +362,7 @@ SDK는 모든 기본 타입(object, array, string, number, boolean, null), `enum
   오류 처리
 </h2>
 
-구조화된 출력 생성은 에이전트가 스키마와 일치하는 유효한 JSON을 생성할 수 없을 때 실패할 수 있습니다. 이는 일반적으로 스키마가 작업에 너무 복잡하거나, 작업 자체가 모호하거나, 에이전트가 검증 오류를 수정하려고 시도하는 동안 재시도 제한에 도달할 때 발생합니다. 또한 검증 실패 없이도 발생할 수 있습니다: [모델 폴백](/ko/model-config#automatic-model-fallback)은 이미 완료된 출력을 스트림 중간에 취소할 수 있으며, 재시도가 이를 대체하지 않으면 실행이 동일한 오류로 종료됩니다. 디버깅하기 전에 결과 메시지의 `errors` 필드를 확인하여 두 가지 원인을 구분하십시오.
+구조화된 출력 생성은 에이전트가 스키마와 일치하는 유효한 JSON을 생성할 수 없을 때 실패할 수 있습니다. 이는 일반적으로 스키마가 작업에 너무 복잡하거나, 작업 자체가 모호하거나, 에이전트가 검증 오류를 수정하려고 시도하는 동안 재시도 제한에 도달할 때 발생합니다. 또한 검증 실패 없이도 발생할 수 있습니다: [모델 폴백](/docs/ko/model-config#automatic-model-fallback)은 이미 완료된 출력을 스트림 중간에 취소할 수 있으며, 재시도가 이를 대체하지 않으면 실행이 동일한 오류로 종료됩니다. 디버깅하기 전에 결과 메시지의 `errors` 필드를 확인하여 두 가지 원인을 구분하십시오.
 
 오류가 발생하면 결과 메시지에 무엇이 잘못되었는지 나타내는 `subtype`이 있습니다:
 
@@ -421,4 +425,4 @@ SDK는 모든 기본 타입(object, array, string, number, boolean, null), `enum
 
 * [JSON Schema 문서](https://json-schema.org/): 중첩 객체, 배열, 열거형 및 검증 제약 조건이 있는 복잡한 스키마를 정의하기 위한 JSON Schema 구문 학습
 * [API 구조화된 출력](https://platform.claude.com/docs/ko/build-with-claude/structured-outputs): 도구 사용 없이 단일 턴 요청에 대해 Claude API와 함께 직접 구조화된 출력 사용
-* [사용자 정의 도구](/ko/agent-sdk/custom-tools): 구조화된 출력을 반환하기 전에 실행 중에 호출할 에이전트 사용자 정의 도구 제공
+* [사용자 정의 도구](/docs/ko/agent-sdk/custom-tools): 구조화된 출력을 반환하기 전에 실행 중에 호출할 에이전트 사용자 정의 도구 제공

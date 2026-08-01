@@ -15,12 +15,12 @@
 다음을 확인하십시오:
 
 * 열려 있는 터미널 또는 명령 프롬프트
-  * 터미널을 처음 사용하는 경우 [터미널 가이드](/ko/terminal-guide)를 확인하십시오
+  * 터미널을 처음 사용하는 경우 [터미널 가이드](/docs/ko/terminal-guide)를 확인하십시오
 * 작업할 코드 프로젝트
-* [Claude 구독](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_prereq) (Pro, Max, Team 또는 Enterprise), [Claude Console](https://console.anthropic.com/) 계정 또는 [지원되는 클라우드 제공자](/ko/third-party-integrations)를 통한 액세스
+* [Claude 구독](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_prereq) (Pro, Max, Team 또는 Enterprise), [Claude Console](https://console.anthropic.com/) 계정 또는 [지원되는 클라우드 제공자](/docs/ko/third-party-integrations)를 통한 액세스
 
 <Note>
-  이 가이드는 터미널 CLI를 다룹니다. Claude Code는 [웹](https://claude.ai/code), [데스크톱 앱](/ko/desktop), [VS Code](/ko/vs-code) 및 [JetBrains IDE](/ko/jetbrains), [Slack](/ko/slack), [GitHub Actions](/ko/github-actions) 및 [GitLab](/ko/gitlab-ci-cd)의 CI/CD에서도 사용할 수 있습니다. [모든 인터페이스](/ko/overview#use-claude-code-everywhere)를 참조하십시오.
+  이 가이드는 터미널 CLI를 다룹니다. Claude Code는 [웹](https://claude.ai/code), [데스크톱 앱](/docs/ko/desktop), [VS Code](/docs/ko/vs-code) 및 [JetBrains IDE](/docs/ko/jetbrains), [Slack](/docs/ko/slack), [GitHub Actions](/docs/ko/github-actions) 및 [GitLab](/docs/ko/gitlab-ci-cd)의 CI/CD에서도 사용할 수 있습니다. [모든 인터페이스](/docs/ko/overview#use-claude-code-everywhere)를 참조하십시오.
 </Note>
 
 <h2 id="step-1-install-claude-code">
@@ -51,7 +51,7 @@ To install Claude Code, use one of the following methods:
 
     If you see `The token '&&' is not a valid statement separator`, you're in PowerShell, not CMD. If you see `'irm' is not recognized as an internal or external command`, you're in CMD, not PowerShell. Your prompt shows `PS C:\` when you're in PowerShell and `C:\` without the `PS` when you're in CMD.
 
-    If the install command fails with `syntax error near unexpected token '<'`, a `403`, or another curl error, see [Troubleshoot installation](/en/troubleshoot-install#find-your-error) to match the error to a fix and for alternative install methods.
+    If the install command fails with `syntax error near unexpected token '<'`, a `403`, or another curl error, see [Troubleshoot installation](/docs/en/troubleshoot-install#find-your-error) to match the error to a fix and for alternative install methods.
 
     [Git for Windows](https://git-scm.com/downloads/win) is recommended on native Windows so Claude Code can use the Bash tool. If Git for Windows is not installed, Claude Code uses PowerShell as the shell tool instead. WSL setups do not need Git for Windows.
 
@@ -83,7 +83,7 @@ To install Claude Code, use one of the following methods:
   </Tab>
 </Tabs>
 
-You can also install with [apt, dnf, or apk](/en/setup#install-with-linux-package-managers) on Debian, Fedora, RHEL, and Alpine.
+You can also install with [apt, dnf, or apk](/docs/en/setup#install-with-linux-package-managers) on Debian, Fedora, RHEL, and Alpine.
 
 <h2 id="step-2-log-in-to-your-account">
   단계 2: 계정에 로그인
@@ -105,8 +105,8 @@ Claude 구독 또는 Console 계정의 경우 프롬프트를 따라 브라우�
 
 * [Claude Pro, Max, Team 또는 Enterprise](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_login) (권장)
 * [Claude Console](https://console.anthropic.com/) (선불 크레딧이 있는 API 액세스). 처음 로그인할 때 비용 추적을 위해 Console에서 "Claude Code" 워크스페이스가 자동으로 생성됩니다.
-* [Amazon Bedrock, Google Vertex AI 또는 Microsoft Foundry](/ko/third-party-integrations) (엔터프라이즈 클라우드 제공자)
-* 조직에서 운영하는 자체 호스팅 [Claude 앱 게이트웨이](/ko/claude-apps-gateway): 관리자가 게이트웨이 URL을 미리 구성하고, `/login`을 입력하면 **Cloud gateway** 화면에서 직접 열려 기업 SSO로 로그인할 수 있습니다.
+* [Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry](/docs/ko/third-party-integrations) (엔터프라이즈 클라우드 제공자)
+* 조직에서 운영하는 자체 호스팅 [Claude 앱 게이트웨이](/docs/ko/claude-apps-gateway): 관리자가 게이트웨이 URL을 미리 구성하고, `/login`을 입력하면 **Cloud gateway** 화면에서 직접 열려 기업 SSO로 로그인할 수 있습니다.
 
 로그인하면 자격 증명이 저장되고 다시 로그인할 필요가 없습니다.
 
@@ -124,7 +124,7 @@ claude
 버전, 현재 모델 및 작업 디렉토리가 표시된 Claude Code 프롬프트가 나타납니다. 사용 가능한 명령을 보려면 `/help`를 입력하거나 이전 대화를 계속하려면 `/resume`을 입력하십시오.
 
 <Tip>
-  로그인(단계 2) 후 자격 증명이 시스템에 저장됩니다. [자격 증명 관리](/ko/authentication#credential-management)에서 자세히 알아보십시오.
+  로그인(단계 2) 후 자격 증명이 시스템에 저장됩니다. [자격 증명 관리](/docs/ko/authentication#credential-management)에서 자세히 알아보십시오.
 </Tip>
 
 <h2 id="step-4-ask-your-first-question">
@@ -301,13 +301,13 @@ Claude와 함께 작업하는 여러 가지 방법이 있습니다:
 | `/help`           | 사용 가능한 명령 표시   | `/help`  |
 | `/exit` 또는 Ctrl+D | Claude Code 종료 | `/exit`  |
 
-전체 셸 명령 목록은 [CLI 참조](/ko/cli-reference)를 참조하고 전체 세션 명령 목록은 [명령 참조](/ko/commands)를 참조하십시오.
+전체 셸 명령 목록은 [CLI 참조](/docs/ko/cli-reference)를 참조하고 전체 세션 명령 목록은 [명령 참조](/docs/ko/commands)를 참조하십시오.
 
 <h2 id="pro-tips-for-beginners">
   초보자를 위한 팁
 </h2>
 
-자세한 내용은 [모범 사례](/ko/best-practices) 및 [일반적인 워크플로우](/ko/common-workflows)를 참조하십시오.
+자세한 내용은 [모범 사례](/docs/ko/best-practices) 및 [일반적인 워크플로우](/docs/ko/common-workflows)를 참조하십시오.
 
 <AccordionGroup>
   <Accordion title="요청을 구체적으로 하기">
@@ -353,19 +353,19 @@ Claude와 함께 작업하는 여러 가지 방법이 있습니다:
 이제 기본 사항을 배웠으므로 더 고급 기능을 살펴보십시오:
 
 <CardGroup cols={2}>
-  <Card title="Claude Code 작동 방식" icon="microchip" href="/ko/how-claude-code-works">
+  <Card title="Claude Code 작동 방식" icon="microchip" href="/docs/ko/how-claude-code-works">
     에이전트 루프, 기본 제공 도구 및 Claude Code가 프로젝트와 상호 작용하는 방식 이해
   </Card>
 
-  <Card title="모범 사례" icon="star" href="/ko/best-practices">
+  <Card title="모범 사례" icon="star" href="/docs/ko/best-practices">
     효과적인 프롬프팅 및 프로젝트 설정으로 더 나은 결과 얻기
   </Card>
 
-  <Card title="일반적인 워크플로우" icon="graduation-cap" href="/ko/common-workflows">
+  <Card title="일반적인 워크플로우" icon="graduation-cap" href="/docs/ko/common-workflows">
     일반적인 작업에 대한 단계별 가이드
   </Card>
 
-  <Card title="Claude Code 확장" icon="puzzle-piece" href="/ko/features-overview">
+  <Card title="Claude Code 확장" icon="puzzle-piece" href="/docs/ko/features-overview">
     CLAUDE.md, skills, hooks, MCP 등으로 사용자 정의
   </Card>
 </CardGroup>

@@ -9,7 +9,7 @@
 기본적으로 Agent SDK는 Claude가 각 응답 생성을 완료한 후 완전한 `AssistantMessage` 객체를 생성합니다. 텍스트와 도구 호출이 생성될 때 증분 업데이트를 받으려면 옵션에서 `include_partial_messages`(Python) 또는 `includePartialMessages`(TypeScript)를 `true`로 설정하여 부분 메시지 스트리밍을 활성화하십시오.
 
 <Tip>
-  이 페이지는 출력 스트리밍(실시간으로 토큰 수신)을 다룹니다. 입력 모드(메시지 전송 방법)는 [에이전트에 메시지 전송하기](/ko/agent-sdk/streaming-vs-single-mode)를 참조하십시오. [CLI를 통해 Agent SDK를 사용하여 응답 스트리밍하기](/ko/headless)도 가능합니다.
+  이 페이지는 출력 스트리밍(실시간으로 토큰 수신)을 다룹니다. 입력 모드(메시지 전송 방법)는 [에이전트에 메시지 전송하기](/docs/ko/agent-sdk/streaming-vs-single-mode)를 참조하십시오. [CLI를 통해 Agent SDK를 사용하여 응답 스트리밍하기](/docs/ko/headless)도 가능합니다.
 </Tip>
 
 <h2 id="enable-streaming-output">
@@ -91,7 +91,7 @@
       uuid: str  # Unique identifier for this event
       session_id: str  # Session identifier
       event: dict[str, Any]  # The raw Claude API stream event
-      parent_tool_use_id: str | None  # Parent tool ID if from a subagent
+      parent_tool_use_id: str | None  # Always None
   ```
 
   ```typescript TypeScript theme={null}
@@ -105,6 +105,8 @@
   };
   ```
 </CodeGroup>
+
+`parent_tool_use_id` 필드는 Python에서는 항상 `None`이고 TypeScript에서는 `null`입니다. 스트림 이벤트는 주 세션에서만 발생합니다. 서브에이전트의 토큰 수준 델타는 전달되지 않습니다. 출력을 서브에이전트에 귀속시키려면 `parent_tool_use_id`를 포함하는 완전한 메시지를 사용하십시오. [서브에이전트 호출 감지](/docs/ko/agent-sdk/subagents#detect-subagent-invocation)를 참조하십시오.
 
 `event` 필드는 [Claude API](https://platform.claude.com/docs/en/build-with-claude/streaming#event-types)의 원본 스트리밍 이벤트를 포함합니다. 일반적인 이벤트 유형은 다음과 같습니다:
 
@@ -397,7 +399,7 @@ ResultMessage - final result
   알려진 제한 사항
 </h2>
 
-* **구조화된 출력**: JSON 결과는 스트리밍 델타가 아닌 최종 `ResultMessage.structured_output`에만 나타납니다. 자세한 내용은 [구조화된 출력](/ko/agent-sdk/structured-outputs)을 참조하십시오.
+* **구조화된 출력**: JSON 결과는 스트리밍 델타가 아닌 최종 `ResultMessage.structured_output`에만 나타납니다. 자세한 내용은 [구조화된 출력](/docs/ko/agent-sdk/structured-outputs)을 참조하십시오.
 
 <h2 id="next-steps">
   다음 단계
@@ -405,6 +407,6 @@ ResultMessage - final result
 
 이제 실시간으로 텍스트와 도구 호출을 스트리밍할 수 있으므로 다음 관련 항목을 살펴보십시오:
 
-* [대화형 vs 일회성 쿼리](/ko/agent-sdk/streaming-vs-single-mode): 사용 사례에 맞는 입력 모드 선택
-* [구조화된 출력](/ko/agent-sdk/structured-outputs): 에이전트에서 입력된 JSON 응답 받기
-* [권한](/ko/agent-sdk/permissions): 에이전트가 사용할 수 있는 도구 제어
+* [대화형 vs 일회성 쿼리](/docs/ko/agent-sdk/streaming-vs-single-mode): 사용 사례에 맞는 입력 모드 선택
+* [구조화된 출력](/docs/ko/agent-sdk/structured-outputs): 에이전트에서 입력된 JSON 응답 받기
+* [권한](/docs/ko/agent-sdk/permissions): 에이전트가 사용할 수 있는 도구 제어

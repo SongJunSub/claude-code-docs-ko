@@ -12,7 +12,7 @@ Claude Code는 작업하면서 Claude의 파일 편집을 자동으로 추적하
   Checkpoint의 작동 방식
 </h2>
 
-Claude와 함께 작업할 때 checkpointing은 각 편집 전에 코드의 상태를 자동으로 캡처합니다. 이 안전장치를 통해 언제든지 이전 코드 상태로 돌아갈 수 있다는 확신을 가지고 야심 찬 대규모 작업을 수행할 수 있습니다.
+Claude와 함께 작업할 때 checkpointing은 각 사용자 프롬프트 전에 코드의 상태를 자동으로 캡처합니다. 이 안전장치를 통해 언제든지 이전 코드 상태로 돌아갈 수 있다는 확신을 가지고 야심 찬 대규모 작업을 수행할 수 있습니다.
 
 <h3 id="automatic-tracking">
   자동 추적
@@ -21,7 +21,8 @@ Claude와 함께 작업할 때 checkpointing은 각 편집 전에 코드의 상�
 Claude Code는 파일 편집 도구로 수행된 모든 변경 사항을 추적합니다:
 
 * 모든 사용자 프롬프트는 새로운 checkpoint를 생성합니다
-* Checkpoint는 세션 전체에 걸쳐 유지되므로 재개된 대화에서 액세스할 수 있습니다
+* Claude Code는 세션의 가장 최근 100개 checkpoint에 대한 파일 스냅샷을 유지합니다. 이전 checkpoint를 삭제하면 남은 checkpoint가 참조하지 않는 스냅샷 파일이 삭제되며, 각 파일의 첫 번째 스냅샷은 예외입니다. 이 스냅샷은 VS Code 확장이 세션 diff의 기준선으로 사용합니다. {/* min-version: 2.1.208 */}v2.1.208 이전에는 이러한 대체된 스냅샷 파일이 세션이 정리될 때까지 디스크에 남아 있었습니다.
+* Checkpoint는 세션과 함께 저장되므로 재개된 세션에서도 `/rewind`를 사용할 수 있습니다
 * 30일 후 세션과 함께 자동으로 정리됩니다(구성 가능)
 
 <h3 id="rewind-and-summarize">
@@ -65,7 +66,7 @@ Rewind 메뉴는 세션 중에 보낸 각 프롬프트를 나열합니다. 작�
 두 경우 모두 원본 메시지는 세션 기록에 보존되므로 Claude가 필요한 경우 세부 정보를 참조할 수 있습니다. 요약이 초점을 맞출 내용을 안내하기 위해 선택적 지침을 입력할 수 있습니다. 이는 `/compact`와 유사하지만 대상이 지정됩니다: 전체 대화를 요약하는 대신 선택한 메시지의 어느 쪽을 압축할지 선택합니다.
 
 <Note>
-  Summarize는 동일한 세션에 유지되고 context를 압축합니다. 원본 세션을 그대로 유지하면서 다른 접근 방식을 시도하고 싶다면 [fork](/ko/sessions#branch-a-session) 대신 사용하세요(`claude --continue --fork-session`).
+  Summarize는 동일한 세션에 유지되고 context를 압축합니다. 원본 세션을 그대로 유지하면서 다른 접근 방식을 시도하고 싶다면 [fork](/docs/ko/sessions#branch-a-session) 대신 사용하세요(`claude --continue --fork-session`).
 </Note>
 
 <h2 id="common-use-cases">
@@ -117,6 +118,6 @@ Checkpoint는 빠른 세션 수준의 복구를 위해 설계되었습니다. �
   참고 항목
 </h2>
 
-* [Interactive mode](/ko/interactive-mode) - 키보드 단축키 및 세션 제어
-* [Commands](/ko/commands) - `/rewind`를 사용하여 checkpoint에 액세스
-* [CLI reference](/ko/cli-reference) - 명령줄 옵션
+* [Interactive mode](/docs/ko/interactive-mode) - 키보드 단축키 및 세션 제어
+* [Commands](/docs/ko/commands) - `/rewind`를 사용하여 checkpoint에 액세스
+* [CLI reference](/docs/ko/cli-reference) - 명령줄 옵션

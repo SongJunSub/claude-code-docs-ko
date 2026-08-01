@@ -23,13 +23,13 @@
   `commands/` 디렉터리는 레거시 형식입니다. 새로운 플러그인의 경우 `skills/`를 사용하십시오. Claude Code는 하위 호환성을 위해 두 형식을 모두 계속 지원합니다.
 </Note>
 
-플러그인 구조 및 플러그인 생성 방법에 대한 완전한 정보는 [플러그인](/ko/plugins)을 참조하십시오.
+플러그인 구조 및 플러그인 생성 방법에 대한 완전한 정보는 [플러그인](/docs/ko/plugins)을 참조하십시오.
 
 <h2 id="loading-plugins">
   플러그인 로드
 </h2>
 
-옵션 구성에서 로컬 파일 시스템 경로를 제공하여 플러그인을 로드합니다. `type` 필드는 `"local"`이어야 하며, 이는 SDK가 허용하는 유일한 값입니다. [마켓플레이스](/ko/plugin-marketplaces)를 통해 배포되거나 원격 저장소에서 플러그인을 사용하려면 먼저 다운로드한 후 로컬 디렉터리 경로를 제공합니다. SDK는 다양한 위치에서 여러 플러그인을 로드하는 것을 지원합니다.
+옵션 구성에서 로컬 파일 시스템 경로를 제공하여 플러그인을 로드합니다. `type` 필드는 `"local"`이어야 하며, 이는 SDK가 허용하는 유일한 값입니다. [마켓플레이스](/docs/ko/plugin-marketplaces)를 통해 배포되거나 원격 저장소에서 플러그인을 사용하려면 먼저 다운로드한 후 로컬 디렉터리 경로를 제공합니다. SDK는 다양한 위치에서 여러 플러그인을 로드하는 것을 지원합니다.
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
@@ -305,8 +305,8 @@ my-plugin/
 
 플러그인 생성에 대한 자세한 정보는 다음을 참조하십시오:
 
-* [플러그인](/ko/plugins) - 완전한 플러그인 개발 가이드
-* [플러그인 참조](/ko/plugins-reference) - 기술 사양 및 스키마
+* [플러그인](/docs/ko/plugins) - 완전한 플러그인 개발 가이드
+* [플러그인 참조](/docs/ko/plugins-reference) - 기술 사양 및 스키마
 
 <h2 id="common-use-cases">
   일반적인 사용 사례
@@ -383,8 +383,8 @@ plugins: [
   참고 항목
 </h2>
 
-* [플러그인](/ko/plugins) - 완전한 플러그인 개발 가이드
-* [플러그인 참조](/ko/plugins-reference) - 기술 사양
-* [Commands](/ko/agent-sdk/slash-commands) - SDK에서 명령어 사용
-* [Subagents](/ko/agent-sdk/subagents) - 전문화된 에이전트 작업
-* [Skills](/ko/agent-sdk/skills) - Agent Skills 사용
+* [플러그인](/docs/ko/plugins) - 완전한 플러그인 개발 가이드
+* [플러그인 참조](/docs/ko/plugins-reference) - 기술 사양
+* [Commands](/docs/ko/agent-sdk/slash-commands) - SDK에서 명령어 사용
+* [Subagents](/docs/ko/agent-sdk/subagents) - 전문화된 에이전트 작업
+* [Skills](/docs/ko/agent-sdk/skills) - Agent Skills 사용

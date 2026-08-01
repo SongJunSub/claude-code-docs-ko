@@ -8,7 +8,7 @@
 
 Claude Agent SDK는 Claude와의 각 상호작용에 대한 상세한 토큰 사용량 정보를 제공합니다. 이 가이드에서는 사용량을 적절히 추적하고 비용 보고를 이해하는 방법을 설명합니다. 특히 병렬 도구 사용 및 다단계 대화를 다룰 때 유용합니다.
 
-완전한 API 문서는 [TypeScript SDK 참조](/ko/agent-sdk/typescript) 및 [Python SDK 참조](/ko/agent-sdk/python)를 참조하십시오.
+완전한 API 문서는 [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript) 및 [Python SDK 참조](/docs/ko/agent-sdk/python)를 참조하십시오.
 
 <Warning>
   `total_cost_usd` 및 `costUSD` 필드는 클라이언트 측 추정값이며, 권위 있는 청구 데이터가 아닙니다. SDK는 빌드 시간에 번들된 가격 테이블에서 로컬로 계산하므로 다음과 같은 경우에 실제 청구 금액과 달라질 수 있습니다:
@@ -33,7 +33,7 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
 
 비용 추적은 SDK가 사용량 데이터를 어떻게 범위 지정하는지 이해하는 것에 달려 있습니다:
 
-* **`query()` 호출:** SDK의 `query()` 함수 한 번의 호출입니다. 단일 호출은 여러 단계를 포함할 수 있습니다(Claude가 응답하고, 도구를 사용하고, 결과를 받고, 다시 응답합니다). 각 호출은 끝에 하나의 [`result`](/ko/agent-sdk/typescript#sdkresultmessage) 메시지를 생성합니다.
+* **`query()` 호출:** SDK의 `query()` 함수 한 번의 호출입니다. 단일 호출은 여러 단계를 포함할 수 있습니다(Claude가 응답하고, 도구를 사용하고, 결과를 받고, 다시 응답합니다). 각 호출은 끝에 하나의 [`result`](/docs/ko/agent-sdk/typescript#sdkresultmessage) 메시지를 생성합니다.
 * **단계:** `query()` 호출 내의 단일 요청/응답 사이클입니다. 각 단계는 토큰 사용량이 있는 어시스턴트 메시지를 생성합니다.
 * **세션:** 세션 ID로 연결된 일련의 `query()` 호출입니다(`resume` 옵션 사용). 세션 내의 각 `query()` 호출은 자신의 비용을 독립적으로 보고합니다.
 
@@ -47,7 +47,7 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
   </Step>
 
   <Step title="결과 메시지는 누적 추정값을 제공합니다">
-    `query()` 호출이 완료되면, SDK는 `total_cost_usd` 및 누적 `usage`가 있는 결과 메시지를 내보냅니다. 이는 TypeScript([`SDKResultMessage`](/ko/agent-sdk/typescript#sdkresultmessage)) 및 Python([`ResultMessage`](/ko/agent-sdk/python#resultmessage)) 모두에서 사용 가능합니다. 여러 `query()` 호출을 수행하는 경우(예: 다중 턴 세션에서), 각 결과는 해당 개별 호출의 비용만 반영합니다. 추정된 합계만 필요한 경우, 단계별 사용량을 무시하고 이 단일 값을 읽을 수 있습니다.
+    `query()` 호출이 완료되면, SDK는 `total_cost_usd` 및 누적 `usage`가 있는 결과 메시지를 내보냅니다. 이는 TypeScript([`SDKResultMessage`](/docs/ko/agent-sdk/typescript#sdkresultmessage)) 및 Python([`ResultMessage`](/docs/ko/agent-sdk/python#resultmessage)) 모두에서 사용 가능합니다. 여러 `query()` 호출을 수행하는 경우(예: 다중 턴 세션에서), 각 결과는 해당 개별 호출의 비용만 반영합니다. 추정된 합계만 필요한 경우, 단계별 사용량을 무시하고 이 단일 값을 읽을 수 있습니다.
   </Step>
 </Steps>
 
@@ -55,7 +55,15 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
   쿼리의 총 비용 얻기
 </h2>
 
-결과 메시지([TypeScript](/ko/agent-sdk/typescript#sdkresultmessage), [Python](/ko/agent-sdk/python#resultmessage))는 `query()` 호출에 대한 에이전트 루프의 끝을 표시합니다. 여기에는 `total_cost_usd`가 포함되어 있으며, 이는 해당 호출의 모든 단계에 걸친 누적 추정 비용입니다. 이는 성공 및 오류 결과 모두에 대해 작동합니다. 세션을 사용하여 여러 `query()` 호출을 수행하는 경우, 각 결과는 해당 개별 호출의 비용만 반영합니다.
+결과 메시지([TypeScript](/docs/ko/agent-sdk/typescript#sdkresultmessage), [Python](/docs/ko/agent-sdk/python#resultmessage))는 `query()` 호출에 대한 에이전트 루프의 끝을 표시합니다. 여기에는 `total_cost_usd`가 포함되어 있으며, 이는 해당 호출의 모든 단계에 걸친 누적 추정 비용입니다. 이는 성공 및 오류 결과 모두에 대해 작동합니다. 세션을 사용하여 여러 `query()` 호출을 수행하는 경우, 각 결과는 해당 개별 호출의 비용만 반영합니다.
+
+세 가지 결과 수준 필드는 에이전트가 [서브에이전트](/docs/ko/agent-sdk/subagents)를 생성할 때 계산하는 항목이 다릅니다. 전체 트리 토큰 계산을 위해 `modelUsage` 또는 Python의 `model_usage`를 사용하십시오. `usage` 필드는 중첩이 발생하는 즉시 과소 계산됩니다.
+
+| 필드                           | 서브에이전트 활동                                            |
+| ---------------------------- | ---------------------------------------------------- |
+| `usage`                      | 제외됨. 최상위 에이전트 루프만 계산하므로 서브에이전트 내에서 소비된 토큰은 추가되지 않습니다 |
+| `total_cost_usd`             | 포함됨. 최상위 루프와 함께 서브에이전트 요청을 계산합니다                     |
+| `modelUsage` / `model_usage` | 포함됨. 최상위 루프와 함께 서브에이전트 요청을 계산하며, 모델별로 분류됩니다          |
 
 다음 예제는 `query()` 호출의 메시지 스트림을 반복하고 `result` 메시지가 도착할 때 총 비용을 인쇄합니다:
 
@@ -63,10 +71,18 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
   ```typescript TypeScript theme={null}
   import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  for await (const message of query({ prompt: "Summarize this project" })) {
-    if (message.type === "result") {
-      console.log(`Total cost: $${message.total_cost_usd}`);
+  try {
+    for await (const message of query({ prompt: "Summarize this project" })) {
+      if (message.type === "result") {
+        console.log(`Total cost: $${message.total_cost_usd}`);
+      }
     }
+  } catch (error) {
+    // A single-shot query() throws after yielding an error result. If the
+    // failure was an error result, it still carried total_cost_usd and the
+    // branch above has already run; connection or process failures yield
+    // no result message.
+    console.error(`Session ended with an error: ${error}`);
   }
   ```
 
@@ -76,9 +92,16 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
 
 
   async def main():
-      async for message in query(prompt="Summarize this project"):
-          if isinstance(message, ResultMessage):
-              print(f"Total cost: ${message.total_cost_usd or 0}")
+      try:
+          async for message in query(prompt="Summarize this project"):
+              if isinstance(message, ResultMessage):
+                  print(f"Total cost: ${message.total_cost_usd or 0}")
+      except Exception as error:
+          # A single-shot query() raises after yielding an error result. If the
+          # failure was an error result, it still carried total_cost_usd and the
+          # branch above has already run; connection or process failures yield
+          # no result message.
+          print(f"Session ended with an error: {error}")
 
 
   asyncio.run(main())
@@ -89,7 +112,7 @@ TypeScript 및 Python SDK는 다른 필드 이름으로 동일한 사용량 데�
   단계별 및 모델별 사용량 추적
 </h2>
 
-이 섹션의 예제는 TypeScript 필드 이름을 사용합니다. Python에서 동등한 필드는 단계별 사용량의 경우 [`AssistantMessage.usage`](/ko/agent-sdk/python#assistantmessage) 및 `AssistantMessage.message_id`이고, 모델별 분석의 경우 [`ResultMessage.model_usage`](/ko/agent-sdk/python#resultmessage)입니다.
+이 섹션의 예제는 TypeScript 필드 이름을 사용합니다. Python에서 동등한 필드는 단계별 사용량의 경우 [`AssistantMessage.usage`](/docs/ko/agent-sdk/python#assistantmessage) 및 `AssistantMessage.message_id`이고, 모델별 분석의 경우 [`ResultMessage.model_usage`](/docs/ko/agent-sdk/python#resultmessage)입니다.
 
 <h3 id="track-per-step-usage">
   단계별 사용량 추적
@@ -110,17 +133,23 @@ const seenIds = new Set<string>();
 let totalInputTokens = 0;
 let totalOutputTokens = 0;
 
-for await (const message of query({ prompt: "Summarize this project" })) {
-  if (message.type === "assistant") {
-    const msgId = message.message.id;
+try {
+  for await (const message of query({ prompt: "Summarize this project" })) {
+    if (message.type === "assistant") {
+      const msgId = message.message.id;
 
-    // Parallel tool calls share the same ID, only count once
-    if (!seenIds.has(msgId)) {
-      seenIds.add(msgId);
-      totalInputTokens += message.message.usage.input_tokens;
-      totalOutputTokens += message.message.usage.output_tokens;
+      // Parallel tool calls share the same ID, only count once
+      if (!seenIds.has(msgId)) {
+        seenIds.add(msgId);
+        totalInputTokens += message.message.usage.input_tokens;
+        totalOutputTokens += message.message.usage.output_tokens;
+      }
     }
   }
+} catch (error) {
+  // A single-shot query() throws after yielding an error result, so the
+  // totals below still reflect the steps that ran before the failure.
+  console.error(`Session ended with an error: ${error}`);
 }
 
 console.log(`Steps: ${seenIds.size}`);
@@ -132,23 +161,30 @@ console.log(`Output tokens: ${totalOutputTokens}`);
   모델별 사용량 분석
 </h3>
 
-결과 메시지는 [`modelUsage`](/ko/agent-sdk/typescript#modelusage)를 포함하며, 이는 모델 이름을 모델별 토큰 개수 및 비용에 매핑합니다. 이는 여러 모델을 실행할 때(예: 서브에이전트의 경우 Haiku, 메인 에이전트의 경우 Opus) 토큰이 어디로 가는지 확인하려는 경우 유용합니다.
+결과 메시지는 [`modelUsage`](/docs/ko/agent-sdk/typescript#modelusage)를 포함하며, 이는 모델 이름을 모델별 토큰 개수 및 비용에 매핑합니다. 이는 여러 모델을 실행할 때(예: 서브에이전트의 경우 Haiku, 메인 에이전트의 경우 Opus) 토큰이 어디로 가는지 확인하려는 경우 유용합니다.
 
 다음 예제는 쿼리를 실행하고 사용된 각 모델에 대한 비용 및 토큰 분석을 인쇄합니다:
 
 ```typescript theme={null}
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
-for await (const message of query({ prompt: "Summarize this project" })) {
-  if (message.type !== "result") continue;
+try {
+  for await (const message of query({ prompt: "Summarize this project" })) {
+    if (message.type !== "result") continue;
 
-  for (const [modelName, usage] of Object.entries(message.modelUsage)) {
-    console.log(`${modelName}: $${usage.costUSD.toFixed(4)}`);
-    console.log(`  Input tokens: ${usage.inputTokens}`);
-    console.log(`  Output tokens: ${usage.outputTokens}`);
-    console.log(`  Cache read: ${usage.cacheReadInputTokens}`);
-    console.log(`  Cache creation: ${usage.cacheCreationInputTokens}`);
+    for (const [modelName, usage] of Object.entries(message.modelUsage)) {
+      console.log(`${modelName}: $${usage.costUSD.toFixed(4)}`);
+      console.log(`  Input tokens: ${usage.inputTokens}`);
+      console.log(`  Output tokens: ${usage.outputTokens}`);
+      console.log(`  Cache read: ${usage.cacheReadInputTokens}`);
+      console.log(`  Cache creation: ${usage.cacheCreationInputTokens}`);
+    }
   }
+} catch (error) {
+  // A single-shot query() throws after yielding an error result. If the
+  // failure was an error result, the per-model breakdown above has already
+  // printed; connection or process failures yield no result message.
+  console.error(`Session ended with an error: ${error}`);
 }
 ```
 
@@ -173,11 +209,19 @@ for await (const message of query({ prompt: "Summarize this project" })) {
   ];
 
   for (const prompt of prompts) {
-    for await (const message of query({ prompt })) {
-      if (message.type === "result") {
-        totalSpend += message.total_cost_usd;
-        console.log(`This call: $${message.total_cost_usd}`);
+    try {
+      for await (const message of query({ prompt })) {
+        if (message.type === "result") {
+          totalSpend += message.total_cost_usd;
+          console.log(`This call: $${message.total_cost_usd}`);
+        }
       }
+    } catch (error) {
+      // A single-shot query() throws after yielding an error result. If the
+      // failure was an error result, this call's cost was already counted;
+      // connection or process failures yield no result message. Continue
+      // with the next prompt.
+      console.error(`Call failed: ${error}`);
     }
   }
 
@@ -199,11 +243,18 @@ for await (const message of query({ prompt: "Summarize this project" })) {
       ]
 
       for prompt in prompts:
-          async for message in query(prompt=prompt):
-              if isinstance(message, ResultMessage):
-                  cost = message.total_cost_usd or 0
-                  total_spend += cost
-                  print(f"This call: ${cost}")
+          try:
+              async for message in query(prompt=prompt):
+                  if isinstance(message, ResultMessage):
+                      cost = message.total_cost_usd or 0
+                      total_spend += cost
+                      print(f"This call: ${cost}")
+          except Exception as error:
+              # A single-shot query() raises after yielding an error result. If
+              # the failure was an error result, this call's cost was already
+              # counted; connection or process failures yield no result message.
+              # Continue with the next prompt.
+              print(f"Call failed: {error}")
 
       print(f"Total spend: ${total_spend:.4f}")
 
@@ -243,17 +294,17 @@ Agent SDK는 반복된 콘텐츠에 대한 비용을 줄이기 위해 [프롬프
 * `cache_creation_input_tokens`: 새 캐시 항목을 생성하는 데 사용된 토큰(표준 입력 토큰보다 높은 요금으로 청구됨).
 * `cache_read_input_tokens`: 기존 캐시 항목에서 읽은 토큰(감소된 요금으로 청구됨).
 
-캐싱 절감액을 이해하려면 이들을 `input_tokens`과 별도로 추적하십시오. TypeScript에서 이 필드는 [`Usage`](/ko/agent-sdk/typescript#usage) 객체에 입력됩니다. Python에서 이들은 [`ResultMessage.usage`](/ko/agent-sdk/python#resultmessage) dict의 키로 나타납니다(예: `message.usage.get("cache_read_input_tokens", 0)`).
+캐싱 절감액을 이해하려면 이들을 `input_tokens`과 별도로 추적하십시오. TypeScript에서 이 필드는 [`Usage`](/docs/ko/agent-sdk/typescript#usage) 객체에 입력됩니다. Python에서 이들은 [`ResultMessage.usage`](/docs/ko/agent-sdk/python#resultmessage) dict의 키로 나타납니다(예: `message.usage.get("cache_read_input_tokens", 0)`).
 
 <h3 id="extend-the-prompt-cache-ttl-to-one-hour">
   프롬프트 캐시 TTL을 1시간으로 연장
 </h3>
 
-SDK에서 작성한 캐시 항목은 API 키로 인증하거나 Amazon Bedrock, Google Cloud Vertex AI 또는 Microsoft Foundry에서 실행할 때 기본적으로 5분 TTL을 사용합니다. 워크로드가 동일한 시스템 프롬프트 및 컨텍스트에 대해 많은 짧은 세션을 실행하고 세션 간에 5분보다 긴 간격이 있는 경우, 캐시는 세션 간에 만료되고 각 새 세션은 전체 입력 가격을 지불합니다.
+SDK에서 작성한 캐시 항목은 API 키로 인증하거나 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry에서 실행할 때 기본적으로 5분 TTL을 사용합니다. 워크로드가 동일한 시스템 프롬프트 및 컨텍스트에 대해 많은 짧은 세션을 실행하고 세션 간에 5분보다 긴 간격이 있는 경우, 캐시는 세션 간에 만료되고 각 새 세션은 전체 입력 가격을 지불합니다.
 
-캐시 쓰기에 1시간 TTL을 요청하려면 [`ENABLE_PROMPT_CACHING_1H`](/ko/env-vars) 환경 변수를 설정하십시오. 셸 또는 컨테이너 환경에서 내보내거나 `options.env`를 통해 전달할 수 있습니다.
+캐시 쓰기에 1시간 TTL을 요청하려면 [`ENABLE_PROMPT_CACHING_1H`](/docs/ko/env-vars) 환경 변수를 설정하십시오. 셸 또는 컨테이너 환경에서 내보내거나 `options.env`를 통해 전달할 수 있습니다.
 
-다음 예제는 Bedrock에서 실행되는 에이전트에 대해 1시간 TTL을 활성화합니다:
+다음 예제는 Amazon Bedrock에서 실행되는 에이전트에 대해 1시간 TTL을 활성화합니다:
 
 <CodeGroup>
   ```python Python theme={null}
@@ -299,6 +350,6 @@ SDK에서 작성한 캐시 항목은 API 키로 인증하거나 Amazon Bedrock, 
   관련 문서
 </h2>
 
-* [TypeScript SDK 참조](/ko/agent-sdk/typescript) - 완전한 API 문서
-* [SDK 개요](/ko/agent-sdk/overview) - SDK 시작하기
-* [SDK 권한](/ko/agent-sdk/permissions) - 도구 권한 관리
+* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript) - 완전한 API 문서
+* [SDK 개요](/docs/ko/agent-sdk/overview) - SDK 시작하기
+* [SDK 권한](/docs/ko/agent-sdk/permissions) - 도구 권한 관리

@@ -10,7 +10,7 @@
 
 사용자 정의 출력 스타일은 지침을 시스템 프롬프트에 추가하고 Claude Code의 기본 제공 소프트웨어 엔지니어링 지침을 유지할지 여부를 선택할 수 있게 합니다. Claude가 여전히 코딩하고 있지만 통신 방식을 변경할 때(예: 항상 다이어그램으로 답변)는 유지합니다. Claude가 쓰기 어시스턴트나 데이터 분석가와 같이 소프트웨어 엔지니어링을 수행하지 않을 때는 제외합니다.
 
-프로젝트, 규칙 또는 코드베이스에 대한 지침은 대신 [CLAUDE.md](/ko/memory)를 사용합니다.
+프로젝트, 규칙 또는 코드베이스에 대한 지침은 대신 [CLAUDE.md](/docs/ko/memory)를 사용합니다.
 
 <h2 id="built-in-output-styles">
   기본 제공 출력 스타일
@@ -20,7 +20,7 @@ Claude Code의 **Default** 출력 스타일은 기존 시스템 프롬프트이�
 
 세 가지 추가 기본 제공 출력 스타일이 있습니다:
 
-* **Proactive**: Claude가 즉시 실행하고, 일상적인 결정을 위해 일시 중지하는 대신 합리적인 가정을 하며, 계획보다 행동을 선호합니다. 이는 [자동 모드](/ko/permission-modes#eliminate-prompts-with-auto-mode)가 적용하는 것보다 더 강력한 자율 실행 지침이며, 권한 모드를 변경하지 않고도 작동하므로, 도구가 실행되기 전에 여전히 권한 프롬프트를 볼 수 있습니다.
+* **Proactive**: Claude가 즉시 실행하고, 일상적인 결정을 위해 일시 중지하는 대신 합리적인 가정을 하며, 계획보다 행동을 선호합니다. 이는 [자동 모드](/docs/ko/permission-modes#eliminate-prompts-with-auto-mode)가 적용하는 것보다 더 강력한 자율 실행 지침이며, 권한 모드를 변경하지 않고도 작동하므로, 도구가 실행되기 전에 여전히 권한 프롬프트를 볼 수 있습니다.
 
 * **Explanatory**: 소프트웨어 엔지니어링 작업을 완료하는 동안 교육용 "Insights"를 제공합니다. 구현 선택 사항과 코드베이스 패턴을 이해하는 데 도움이 됩니다.
 
@@ -30,7 +30,7 @@ Claude Code의 **Default** 출력 스타일은 기존 시스템 프롬프트이�
   출력 스타일 변경
 </h2>
 
-`/config`를 실행하고 **Output style**을 선택하여 메뉴에서 스타일을 선택합니다. 선택 사항은 [로컬 프로젝트 수준](/ko/settings)의 `.claude/settings.local.json`에 저장됩니다.
+`/config`를 실행하고 **Output style**을 선택하여 메뉴에서 스타일을 선택합니다. 선택 사항은 [로컬 프로젝트 수준](/docs/ko/settings)의 `.claude/settings.local.json`에 저장됩니다.
 
 <Note>{/* max-version: 2.1.90 */}독립 실행형 `/output-style` 명령은 v2.1.73에서 더 이상 사용되지 않으며 v2.1.91에서 제거되었습니다. `/config`를 사용하거나 `outputStyle` 설정을 직접 편집하십시오.</Note>
 
@@ -42,7 +42,7 @@ Claude Code의 **Default** 출력 스타일은 기존 시스템 프롬프트이�
 }
 ```
 
-출력 스타일은 시스템 프롬프트의 일부이며, Claude Code는 세션 시작 시 이를 한 번 읽습니다. 변경 사항은 `/clear` 후 또는 새 세션 후에 적용됩니다. 출력 스타일 변경이 캐시에 미치는 영향에 대해서는 [Claude Code가 prompt caching을 사용하는 방법](/ko/prompt-caching#changing-output-style)을 참조하십시오.
+출력 스타일은 시스템 프롬프트의 일부이며, Claude Code는 세션 시작 시 이를 한 번 읽습니다. 변경 사항은 `/clear` 후 또는 새 세션 후에 적용됩니다. 출력 스타일 변경이 캐시에 미치는 영향에 대해서는 [Claude Code가 prompt caching을 사용하는 방법](/docs/ko/prompt-caching#changing-output-style)을 참조하십시오.
 
 <h2 id="create-a-custom-output-style">
   사용자 정의 출력 스타일 만들기
@@ -56,7 +56,7 @@ Claude Code의 **Default** 출력 스타일은 기존 시스템 프롬프트이�
 
     * 사용자: `~/.claude/output-styles`
     * 프로젝트: `.claude/output-styles`
-    * 관리형 정책: [관리형 설정 디렉토리](/ko/settings#settings-files) 내의 `.claude/output-styles`
+    * 관리형 정책: [관리형 설정 디렉토리](/docs/ko/settings#settings-files) 내의 `.claude/output-styles`
 
     프로젝트 출력 스타일은 작업 디렉토리와 저장소 루트 사이의 모든 `.claude/output-styles/`에서 로드됩니다. {/* min-version: 2.1.178 */}v2.1.178부터 이러한 중첩된 디렉토리 중 하나 이상이 동일한 이름의 스타일을 정의하면 Claude Code는 작업 디렉토리에 가장 가까운 것을 사용합니다.
   </Step>
@@ -86,7 +86,7 @@ Claude Code의 **Default** 출력 스타일은 기존 시스템 프롬프트이�
   </Step>
 </Steps>
 
-[플러그인](/ko/plugins-reference)도 `output-styles/` 디렉토리에 출력 스타일을 포함할 수 있습니다.
+[플러그인](/docs/ko/plugins-reference)도 `output-styles/` 디렉토리에 출력 스타일을 포함할 수 있습니다.
 
 <h3 id="frontmatter">
   Frontmatter
@@ -122,16 +122,16 @@ Claude Code의 **Default** 출력 스타일은 기존 시스템 프롬프트이�
 | 기능                       | 작동 방식                                    | 사용 시기                                   |
 | :----------------------- | :--------------------------------------- | :-------------------------------------- |
 | 출력 스타일                   | 시스템 프롬프트를 수정합니다                          | 매 턴마다 다른 역할, 톤, 또는 기본 응답 형식을 원할 때       |
-| [CLAUDE.md](/ko/memory)  | 시스템 프롬프트 이후에 사용자 메시지를 추가합니다              | Claude가 항상 프로젝트 규칙과 코드베이스 컨텍스트를 알아야 할 때 |
+| [CLAUDE.md](/docs/ko/memory)  | 시스템 프롬프트 이후에 사용자 메시지를 추가합니다              | Claude가 항상 프로젝트 규칙과 코드베이스 컨텍스트를 알아야 할 때 |
 | `--append-system-prompt` | 아무것도 제거하지 않고 시스템 프롬프트에 추가합니다             | 단일 호출을 위한 일회성 추가를 원할 때                  |
-| [Agents](/ko/sub-agents) | 자신의 시스템 프롬프트, 모델, 도구를 가진 subagent를 실행합니다 | 초점이 맞춰진 작업을 위해 별도로 범위가 지정된 도우미를 원할 때    |
-| [Skills](/ko/skills)     | 호출되거나 관련성이 있을 때 작업별 지침을 로드합니다            | 재사용 가능한 워크플로우가 있을 때                     |
+| [Agents](/docs/ko/sub-agents) | 자신의 시스템 프롬프트, 모델, 도구를 가진 subagent를 실행합니다 | 초점이 맞춰진 작업을 위해 별도로 범위가 지정된 도우미를 원할 때    |
+| [Skills](/docs/ko/skills)     | 호출되거나 관련성이 있을 때 작업별 지침을 로드합니다            | 재사용 가능한 워크플로우가 있을 때                     |
 
 <h2 id="related-resources">
   관련 리소스
 </h2>
 
-* [Settings](/ko/settings): `outputStyle` 필드가 있는 위치 및 설정 우선순위 작동 방식
-* [Permission modes](/ko/permission-modes): Proactive 스타일이 자동 모드와 어떻게 비교되는지
-* [Plugins](/ko/plugins): skills, hooks, agents와 함께 출력 스타일을 패키징하고 배포합니다
-* [Debug your configuration](/ko/debug-your-config): 출력 스타일이 적용되지 않는 이유를 진단합니다
+* [Settings](/docs/ko/settings): `outputStyle` 필드가 있는 위치 및 설정 우선순위 작동 방식
+* [Permission modes](/docs/ko/permission-modes): Proactive 스타일이 자동 모드와 어떻게 비교되는지
+* [Plugins](/docs/ko/plugins): skills, hooks, agents와 함께 출력 스타일을 패키징하고 배포합니다
+* [Debug your configuration](/docs/ko/debug-your-config): 출력 스타일이 적용되지 않는 이유를 진단합니다

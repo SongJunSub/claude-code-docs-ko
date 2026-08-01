@@ -9,7 +9,7 @@
 <Warning>
   V2 세션 API는 더 이상 지원되지 않습니다. TypeScript Agent SDK 0.3.142는 `unstable_v2_createSession`, `unstable_v2_resumeSession`, `unstable_v2_prompt` 및 `SDKSession`과 `SDKSessionOptions` 타입을 제거합니다.
 
-  마이그레이션하려면 [`query()` API](/ko/agent-sdk/typescript)와 이를 허용하는 [세션 옵션](/ko/agent-sdk/sessions)을 사용하십시오. 다중 턴 대화의 경우 `AsyncIterable<SDKUserMessage>`를 전달하거나 저장된 세션을 계속하려면 `options.resume`을 사용하십시오. 이 페이지는 Agent SDK 0.2.x 이전 버전의 코드를 유지 관리하는 경우 참조용으로 유지됩니다.
+  마이그레이션하려면 [`query()` API](/docs/ko/agent-sdk/typescript)와 이를 허용하는 [세션 옵션](/docs/ko/agent-sdk/sessions)을 사용하십시오. 다중 턴 대화의 경우 `AsyncIterable<SDKUserMessage>`를 전달하거나 저장된 세션을 계속하려면 `options.resume`을 사용하십시오. 이 페이지는 Agent SDK 0.2.x 이전 버전의 코드를 유지 관리하는 경우 참조용으로 유지됩니다.
 </Warning>
 
 V2는 비동기 생성기와 yield 조정의 필요성을 제거한 실험적 세션 API였습니다. 턴 전체에서 생성기 상태를 관리하는 대신 각 턴은 별도의 `send()`/`stream()` 사이클이었습니다. API 표면은 세 가지 개념으로 축소되었습니다:
@@ -408,7 +408,7 @@ interface SDKSession {
   기능 가용성
 </h2>
 
-V2 세션 API는 모든 V1 기능을 지원하지 않습니다. 다음은 [V1 SDK](/ko/agent-sdk/typescript)가 필요합니다:
+V2 세션 API는 모든 V1 기능을 지원하지 않습니다. 다음은 [V1 SDK](/docs/ko/agent-sdk/typescript)가 필요합니다:
 
 * 세션 포킹 (`forkSession` 옵션)
 * 일부 고급 스트리밍 입력 패턴
@@ -417,6 +417,6 @@ V2 세션 API는 모든 V1 기능을 지원하지 않습니다. 다음은 [V1 SD
   참고 항목
 </h2>
 
-* [TypeScript SDK 참조 (V1)](/ko/agent-sdk/typescript) - 전체 V1 SDK 문서
-* [SDK 개요](/ko/agent-sdk/overview) - 일반 SDK 개념
+* [TypeScript SDK 참조 (V1)](/docs/ko/agent-sdk/typescript) - 전체 V1 SDK 문서
+* [SDK 개요](/docs/ko/agent-sdk/overview) - 일반 SDK 개념
 * [GitHub의 V2 예제](https://github.com/anthropics/claude-agent-sdk-demos/tree/main/hello-world-v2) - 작동하는 코드 예제

@@ -6,7 +6,7 @@
 
 > Claude Code를 라이브러리로 사용하여 프로덕션 AI 에이전트 구축하기
 
-자율적으로 파일을 읽고, 명령을 실행하고, 웹을 검색하고, 코드를 편집하는 등의 작업을 수행하는 AI 에이전트를 구축하십시오. Agent SDK는 Claude Code를 강화하는 동일한 도구, 에이전트 루프 및 컨텍스트 관리를 Python 및 TypeScript로 프로그래밍할 수 있도록 제공합니다.
+자율적으로 파일을 읽고, 명령을 실행하고, 웹을 검색하고, 코드를 편집하는 등의 작업을 수행하는 AI 에이전트를 구축하십시오. Agent SDK는 Claude Code를 강화하는 동일한 도구, 에이전트 루프 및 컨텍스트 관리를 Python 및 TypeScript로 프로그래밍할 수 있도록 제공합니다. 에이전트 하네스 설계의 배경에 대해서는 블로그의 [A harness for every task: dynamic workflows in Claude Code](https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code)를 참조하십시오.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -40,7 +40,7 @@
 Agent SDK에는 파일 읽기, 명령 실행 및 코드 편집을 위한 기본 제공 도구가 포함되어 있으므로 도구 실행을 직접 구현하지 않고도 에이전트가 즉시 작업을 시작할 수 있습니다. 빠른 시작을 살펴보거나 SDK로 구축한 실제 에이전트를 탐색하십시오:
 
 <CardGroup cols={2}>
-  <Card title="빠른 시작" icon="play" href="/ko/agent-sdk/quickstart">
+  <Card title="빠른 시작" icon="play" href="/docs/ko/agent-sdk/quickstart">
     몇 분 안에 버그 수정 에이전트 구축하기
   </Card>
 
@@ -62,10 +62,35 @@ Agent SDK에는 파일 읽기, 명령 실행 및 코드 편집을 위한 기본 
         ```
       </Tab>
 
-      <Tab title="Python">
+      <Tab title="Python (uv)">
+        [uv](https://docs.astral.sh/uv/)는 가상 환경을 자동으로 처리하는 빠른 Python 패키지 관리자입니다:
+
         ```bash theme={null}
+        uv init
+        uv add claude-agent-sdk
+        ```
+      </Tab>
+
+      <Tab title="Python (pip)">
+        가상 환경을 생성하고 활성화한 다음 패키지를 설치합니다. 가상 환경에 설치하면 최근 Debian, Ubuntu 및 Homebrew 설치의 시스템 Python이 venv 외부의 `pip install`에 대해 반환하는 `error: externally-managed-environment` 오류를 피할 수 있습니다.
+
+        macOS 또는 Linux에서:
+
+        ```bash theme={null}
+        python3 -m venv .venv
+        source .venv/bin/activate
         pip install claude-agent-sdk
         ```
+
+        Windows에서:
+
+        ```powershell theme={null}
+        py -m venv .venv
+        .venv\Scripts\Activate.ps1
+        pip install claude-agent-sdk
+        ```
+
+        PowerShell이 실행 정책 오류로 `Activate.ps1`을 차단하면 먼저 `Set-ExecutionPolicy -Scope Process RemoteSigned`를 실행합니다.
 
         Python 패키지는 Python 3.10 이상이 필요합니다. pip에서 `No matching distribution found for claude-agent-sdk`를 보고하면 인터프리터가 3.10보다 오래된 것입니다. macOS 또는 Linux에서 `python3 --version`을 실행하거나 Windows에서 `py --version`을 실행하여 확인하십시오.
       </Tab>
@@ -77,20 +102,28 @@ Agent SDK에는 파일 읽기, 명령 실행 및 코드 편집을 위한 기본 
   </Step>
 
   <Step title="API 키 설정">
-    [콘솔](https://platform.claude.com/)에서 API 키를 가져온 다음 환경 변수로 설정하십시오:
+    [콘솔](https://platform.claude.com/)에서 API 키를 가져온 다음 환경 변수로 설정합니다.
+
+    macOS 또는 Linux에서:
 
     ```bash theme={null}
-    export ANTHROPIC_API_KEY=your-api-key
+    export ANTHROPIC_API_KEY=sk-ant-xxxxx
+    ```
+
+    Windows PowerShell에서:
+
+    ```powershell theme={null}
+    $env:ANTHROPIC_API_KEY = "sk-ant-xxxxx"
     ```
 
     SDK는 또한 타사 API 제공자를 통한 인증을 지원합니다:
 
     * **Amazon Bedrock**: `CLAUDE_CODE_USE_BEDROCK=1` 환경 변수를 설정하고 AWS 자격 증명을 구성합니다
     * **Claude Platform on AWS**: `CLAUDE_CODE_USE_ANTHROPIC_AWS=1` 및 `ANTHROPIC_AWS_WORKSPACE_ID`를 설정한 다음 AWS 자격 증명을 구성합니다
-    * **Google Vertex AI**: `CLAUDE_CODE_USE_VERTEX=1` 환경 변수를 설정하고 Google Cloud 자격 증명을 구성합니다
+    * **Google Cloud의 Agent Platform**: `CLAUDE_CODE_USE_VERTEX=1` 환경 변수를 설정하고 Google Cloud 자격 증명을 구성합니다
     * **Microsoft Azure**: `CLAUDE_CODE_USE_FOUNDRY=1` 환경 변수를 설정하고 Azure 자격 증명을 구성합니다
 
-    [Bedrock](/ko/amazon-bedrock), [Claude Platform on AWS](/ko/claude-platform-on-aws), [Vertex AI](/ko/google-vertex-ai) 또는 [Azure AI Foundry](/ko/microsoft-foundry)의 설정 가이드를 참조하십시오.
+    [Amazon Bedrock](/docs/ko/amazon-bedrock), [Claude Platform on AWS](/docs/ko/claude-platform-on-aws), [Google Cloud의 Agent Platform](/docs/ko/google-vertex-ai), 또는 [Microsoft Foundry](/docs/ko/microsoft-foundry)의 설정 가이드를 참조하십시오.
 
     <Note>
       이전에 승인되지 않은 경우, Anthropic은 타사 개발자가 Claude Agent SDK로 구축한 에이전트를 포함하여 자신의 제품에 대해 claude.ai 로그인 또는 속도 제한을 제공하도록 허용하지 않습니다. 대신 이 문서에 설명된 API 키 인증 방법을 사용하십시오.
@@ -132,7 +165,7 @@ Agent SDK에는 파일 읽기, 명령 실행 및 코드 편집을 위한 기본 
   </Step>
 </Steps>
 
-**구축할 준비가 되셨나요?** [빠른 시작](/ko/agent-sdk/quickstart)을 따라 몇 분 안에 버그를 찾고 수정하는 에이전트를 만드십시오.
+**구축할 준비가 되셨나요?** [빠른 시작](/docs/ko/agent-sdk/quickstart)을 따라 몇 분 안에 버그를 찾고 수정하는 에이전트를 만드십시오.
 
 <h2 id="capabilities">
   기능
@@ -155,7 +188,7 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
     | **Grep**                                                                    | 정규식으로 파일 내용 검색                       |
     | **WebSearch**                                                               | 현재 정보를 위해 웹 검색                       |
     | **WebFetch**                                                                | 웹 페이지 내용 가져오기 및 구문 분석                |
-    | **[AskUserQuestion](/ko/agent-sdk/user-input#handle-clarifying-questions)** | 여러 선택 옵션으로 사용자에게 명확히 하는 질문 하기        |
+    | **[AskUserQuestion](/docs/ko/agent-sdk/user-input#handle-clarifying-questions)** | 여러 선택 옵션으로 사용자에게 명확히 하는 질문 하기        |
 
     이 예제는 코드베이스에서 TODO 주석을 검색하는 에이전트를 만듭니다:
 
@@ -254,7 +287,7 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
       ```
     </CodeGroup>
 
-    [훅에 대해 자세히 알아보기 →](/ko/agent-sdk/hooks)
+    [훅에 대해 자세히 알아보기 →](/docs/ko/agent-sdk/hooks)
   </Tab>
 
   <Tab title="서브에이전트">
@@ -312,7 +345,7 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
 
     서브에이전트의 컨텍스트 내의 메시지에는 `parent_tool_use_id` 필드가 포함되어 있어 어떤 메시지가 어떤 서브에이전트 실행에 속하는지 추적할 수 있습니다.
 
-    [서브에이전트에 대해 자세히 알아보기 →](/ko/agent-sdk/subagents)
+    [서브에이전트에 대해 자세히 알아보기 →](/docs/ko/agent-sdk/subagents)
   </Tab>
 
   <Tab title="MCP">
@@ -358,14 +391,14 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
       ```
     </CodeGroup>
 
-    [MCP에 대해 자세히 알아보기 →](/ko/agent-sdk/mcp)
+    [MCP에 대해 자세히 알아보기 →](/docs/ko/agent-sdk/mcp)
   </Tab>
 
   <Tab title="권한">
     에이전트가 사용할 수 있는 도구를 정확히 제어합니다. 안전한 작업을 허용하고, 위험한 작업을 차단하거나, 민감한 작업에 대한 승인을 요구합니다.
 
     <Note>
-      대화형 승인 프롬프트 및 `AskUserQuestion` 도구는 [승인 및 사용자 입력 처리](/ko/agent-sdk/user-input)를 참조하십시오.
+      대화형 승인 프롬프트 및 `AskUserQuestion` 도구는 [승인 및 사용자 입력 처리](/docs/ko/agent-sdk/user-input)를 참조하십시오.
     </Note>
 
     이 예제는 코드를 분석할 수 있지만 수정할 수 없는 읽기 전용 에이전트를 만듭니다. `allowed_tools`는 `Read`, `Glob` 및 `Grep`을 사전 승인합니다.
@@ -404,7 +437,7 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
       ```
     </CodeGroup>
 
-    [권한에 대해 자세히 알아보기 →](/ko/agent-sdk/permissions)
+    [권한에 대해 자세히 알아보기 →](/docs/ko/agent-sdk/permissions)
   </Tab>
 
   <Tab title="세션">
@@ -466,7 +499,7 @@ Claude Code를 강력하게 만드는 모든 것이 SDK에서 사용 가능합�
       ```
     </CodeGroup>
 
-    [세션에 대해 자세히 알아보기 →](/ko/agent-sdk/sessions)
+    [세션에 대해 자세히 알아보기 →](/docs/ko/agent-sdk/sessions)
   </Tab>
 </Tabs>
 
@@ -478,10 +511,10 @@ SDK는 또한 Claude Code의 파일 시스템 기반 구성을 지원합니다. 
 
 | 기능                                               | 설명                                          | 위치                                 |
 | ------------------------------------------------ | ------------------------------------------- | ---------------------------------- |
-| [Skills](/ko/agent-sdk/skills)                   | Claude가 자동으로 사용하거나 `/name`으로 호출하는 특화된 기능    | `.claude/skills/*/SKILL.md`        |
-| [Commands](/ko/agent-sdk/slash-commands)         | 레거시 형식의 사용자 정의 명령. 새로운 사용자 정의 명령은 Skills 사용 | `.claude/commands/*.md`            |
-| [Memory](/ko/agent-sdk/modifying-system-prompts) | 프로젝트 컨텍스트 및 지침                              | `CLAUDE.md` 또는 `.claude/CLAUDE.md` |
-| [Plugins](/ko/agent-sdk/plugins)                 | Skills, 에이전트, 훅 및 MCP 서버로 확장                | `plugins` 옵션을 통한 프로그래밍 방식          |
+| [Skills](/docs/ko/agent-sdk/skills)                   | Claude가 자동으로 사용하거나 `/name`으로 호출하는 특화된 기능    | `.claude/skills/*/SKILL.md`        |
+| [Commands](/docs/ko/agent-sdk/slash-commands)         | 레거시 형식의 사용자 정의 명령. 새로운 사용자 정의 명령은 Skills 사용 | `.claude/commands/*.md`            |
+| [Memory](/docs/ko/agent-sdk/modifying-system-prompts) | 프로젝트 컨텍스트 및 지침                              | `CLAUDE.md` 또는 `.claude/CLAUDE.md` |
+| [Plugins](/docs/ko/agent-sdk/plugins)                 | Skills, 에이전트, 훅 및 MCP 서버로 확장                | `plugins` 옵션을 통한 프로그래밍 방식          |
 
 <h2 id="compare-the-agent-sdk-to-other-claude-tools">
   Agent SDK를 다른 Claude 도구와 비교
@@ -602,7 +635,7 @@ Claude Agent SDK의 사용은 [Anthropic의 상용 서비스 약관](https://www
 </h2>
 
 <CardGroup cols={2}>
-  <Card title="빠른 시작" icon="play" href="/ko/agent-sdk/quickstart">
+  <Card title="빠른 시작" icon="play" href="/docs/ko/agent-sdk/quickstart">
     몇 분 안에 버그를 찾고 수정하는 에이전트 구축하기
   </Card>
 
@@ -610,11 +643,11 @@ Claude Agent SDK의 사용은 [Anthropic의 상용 서비스 약관](https://www
     이메일 어시스턴트, 연구 에이전트 등
   </Card>
 
-  <Card title="TypeScript SDK" icon="code" href="/ko/agent-sdk/typescript">
+  <Card title="TypeScript SDK" icon="code" href="/docs/ko/agent-sdk/typescript">
     전체 TypeScript API 참조 및 예제
   </Card>
 
-  <Card title="Python SDK" icon="code" href="/ko/agent-sdk/python">
+  <Card title="Python SDK" icon="code" href="/docs/ko/agent-sdk/python">
     전체 Python API 참조 및 예제
   </Card>
 </CardGroup>

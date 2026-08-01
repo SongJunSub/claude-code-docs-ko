@@ -2,16 +2,16 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Chrome에서 Claude Code 사용하기 (베타)
+# Chrome에서 Claude Code 사용하기
 
 > Claude Code를 Chrome 브라우저에 연결하여 웹 앱을 테스트하고, 콘솔 로그로 디버깅하며, 양식 작성을 자동화하고, 웹 페이지에서 데이터를 추출합니다.
 
-Claude Code는 [Claude in Chrome 브라우저 확장 프로그램](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn)과 통합되어 CLI 또는 [VS Code 확장 프로그램](/ko/vs-code#automate-browser-tasks-with-chrome)에서 브라우저 자동화 기능을 제공합니다. 코드를 작성한 후 컨텍스트를 전환하지 않고 브라우저에서 테스트하고 디버깅합니다.
+Claude Code는 [Claude in Chrome 브라우저 확장 프로그램](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn)과 통합되어 CLI 또는 [VS Code 확장 프로그램](/docs/ko/vs-code#automate-browser-tasks-with-chrome)에서 브라우저 자동화 기능을 제공합니다. 코드를 작성한 후 컨텍스트를 전환하지 않고 브라우저에서 테스트하고 디버깅합니다.
 
 Claude는 브라우저 작업을 위해 새 탭을 열고 브라우저의 로그인 상태를 공유하므로 이미 로그인한 모든 사이트에 액세스할 수 있습니다. 브라우저 작업은 실시간으로 표시되는 Chrome 창에서 실행됩니다. Claude가 로그인 페이지나 CAPTCHA를 만나면 일시 중지하고 수동으로 처리하도록 요청합니다.
 
 <Note>
-  Chrome 통합은 베타 버전이며 현재 Google Chrome 및 Microsoft Edge에서 작동합니다. Brave, Arc 또는 기타 Chromium 기반 브라우저에서는 아직 지원되지 않습니다. WSL(Windows Subsystem for Linux)도 지원되지 않습니다.
+  Chrome 통합은 Google Chrome 및 Microsoft Edge에서 작동합니다. Brave, Arc 또는 기타 Chromium 기반 브라우저에서는 아직 지원되지 않습니다. Windows Subsystem for Linux(WSL)도 지원되지 않습니다.
 </Note>
 
 <h2 id="capabilities">
@@ -36,11 +36,11 @@ Chrome에서 Claude Code를 사용하기 전에 다음이 필요합니다.
 
 * [Google Chrome](https://www.google.com/chrome/) 또는 [Microsoft Edge](https://www.microsoft.com/edge) 브라우저
 * [Claude in Chrome 확장 프로그램](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) 버전 1.0.36 이상(Chrome 웹 스토어에서 두 브라우저 모두에 사용 가능)
-* [Claude Code](/ko/quickstart#step-1-install-claude-code) 버전 2.0.73 이상
+* [Claude Code](/docs/ko/quickstart#step-1-install-claude-code)
 * 직접 Anthropic 플랜 (Pro, Max, Team 또는 Enterprise)
 
 <Note>
-  Chrome 통합은 Amazon Bedrock, Google Cloud Vertex AI 또는 Microsoft Foundry와 같은 타사 제공자를 통해 사용할 수 없습니다. 타사 제공자를 통해서만 Claude에 액세스하는 경우 이 기능을 사용하려면 별도의 claude.ai 계정이 필요합니다.
+  Chrome 통합은 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry와 같은 타사 제공자를 통해 사용할 수 없습니다. 타사 제공자를 통해서만 Claude에 액세스하는 경우 이 기능을 사용하려면 별도의 claude.ai 계정이 필요합니다.
 </Note>
 
 <h2 id="get-started-in-the-cli">
@@ -65,12 +65,14 @@ Chrome에서 Claude Code를 사용하기 전에 다음이 필요합니다.
     code.claude.com/docs로 이동하여 검색 상자를 클릭하고,
     "hooks"를 입력한 후 나타나는 결과를 알려주세요
     ```
+
+    첫 번째 브라우저 작업은 `claude-in-chrome` 스킬을 사용할 수 있는 권한을 요청합니다. 승인하면 Claude가 새 탭을 열고 작업을 시작합니다.
   </Step>
 </Steps>
 
 언제든지 `/chrome`을 실행하여 연결 상태를 확인하고, 권한을 관리하거나, 확장 프로그램을 다시 연결하거나, 사용할 연결된 브라우저를 선택할 수 있습니다. 브라우저 작업이 시작될 때 둘 이상의 브라우저가 연결되어 있으면 Claude가 하나를 선택하도록 요청합니다.
 
-VS Code의 경우 [VS Code에서 브라우저 자동화](/ko/vs-code#automate-browser-tasks-with-chrome)를 참조하세요.
+VS Code의 경우 [VS Code에서 브라우저 자동화](/docs/ko/vs-code#automate-browser-tasks-with-chrome)를 참조하세요.
 
 <h3 id="enable-chrome-by-default">
   기본적으로 Chrome 활성화
@@ -78,7 +80,7 @@ VS Code의 경우 [VS Code에서 브라우저 자동화](/ko/vs-code#automate-br
 
 각 세션마다 `--chrome`을 전달하지 않으려면 `/chrome`을 실행하고 "기본적으로 활성화"를 선택합니다.
 
-[VS Code 확장 프로그램](/ko/vs-code#automate-browser-tasks-with-chrome)에서는 Chrome 확장 프로그램이 설치되어 있으면 Chrome을 사용할 수 있습니다. 추가 플래그가 필요하지 않습니다.
+[VS Code 확장 프로그램](/docs/ko/vs-code#automate-browser-tasks-with-chrome)에서는 Chrome 확장 프로그램이 설치되어 있으면 Chrome을 사용할 수 있습니다. 추가 플래그가 필요하지 않습니다.
 
 <Note>
   CLI에서 기본적으로 Chrome을 활성화하면 브라우저 도구가 항상 로드되므로 컨텍스트 사용량이 증가합니다. 컨텍스트 소비가 증가하는 것을 발견하면 이 설정을 비활성화하고 필요할 때만 `--chrome`을 사용합니다.
@@ -90,11 +92,22 @@ VS Code의 경우 [VS Code에서 브라우저 자동화](/ko/vs-code#automate-br
 
 사이트 수준 권한은 Chrome 확장 프로그램에서 상속됩니다. Chrome 확장 프로그램 설정에서 권한을 관리하여 Claude가 탐색하고, 클릭하고, 입력할 수 있는 사이트를 제어합니다.
 
+<h3 id="browser-tools-in-plan-mode">
+  계획 모드에서의 브라우저 도구
+</h3>
+
+[계획 모드](/docs/ko/permission-modes#analyze-before-you-edit-with-plan-mode)에서는 페이지나 브라우저 상태만 읽는 브라우저 도구 호출이 권한 프롬프트 없이 실행되고, 상태를 변경하는 호출은 승인을 요청합니다.
+
+* **읽기 전용 호출**: `read_page`, `get_page_text`, `find`, 콘솔 메시지 또는 네트워크 요청 읽기, 스크린샷 촬영
+* **상태 변경 호출**: 클릭, 입력, 탐색, 탭 및 창 관리, GIF 녹화
+
+v2.1.199부터 `tabs_context_mcp`의 `createIfEmpty`, 콘솔 및 네트워크 리더의 `clear`, 스크린샷의 `save_to_disk`와 같이 상태 변경 입력 플래그를 설정하는 읽기 전용 호출도 승인을 요청합니다. `browser_batch` 호출은 내부의 모든 작업이 읽기 전용일 때만 프롬프트 없이 실행됩니다.
+
 <h2 id="example-workflows">
   예제 워크플로우
 </h2>
 
-이 예제들은 브라우저 작업과 코딩 작업을 결합하는 일반적인 방법을 보여줍니다. `/mcp`를 실행하고 `claude-in-chrome`을 선택하여 사용 가능한 브라우저 도구의 전체 목록을 확인합니다.
+이 예제들은 브라우저 작업과 코딩 작업을 결합하는 일반적인 방법을 보여줍니다. `/mcp`를 실행하고 `claude-in-chrome`을 선택한 후 **도구 보기**를 선택하여 사용 가능한 브라우저 도구의 전체 목록을 확인합니다.
 
 <h3 id="test-a-local-web-application">
   로컬 웹 애플리케이션 테스트
@@ -208,6 +221,8 @@ Claude Code에서 Chrome 확장 프로그램을 감지할 수 없는 경우:
 
 Chrome 통합을 처음 활성화할 때 Claude Code는 네이티브 메시징 호스트 구성 파일을 설치합니다. Chrome은 시작 시 이 파일을 읽으므로 첫 번째 시도에서 확장 프로그램이 감지되지 않으면 Chrome을 다시 시작하여 새 구성을 선택합니다.
 
+v2.1.199부터 Claude Code는 첫 번째 설치 시에만 확장 프로그램을 연결하도록 요청하는 브라우저 탭을 엽니다. Claude Code 빌드 또는 구성 디렉터리 전환 후와 같이 구성 파일을 다시 작성하는 이후 세션에서는 다시 열지 않습니다.
+
 연결이 계속 실패하면 다음 위치에 호스트 구성 파일이 있는지 확인합니다.
 
 Chrome의 경우:
@@ -264,9 +279,9 @@ Windows에서 다음을 만날 수 있습니다.
   참고 항목
 </h2>
 
-* [컴퓨터 사용](/ko/computer-use): 브라우저에서 작업을 수행할 수 없을 때 네이티브 macOS 앱을 제어합니다
-* [VS Code에서 Claude Code 사용](/ko/vs-code#automate-browser-tasks-with-chrome): VS Code 확장 프로그램의 브라우저 자동화
-* [CLI 참조](/ko/cli-reference): `--chrome`을 포함한 명령줄 플래그
-* [일반적인 워크플로우](/ko/common-workflows): Claude Code를 사용하는 더 많은 방법
-* [데이터 및 개인정보](/ko/data-usage): Claude Code가 데이터를 처리하는 방법
+* [컴퓨터 사용](/docs/ko/computer-use): 브라우저에서 작업을 수행할 수 없을 때 네이티브 macOS 앱을 제어합니다
+* [VS Code에서 Claude Code 사용](/docs/ko/vs-code#automate-browser-tasks-with-chrome): VS Code 확장 프로그램의 브라우저 자동화
+* [CLI 참조](/docs/ko/cli-reference): `--chrome`을 포함한 명령줄 플래그
+* [일반적인 워크플로우](/docs/ko/common-workflows): Claude Code를 사용하는 더 많은 방법
+* [데이터 및 개인정보](/docs/ko/data-usage): Claude Code가 데이터를 처리하는 방법
 * [Chrome에서 Claude 시작하기](https://support.claude.com/en/articles/12012173-getting-started-with-claude-in-chrome): 바로 가기, 일정 예약 및 권한을 포함한 Chrome 확장 프로그램의 전체 문서

@@ -11,7 +11,7 @@
 MCP 서버는 로컬 프로세스로 실행되거나, HTTP를 통해 연결되거나, SDK 애플리케이션 내에서 직접 실행될 수 있습니다.
 
 <Note>
-  이 페이지는 Agent SDK에 대한 MCP 구성을 다룹니다. Claude Code CLI에 MCP 서버를 추가하여 모든 프로젝트에서 로드되도록 하려면 [MCP 설치 범위](/ko/mcp#mcp-installation-scopes)를 참조하세요.
+  이 페이지는 Agent SDK에 대한 MCP 구성을 다룹니다. Claude Code CLI에 MCP 서버를 추가하여 모든 프로젝트에서 로드되도록 하려면 [MCP 설치 범위](/docs/ko/mcp#mcp-installation-scopes)를 참조하세요.
 </Note>
 
 <h2 id="quickstart">
@@ -188,7 +188,7 @@ const _ = {
 와일드카드(`*`)를 사용하면 각 도구를 개별적으로 나열하지 않고도 서버의 모든 도구를 허용할 수 있습니다.
 
 <Note>
-  **MCP 액세스를 위해 권한 모드보다 `allowedTools`를 선호합니다.** `permissionMode: "acceptEdits"`는 MCP 도구를 자동으로 승인하지 않습니다(파일 편집 및 파일 시스템 Bash 명령만). `permissionMode: "bypassPermissions"`는 MCP 도구를 자동으로 승인하지만 명시적 [`ask` 규칙](/ko/agent-sdk/permissions#how-permissions-are-evaluated)이 일치하지 않는 한 다른 모든 안전 프롬프트도 비활성화하므로 필요한 것보다 더 광범위합니다. `allowedTools`의 와일드카드는 원하는 MCP 서버만 정확히 부여하고 다른 것은 부여하지 않습니다. 전체 비교는 [권한 모드](/ko/agent-sdk/permissions#permission-modes)를 참조하세요.
+  **MCP 액세스를 위해 권한 모드보다 `allowedTools`를 선호합니다.** `permissionMode: "acceptEdits"`는 MCP 도구를 자동으로 승인하지 않습니다(파일 편집 및 파일 시스템 Bash 명령만). `permissionMode: "bypassPermissions"`는 MCP 도구를 자동으로 승인하지만 다른 모든 안전 프롬프트도 비활성화하므로 필요한 것보다 더 광범위합니다. 자세한 내용은 [권한이 평가되는 방식](/docs/ko/agent-sdk/permissions#how-permissions-are-evaluated)을 참조하세요. `allowedTools`의 와일드카드는 원하는 MCP 서버만 정확히 부여하고 다른 것은 부여하지 않습니다. 전체 비교는 [권한 모드](/docs/ko/agent-sdk/permissions#permission-modes)를 참조하세요.
 </Note>
 
 <h3 id="discover-available-tools">
@@ -353,7 +353,7 @@ stdin/stdout을 통해 통신하는 로컬 프로세스입니다. 같은 머신�
   SDK MCP 서버
 </h3>
 
-별도의 서버 프로세스를 실행하는 대신 애플리케이션 코드에서 직접 사용자 정의 도구를 정의합니다. 구현 세부 사항은 [사용자 정의 도구 가이드](/ko/agent-sdk/custom-tools)를 참조하세요.
+별도의 서버 프로세스를 실행하는 대신 애플리케이션 코드에서 직접 사용자 정의 도구를 정의합니다. 구현 세부 사항은 [사용자 정의 도구 가이드](/docs/ko/agent-sdk/custom-tools)를 참조하세요.
 
 <h2 id="mcp-tool-search">
   MCP 도구 검색
@@ -361,9 +361,9 @@ stdin/stdout을 통해 통신하는 로컬 프로세스입니다. 같은 머신�
 
 많은 MCP 도구를 구성한 경우 도구 정의가 컨텍스트 윈도우의 상당 부분을 소비할 수 있습니다. 도구 검색은 컨텍스트에서 도구 정의를 보류하고 각 턴에 Claude가 필요로 하는 도구만 로드하여 이를 해결합니다.
 
-도구 검색은 기본적으로 활성화됩니다. 구성 옵션 및 세부 사항은 [도구 검색](/ko/agent-sdk/tool-search)을 참조하세요.
+도구 검색은 기본적으로 활성화됩니다. 구성 옵션 및 세부 사항은 [도구 검색](/docs/ko/agent-sdk/tool-search)을 참조하세요.
 
-더 자세한 내용(모범 사례 및 사용자 정의 SDK 도구와 함께 도구 검색 사용 포함)은 [도구 검색 가이드](/ko/agent-sdk/tool-search)를 참조하세요.
+더 자세한 내용(모범 사례 및 사용자 정의 SDK 도구와 함께 도구 검색 사용 포함)은 [도구 검색 가이드](/docs/ko/agent-sdk/tool-search)를 참조하세요.
 
 <h2 id="authentication">
   인증
@@ -497,7 +497,9 @@ HTTP 및 SSE 서버의 경우 서버 구성에서 직접 인증 헤더를 전달
   OAuth2 인증
 </h3>
 
-[MCP 사양은 OAuth 2.1을 지원합니다](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization). SDK는 OAuth 흐름을 자동으로 처리하지 않지만 애플리케이션에서 OAuth 흐름을 완료한 후 헤더를 통해 액세스 토큰을 전달할 수 있습니다:
+[MCP 사양은 OAuth 2.1을 지원합니다](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization). SDK는 브라우저를 열거나 대화형 OAuth 흐름을 실행하지 않습니다. 구성된 서버가 인증 챌린지를 반환하고 저장된 토큰이 없을 때, 에이전트 실행은 해당 서버의 도구 없이 계속되며, 서버는 [시스템 초기화 메시지](/docs/ko/agent-sdk/typescript#sdksystemmessage)의 `mcp_servers` 배열에서 `needs-auth` 상태로 보고됩니다. 에이전트가 특정 서버 연결에 의존하는 경우 시작 시 해당 배열을 확인하세요.
+
+자격 증명을 제공하려면 애플리케이션에서 OAuth 흐름을 완료하고 결과 액세스 토큰을 서버의 `headers`에 전달합니다:
 
 <CodeGroup>
   ```typescript TypeScript theme={null}
@@ -823,18 +825,25 @@ const _ = {
   연결 시간 초과
 </h3>
 
-MCP SDK는 서버 연결에 대해 기본 60초 시간 초과를 가집니다. 서버가 더 오래 시작되는 경우 연결이 실패합니다. 더 많은 시작 시간이 필요한 서버의 경우 다음을 고려합니다:
+MCP 서버 연결은 기본적으로 30초 후 시간 초과됩니다. 서버가 더 오래 시작되는 경우 연결이 실패합니다. [`MCP_TIMEOUT`](/docs/ko/env-vars) 환경 변수(밀리초 단위)로 제한을 높입니다. 더 많은 시작 시간이 필요한 서버의 경우 다음을 고려합니다:
 
 * 사용 가능한 경우 더 가벼운 서버 사용
 * 에이전트를 시작하기 전에 서버 사전 준비
 * 느린 초기화 원인에 대한 서버 로그 확인
 
+<h3 id="tool-output-exceeds-maximum-allowed-tokens">
+  도구 출력이 최대 허용 토큰을 초과합니다
+</h3>
+
+SDK는 Claude Code와 동일한 MCP 출력 제한을 적용합니다. 도구 결과가 25,000토큰보다 크면 전체 출력이 파일에 저장되고 도구 결과는 파일 경로를 이름으로 지정하는 오류 메시지로 바뀌므로 에이전트가 출력을 부분적으로 다시 읽을 수 있습니다. [`MAX_MCP_OUTPUT_TOKENS`](/docs/ko/env-vars) 환경 변수로 제한을 높입니다. 서버가 더 높은 도구별 제한을 선언하는 방법을 포함한 전체 동작은 [MCP 출력 제한 및 경고](/docs/ko/mcp#mcp-output-limits-and-warnings)를 참조합니다.
+
 <h2 id="related-resources">
   관련 리소스
 </h2>
 
-* **[사용자 정의 도구 가이드](/ko/agent-sdk/custom-tools)**: SDK 애플리케이션과 함께 프로세스 내에서 실행되는 자신의 MCP 서버를 구축합니다
-* **[권한](/ko/agent-sdk/permissions)**: `allowedTools` 및 `disallowedTools`로 에이전트가 사용할 수 있는 MCP 도구를 제어합니다
-* **[TypeScript SDK 참조](/ko/agent-sdk/typescript)**: MCP 구성 옵션을 포함한 전체 API 참조
-* **[Python SDK 참조](/ko/agent-sdk/python)**: MCP 구성 옵션을 포함한 전체 API 참조
+* **[사용자 정의 도구 가이드](/docs/ko/agent-sdk/custom-tools)**: SDK 애플리케이션과 함께 프로세스 내에서 실행되는 자신의 MCP 서버를 구축합니다
+* **[권한](/docs/ko/agent-sdk/permissions)**: `allowedTools` 및 `disallowedTools`로 에이전트가 사용할 수 있는 MCP 도구를 제어합니다
+* **[MCP 출력 제한 및 경고](/docs/ko/mcp#mcp-output-limits-and-warnings)**: SDK가 `MAX_MCP_OUTPUT_TOKENS`을 초과하는 도구 결과를 처리하는 방법으로, 디스크에 지속하는 폴백 및 도구별 `anthropic/maxResultSizeChars` 주석을 포함합니다
+* **[TypeScript SDK 참조](/docs/ko/agent-sdk/typescript)**: MCP 구성 옵션을 포함한 전체 API 참조
+* **[Python SDK 참조](/docs/ko/agent-sdk/python)**: MCP 구성 옵션을 포함한 전체 API 참조
 * **[MCP 서버 디렉토리](https://github.com/modelcontextprotocol/servers)**: 데이터베이스, API 등을 위한 사용 가능한 MCP 서버를 찾아봅니다

@@ -123,7 +123,7 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
 
   해당 최종 결과 메시지를 생성한 후 SDK는 CLI 프로세스가 0이 아닌 코드로 종료되기 때문에 오류를 발생시킵니다.
 
-  명령어가 제한에 도달할 수 있는 경우 TypeScript에서는 루프를 `try`/`catch`로 감싸거나 Python에서는 `try`/`except`로 감싸십시오. [단일 메시지 입력](/ko/agent-sdk/streaming-vs-single-mode#single-message-input)에 표시된 대로 하거나, 작업이 완료될 수 있도록 `maxTurns`를 충분히 높게 설정하십시오. Python에서는 `Exception`을 캐치하십시오: SDK는 오류 결과를 일반 `Exception`으로 표시합니다.
+  명령어가 제한에 도달할 수 있는 경우 TypeScript에서는 루프를 `try`/`catch`로 감싸거나 Python에서는 `try`/`except`로 감싸십시오. [단일 메시지 입력](/docs/ko/agent-sdk/streaming-vs-single-mode#single-message-input)에 표시된 대로 하거나, 작업이 완료될 수 있도록 `maxTurns`를 충분히 높게 설정하십시오. Python에서는 `Exception`을 캐치하십시오: SDK는 오류 결과를 일반 `Exception`으로 표시합니다.
 </Note>
 
 <h2 id="common-slash-commands">
@@ -212,16 +212,16 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
 </CodeGroup>
 
 <Note>
-  `compact_boundary` 메시지는 압축이 실행되었을 때만 도착합니다. 요약할 내용이 없으면 `/compact`는 대신 이유를 보고합니다. 실행은 여전히 `success` 결과로 끝나고, `compact_boundary` 메시지는 발생하지 않으며, 결과 텍스트에 메시지가 포함됩니다. 예를 들어 짧은 단일 교환 후 `Not enough messages to compact.`입니다. 새로운 일회성 `query()` 호출은 빈 컨텍스트로 시작하므로 이 패턴을 이전 턴이 있는 세션에서 사용하세요. 예를 들어 [스트리밍 입력 모드](/ko/agent-sdk/streaming-vs-single-mode)에서 또는 세션을 재개할 때입니다.
+  `compact_boundary` 메시지는 압축이 실행되었을 때만 도착합니다. 요약할 내용이 없으면 `/compact`는 대신 이유를 보고합니다. 실행은 여전히 `success` 결과로 끝나고, `compact_boundary` 메시지는 발생하지 않으며, 결과 텍스트에 메시지가 포함됩니다. 예를 들어 짧은 단일 교환 후 `Not enough messages to compact.`입니다. 새로운 일회성 `query()` 호출은 빈 컨텍스트로 시작하므로 이 패턴을 이전 턴이 있는 세션에서 사용하세요. 예를 들어 [스트리밍 입력 모드](/docs/ko/agent-sdk/streaming-vs-single-mode)에서 또는 세션을 재개할 때입니다.
 </Note>
 
 <h3 id="/clear-reset-conversation-context">
   `/clear` - 대화 컨텍스트 초기화
 </h3>
 
-`/clear` 명령어는 대화를 빈 컨텍스트로 초기화하므로 이후의 프롬프트는 이전 대화 기록 없이 시작됩니다. 이전 대화는 디스크에 남아 있으며 세션 ID를 [`resume` 옵션](/ko/agent-sdk/sessions#resume-by-id)에 전달하여 돌아갈 수 있습니다.
+`/clear` 명령어는 대화를 빈 컨텍스트로 초기화하므로 이후의 프롬프트는 이전 대화 기록 없이 시작됩니다. 이전 대화는 디스크에 남아 있으며 세션 ID를 [`resume` 옵션](/docs/ko/agent-sdk/sessions#resume-by-id)에 전달하여 돌아갈 수 있습니다.
 
-이는 단일 연결을 통해 여러 프롬프트를 보내는 [스트리밍 입력 모드](/ko/agent-sdk/streaming-vs-single-mode)에서 유용합니다. 일회성 `query()` 호출의 경우 각 호출은 이미 빈 컨텍스트로 시작하므로 `/clear`를 보내는 것은 실질적인 효과가 없습니다. 대신 새로운 `query()`를 시작하세요.
+이는 단일 연결을 통해 여러 프롬프트를 보내는 [스트리밍 입력 모드](/docs/ko/agent-sdk/streaming-vs-single-mode)에서 유용합니다. 일회성 `query()` 호출의 경우 각 호출은 이미 빈 컨텍스트로 시작하므로 `/clear`를 보내는 것은 실질적인 효과가 없습니다. 대신 새로운 `query()`를 시작하세요.
 
 <Note>
   SDK의 `/clear`는 Claude Code v2.1.117 이상이 필요합니다. 이전 버전에서는 `slash_commands`에서 생략됩니다.
@@ -234,7 +234,7 @@ Claude Agent SDK는 시스템 초기화 메시지에서 사용 가능한 슬래�
 기본 제공 슬래시 명령어를 사용하는 것 외에도 SDK를 통해 사용 가능한 자신만의 사용자 정의 명령어를 만들 수 있습니다. 사용자 정의 명령어는 서브에이전트가 구성되는 방식과 유사하게 특정 디렉토리의 마크다운 파일로 정의됩니다.
 
 <Note>
-  `.claude/commands/` 디렉토리는 레거시 형식입니다. 권장되는 형식은 `.claude/skills/<name>/SKILL.md`이며, 이는 동일한 슬래시 명령어 호출(`/name`)과 Claude의 자율적 호출을 지원합니다. 현재 형식은 [Skills](/ko/agent-sdk/skills)를 참조하세요. CLI는 두 형식을 모두 계속 지원하며, 아래 예제는 `.claude/commands/`에 대해 정확합니다.
+  `.claude/commands/` 디렉토리는 레거시 형식입니다. 권장되는 형식은 `.claude/skills/<name>/SKILL.md`이며, 이는 동일한 슬래시 명령어 호출(`/name`)과 Claude의 자율적 호출을 지원합니다. 현재 형식은 [Skills](/docs/ko/agent-sdk/skills)를 참조하세요. CLI는 두 형식을 모두 계속 지원하며, 아래 예제는 `.claude/commands/`에 대해 정확합니다.
 </Note>
 
 <h3 id="file-locations">
@@ -599,8 +599,8 @@ SDK를 통해 이러한 명령어를 사용합니다:
   참고 항목
 </h2>
 
-* [Slash Commands](/ko/skills) - 완전한 슬래시 명령어 문서
-* [SDK의 서브에이전트](/ko/agent-sdk/subagents) - 서브에이전트를 위한 유사한 파일 시스템 기반 구성
-* [TypeScript SDK 참조](/ko/agent-sdk/typescript) - 완전한 API 문서
-* [SDK 개요](/ko/agent-sdk/overview) - 일반 SDK 개념
-* [CLI 참조](/ko/cli-reference) - 명령줄 인터페이스
+* [Slash Commands](/docs/ko/skills) - 완전한 슬래시 명령어 문서
+* [SDK의 서브에이전트](/docs/ko/agent-sdk/subagents) - 서브에이전트를 위한 유사한 파일 시스템 기반 구성
+* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript) - 완전한 API 문서
+* [SDK 개요](/docs/ko/agent-sdk/overview) - 일반 SDK 개념
+* [CLI 참조](/docs/ko/cli-reference) - 명령줄 인터페이스

@@ -121,10 +121,10 @@ Agent SDK를 사용하여 코드를 읽고, 버그를 찾고, 수동 개입 없�
 
     * **Amazon Bedrock**: `CLAUDE_CODE_USE_BEDROCK=1` 환경 변수를 설정하고 AWS 자격 증명을 구성합니다
     * **Claude Platform on AWS**: `CLAUDE_CODE_USE_ANTHROPIC_AWS=1` 및 `ANTHROPIC_AWS_WORKSPACE_ID`를 설정한 다음 AWS 자격 증명을 구성합니다
-    * **Google Vertex AI**: `CLAUDE_CODE_USE_VERTEX=1` 환경 변수를 설정하고 Google Cloud 자격 증명을 구성합니다
+    * **Google Cloud의 Agent Platform**: `CLAUDE_CODE_USE_VERTEX=1` 환경 변수를 설정하고 Google Cloud 자격 증명을 구성합니다
     * **Microsoft Azure**: `CLAUDE_CODE_USE_FOUNDRY=1` 환경 변수를 설정하고 Azure 자격 증명을 구성합니다
 
-    [Bedrock](/ko/amazon-bedrock), [Claude Platform on AWS](/ko/claude-platform-on-aws), [Vertex AI](/ko/google-vertex-ai) 또는 [Azure AI Foundry](/ko/microsoft-foundry)의 설정 가이드를 참조하여 자세한 내용을 확인합니다.
+    [Amazon Bedrock](/docs/ko/amazon-bedrock), [Claude Platform on AWS](/docs/ko/claude-platform-on-aws), [Google Cloud의 Agent Platform](/docs/ko/google-vertex-ai) 또는 [Microsoft Foundry](/docs/ko/microsoft-foundry)의 설정 가이드를 참조하여 자세한 내용을 확인합니다.
 
     <Note>
       이전에 승인되지 않은 경우 Anthropic은 타사 개발자가 claude.ai 로그인 또는 Claude Agent SDK를 기반으로 구축된 에이전트를 포함한 제품에 대한 속도 제한을 제공하는 것을 허용하지 않습니다. 대신 이 문서에 설명된 API 키 인증 방법을 사용하십시오.
@@ -219,18 +219,18 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
 
 이 코드에는 세 가지 주요 부분이 있습니다:
 
-1. **`query`**: 에이전틱 루프를 생성하는 주요 진입점입니다. 비동기 반복자를 반환하므로 `async for`를 사용하여 Claude가 작동할 때 메시지를 스트리밍합니다. [Python](/ko/agent-sdk/python#query) 또는 [TypeScript](/ko/agent-sdk/typescript#query) SDK 참조에서 전체 API를 참조합니다.
+1. **`query`**: 에이전틱 루프를 생성하는 주요 진입점입니다. 비동기 반복자를 반환하므로 `async for`를 사용하여 Claude가 작동할 때 메시지를 스트리밍합니다. [Python](/docs/ko/agent-sdk/python#query) 또는 [TypeScript](/docs/ko/agent-sdk/typescript#query) SDK 참조에서 전체 API를 참조합니다.
 
 2. **`prompt`**: Claude가 수행할 작업입니다. Claude는 작업을 기반으로 사용할 도구를 파악합니다.
 
-3. **`options`**: 에이전트의 구성입니다. 이 예제는 `allowedTools`를 사용하여 `Read`, `Edit` 및 `Glob`을 사전 승인하고 `permissionMode: "acceptEdits"`를 사용하여 파일 변경을 자동 승인합니다. 다른 옵션에는 `systemPrompt`, `mcpServers` 등이 포함됩니다. [Python](/ko/agent-sdk/python#claudeagentoptions) 또는 [TypeScript](/ko/agent-sdk/typescript#options)의 모든 옵션을 참조합니다.
+3. **`options`**: 에이전트의 구성입니다. 이 예제는 `allowedTools`를 사용하여 `Read`, `Edit` 및 `Glob`을 사전 승인하고 `permissionMode: "acceptEdits"`를 사용하여 파일 변경을 자동 승인합니다. 다른 옵션에는 `systemPrompt`, `mcpServers` 등이 포함됩니다. [Python](/docs/ko/agent-sdk/python#claudeagentoptions) 또는 [TypeScript](/docs/ko/agent-sdk/typescript#options)의 모든 옵션을 참조합니다.
 
 `async for` 루프는 Claude가 생각하고, 도구를 호출하고, 결과를 관찰하고, 다음에 할 일을 결정할 때 계속 실행됩니다. 각 반복은 메시지를 생성합니다: Claude의 추론, 도구 호출, 도구 결과 또는 최종 결과입니다. SDK는 오케스트레이션(도구 실행, 컨텍스트 관리, 재시도)을 처리하므로 스트림을 사용하기만 하면 됩니다. Claude가 작업을 완료하거나 오류가 발생하면 루프가 종료됩니다.
 
 루프 내의 메시지 처리는 인간이 읽을 수 있는 출력을 필터링합니다. 필터링 없이는 시스템 초기화 및 내부 상태를 포함한 원시 메시지 객체가 표시되며, 이는 디버깅에는 유용하지만 그 외에는 번거롭습니다.
 
 <Note>
-  이 예제는 스트리밍을 사용하여 실시간으로 진행 상황을 표시합니다. 실시간 출력이 필요하지 않은 경우(예: 백그라운드 작업 또는 CI 파이프라인의 경우) 모든 메시지를 한 번에 수집할 수 있습니다. 자세한 내용은 [스트리밍 대 단일 턴 모드](/ko/agent-sdk/streaming-vs-single-mode)를 참조합니다.
+  이 예제는 스트리밍을 사용하여 실시간으로 진행 상황을 표시합니다. 실시간 출력이 필요하지 않은 경우(예: 백그라운드 작업 또는 CI 파이프라인의 경우) 모든 메시지를 한 번에 수집할 수 있습니다. 자세한 내용은 [스트리밍 대 단일 턴 모드](/docs/ko/agent-sdk/streaming-vs-single-mode)를 참조합니다.
 </Note>
 
 <h3 id="run-your-agent">
@@ -272,7 +272,7 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
 이것이 Agent SDK를 다르게 만드는 것입니다: Claude는 구현을 요청하는 대신 도구를 직접 실행합니다.
 
 <Note>
-  "API key not found"가 표시되면 에이전트를 실행할 셸에서 `ANTHROPIC_API_KEY` 환경 변수를 설정했는지 확인합니다. SDK는 `.env` 파일을 자동으로 로드하지 않습니다. 자세한 내용은 [전체 문제 해결 가이드](/ko/troubleshooting)를 참조합니다.
+  "API key not found"가 표시되면 에이전트를 실행할 셸에서 `ANTHROPIC_API_KEY` 환경 변수를 설정했는지 확인합니다. SDK는 `.env` 파일을 자동으로 로드하지 않습니다. 자세한 내용은 [전체 문제 해결 가이드](/docs/ko/troubleshooting)를 참조합니다.
 </Note>
 
 <h3 id="try-other-prompts">
@@ -367,16 +367,16 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
 
 **권한 모드**는 원하는 인간 감독의 양을 제어합니다:
 
-| 모드                      | 동작                                                                                                      | 사용 사례                    |
-| ----------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------ |
-| `acceptEdits`           | 파일 편집 및 일반적인 파일 시스템 명령을 자동 승인하고 다른 작업을 요청합니다                                                            | 신뢰할 수 있는 개발 워크플로우        |
-| `plan`                  | 읽기 전용 도구를 실행합니다. 파일 편집은 자동 승인되지 않으며 `canUseTool` 콜백에 도달합니다                                              | 실행 승인 전 작업 범위 지정         |
-| `dontAsk`               | `allowedTools`에 없는 모든 것을 거부합니다                                                                          | 잠금된 헤드리스 에이전트            |
-| `auto` (TypeScript만 해당) | 모델 분류기가 각 도구 호출을 승인하거나 거부합니다                                                                            | 안전 가드레일이 있는 자율 에이전트      |
-| `bypassPermissions`     | 명시적 [`ask` 규칙](/ko/agent-sdk/permissions#how-permissions-are-evaluated)이 일치하지 않는 한 프롬프트 없이 모든 도구를 실행합니다 | 샌드박스 CI, 완전히 신뢰할 수 있는 환경 |
-| `default`               | 승인을 처리하기 위해 `canUseTool` 콜백이 필요합니다                                                                      | 사용자 정의 승인 흐름             |
+| 모드                  | 동작                                                                                                                                                                                                        | 사용 사례                    |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `acceptEdits`       | 파일 편집 및 일반적인 파일 시스템 명령을 자동 승인하고 다른 작업을 요청합니다                                                                                                                                                              | 신뢰할 수 있는 개발 워크플로우        |
+| `plan`              | 읽기 전용 도구를 실행합니다. 파일 편집은 자동 승인되지 않으며 `canUseTool` 콜백에 도달합니다                                                                                                                                                | 실행 승인 전 작업 범위 지정         |
+| `dontAsk`           | `allowedTools`에 없는 모든 것을 거부합니다. 커넥터 도구 [조직에서 `ask`로 설정](/docs/ko/mcp#organization-controls-on-connector-tools) 및 사용자 상호작용이 필요한 도구는 나열했더라도 거부됩니다                                                                | 잠금된 헤드리스 에이전트            |
+| `auto`              | 모델 분류기가 각 도구 호출을 승인하거나 거부합니다                                                                                                                                                                              | 안전 가드레일이 있는 자율 에이전트      |
+| `bypassPermissions` | 명시적 [`ask` 규칙](/docs/ko/agent-sdk/permissions#how-permissions-are-evaluated)이 일치하는 도구, 커넥터 도구 [조직에서 `ask`로 설정](/docs/ko/mcp#organization-controls-on-connector-tools) 및 사용자 상호작용이 필요한 도구를 제외하고 프롬프트 없이 모든 도구를 실행합니다 | 샌드박스 CI, 완전히 신뢰할 수 있는 환경 |
+| `default`           | 승인을 처리하기 위해 `canUseTool` 콜백이 필요합니다                                                                                                                                                                        | 사용자 정의 승인 흐름             |
 
-위의 예제는 `acceptEdits` 모드를 사용하며, 이는 파일 작업을 자동 승인하므로 에이전트가 대화형 프롬프트 없이 실행될 수 있습니다. 사용자에게 승인을 요청하려면 `default` 모드를 사용하고 사용자 입력을 수집하는 [`canUseTool` 콜백](/ko/agent-sdk/user-input)을 제공합니다. 더 많은 제어를 위해 [권한](/ko/agent-sdk/permissions)을 참조합니다.
+위의 예제는 `acceptEdits` 모드를 사용하며, 이는 파일 작업을 자동 승인하므로 에이전트가 대화형 프롬프트 없이 실행될 수 있습니다. 사용자에게 승인을 요청하려면 `default` 모드를 사용하고 사용자 입력을 수집하는 [`canUseTool` 콜백](/docs/ko/agent-sdk/user-input)을 제공합니다. 더 많은 제어를 위해 [권한](/docs/ko/agent-sdk/permissions)을 참조합니다.
 
 <h2 id="next-steps">
   다음 단계
@@ -384,9 +384,9 @@ Python SDK를 사용하는 경우 `agent.py`를 생성하거나 TypeScript의 �
 
 이제 첫 번째 에이전트를 생성했으므로 기능을 확장하고 사용 사례에 맞게 조정하는 방법을 알아봅니다:
 
-* **[권한](/ko/agent-sdk/permissions)**: 에이전트가 수행할 수 있는 작업과 승인이 필요한 시기를 제어합니다
-* **[Hooks](/ko/agent-sdk/hooks)**: 도구 호출 전후에 사용자 정의 코드를 실행합니다
-* **[세션](/ko/agent-sdk/sessions)**: 컨텍스트를 유지하는 다중 턴 에이전트를 구축합니다
-* **[MCP 서버](/ko/agent-sdk/mcp)**: 데이터베이스, 브라우저, API 및 기타 외부 시스템에 연결합니다
-* **[호스팅](/ko/agent-sdk/hosting)**: Docker, 클라우드 및 CI/CD에 에이전트를 배포합니다
+* **[권한](/docs/ko/agent-sdk/permissions)**: 에이전트가 수행할 수 있는 작업과 승인이 필요한 시기를 제어합니다
+* **[Hooks](/docs/ko/agent-sdk/hooks)**: 도구 호출 전후에 사용자 정의 코드를 실행합니다
+* **[세션](/docs/ko/agent-sdk/sessions)**: 컨텍스트를 유지하는 다중 턴 에이전트를 구축합니다
+* **[MCP 서버](/docs/ko/agent-sdk/mcp)**: 데이터베이스, 브라우저, API 및 기타 외부 시스템에 연결합니다
+* **[호스팅](/docs/ko/agent-sdk/hosting)**: Docker, 클라우드 및 CI/CD에 에이전트를 배포합니다
 * **[예제 에이전트](https://github.com/anthropics/claude-agent-sdk-demos)**: 완전한 예제를 참조합니다: 이메일 어시스턴트, 연구 에이전트 등

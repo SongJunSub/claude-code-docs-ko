@@ -6,10 +6,6 @@
 
 > keybindings 구성 파일을 사용하여 Claude Code에서 키보드 단축키를 사용자 정의합니다.
 
-<Note>
-  사용자 정의 가능한 키보드 단축키는 Claude Code v2.1.18 이상이 필요합니다. `claude --version`으로 버전을 확인하세요.
-</Note>
-
 Claude Code는 사용자 정의 가능한 키보드 단축키를 지원합니다. `/keybindings`를 실행하여 `~/.claude/keybindings.json`에서 구성 파일을 만들거나 열 수 있습니다.
 
 <h2 id="configuration-file">
@@ -71,7 +67,8 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 | `Select`          | 일반 선택/목록 구성 요소             |
 | `Plugin`          | 플러그인 대화 상자(찾아보기, 발견, 관리)   |
 | `Scroll`          | 전체 화면 모드에서 대화 스크롤 및 텍스트 선택 |
-| `Doctor`          | `/doctor` 진단 화면            |
+
+{/* max-version: 2.1.204 */}v2.1.205 이전에는 `/doctor` 진단 화면에 대한 `Doctor` 컨텍스트와 `doctor:fix` 작업이 존재했습니다.
 
 <h2 id="available-actions">
   사용 가능한 작업
@@ -85,13 +82,13 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 
 `Global` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                     | 기본값       | 설명             |
-| :--------------------- | :-------- | :------------- |
-| `app:interrupt`        | Ctrl+C    | 현재 작업 취소       |
-| `app:exit`             | Ctrl+D    | Claude Code 종료 |
-| `app:redraw`           | (바인딩 해제됨) | 터미널 다시 그리기 강제  |
-| `app:toggleTodos`      | Ctrl+T    | 작업 목록 표시 여부 전환 |
-| `app:toggleTranscript` | Ctrl+O    | 상세 트랜스크립트 전환   |
+| 작업                     | 기본값       | 설명                                                                         |
+| :--------------------- | :-------- | :------------------------------------------------------------------------- |
+| `app:interrupt`        | Ctrl+C    | 현재 작업 취소                                                                   |
+| `app:exit`             | Ctrl+D    | Claude Code 종료                                                             |
+| `app:redraw`           | (바인딩 해제됨) | 터미널 다시 그리기 강제                                                              |
+| `app:toggleTodos`      | Ctrl+T    | Claude의 할 일 체크리스트 표시 여부 전환. 이것은 [`/tasks`](/docs/ko/commands) 백그라운드 작업 보기가 아닙니다 |
+| `app:toggleTranscript` | Ctrl+O    | 상세 트랜스크립트 전환                                                               |
 
 <h3 id="history-actions">
   기록 작업
@@ -114,9 +111,9 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 | 작업                    | 기본값                            | 설명                                                                                                             |
 | :-------------------- | :----------------------------- | :------------------------------------------------------------------------------------------------------------- |
 | `chat:cancel`         | Escape                         | 현재 입력 취소                                                                                                       |
-| `chat:clearInput`     | Ctrl+L                         | 입력을 유지하면서 전체 화면을 다시 그리기 강제합니다. [전체 화면 렌더링](/ko/fullscreen#clear-the-conversation)에서 2초 이내에 두 번 누르면 `/clear` 실행 |
-| `chat:clearScreen`    | Cmd+K                          | [전체 화면 렌더링](/ko/fullscreen#clear-the-conversation)에서 2초 이내에 두 번 누르면 `/clear` 실행                                |
-| `chat:killAgents`     | Ctrl+X Ctrl+K                  | 이 세션의 모든 실행 중인 [백그라운드 서브에이전트](/ko/sub-agents#run-subagents-in-foreground-or-background) 종료                     |
+| `chat:clearInput`     | Ctrl+L                         | 입력을 유지하면서 전체 화면을 다시 그리기 강제합니다. [전체 화면 렌더링](/docs/ko/fullscreen#clear-the-conversation)에서 2초 이내에 두 번 누르면 `/clear` 실행 |
+| `chat:clearScreen`    | Cmd+K                          | [전체 화면 렌더링](/docs/ko/fullscreen#clear-the-conversation)에서 2초 이내에 두 번 누르면 `/clear` 실행                                |
+| `chat:killAgents`     | Ctrl+X Ctrl+K                  | 이 세션의 모든 실행 중인 [백그라운드 서브에이전트](/docs/ko/sub-agents#run-subagents-in-foreground-or-background) 종료                     |
 | `chat:cycleMode`      | Shift+Tab\*                    | 권한 모드 순환                                                                                                       |
 | `chat:modelPicker`    | Meta+P                         | 모델 선택기 열기                                                                                                      |
 | `chat:fastMode`       | Meta+O                         | 빠른 모드 전환                                                                                                       |
@@ -149,17 +146,17 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 
 `Confirmation` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                          | 기본값       | 설명       |
-| :-------------------------- | :-------- | :------- |
-| `confirm:yes`               | Y, Enter  | 작업 확인    |
-| `confirm:no`                | N, Escape | 작업 거부    |
-| `confirm:previous`          | Up        | 이전 옵션    |
-| `confirm:next`              | Down      | 다음 옵션    |
-| `confirm:nextField`         | Tab       | 다음 필드    |
-| `confirm:previousField`     | (바인딩 해제됨) | 이전 필드    |
-| `confirm:toggle`            | Space     | 선택 전환    |
-| `confirm:cycleMode`         | Shift+Tab | 권한 모드 순환 |
-| `confirm:toggleExplanation` | Ctrl+E    | 권한 설명 전환 |
+| 작업                          | 기본값       | 설명                                                                                |
+| :-------------------------- | :-------- | :-------------------------------------------------------------------------------- |
+| `confirm:yes`               | Y, Enter  | 작업 확인                                                                             |
+| `confirm:no`                | N, Escape | 작업 거부                                                                             |
+| `confirm:previous`          | Up        | 이전 옵션                                                                             |
+| `confirm:next`              | Down      | 다음 옵션                                                                             |
+| `confirm:nextField`         | Tab       | 다음 필드                                                                             |
+| `confirm:previousField`     | (바인딩 해제됨) | 이전 필드                                                                             |
+| `confirm:toggle`            | Space     | 선택 전환                                                                             |
+| `confirm:cycleMode`         | Shift+Tab | 권한 모드 순환                                                                          |
+| `confirm:toggleExplanation` | Ctrl+E    | Bash 및 PowerShell 권한 프롬프트에서 모델이 생성한 [명령 설명](/docs/ko/permissions#permission-system) 전환 |
 
 <h3 id="permission-actions">
   권한 작업
@@ -285,15 +282,15 @@ keybindings 구성 파일은 `bindings` 배열이 있는 객체입니다. 각 �
 
 `DiffDialog` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                    | 기본값     | 설명                                   |
-| :-------------------- | :------ | :----------------------------------- |
-| `diff:dismiss`        | Escape  | Diff 뷰어 닫기                           |
-| `diff:previousSource` | Left    | 이전 diff 소스                           |
-| `diff:nextSource`     | Right   | 다음 diff 소스                           |
-| `diff:previousFile`   | Up, K   | 파일 목록의 이전 파일; 세부 정보 보기에서 한 줄 위로 스크롤  |
-| `diff:nextFile`       | Down, J | 파일 목록의 다음 파일; 세부 정보 보기에서 한 줄 아래로 스크롤 |
-| `diff:viewDetails`    | Enter   | Diff 세부 정보 보기                        |
-| `diff:back`           | (컨텍스트별) | Diff 뷰어에서 뒤로 이동                      |
+| 작업                    | 기본값       | 설명                                                                                                    |
+| :-------------------- | :-------- | :---------------------------------------------------------------------------------------------------- |
+| `diff:dismiss`        | Escape    | Diff 뷰어 닫기; 세부 정보 보기에서는 파일 목록으로 돌아갑니다                                                                 |
+| `diff:previousSource` | Left      | 이전 diff 소스                                                                                            |
+| `diff:nextSource`     | Right     | 다음 diff 소스                                                                                            |
+| `diff:previousFile`   | Up, K     | 파일 목록의 이전 파일; 세부 정보 보기에서 한 줄 위로 스크롤                                                                   |
+| `diff:nextFile`       | Down, J   | 파일 목록의 다음 파일; 세부 정보 보기에서 한 줄 아래로 스크롤                                                                  |
+| `diff:viewDetails`    | Enter     | Diff 세부 정보 보기                                                                                         |
+| `diff:back`           | (바인딩 해제됨) | Diff 뷰어에서 뒤로 이동. Escape는 `diff:dismiss`를 통해 뒤로 작업을 수행합니다. 세부 정보 보기에서 이전 기본값인 Left는 v2.1.203에서 제거되었습니다 |
 
 Diff 세부 정보 보기는 또한 페이저 스타일 키를 표준 [스크롤 작업](#scroll-actions)에 바인딩합니다. 이러한 바인딩은 `DiffDialog` 컨텍스트의 일부이며 세부 정보 보기에만 적용됩니다. [스크롤 작업](#scroll-actions) 아래에 나열된 `Scroll` 컨텍스트 기본값은 변경되지 않습니다.
 
@@ -356,31 +353,21 @@ Diff 세부 정보 보기는 또한 페이저 스타일 키를 표준 [스크롤
 | `select:accept`   | Enter, Space | 선택한 설정을 변경하거나 해당 서브메뉴 열기 |
 | `confirm:no`      | Escape       | 패널 닫기. 변경 사항은 이미 저장됨     |
 
-<h3 id="doctor-actions">
-  Doctor 작업
-</h3>
-
-`Doctor` 컨텍스트에서 사용 가능한 작업:
-
-| 작업           | 기본값 | 설명                                                  |
-| :----------- | :-- | :-------------------------------------------------- |
-| `doctor:fix` | F   | 진단 보고서를 Claude에 보내 보고된 문제를 해결합니다. 문제가 발견되었을 때만 활성화됨 |
-
 <h3 id="voice-actions">
   음성 작업
 </h3>
 
-[음성 받아쓰기](/ko/voice-dictation)가 활성화되었을 때 `Chat` 컨텍스트에서 사용 가능한 작업:
+[음성 받아쓰기](/docs/ko/voice-dictation)가 활성화되었을 때 `Chat` 컨텍스트에서 사용 가능한 작업:
 
-| 작업                 | 기본값   | 설명                   |
-| :----------------- | :---- | :------------------- |
-| `voice:pushToTalk` | Space | 프롬프트를 받아쓰기 위해 누르고 있기 |
+| 작업                 | 기본값   | 설명         |
+| :----------------- | :---- | :--------- |
+| `voice:pushToTalk` | Space | 프롬프트를 받아쓰기 |
 
 <h3 id="scroll-actions">
   스크롤 작업
 </h3>
 
-[전체 화면 렌더링](/ko/fullscreen)이 활성화되었을 때 `Scroll` 컨텍스트에서 사용 가능한 작업:
+[전체 화면 렌더링](/docs/ko/fullscreen)이 활성화되었을 때 `Scroll` 컨텍스트에서 사용 가능한 작업:
 
 | 작업                          | 기본값                  | 설명                                                                       |
 | :-------------------------- | :------------------- | :----------------------------------------------------------------------- |
@@ -477,11 +464,19 @@ ctrl+k ctrl+s   Ctrl+K를 누르고 놓은 다음 Ctrl+S를 누릅니다
 }
 ```
 
-이는 코드 바인딩에도 작동합니다. 접두사를 공유하는 모든 코드를 바인딩 해제하면 해당 접두사를 단일 키 바인딩으로 사용할 수 있습니다:
+이는 코드 바인딩에도 작동합니다. 접두사를 공유하는 모든 코드를 바인딩 해제하면 해당 접두사를 단일 키 바인딩으로 사용할 수 있습니다. 모든 활성 컨텍스트의 코드는 해당 접두사를 예약된 상태로 유지하므로 해당 코드를 정의하는 컨텍스트에서 각 코드를 바인딩 해제해야 합니다.
+
+기본 `Ctrl+X` 패밀리는 두 개의 컨텍스트에 걸쳐 있습니다: `Chat`의 `ctrl+x ctrl+k`와 `ctrl+x ctrl+e`, 그리고 `Task`의 `ctrl+x ctrl+b`. `ctrl+x` 자체를 단일 키 바인딩으로 되찾으려면 모두 바인딩 해제합니다:
 
 ```json theme={null}
 {
   "bindings": [
+    {
+      "context": "Task",
+      "bindings": {
+        "ctrl+x ctrl+b": null
+      }
+    },
     {
       "context": "Chat",
       "bindings": {
@@ -531,6 +526,7 @@ vim 모드가 `/config` → 편집기 모드를 통해 활성화되면 키바인
 * **키바인딩**은 구성 요소 수준에서 작업을 처리합니다(작업 전환, 제출 등).
 * vim 모드의 Escape 키는 INSERT를 NORMAL 모드로 전환합니다. `chat:cancel`을 트리거하지 않습니다.
 * 대부분의 Ctrl+key 단축키는 vim 모드를 통과하여 키바인딩 시스템으로 이동합니다.
+* Vim 키는 키바인딩 파일을 통해 다시 매핑할 수 없습니다. `jj`를 Escape로 매핑하는 것과 같은 두 키 INSERT 모드 시퀀스를 매핑하려면 [`vimInsertModeRemaps`](/docs/ko/interactive-mode#remap-insert-mode-key-sequences) 설정을 사용합니다.
 * vim NORMAL 모드에서 `?`는 도움말 메뉴를 표시합니다(vim 동작).
 * vim NORMAL 모드에서 `/`는 히스토리 검색을 열며, 표준 모드의 Ctrl+R과 동일합니다.
 
@@ -546,4 +542,4 @@ Claude Code는 키바인딩을 검증하고 다음에 대한 경고를 표시합
 * 터미널 멀티플렉서 충돌
 * 동일한 컨텍스트의 중복 바인딩
 
-`/doctor`를 실행하여 키바인딩 경고를 확인합니다.
+Claude Code는 파일이 로드될 때 경고를 보고하며 각각을 디버그 로그에 기록합니다. [`--debug`](/docs/ko/cli-reference#cli-flags)를 사용하여 Claude Code를 시작하면 세부 정보를 확인할 수 있습니다.

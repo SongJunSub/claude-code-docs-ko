@@ -7,7 +7,7 @@
 > 서브에이전트를 정의하고 호출하여 컨텍스트를 격리하고, 작업을 병렬로 실행하며, Claude Agent SDK 애플리케이션에서 특화된 지침을 적용합니다.
 
 서브에이전트는 메인 에이전트가 집중된 부작업을 처리하기 위해 생성할 수 있는 별도의 에이전트 인스턴스입니다.
-서브에이전트를 사용하여 집중된 부작업의 컨텍스트를 격리하고, 여러 분석을 병렬로 실행하며, 메인 에이전트의 프롬프트를 비대하게 만들지 않으면서 특화된 지침을 적용합니다.
+서브에이전트를 사용하여 컨텍스트를 격리하고, 여러 분석을 병렬로 실행하며, 메인 에이전트의 프롬프트를 비대하게 만들지 않으면서 특화된 지침을 적용합니다.
 
 이 가이드에서는 `agents` 매개변수를 사용하여 SDK에서 서브에이전트를 정의하고 사용하는 방법을 설명합니다.
 
@@ -17,8 +17,8 @@
 
 서브에이전트를 세 가지 방법으로 생성할 수 있습니다.
 
-* **프로그래밍 방식**: `query()` 옵션에서 `agents` 매개변수 사용 ([TypeScript](/ko/agent-sdk/typescript#agentdefinition), [Python](/ko/agent-sdk/python#agentdefinition))
-* **파일 시스템 기반**: `.claude/agents/` 디렉토리에 마크다운 파일로 에이전트 정의 ([서브에이전트를 파일로 정의](/ko/sub-agents) 참조)
+* **프로그래밍 방식**: `query()` 옵션에서 `agents` 매개변수 사용. [TypeScript](/docs/ko/agent-sdk/typescript#agentdefinition) 및 [Python](/docs/ko/agent-sdk/python#agentdefinition) 참조 확인
+* **파일 시스템 기반**: `.claude/agents/` 디렉토리에 마크다운 파일로 에이전트 정의. [서브에이전트를 파일로 정의](/docs/ko/sub-agents) 참조
 * **기본 제공 범용**: Claude는 언제든지 Agent 도구를 통해 기본 제공 `general-purpose` 서브에이전트를 호출할 수 있습니다.
 
 이 가이드는 SDK 애플리케이션에 권장되는 프로그래밍 방식에 중점을 둡니다.
@@ -61,7 +61,7 @@
 
 **예시:** `doc-reviewer` 서브에이전트는 Read 및 Grep 도구에만 액세스할 수 있으므로, 문서 파일을 분석할 수 있지만 실수로 수정할 수 없습니다.
 
-<h2 id="creating-subagents">
+<h2 id="create-subagents">
   서브에이전트 생성
 </h2>
 
@@ -69,9 +69,11 @@
   프로그래밍 방식 정의 (권장)
 </h3>
 
-`agents` 매개변수를 사용하여 코드에서 직접 서브에이전트를 정의합니다. 이 예시는 읽기 전용 액세스가 있는 코드 리뷰어와 명령을 실행할 수 있는 테스트 러너라는 두 개의 서브에이전트를 생성합니다. Claude가 `Agent` 도구를 통해 서브에이전트를 호출하므로 `allowedTools`에 `Agent`를 포함하여 권한 프롬프트 없이 서브에이전트 호출을 자동으로 승인합니다.
+`agents` 매개변수를 사용하여 코드에서 직접 서브에이전트를 정의합니다. Claude는 `Agent` 도구를 통해 서브에이전트를 호출하므로 `allowedTools`에 `Agent`를 포함하여 권한 프롬프트 없이 서브에이전트 호출을 자동으로 승인합니다.
 
-이 페이지의 대부분의 예시는 최종 결과만 출력합니다. Claude가 서브에이전트에 위임했는지 직접 답변했는지 확인하려면 [서브에이전트 호출 감지](#detecting-subagent-invocation)를 참조하세요.
+이 페이지의 대부분의 예시는 최종 결과만 출력합니다. Claude가 서브에이전트에 위임했는지 직접 답변했는지 확인하려면 [서브에이전트 호출 감지](#detect-subagent-invocation)를 참조하세요.
+
+이 예시는 읽기 전용 액세스가 있는 코드 리뷰어와 명령을 실행할 수 있는 테스트 러너라는 두 개의 서브에이전트를 생성합니다.
 
 <CodeGroup>
   ```python Python theme={null}
@@ -195,17 +197,22 @@
 | `effort`          | `'low' \| 'medium' \| 'high' \| 'xhigh' \| 'max' \| number` | 아니오 | 이 에이전트의 추론 노력 수준                                                                                                                               |
 | `permissionMode`  | `PermissionMode`                                            | 아니오 | 이 에이전트 내의 도구 실행을 위한 권한 모드                                                                                                                      |
 
-Python SDK에서 `disallowedTools` 및 `mcpServers`와 같은 여러 단어로 된 필드 이름은 Python의 snake\_case 규칙을 따르지 않고 와이어 형식과 일치하도록 camelCase를 유지합니다. 자세한 내용은 [`AgentDefinition` 참조](/ko/agent-sdk/python#agentdefinition)를 참조하세요.
+Python SDK에서 `disallowedTools` 및 `mcpServers`와 같은 여러 단어로 된 필드 이름은 Python의 snake\_case 규칙을 따르지 않고 와이어 형식과 일치하도록 camelCase를 유지합니다. 자세한 내용은 [`AgentDefinition` 참조](/docs/ko/agent-sdk/python#agentdefinition)를 참조하세요.
+
+Claude Code v2.1.198에서 두 가지 서브에이전트 동작이 변경되었습니다:
+
+* 서브에이전트는 기본적으로 백그라운드에서 실행됩니다. [`run_in_background`](/docs/ko/agent-sdk/typescript) 입력을 생략하는 Agent 도구 호출은 백그라운드 서브에이전트를 시작하고, Claude는 계속하기 전에 결과가 필요할 때 `run_in_background: false`를 설정합니다. v2.1.198 이전에는 `run_in_background`를 생략하면 서브에이전트가 동기적으로 실행되었습니다. 특정 에이전트에 대해 Claude가 요청하는 것과 관계없이 백그라운드 실행을 강제하려면 `background` 필드를 `true`로 설정합니다.
+* 서브에이전트는 메인 세션의 확장 사고 구성을 상속합니다. 이전 버전에서는 메인 세션의 설정과 관계없이 서브에이전트 내에서 확장 사고가 비활성화됩니다.
 
 <Note>
-  {/* min-version: 2.1.172 */}Claude Code v2.1.172부터 서브에이전트는 자신의 서브에이전트를 생성할 수 있습니다. 메인 에이전트 아래 5단계 깊이의 서브에이전트는 추가 서브에이전트를 생성할 수 없습니다. 포그라운드 또는 백그라운드에서 실행되는지 여부와 관계없이 이 제한이 적용됩니다. 서브에이전트가 다른 서브에이전트를 생성하지 못하도록 하려면 `tools` 배열에서 `Agent`를 생략하거나 `disallowedTools`에 추가합니다. 전체 깊이 규칙은 [중첩된 서브에이전트](/ko/sub-agents#spawn-nested-subagents)를 참조하세요.
+  {/* min-version: 2.1.172 */}Claude Code v2.1.172부터 서브에이전트는 자신의 서브에이전트를 생성할 수 있습니다. 메인 에이전트 아래 5단계 깊이의 서브에이전트는 포그라운드 또는 백그라운드에서 실행되는지 여부와 관계없이 추가 서브에이전트를 생성할 수 없습니다. 서브에이전트가 다른 서브에이전트를 생성하지 못하도록 하려면 `tools` 배열에서 `Agent`를 생략하거나 `disallowedTools`에 추가합니다. 전체 깊이 규칙은 [중첩된 서브에이전트](/docs/ko/sub-agents#spawn-nested-subagents)를 참조하세요.
 </Note>
 
 <h3 id="filesystem-based-definition-alternative">
   파일 시스템 기반 정의 (대안)
 </h3>
 
-`.claude/agents/` 디렉토리에 마크다운 파일로 서브에이전트를 정의할 수도 있습니다. 이 방식에 대한 자세한 내용은 [Claude Code 서브에이전트 문서](/ko/sub-agents)를 참조하세요. 프로그래밍 방식으로 정의된 에이전트는 같은 이름의 파일 시스템 기반 에이전트보다 우선합니다.
+`.claude/agents/` 디렉토리에 마크다운 파일로 서브에이전트를 정의할 수도 있습니다. 이 방식에 대한 자세한 내용은 [Claude Code 서브에이전트 문서](/docs/ko/sub-agents)를 참조하세요. 프로그래밍 방식으로 정의된 에이전트는 같은 이름의 파일 시스템 기반 에이전트보다 우선합니다.
 
 <Note>
   사용자 정의 서브에이전트를 정의하지 않더라도, Claude는 기본 제공 `general-purpose` 서브에이전트를 생성할 수 있습니다. 이는 특화된 에이전트를 만들지 않고도 연구 또는 탐색 작업을 위임하는 데 유용합니다. `allowedTools`에 `Agent`를 포함하여 권한 프롬프트 없이 이러한 호출을 자동으로 승인합니다.
@@ -217,17 +224,23 @@ Python SDK에서 `disallowedTools` 및 `mcpServers`와 같은 여러 단어로 �
 
 서브에이전트의 컨텍스트 윈도우는 새로 시작되지만(부모 대화 없음) 비어 있지 않습니다. 부모에서 서브에이전트로의 유일한 채널은 Agent 도구의 프롬프트 문자열이므로, 서브에이전트가 필요한 파일 경로, 오류 메시지 또는 결정을 해당 프롬프트에 직접 포함하세요.
 
+{/* min-version: 2.1.206 */}[`SendMessage`](/docs/ko/tools-reference) 도구를 가진 서브에이전트는 세션에서 실행 중인 다른 명명된 에이전트 목록으로 시작하므로, 메시지를 보낼 수 있는 이름을 알 수 있습니다. Claude Code는 서브에이전트의 첫 번째 턴에 자동으로 목록을 추가합니다. [포크](/docs/ko/sub-agents#fork-the-current-conversation)는 부모 대화를 상속하므로 목록을 받지 않습니다. 이 목록은 Claude Code v2.1.206 이상이 필요합니다.
+
 | 서브에이전트가 받는 것                                                                                                                    | 서브에이전트가 받지 않는 것                                    |
 | :------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------- |
 | 자신의 시스템 프롬프트(`AgentDefinition.prompt`)와 Agent 도구의 프롬프트                                                                          | 부모의 대화 기록 또는 도구 결과                                 |
-| 프로젝트 CLAUDE.md ([`settingSources`](/ko/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources)를 통해 로드됨) | 미리 로드된 스킬 콘텐츠(`AgentDefinition.skills`에 나열된 경우 제외) |
+| 프로젝트 CLAUDE.md ([`settingSources`](/docs/ko/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources)를 통해 로드됨) | 미리 로드된 스킬 콘텐츠(`AgentDefinition.skills`에 나열된 경우 제외) |
 | 도구 정의 (부모에서 상속되거나 `tools`의 부분 집합)                                                                                               | 부모의 시스템 프롬프트                                       |
 
 <Note>
-  부모는 서브에이전트의 최종 메시지를 Agent 도구 결과로 그대로 받지만, 자신의 응답에서 요약할 수 있습니다. 서브에이전트 출력을 사용자 대면 응답에서 그대로 유지하려면, **메인** `query()` 호출에 전달하는 프롬프트 또는 `systemPrompt` 옵션에 그렇게 하도록 지시하는 지침을 포함하세요.
+  부모는 서브에이전트의 최종 메시지를 Agent 도구 결과로 그대로 받지만, 자신의 응답에서 요약할 수 있습니다. 서브에이전트 출력을 사용자 대면 응답에서 그대로 유지하려면, 메인 `query()` 호출에 전달하는 프롬프트 또는 `systemPrompt` 옵션에 그렇게 하도록 지시하는 지침을 포함하세요.
 </Note>
 
-<h2 id="invoking-subagents">
+속도 제한과 같이 서브에이전트를 조기에 종료하는 API 오류는 절대 결과로 전달되지 않습니다. 속도 제한, 과부하 또는 서버 오류가 이미 텍스트 출력을 생성한 포그라운드 서브에이전트를 중단하는 경우, Agent 도구는 서브에이전트가 완료되지 않았다는 메모와 함께 해당 부분 출력을 반환합니다. 아무것도 생성하지 않았거나 텍스트 없이 도구 호출만 있었던 서브에이전트는 오류 메시지 `Agent terminated early due to an API error`와 함께 실패하며, 그 뒤에 오류 세부 정보가 따릅니다. [서브에이전트의 API 오류](/docs/ko/sub-agents#api-errors-in-subagents)에서 포그라운드 및 백그라운드 동작을 참조하세요.
+
+이 부분 출력 처리는 Claude Code v2.1.199 이상이 필요합니다. v2.1.199에서는 속도 제한, 과부하 또는 서버 오류로 인해 도구 호출만 있는 형태가 중단 메모만 포함된 빈 부분 결과로 남겨졌습니다.
+
+<h2 id="invoke-subagents">
   서브에이전트 호출
 </h2>
 
@@ -329,11 +342,11 @@ Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬�
   ```
 </CodeGroup>
 
-<h2 id="detecting-subagent-invocation">
+<h2 id="detect-subagent-invocation">
   서브에이전트 호출 감지
 </h2>
 
-서브에이전트는 Agent 도구를 통해 호출됩니다. 서브에이전트가 호출될 때를 감지하려면, `name`이 `"Agent"`인 `tool_use` 블록을 확인하세요. 서브에이전트의 컨텍스트 내에서의 메시지에는 `parent_tool_use_id` 필드가 포함됩니다.
+Claude는 Agent 도구를 통해 서브에이전트를 호출합니다. 서브에이전트가 호출될 때를 감지하려면, `name`이 `"Agent"`인 `tool_use` 블록을 확인하세요. 서브에이전트의 컨텍스트 내에서의 메시지에는 `parent_tool_use_id` 필드가 포함됩니다.
 
 <Note>
   도구 이름은 Claude Code v2.1.63에서 `"Task"`에서 `"Agent"`로 변경되었습니다. 현재 SDK 릴리스는 `tool_use` 블록에서 `"Agent"`를 내보내지만 여전히 `system:init` 도구 목록과 `result.permission_denials[].tool_name`에서 `"Task"`를 사용합니다. `block.name`에서 두 값을 모두 확인하면 SDK 버전 간 호환성이 보장됩니다.
@@ -422,13 +435,13 @@ Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬�
   ```
 </CodeGroup>
 
-<h2 id="resuming-subagents">
+<h2 id="resume-subagents">
   서브에이전트 재개
 </h2>
 
-서브에이전트를 재개하여 중단한 지점에서 계속할 수 있습니다. 재개된 서브에이전트는 이전의 모든 도구 호출, 결과 및 추론을 포함한 전체 대화 기록을 유지합니다. 서브에이전트는 새로 시작하는 대신 정확히 중단한 지점에서 계속됩니다.
+서브에이전트를 재개하여 중단한 지점에서 계속할 수 있습니다. 재개된 서브에이전트는 이전의 모든 도구 호출, 결과 및 추론을 포함한 전체 대화 기록을 유지합니다.
 
-서브에이전트가 완료되면, Agent 도구 결과에는 `agentId: <id>`를 포함하는 텍스트 블록이 포함됩니다. 기본 제공 [`Explore` 및 `Plan` 에이전트](/ko/sub-agents#built-in-subagents)는 일회성이며 `agentId`를 반환하지 않으므로, 재개가 필요한 경우 사용자 정의 에이전트 또는 `general-purpose`를 사용하세요. 서브에이전트를 프로그래밍 방식으로 재개하려면:
+서브에이전트가 완료되면, Agent 도구 결과에는 `agentId: <id>`를 포함하는 텍스트 블록이 포함됩니다. 기본 제공 [`Explore` 및 `Plan` 에이전트](/docs/ko/sub-agents#built-in-subagents)는 일회성이며 `agentId`를 반환하지 않으므로, 재개가 필요한 경우 사용자 정의 에이전트 또는 `general-purpose`를 사용하세요. 서브에이전트를 프로그래밍 방식으로 재개하려면:
 
 1. **세션 ID 캡처**: 첫 번째 쿼리 중에 메시지에서 `session_id` 추출
 2. **에이전트 ID 추출**: Agent 도구 결과 텍스트에서 `agentId` 파싱
@@ -570,7 +583,7 @@ Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬�
 * **세션 지속성**: 서브에이전트 트랜스크립트는 해당 세션 내에서 유지됩니다. 같은 세션을 재개하여 Claude Code를 다시 시작한 후 서브에이전트를 재개할 수 있습니다.
 * **자동 정리**: 트랜스크립트는 `cleanupPeriodDays` 설정(기본값: 30일)에 따라 정리됩니다.
 
-<h2 id="tool-restrictions-1">
+<h2 id="tool-restrictions-2">
   도구 제한
 </h2>
 
@@ -648,9 +661,9 @@ Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬�
   동적 워크플로우로 확장
 </h2>
 
-서브에이전트는 턴당 몇 가지 위임된 작업에 적합합니다. 수십 개에서 수백 개의 에이전트를 조정하는 실행의 경우, `Workflow` 도구를 사용하세요. 이는 오케스트레이션을 대화 컨텍스트 외부에서 런타임이 실행하는 스크립트로 이동합니다. 워크플로우가 턴별 서브에이전트 위임과 어떻게 다른지는 [동적 워크플로우](/ko/workflows)를 참조하세요.
+서브에이전트는 턴당 몇 가지 위임된 작업에 적합합니다. 수십 개에서 수백 개의 에이전트를 조정하는 실행의 경우, `Workflow` 도구를 사용하세요. 이는 오케스트레이션을 대화 컨텍스트 외부에서 런타임이 실행하는 스크립트로 이동합니다. 워크플로우가 턴별 서브에이전트 위임과 어떻게 다른지는 [동적 워크플로우](/docs/ko/workflows)를 참조하세요.
 
-`Workflow` 도구는 TypeScript Agent SDK v0.3.149 이상에서 사용 가능합니다. `allowedTools`에 `Workflow`를 포함하여 워크플로우 실행을 자동 승인합니다. 도구 입력 및 출력 스키마는 [TypeScript 참조](/ko/agent-sdk/typescript#workflow)에 나열되어 있습니다.
+`Workflow` 도구는 TypeScript Agent SDK v0.3.149 이상에서 사용 가능합니다. `allowedTools`에 `Workflow`를 포함하여 워크플로우 실행을 자동 승인합니다. 도구 입력 및 출력 스키마는 [TypeScript 참조](/docs/ko/agent-sdk/typescript#workflow)에 나열되어 있습니다.
 
 <h2 id="troubleshooting">
   문제 해결
@@ -662,26 +675,33 @@ Claude가 특정 서브에이전트를 사용하도록 보장하려면, 프롬�
 
 Claude가 서브에이전트에 위임하는 대신 작업을 직접 완료하는 경우:
 
-1. **Agent 호출이 승인되었는지 확인**: `allowedTools`에 `Agent`를 포함하여 서브에이전트 호출을 자동 승인합니다. 이를 포함하지 않으면 Agent 호출이 `canUseTool` 콜백으로 전달되거나 `dontAsk` 모드에서는 거부됩니다.
-2. **명시적 프롬프팅 사용**: 프롬프트에서 서브에이전트를 이름으로 언급하세요(예: "code-reviewer 에이전트를 사용하여...").
-3. **명확한 설명 작성**: Claude가 작업을 적절히 일치시킬 수 있도록 서브에이전트를 사용해야 할 때를 정확히 설명하세요.
+* **Agent 호출이 승인되었는지 확인**: `allowedTools`에 `Agent`를 포함하여 서브에이전트 호출을 자동 승인합니다. 이를 포함하지 않으면 Agent 호출이 `canUseTool` 콜백으로 전달되거나 `dontAsk` 모드에서는 거부됩니다.
+* **명시적 프롬프팅 사용**: 프롬프트에서 서브에이전트를 이름으로 언급하세요(예: "code-reviewer 에이전트를 사용하여...").
+* **명확한 설명 작성**: Claude가 작업을 적절히 일치시킬 수 있도록 서브에이전트를 사용해야 할 때를 정확히 설명하세요.
 
 <h3 id="filesystem-based-agents-not-loading">
   파일 시스템 기반 에이전트가 로드되지 않음
 </h3>
 
-`.claude/agents/`에 정의된 에이전트는 시작 시에만 로드됩니다. Claude Code가 실행 중인 동안 새 에이전트 파일을 생성하면, 세션을 다시 시작하여 로드하세요.
+Claude Code는 `~/.claude/agents/` 및 `.claude/agents/`를 감시하며 새로운 또는 편집된 에이전트 파일을 몇 초 내에 선택하며, 재시작이 필요하지 않습니다. 정의가 나타나지 않으면 다음 원인들을 확인하세요:
 
-<h3 id="windows-long-prompt-failures">
-  Windows: 긴 프롬프트 실패
+* **새로운 `agents` 디렉토리**: 감시자는 세션이 시작될 때 존재했던 디렉토리만 포함하므로, 새 디렉토리의 첫 번째 파일은 세션 재시작이 필요합니다. 이것이 가장 일반적인 원인입니다.
+* **잘못된 frontmatter 또는 중복된 `name`**: 파일의 YAML을 확인하고, 기존 에이전트가 이미 해당 `name`을 사용하고 있는지 확인하세요.
+* **`--disable-slash-commands`**: 이 플래그로 시작된 세션은 이러한 디렉토리를 감시하지 않으며 새 파일을 로드하려면 항상 재시작이 필요합니다.
+* **동일한 이름의 프로그래밍 방식 에이전트**: `query()`에 전달된 `agents`는 동일한 이름의 파일 시스템 에이전트를 재정의합니다.
+
+파일 형식에 대해서는 [서브에이전트 파일 작성 방법](/docs/ko/sub-agents#write-subagent-files)을 참조하세요.
+
+<h3 id="long-prompt-failures-on-windows">
+  Windows에서 긴 프롬프트 실패
 </h3>
 
-Windows에서는 매우 긴 프롬프트가 있는 서브에이전트가 명령줄 길이 제한(8191자)으로 인해 실패할 수 있습니다. 프롬프트를 간결하게 유지하거나 복잡한 지침에는 파일 시스템 기반 에이전트를 사용하세요.
+Windows에서는 매우 긴 프롬프트가 있는 서브에이전트가 명령줄 길이 제한인 8191자로 인해 실패할 수 있습니다. 프롬프트를 간결하게 유지하거나 복잡한 지침에는 파일 시스템 기반 에이전트를 사용하세요.
 
 <h2 id="related-documentation">
   관련 문서
 </h2>
 
-* [Claude Code 서브에이전트](/ko/sub-agents): 파일 시스템 기반 정의를 포함한 포괄적인 서브에이전트 문서
-* [동적 워크플로우](/ko/workflows): 한 대화에 너무 큰 작업을 위해 스크립트에서 많은 서브에이전트를 오케스트레이션합니다
-* [SDK 개요](/ko/agent-sdk/overview): Claude Agent SDK 시작하기
+* [Claude Code 서브에이전트](/docs/ko/sub-agents): 파일 시스템 기반 정의를 포함한 포괄적인 서브에이전트 문서
+* [동적 워크플로우](/docs/ko/workflows): 한 대화에 너무 큰 작업을 위해 스크립트에서 많은 서브에이전트를 오케스트레이션합니다
+* [SDK 개요](/docs/ko/agent-sdk/overview): Claude Agent SDK 시작하기

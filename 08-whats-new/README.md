@@ -11,7 +11,7 @@ Claude Code의 변경 이력. 주별 다이제스트는 대부분 한국어, 전
 
 | 페이지 | 한 줄 |
 |---|---|
-| [changelog](changelog.md) ⓔ | 버전별 신규 기능·개선·버그 수정 전체 릴리스 노트 |
+| [changelog](changelog.md) ⓔ | 버전별 신규 기능, 개선, 버그 수정 전체 릴리스 노트 |
 | [index](index.md) | What's new — 주별 다이제스트 인덱스 |
 | [2026-w13](2026-w13.md) | 3월 23–27, 2026 — Auto mode, computer use built in, PR auto-fix, transcript search, PowerShell 도구 |
 | [2026-w14](2026-w14.md) | 3월 30 – 4월 3, 2026 — CLI에서 computer use, 인터랙티브 in-product 레슨, flicker-free 렌더링, MCP per-tool 결과 크기, plugin executable PATH |
@@ -24,5 +24,5 @@ Claude Code의 변경 이력. 주별 다이제스트는 대부분 한국어, 전
 | [2026-w21](2026-w21.md) | 5월 18–22, 2026 — Pro 플랜·Sonnet 4.6에서 auto mode, `/usage`로 skill·subagent·MCP 플랜 한도 소비 확인, `/code-review` 신규 |
 | [2026-w22](2026-w22.md) | 5월 25–29, 2026 — Claude Opus 4.8 실행, 동적 워크플로우로 대규모 작업 조율, security-guidance 플러그인, Opus 4.8 저가 fast mode |
 
-> ⓔ = 영어 원문
+> ⓔ = 영어 원문 (공식 문서에 한국어판이 없어 영어 fallback 으로 받은 페이지)
 > 📌 가장 최신 정보는 [code.claude.com/docs/en/whats-new](https://code.claude.com/docs/en/whats-new) 에서 확인. 본 레포의 What's New는 fetch 시점 스냅샷.

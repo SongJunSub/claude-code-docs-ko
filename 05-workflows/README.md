@@ -51,10 +51,8 @@ Claude Code로 실제 일을 어떻게 굴릴지에 대한 카테고리. 일상 
 | [ultraplan](ultraplan.md) | CLI에서 plan 시작 → 웹에서 작성 → 원격/터미널 실행 |
 | [ultrareview](ultrareview.md) | `/ultrareview`로 클라우드에서 멀티 에이전트 딥 코드 리뷰 |
 | [workflows](workflows.md) | 동적 워크플로우로 스크립트에서 다수 서브에이전트 조율 — 감사·대규모 마이그레이션·교차 검증 리서치 |
-| [advisor](advisor.md) ⓔ | 메인 모델에 더 강력한 advisor 모델을 페어링 — 핵심 순간에 Claude가 자문 |
+| [advisor](advisor.md) | 메인 모델에 더 강력한 advisor 모델을 페어링, 핵심 순간에 Claude가 자문 |
 | [headless](headless.md) | Agent SDK로 CLI/Python/TypeScript에서 프로그래밍 방식 실행 |
 | [sessions](sessions.md) | 세션 이름 지정·재개·분기·전환 (`--continue`, `--resume`, `--from-pr`, `/resume`) |
 | [checkpointing](checkpointing.md) | 편집·대화 추적, 되돌리기, 요약하여 세션 상태 관리 |
 | [fast-mode](fast-mode.md) | Opus 4.8/4.7/4.6 빠른 응답 토글 (Opus 4.8에서 더 저렴) |
-
-> ⓔ = 영어 원문

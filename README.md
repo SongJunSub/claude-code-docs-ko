@@ -71,14 +71,16 @@
 ## 한국어 / 영어 비율
 
 총 146 페이지 중:
-- 🇰🇷 **한국어 144 페이지** (99%)
-- 🇬🇧 **영어 2 페이지** (1%, 한국어 번역 미제공이라 영문 원문 그대로 보존)
+- 🇰🇷 **한국어 145 페이지** (99.3%)
+- 🇬🇧 **영어 1 페이지** (0.7%, 공식 문서에 한국어판이 없어 영어로 받은 페이지)
 
-2026-06-11 sync 기준, 이전에 영문이던 Agent SDK 전체·What's New w13~w15·`voice-dictation`·`context-window`·`github-enterprise-server` 등에 한국어 번역이 들어와 교체되었습니다. 현재 영문으로 남은 페이지는 2개뿐:
-- [`05-workflows/advisor.md`](05-workflows/advisor.md) — 신규 페이지, 아직 한국어 미제공
-- [`08-whats-new/changelog.md`](08-whats-new/changelog.md) — 전체 릴리스 노트 (영문 원문 유지)
+2026-09-01 sync 기준, 영문으로 남은 페이지는 1개입니다:
+- [`08-whats-new/changelog.md`](08-whats-new/changelog.md): 버전별 릴리스 노트. 공식 문서 인덱스(`llms.txt`)가 이 페이지를 영어 경로 하나로만 등록하고 있어 한국어판 자체가 없습니다
 
-각 카테고리 README에서 ⓔ 마크로 표시.
+`advisor`는 이전까지 영문이었으나 한국어 번역이 들어와 교체되었습니다.
+
+영어 페이지는 고정된 것이 아닙니다. 공식 문서에 한국어판이 생기면 다음 sync에서 자동으로 한국어로 바뀝니다.
+각 카테고리 README에서 ⓔ 마크로 표시합니다.
 
 ## 활용 팁
 
@@ -99,11 +101,13 @@ git clone https://github.com/SongJunSub/claude-code-docs-ko.git
 ```
 
 ### 갱신 방법
-공식 문서가 업데이트되면 동일한 fetch 스크립트로 다시 받으면 됨:
+공식 문서가 업데이트되면 동일한 fetch 스크립트로 다시 받으면 됩니다:
 ```bash
 bash .scripts/fetch.sh && bash .scripts/organize.sh
 ```
-스크립트는 `.scripts/` 폴더에 있고, 각 페이지의 한국어 페이지가 추가되면 자동으로 한국어가 우선 적용됨.
+스크립트는 `.scripts/` 폴더에 있고, 각 페이지에 한국어판이 추가되면 자동으로 한국어가 우선 적용됩니다.
+받은 응답이 마크다운이 아니면(문서 사이트가 일부 경로에 HTML 페이지를 주는 경우가 있습니다)
+저장하지 않고 영어 경로로 넘어가므로, HTML 이 페이지 파일에 섞이지 않습니다.
 
 ## 디렉토리 구조
 
@@ -112,7 +116,7 @@ claude-code-docs-ko/
 ├── README.md                    # 이 파일
 ├── .scripts/
 │   ├── manifest.tsv             # 146개 페이지 → 카테고리 매핑
-│   ├── fetch.sh                 # 한국어 우선, 영어 fallback 다운로드
+│   ├── fetch.sh                 # 한국어 우선, 영어 fallback, HTML 응답 거부
 │   └── organize.sh              # 매니페스트 기반 카테고리 정리
 ├── 01-getting-started/          # 10 pages
 ├── 02-environments/             # 18 pages
@@ -121,7 +125,7 @@ claude-code-docs-ko/
 ├── 05-workflows/                # 27 pages
 ├── 06-config-reference/         # 13 pages
 ├── 07-enterprise/               # 20 pages
-└── 08-whats-new/                # 12 pages (changelog만 영문)
+└── 08-whats-new/                # 12 pages
 ```
 
 ## 라이선스

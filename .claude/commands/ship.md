@@ -1,13 +1,13 @@
 ---
 name: ship
-description: 변경 사항을 논리 단위로 커밋하고 브랜치를 푸시한 뒤 PR을 만들고 머지까지 끝냅니다. sync 결과나 문서 수정을 master에 반영할 때 사용합니다.
+description: 변경 사항을 논리 단위로 커밋하고 브랜치를 푸시한 뒤 PR을 만들고 머지까지 끝냅니다. sync 결과나 문서 수정을 main에 반영할 때 사용합니다.
 allowed-tools: Bash Read
 ---
 
 # /ship: 커밋부터 머지까지
 
-변경 사항을 master 에 반영하는 전 과정을 한 번에 수행한다.
-`master` 직접 push 는 여전히 금지이고, 반드시 브랜치와 PR 을 거친다.
+변경 사항을 main 에 반영하는 전 과정을 한 번에 수행한다.
+`main` 직접 push 는 여전히 금지이고, 반드시 브랜치와 PR 을 거친다.
 
 ## 절차
 
@@ -20,7 +20,7 @@ allowed-tools: Bash Read
    ```bash
    git rev-parse --abbrev-ref HEAD
    ```
-   현재가 `master` 면 새 브랜치를 만든다. 이름 규칙은 다음과 같다.
+   현재가 `main` 이면 새 브랜치를 만든다. 이름 규칙은 다음과 같다.
    - 문서 동기화: `chore/sync-docs-<YYYY-MM-DD>`
    - 버그 수정: `fix/<slug>`
    - 기능 추가: `feat/<slug>`
@@ -36,7 +36,7 @@ allowed-tools: Bash Read
 
 5. **PR 생성**
    ```bash
-   gh pr create --base master --title "<type>: <요약>" --body "<본문>"
+   gh pr create --base main --title "<type>: <요약>" --body "<본문>"
    ```
    본문에는 변경 요약, 검증한 내용, 남은 이슈를 적는다.
 
@@ -54,9 +54,9 @@ allowed-tools: Bash Read
    ```
    기존 이력이 merge commit 방식이므로 squash 로 바꾸지 않는다.
 
-8. **로컬 master 갱신**
+8. **로컬 main 갱신**
    ```bash
-   git checkout master && git pull --ff-only origin master
+   git checkout main && git pull --ff-only origin main
    ```
 
 9. **결과 보고**. 커밋 수, PR 번호, 머지 커밋 해시, 변경 파일 수를 함께 보고한다.

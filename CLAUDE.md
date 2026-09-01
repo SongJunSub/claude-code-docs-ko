@@ -110,7 +110,7 @@ claude-code-docs-ko/
 직전 정상 내용이 남는다. **이 가드를 제거하면 HTML 덤프가 한국어 페이지로 집계된다.**
 
 ## 절대 금지
-- ❌ `master` 브랜치에 직접 push (브랜치와 PR을 통해서만 머지)
+- ❌ `main` 브랜치에 직접 push (브랜치와 PR을 통해서만 머지)
 - ❌ `manifest.tsv`를 임의로 정렬하거나 재구조화 (카테고리 순서 보존)
 - ❌ 카테고리 폴더 이름 변경 (`organize.sh`와 매니페스트가 의존)
 - ❌ `README.md`의 페이지 카운트와 실제 `.md` 카운트 불일치 상태로 커밋
@@ -119,7 +119,7 @@ claude-code-docs-ko/
 
 ## 커밋부터 머지까지 자동 진행
 
-검증을 통과한 변경은 사용자에게 되묻지 않고 커밋, 푸시, PR 생성, 머지, 로컬 master 갱신까지
+검증을 통과한 변경은 사용자에게 되묻지 않고 커밋, 푸시, PR 생성, 머지, 로컬 main 갱신까지
 [`/ship`](.claude/commands/ship.md)으로 끝까지 진행한다. 절차와 멈춰야 하는 조건은 그 문서에 있다.
 
 핵심만 옮기면 다음과 같다.
@@ -128,10 +128,10 @@ claude-code-docs-ko/
 2. 브랜치 생성 (`chore/sync-docs-<날짜>`, `fix/<slug>`, `feat/<slug>`)
 3. 논리 단위로 나눠 커밋 (Conventional Commits, 본문은 한국어)
 4. `git push -u origin <branch>`
-5. `gh pr create --base master`
+5. `gh pr create --base main`
 6. `gh pr view <N> --json mergeStateStatus`가 `CLEAN`인지 확인. CI가 있으면 통과까지 대기
 7. `gh pr merge <N> --merge` (기존 이력이 merge commit 방식이므로 squash로 바꾸지 않는다)
-8. `git checkout master && git pull --ff-only origin master`
+8. `git checkout main && git pull --ff-only origin main`
 9. 커밋 수, PR 번호, 머지 커밋 해시를 함께 보고
 
 다음 경우에는 자동으로 넘기지 않고 사용자에게 묻는다.
@@ -174,7 +174,7 @@ claude-code-docs-ko/
 | `/translation-status` | 한국어/영어 비율 + 새 한국어 페이지 검출 |
 | `/add-page <slug> <category>` | 새 페이지 매니페스트 추가 + 다운로드 + README 갱신 |
 | `/refresh-readme <category>` | 카테고리 README 표 재생성 |
-| `/ship` | 커밋, 푸시, PR 생성, 머지, 로컬 master 갱신까지 일괄 수행 |
+| `/ship` | 커밋, 푸시, PR 생성, 머지, 로컬 main 갱신까지 일괄 수행 |
 
 | Bash 명령 | 용도 |
 |---|---|
@@ -183,7 +183,7 @@ claude-code-docs-ko/
 | `bash .scripts/check-repo.sh` | 커밋 전 일관성 검증 (빈 파일, HTML 혼입, 카운트, ⓔ, 글쓰기 규칙) |
 | `find . -name "*.md" -not -path "./.git/*" \| wc -l` | 전체 .md 카운트 (정상값: 162 = 146 페이지 + 8 카테고리 README + 루트 README + CLAUDE.md + `.claude/` 6개) |
 | `find . -name "*.md" -not -path "./.git/*" -not -path "./.claude/*" -not -name README.md -not -name CLAUDE.md \| wc -l` | 페이지만 카운트 (정상값: 146, 매니페스트 줄 수와 같아야 함) |
-| `gh pr list --base master` | 월간 sync routine이 만든 PR 목록 |
+| `gh pr list --base main` | 월간 sync routine이 만든 PR 목록 |
 
 ## 검증 체크리스트 (커밋 전)
 - [ ] `.md` 카운트가 카테고리 README들의 페이지 수 합과 일치

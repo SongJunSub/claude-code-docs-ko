@@ -55,7 +55,7 @@ for cat_readme in [0-9]*-*/README.md; do
     fi
 done
 
-# 5, 6. ⓔ 마커 일치와 글쓰기 규칙
+# 5, 6. ⓔ 마커 일치와 글쓰기 규칙(em dash, en dash, 가운뎃점)
 #       문자 단위 판정은 로케일 영향을 받지 않도록 파이썬에서 처리한다.
 if ! page_check="$(python3 "$ROOT/.scripts/check-pages.py" 2>&1)"; then
     fail "페이지 검사 실패:"

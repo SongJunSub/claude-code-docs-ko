@@ -6,6 +6,9 @@ macOS 의 LC_ALL=UTF-8 은 유효한 로케일명이 아니라 bash 에서 C 로
 떨어지고, 그러면 [가-힣] 이 바이트 범위로 해석돼 영문 파일을 한국어로
 오판한다. 그래서 이 두 검사는 파이썬에서 코드포인트로 직접 처리한다.
 
+글쓰기 규칙은 레포가 직접 작성한 문서에만 적용한다.
+업스트림에서 받은 페이지는 원문이므로 대상이 아니다.
+
 위반이 있으면 사유를 출력하고 exit 1.
 """
 
@@ -17,9 +20,15 @@ import sys
 # 영어 페이지 판정 기준: 한글 글자 수가 이 값 미만이면 영어로 본다
 HANGUL_THRESHOLD = 200
 
-MARKER = "ⓔ"  # ⓔ
-EM_DASH = "—"
-MIDDLE_DOT = "·"
+MARKER = "ⓔ"
+
+# 금지 문장부호. 한국어 실무 문서에서 쓰지 않아 기계가 쓴 티가 난다.
+# 검사 대상 문자는 이 파일 자신이 걸리지 않도록 이스케이프로 적는다.
+BANNED_PUNCTUATION = [
+    ("\u2014", "em dash"),
+    ("\u2013", "en dash"),
+    ("\u00b7", "가운뎃점"),
+]
 
 # 레포가 직접 작성한 문서. 업스트림에서 받은 페이지는 원문이므로 대상이 아니다.
 AUTHORED_GLOBS = ["0*/README.md", ".claude/commands/*.md", ".claude/agents/*.md"]
@@ -72,16 +81,18 @@ def check_markers():
 
 
 def check_writing():
-    """레포 자체 작성물에 em dash 와 가운뎃점이 없는지 확인한다."""
+    """레포 자체 작성물에 금지 문장부호가 없는지 확인한다."""
     hits = []
     for name in authored_files():
         text = read(name)
-        em, mid = text.count(EM_DASH), text.count(MIDDLE_DOT)
-        if em or mid:
-            hits.append(f"      {name}: em dash {em}, 가운뎃점 {mid}")
+        found = [(label, text.count(ch)) for ch, label in BANNED_PUNCTUATION if ch in text]
+        if found:
+            detail = ", ".join(f"{label} {count}" for label, count in found)
+            hits.append(f"      {name}: {detail}")
     if not hits:
         return []
-    return ["금지된 문장부호 사용 (em dash, 가운뎃점)"] + hits
+    labels = ", ".join(label for _, label in BANNED_PUNCTUATION)
+    return [f"금지된 문장부호 사용 ({labels})"] + hits
 
 
 def main():

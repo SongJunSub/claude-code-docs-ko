@@ -142,6 +142,33 @@ claude-code-docs-ko/
 - sync가 아닌데 변경 파일이 100개를 넘음
 - PR에 사용자 아닌 리뷰어의 코멘트가 달림
 
+## 커밋 규칙
+
+### author 이메일
+커밋 author 이메일은 반드시 `song911130@gmail.com` (name: `JunSub_Dev`) 을 쓴다.
+이 이메일만 GitHub 계정에 연결돼 있어서, 다른 값으로 커밋하면 기여도(contribution graph)에 잡히지 않는다.
+
+월간 sync routine 이 한동안 `claude-code-routine@anthropic.com` 으로 커밋해서 PR #7, #8, #9 의
+sync 커밋이 전부 기여도에서 누락됐다. 클라우드 환경처럼 git config 가 비어 있는 곳에서는
+커밋 전에 반드시 아래를 실행한다.
+
+```bash
+git config user.email song911130@gmail.com
+git config user.name JunSub_Dev
+```
+
+### 커밋 분리
+변경을 한 덩어리로 몰지 않는다. 되돌리기와 리뷰가 쉬워지고 기여도에도 그대로 반영된다.
+
+| 작업 | 분리 기준 |
+|---|---|
+| 문서 sync | 카테고리 폴더 단위. `chore: sync 05-workflows 문서 16개 (YYYY-MM-DD)` |
+| ⓔ 마커 갱신 | 별도 커밋. `docs: ⓔ 마커를 실제 영어 페이지와 일치시킴` |
+| 루트 README 비율 갱신 | 별도 커밋. `docs: 한국어 / 영어 비율 갱신 (YYYY-MM-DD 기준)` |
+| 스크립트 수정 | 고친 문제 단위로 하나씩 |
+
+커밋을 나누려고 없는 변경을 만들어내지 않는다. 실제 변경이 있는 단위만 커밋한다.
+
 ## 글쓰기 규칙
 
 레포가 직접 작성하는 모든 문서에 적용한다. 업스트림에서 받은 페이지는 원문이므로 손대지 않는다.

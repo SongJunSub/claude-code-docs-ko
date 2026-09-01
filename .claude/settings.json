@@ -40,13 +40,13 @@
       "Bash(python3 .scripts/check-pages.py)",
       "Bash(gh pr merge *)",
       "Bash(gh pr checks*)",
-      "Bash(git checkout master)",
-      "Bash(git switch master)",
+      "Bash(git checkout main)",
+      "Bash(git switch main)",
       "Bash(git pull --ff-only*)"
     ],
     "deny": [
-      "Bash(git push origin master*)",
-      "Bash(git push origin master)",
+      "Bash(git push origin main*)",
+      "Bash(git push origin main)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(rm -rf *)",

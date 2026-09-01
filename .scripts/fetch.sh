@@ -46,7 +46,7 @@ try_download() {
 }
 
 fetch_one() {
-    local slug="$1" cat="${2:-}"
+    local slug="$1"
     # organize.sh가 ROOT/<slug>.md 위치를 기대하므로 슬러그 경로 그대로 루트에 받는다.
     # (agent-sdk/*, whats-new/* 처럼 슬래시 포함 슬러그는 임시 서브디렉토리에 받고,
     #  이후 organize.sh가 카테고리 폴더로 옮긴 뒤 빈 디렉토리를 정리한다.)
@@ -70,8 +70,12 @@ fetch_one() {
 export -f fetch_one try_download is_markdown
 export ROOT LOG
 
-awk -F'\t' 'NF==2 {print $1 "\t" $2}' "$MANIFEST" \
-  | xargs -n 1 -P 12 -I {} bash -c 'IFS=$'"'"'\t'"'"' read -r s c <<<"{}"; fetch_one "$s" "$c"'
+# 매니페스트는 <slug>\t<category> 형식이지만 fetch 에는 슬러그만 필요하다.
+# 탭을 남긴 채 넘기면 xargs 가 탭에서 한 번 더 쪼개 카테고리 이름까지 슬러그로
+# 받으려 하므로(매 실행 146 회 헛요청 + 허위 FAIL 로 실패 카운터가 무의미해짐)
+# 첫 필드만 넘긴다. 카테고리 배치는 organize.sh 가 매니페스트를 다시 읽어 처리한다.
+awk -F'\t' 'NF>=2 && $1 != "" {print $1}' "$MANIFEST" \
+  | xargs -P 12 -I {} bash -c 'fetch_one "$1"' _ {}
 
 echo "--- summary ---" | tee -a "$LOG"
 grep -c '^OK ko' "$LOG"  | awk '{print "Korean OK: " $1}'  | tee -a "$LOG"

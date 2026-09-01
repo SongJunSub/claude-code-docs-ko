@@ -6,7 +6,7 @@ arguments: slug category
 allowed-tools: Bash Read Edit
 ---
 
-# /add-page — 새 페이지 추가
+# /add-page: 새 페이지 추가
 
 - slug: **$1**
 - category: **$2**
@@ -57,11 +57,11 @@ allowed-tools: Bash Read Edit
 8. **결과 출력**:
    ```
    ✅ 페이지 추가 완료
-     slug:        <slug>
-     category:    <category>
-     언어:        한국어 / 영어 fallback
-     크기:        N bytes
-     매니페스트:  117 → 118줄
+     slug: <slug>
+     category: <category>
+     언어: 한국어 / 영어 fallback
+     크기: N bytes
+     매니페스트: 117 → 118줄
      README 갱신: <category>/README.md, README.md
    ```
 
@@ -70,6 +70,6 @@ allowed-tools: Bash Read Edit
    - PR 만들기 전 `/sync`로 전체 일관성 재검증 권장
 
 ## 절대 금지
-- 카테고리를 임의 변경하지 말 것 — 사용자가 지정한 그대로
-- 매니페스트의 다른 줄 정렬 변경 금지 — 새 줄 삽입만
+- 카테고리를 임의 변경하지 말 것. 사용자가 지정한 그대로
+- 매니페스트의 다른 줄 정렬 변경 금지. 새 줄 삽입만
 - 자동 commit/push 금지 (사용자 확인 단계)

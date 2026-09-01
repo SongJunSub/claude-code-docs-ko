@@ -1,6 +1,6 @@
 # 06. 설정 / 레퍼런스
 
-특정 옵션·환경 변수·플래그 값을 찾을 때 보는 레퍼런스 카테고리. 처음부터 읽기보단 검색용.
+특정 옵션, 환경 변수, 플래그 값을 찾을 때 보는 레퍼런스 카테고리. 처음부터 읽기보단 검색용.
 
 ## 이럴 때 본다
 - "이 환경 변수가 뭐였더라" / "이 플래그 정확한 형식이"
@@ -17,16 +17,16 @@
 | [cli-reference](cli-reference.md) | 명령어 + 플래그 전체 레퍼런스 |
 | [env-vars](env-vars.md) | Claude Code 동작 제어 환경 변수 레퍼런스 |
 | [settings](settings.md) | global / project 설정 + 환경 변수 매핑 |
-| [permissions](permissions.md) | 세부 권한 규칙·모드·관리 정책 |
+| [permissions](permissions.md) | 세부 권한 규칙, 모드, 관리 정책 |
 | [permission-modes](permission-modes.md) | 편집/명령 실행 시 확인 여부 모드 (Shift+Tab으로 순환) |
 | [model-config](model-config.md) | 모델 별칭(`opusplan` 등) 설정 |
 | [tools-reference](tools-reference.md) | Claude Code 도구 + 권한 요구사항 전체 레퍼런스 |
 | [errors](errors.md) | 런타임 에러 메시지 + 의미 + 해결 방법 |
-| [auto-mode-config](auto-mode-config.md) | auto mode classifier 설정 (신뢰 repo/bucket/domain·환경 컨텍스트·차단/허용) |
-| [sandboxing](sandboxing.md) | 샌드박스 bash 도구의 파일시스템·네트워크 격리 |
-| [sandbox-environments](sandbox-environments.md) | 샌드박스 옵션 비교 (내장 bash·sandbox runtime·dev container·Docker·VM) — 위협 모델별 격리 선택 |
+| [auto-mode-config](auto-mode-config.md) | auto mode classifier 설정 (신뢰 repo/bucket/domain, 환경 컨텍스트, 차단/허용) |
+| [sandboxing](sandboxing.md) | 샌드박스 bash 도구의 파일시스템, 네트워크 격리 |
+| [sandbox-environments](sandbox-environments.md) | 샌드박스 옵션 비교 (내장 bash, sandbox runtime, dev container, Docker, VM): 위협 모델별 격리 선택 |
 | [server-managed-settings](server-managed-settings.md) | 디바이스 관리 인프라 없이 서버 전달 설정으로 조직 중앙 구성 |
-| [glossary](glossary.md) | agentic loop·compaction·CLAUDE.md·hooks·subagents·MCP 등 핵심 용어 정의 |
+| [glossary](glossary.md) | agentic loop, compaction, CLAUDE.md, hooks, subagents, MCP 등 핵심 용어 정의 |
 
 ## 자주 찾는 항목
 - **권한을 한 번 허용하고 싶다** → `permissions` + `permission-modes`

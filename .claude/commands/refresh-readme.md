@@ -6,7 +6,7 @@ arguments: category
 allowed-tools: Bash Read Edit
 ---
 
-# /refresh-readme — 카테고리 README 페이지 표 재생성
+# /refresh-readme: 카테고리 README 페이지 표 재생성
 
 대상 카테고리: **$1**
 
@@ -54,7 +54,7 @@ allowed-tools: Bash Read Edit
    ✅ $1/README.md 갱신 완료
      이전 페이지 수: M
      현재 페이지 수: N (added: A / removed: R)
-     한국어:        K
+     한국어: K
      영어 fallback: E (이전 EE → 변화 ΔE)
    ```
 

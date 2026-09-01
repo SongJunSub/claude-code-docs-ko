@@ -77,8 +77,19 @@ export ROOT LOG
 awk -F'\t' 'NF>=2 && $1 != "" {print $1}' "$MANIFEST" \
   | xargs -P 12 -I {} bash -c 'fetch_one "$1"' _ {}
 
-echo "--- summary ---" | tee -a "$LOG"
-grep -c '^OK ko' "$LOG"  | awk '{print "Korean OK: " $1}'  | tee -a "$LOG"
-grep -c '^OK en' "$LOG"  | awk '{print "English fallback: " $1}'  | tee -a "$LOG"
-grep -c '^FAIL'  "$LOG"  | awk '{print "Failed: " $1}'  | tee -a "$LOG"
-echo "Total expected: $(wc -l < "$MANIFEST")" | tee -a "$LOG"
+# grep -c 는 매치가 0 건이면 exit 1 이다. set -o pipefail 과 함께 쓰면
+# 영어 fallback 이 0 건인 정상 상황에서 요약 출력이 그 줄에서 그대로 끊긴다.
+# (그래서 기존 로그에는 summary 블록이 아예 남지 않았다)
+# 값을 먼저 담아 두고 한 번에 출력한다.
+ok_ko=$(grep -c '^OK ko' "$LOG" || true)
+ok_en=$(grep -c '^OK en' "$LOG" || true)
+failed=$(grep -c '^FAIL' "$LOG" || true)
+total=$(awk -F'\t' 'NF>=2 && $1 != "" {n++} END {print n+0}' "$MANIFEST")
+
+{
+    echo "--- summary ---"
+    echo "Korean OK: $ok_ko"
+    echo "English fallback: $ok_en"
+    echo "Failed: $failed"
+    echo "Total expected: $total"
+} | tee -a "$LOG"

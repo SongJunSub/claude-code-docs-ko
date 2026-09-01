@@ -241,11 +241,11 @@ MCP 서버는 또한 메시지를 세션에 직접 푸시할 수 있으므로 Cl
   * OAuth 2.0 인증이 필요한 원격 서버로 인증하려면 `/mcp`를 사용하세요
 </Tip>
 
-서버당 `timeout`은 도구 호출당 하드 월클록 제한이며, 서버의 진행 알림은 이를 연장하지 않습니다. 1000 미만의 값은 무시되고 `MCP_TOOL_TIMEOUT`으로 넘어가거나, 해당 변수가 설정되지 않은 경우 약 28시간의 기본값으로 넘어갑니다. HTTP, SSE 또는 [claude.ai 커넥터](/docs/ko/mcp#use-mcp-servers-from-claude-ai) 서버의 경우 서버의 첫 응답 바이트까지 각 요청을 포함하는 요청당 두 번째 타이머도 있습니다. 해당 타이머는 60초이며, 서버당 `timeout` 또는 `MCP_TOOL_TIMEOUT`을 설정하지 않으면 60초 이상으로 설정하면 요청당 타이머가 해당 값으로 올라가고, 더 낮은 값은 단축하지 않으며, 설정되지 않은 `MCP_TOOL_TIMEOUT`의 28시간 기본값은 절대 공급하지 않습니다. Stdio 및 WebSocket 서버에는 요청당 타이머가 없습니다. {/* min-version: 2.1.162 */}v2.1.162 이전에는 1000 미만의 값이 1초로 내림되었습니다.
+서버당 `timeout`은 도구 호출당 하드 월클록 제한이며, 서버의 진행 알림은 이를 연장하지 않습니다. 1000 미만의 값은 무시되고 `MCP_TOOL_TIMEOUT`으로 넘어가거나, 해당 변수가 설정되지 않은 경우 약 28시간의 기본값으로 넘어갑니다. HTTP, SSE 또는 [claude.ai 커넥터](/docs/ko/mcp#use-mcp-servers-from-claude-ai) 서버의 경우 서버의 첫 응답 바이트까지 각 요청을 포함하는 요청당 두 번째 타이머도 있습니다. 해당 타이머는 60초이며, 서버당 `timeout` 또는 `MCP_TOOL_TIMEOUT`을 설정하지 않으면 60초 이상으로 설정하면 요청당 타이머가 해당 값으로 올라가고, 더 낮은 값은 단축하지 않으며, 설정되지 않은 `MCP_TOOL_TIMEOUT`의 28시간 기본값은 절대 공급하지 않습니다. Stdio 및 WebSocket 서버에는 요청당 타이머가 없습니다. v2.1.162 이전에는 1000 미만의 값이 1초로 내림되었습니다.
 
 서버당 최소 1000의 `timeout`은 또한 아래에 설명된 유휴 시간 초과의 하한으로 작동합니다: Claude Code는 서버당 `timeout`보다 더 빨리 유휴 상태로 인해 해당 서버의 도구 호출을 중단하지 않습니다. Claude Code v2.1.203 이상이 필요합니다.
 
-MCP 서버에 대한 도구 호출이 유휴 윈도우 동안 응답 및 진행 알림을 보내지 않으면 월클록 제한을 기다리는 대신 오류로 중단됩니다. 유휴 시간 초과에는 Claude Code v2.1.187 이상이 필요합니다. {/* min-version: 2.1.203 */}IDE 서버 및 SDK 인프로세스 서버를 제외한 모든 서버 유형에 적용됩니다. 유휴 윈도우는 HTTP, SSE, WebSocket 및 [claude.ai 커넥터](#use-mcp-servers-from-claude-ai) 서버의 경우 기본값 5분, stdio 서버의 경우 30분입니다. v2.1.203 이전에는 stdio 서버가 유휴 시간 초과에서 제외되었습니다.
+MCP 서버에 대한 도구 호출이 유휴 윈도우 동안 응답 및 진행 알림을 보내지 않으면 월클록 제한을 기다리는 대신 오류로 중단됩니다. 유휴 시간 초과에는 Claude Code v2.1.187 이상이 필요합니다. IDE 서버 및 SDK 인프로세스 서버를 제외한 모든 서버 유형에 적용됩니다. 유휴 윈도우는 HTTP, SSE, WebSocket 및 [claude.ai 커넥터](#use-mcp-servers-from-claude-ai) 서버의 경우 기본값 5분, stdio 서버의 경우 30분입니다. v2.1.203 이전에는 stdio 서버가 유휴 시간 초과에서 제외되었습니다.
 
 [`CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT`](/docs/ko/env-vars) 환경 변수를 밀리초 단위로 설정하여 유휴 윈도우를 변경하거나, `0`으로 설정하여 확인을 비활성화하세요.
 
@@ -299,7 +299,7 @@ MCP 서버에 대한 도구 호출이 유휴 윈도우 동안 응답 및 진행 
 * **자동 라이프사이클**: 세션 시작 시 활성화된 플러그인의 서버가 자동으로 연결됩니다. 세션 중에 플러그인을 활성화하거나 비활성화하면 `/reload-plugins`를 실행하여 MCP 서버를 연결하거나 연결 해제합니다
 * **경로 자리 표시자**: `${CLAUDE_PLUGIN_ROOT}`는 플러그인의 설치 디렉터리로 확인되고, `${CLAUDE_PLUGIN_DATA}`는 [지속적인 상태](/docs/ko/plugins-reference#persistent-data-directory) 디렉터리로 확인되며, `${CLAUDE_PROJECT_DIR}`은 안정적인 프로젝트 루트로 확인됩니다. 대체는 다음에 적용됩니다:
   * `stdio` 서버: `command`, `args`, `env`
-  * `http`, `sse` 및 `ws` 서버: `url`, `headers` 및 `headersHelper`. {/* min-version: 2.1.195 */}v2.1.195 이전에는 `headersHelper`가 자리 표시자를 리터럴 문자열로 전달했습니다
+  * `http`, `sse` 및 `ws` 서버: `url`, `headers` 및 `headersHelper`. v2.1.195 이전에는 `headersHelper`가 자리 표시자를 리터럴 문자열로 전달했습니다
 * **사용자 환경 액세스**: 수동으로 구성된 서버와 동일한 환경 변수에 액세스
 * **여러 전송 유형**: stdio, SSE, HTTP 및 WebSocket 전송 지원 (전송 지원은 서버에 따라 다를 수 있음)
 

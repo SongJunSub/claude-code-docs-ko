@@ -292,13 +292,13 @@ Claude Code는 두 가지 샌드박스 모드를 제공합니다:
 
 네트워크 액세스는 샌드박스 외부에서 실행되는 프록시 서버를 통해 제어됩니다:
 
-* **도메인 제한**: 사전 허용된 도메인이 없습니다. 명령이 새 도메인에 처음 액세스해야 할 때 Claude Code가 승인을 요청합니다. {/* min-version: 2.1.191 */}v2.1.191부터 예를 선택하면 현재 세션의 나머지 기간 동안 호스트가 허용되므로 나중에 동일한 호스트에 연결해도 다시 프롬프트가 표시되지 않습니다. [`allowedDomains`](/docs/ko/settings#sandbox-settings)로 도메인을 사전 허용하여 프롬프트를 피합니다.
+* **도메인 제한**: 사전 허용된 도메인이 없습니다. 명령이 새 도메인에 처음 액세스해야 할 때 Claude Code가 승인을 요청합니다. v2.1.191부터 예를 선택하면 현재 세션의 나머지 기간 동안 호스트가 허용되므로 나중에 동일한 호스트에 연결해도 다시 프롬프트가 표시되지 않습니다. [`allowedDomains`](/docs/ko/settings#sandbox-settings)로 도메인을 사전 허용하여 프롬프트를 피합니다.
 * **관리 잠금**: [`allowManagedDomainsOnly`](/docs/ko/settings#sandbox-settings)가 관리 설정에서 설정되면 허용되지 않은 도메인이 프롬프트 대신 자동으로 차단되며 관리 설정의 `allowedDomains`만 존중됩니다.
 * **사용자 정의 프록시 지원**: 고급 사용자는 나가는 트래픽에 대한 사용자 정의 규칙을 구현할 수 있습니다
 * **포괄적 범위**: 제한은 명령으로 생성된 모든 스크립트, 프로그램 및 하위 프로세스에 적용됩니다
 
 <Note>
-  기본 제공 프록시는 요청된 호스트 이름을 기반으로 허용 목록을 적용하며, 기본적으로 TLS 트래픽을 종료하거나 검사하지 않습니다. {/* min-version: 2.1.199 */}Claude Code v2.1.199 이상에서 사용 가능한 실험적 [`network.tlsTerminate`](/docs/ko/settings#sandbox-settings) 설정은 기본 제공 프록시가 TLS 자체를 종료하도록 하며, 이는 [`mask` 자격 증명 항목](#protect-credentials)이 필요로 합니다. 기본값의 의미는 [보안 제한 사항](#security-limitations)을 참조하고, 위협 모델이 TLS 검사를 요구하면 [사용자 정의 프록시 구성](#custom-proxy-configuration)을 참조하세요.
+  기본 제공 프록시는 요청된 호스트 이름을 기반으로 허용 목록을 적용하며, 기본적으로 TLS 트래픽을 종료하거나 검사하지 않습니다. Claude Code v2.1.199 이상에서 사용 가능한 실험적 [`network.tlsTerminate`](/docs/ko/settings#sandbox-settings) 설정은 기본 제공 프록시가 TLS 자체를 종료하도록 하며, 이는 [`mask` 자격 증명 항목](#protect-credentials)이 필요로 합니다. 기본값의 의미는 [보안 제한 사항](#security-limitations)을 참조하고, 위협 모델이 TLS 검사를 요구하면 [사용자 정의 프록시 구성](#custom-proxy-configuration)을 참조하세요.
 </Note>
 
 <h3 id="os-level-enforcement">

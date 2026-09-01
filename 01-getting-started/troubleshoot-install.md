@@ -786,7 +786,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 `@anthropic-ai/claude-code` npm 패키지는 `@anthropic-ai/claude-code-darwin-arm64`와 같은 플랫폼별 선택적 종속성을 통해 네이티브 바이너리를 가져옵니다. 설치 후 `claude`를 실행하면 `Could not find native binary package "@anthropic-ai/claude-code-<platform>"`이 인쇄되면 다음 원인을 확인하세요:
 
 * **선택적 종속성이 비활성화됨.** npm 설치 명령에서 `--omit=optional`을 제거하고 pnpm에서 `--no-optional`을 제거하고 yarn에서 `--ignore-optional`을 제거하고 `.npmrc`가 `optional=false`를 설정하지 않는지 확인하세요. 그런 다음 다시 설치하세요. 네이티브 바이너리는 선택적 종속성으로만 제공되므로 건너뛰면 JavaScript 폴백이 없습니다.
-* **지원되지 않는 플랫폼.** 미리 빌드된 바이너리는 `darwin-arm64`, `darwin-x64`, `linux-x64`, `linux-arm64`, `linux-x64-musl`, `linux-arm64-musl`, `win32-x64` 및 `win32-arm64`에 대해 게시됩니다. Claude Code는 다른 플랫폼에 대한 바이너리를 제공하지 않습니다. [시스템 요구사항](/docs/ko/setup#system-requirements)을 참조하세요. {/* min-version: 2.1.205 */}FreeBSD에서 설치 프로그램은 플랫폼을 지원되지 않음으로 보고합니다. v2.1.205 이전에는 FreeBSD를 Linux로 취급하고 실행할 수 없는 바이너리를 다운로드했습니다.
+* **지원되지 않는 플랫폼.** 미리 빌드된 바이너리는 `darwin-arm64`, `darwin-x64`, `linux-x64`, `linux-arm64`, `linux-x64-musl`, `linux-arm64-musl`, `win32-x64` 및 `win32-arm64`에 대해 게시됩니다. Claude Code는 다른 플랫폼에 대한 바이너리를 제공하지 않습니다. [시스템 요구사항](/docs/ko/setup#system-requirements)을 참조하세요. FreeBSD에서 설치 프로그램은 플랫폼을 지원되지 않음으로 보고합니다. v2.1.205 이전에는 FreeBSD를 Linux로 취급하고 실행할 수 없는 바이너리를 다운로드했습니다.
 * **회사 npm 미러가 플랫폼 패키지를 누락함.** 레지스트리가 메타 패키지 외에도 8개의 `@anthropic-ai/claude-code-*` 플랫폼 패키지를 모두 미러링하는지 확인하세요.
 
 `--ignore-scripts`로 설치하면 이 오류가 트리거되지 않습니다. 바이너리를 제자리에 연결하는 postinstall 단계를 건너뛰므로 Claude Code는 각 시작 시 플랫폼 바이너리를 찾아 생성하는 래퍼로 폴백합니다. 이는 작동하지만 더 느리게 시작됩니다. 직접 실행을 위해 스크립트를 활성화하여 다시 설치하세요.

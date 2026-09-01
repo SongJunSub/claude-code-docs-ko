@@ -116,7 +116,7 @@ MCP 구성을 편집해도 캐시가 자동으로 변경되지 않습니다. 새
 
 예외는 [MCP 서버](/docs/ko/plugins-reference#mcp-servers)를 제공하는 플러그인입니다. 하나를 활성화 또는 비활성화하면 [MCP 서버 연결 또는 연결 해제](#connecting-or-disconnecting-an-mcp-server)와 동일한 규칙을 따릅니다: 서버의 도구가 연기될 때 캐시가 유지되고, 프리픽스에 로드될 때 다음 요청이 전체 대화를 다시 읽습니다.
 
-플러그인 변경은 [`/reload-plugins`](/docs/ko/discover-plugins#apply-plugin-changes-without-restarting)를 실행하거나 새 세션을 시작할 때 적용됩니다. 비용(추가된 공지 사항이든 전체 다시 읽기든)은 다시 로드 후 첫 턴에 표시되며, `/plugin install`, `/plugin enable` 또는 `/plugin disable`을 실행할 때가 아닙니다. {/* min-version: 2.1.163 */}v2.1.163부터 다시 로드가 전체 다시 읽기를 트리거할 때 `/reload-plugins`는 경고를 표시하고 다시 로드를 적용하지 않습니다. `--force`를 전달하여 어차피 적용합니다.
+플러그인 변경은 [`/reload-plugins`](/docs/ko/discover-plugins#apply-plugin-changes-without-restarting)를 실행하거나 새 세션을 시작할 때 적용됩니다. 비용(추가된 공지 사항이든 전체 다시 읽기든)은 다시 로드 후 첫 턴에 표시되며, `/plugin install`, `/plugin enable` 또는 `/plugin disable`을 실행할 때가 아닙니다. v2.1.163부터 다시 로드가 전체 다시 읽기를 트리거할 때 `/reload-plugins`는 경고를 표시하고 다시 로드를 적용하지 않습니다. `--force`를 전달하여 어차피 적용합니다.
 
 세션 초반에 활성화한 플러그인을 비활성화하면 이전 요청 형태가 복원됩니다. 해당 프리픽스가 여전히 [캐시 수명](#cache-lifetime) 내에 있으면 다음 요청이 다시 구축하는 대신 이전 캐시 항목을 읽습니다.
 

@@ -98,7 +98,7 @@ Claude가 수행할 작업을 입력하고 **Enter**를 눌러 보냅니다. Cla
 
 Auto mode는 Anthropic API의 모든 사용자에게 제공되며 Claude Opus 4.6 이상 또는 Sonnet 4.6 이상이 필요합니다. 조직 관리자는 [관리 설정](#managed-settings)에서 `disableAutoMode` 키를 사용하여 auto mode를 끌 수 있습니다.
 
-Google Cloud의 Agent Platform으로 라우팅하는 Enterprise 배포에서는 auto mode가 [기본적으로 사용 가능](/docs/ko/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)하며, 거기서는 Claude Sonnet 5, Opus 4.7, Opus 4.8만 지원됩니다. {/* min-version: 2.1.207 */}Claude Code v2.1.207 이전에는 Google Cloud의 Agent Platform의 Enterprise 배포에서 auto mode를 활성화하기 위해 `CLAUDE_CODE_ENABLE_AUTO_MODE`를 설정해야 했습니다.
+Google Cloud의 Agent Platform으로 라우팅하는 Enterprise 배포에서는 auto mode가 [기본적으로 사용 가능](/docs/ko/permission-modes#enable-auto-mode-on-bedrock-agent-platform-or-foundry)하며, 거기서는 Claude Sonnet 5, Opus 4.7, Opus 4.8만 지원됩니다. Claude Code v2.1.207 이전에는 Google Cloud의 Agent Platform의 Enterprise 배포에서 auto mode를 활성화하기 위해 `CLAUDE_CODE_ENABLE_AUTO_MODE`를 설정해야 했습니다.
 
 <Tip title="모범 사례">
   복잡한 작업을 Plan에서 시작하여 Claude가 변경하기 전에 접근 방식을 매핑하도록 합니다. 계획을 승인한 후 Accept edits 또는 Manual로 전환하여 실행합니다. 이 워크플로우에 대한 자세한 내용은 [먼저 탐색, 그 다음 계획, 그 다음 코드](/docs/ko/best-practices#explore-first-then-plan-then-code)를 참조하세요.
@@ -758,7 +758,7 @@ Desktop 세션이 어느 위치에서 실행되는지에 따라 어떤 관리 �
 
 `permissions.disableBypassPermissionsMode` 및 `disableAutoMode`는 사용자 및 프로젝트 설정에서도 작동하지만 관리 설정에 배치하면 사용자가 재정의하지 못하도록 방지합니다.
 
-{/* min-version: 2.1.207 */}Claude Code는 사용자 설정, `--settings` 플래그, 관리 설정에서 `autoMode`를 읽지만 `.claude/settings.json` 또는 `.claude/settings.local.json`에서는 읽지 않습니다: 두 파일 모두 저장소 디렉토리에 있으므로 복제된 저장소 또는 빌드 단계가 자신의 분류기 규칙을 주입할 수 없습니다. v2.1.207 이전에는 Claude Code도 `.claude/settings.local.json`을 읽었습니다.
+Claude Code는 사용자 설정, `--settings` 플래그, 관리 설정에서 `autoMode`를 읽지만 `.claude/settings.json` 또는 `.claude/settings.local.json`에서는 읽지 않습니다: 두 파일 모두 저장소 디렉토리에 있으므로 복제된 저장소 또는 빌드 단계가 자신의 분류기 규칙을 주입할 수 없습니다. v2.1.207 이전에는 Claude Code도 `.claude/settings.local.json`을 읽었습니다.
 
 `allowManagedPermissionRulesOnly` 및 `allowManagedHooksOnly`를 포함한 관리 전용 설정의 전체 목록은 [관리 전용 설정](/docs/ko/permissions#managed-only-settings)을 참조하세요.
 

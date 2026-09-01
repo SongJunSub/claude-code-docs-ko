@@ -54,7 +54,7 @@ Claude Code의 `model` 설정에서 다음 중 하나를 구성할 수 있습니
 
 별칭이 더 오래된 모델로 확인되는 경우, 전체 모델 이름을 명시적으로 선택하거나 `ANTHROPIC_DEFAULT_OPUS_MODEL` 또는 `ANTHROPIC_DEFAULT_SONNET_MODEL`을 설정하여 더 새로운 모델을 사용할 수 있습니다.
 
-{/* min-version: 2.1.207 */}v2.1.207 이전에는 `opus`가 Claude Platform on AWS에서 Opus 4.7로, Amazon Bedrock 및 Google Cloud의 Agent Platform에서 Opus 4.6으로 확인되었습니다.
+v2.1.207 이전에는 `opus`가 Claude Platform on AWS에서 Opus 4.7로, Amazon Bedrock 및 Google Cloud의 Agent Platform에서 Opus 4.6으로 확인되었습니다.
 
 별칭은 제공자에 대한 권장 버전을 가리키며 시간이 지남에 따라 업데이트됩니다. 특정 버전으로 고정하려면 전체 모델 이름(예: `claude-opus-4-8`)을 사용하거나 `ANTHROPIC_DEFAULT_OPUS_MODEL`과 같은 해당 환경 변수를 설정합니다.
 
@@ -97,7 +97,7 @@ v2.1.153부터 `/model`은 사용자 설정에서 `model` 필드를 작성하여
 * `Enter`: 모델을 전환하고 기본값으로 저장합니다
 * `s`: 이 세션에만 모델을 전환합니다
 
-`/model <name>`을 직접 입력하면 `Enter`처럼 동작합니다. {/* min-version: 2.1.205 */}[비대화형 모드](/docs/ko/headless)에서 `-p` 플래그를 사용하여 `/model`로 설정된 모델은 현재 세션에만 적용되며 기본값으로 저장되지 않습니다. 프로젝트 및 관리되는 설정은 여전히 우선순위를 가지며 다음 실행 시 다시 적용됩니다. {/* min-version: 2.1.196 */}관리자가 구성한 [조직 기본 모델](#organization-default-model)도 다음 실행 시 다시 적용됩니다.
+`/model <name>`을 직접 입력하면 `Enter`처럼 동작합니다. [비대화형 모드](/docs/ko/headless)에서 `-p` 플래그를 사용하여 `/model`로 설정된 모델은 현재 세션에만 적용되며 기본값으로 저장되지 않습니다. 프로젝트 및 관리되는 설정은 여전히 우선순위를 가지며 다음 실행 시 다시 적용됩니다. 관리자가 구성한 [조직 기본 모델](#organization-default-model)도 다음 실행 시 다시 적용됩니다.
 
 v2.1.144부터 v2.1.152까지는 `/model`이 현재 세션에만 적용되었으며 선택기에서 `d`가 기본값을 저장했습니다.
 
@@ -107,7 +107,7 @@ v2.1.144부터 v2.1.152까지는 `/model`이 현재 세션에만 적용되었으
 
 `claude --resume`, `--continue` 또는 `/resume` 선택기로 시작된 재개된 세션은 현재 `model` 설정에 관계없이 트랜스크립트가 저장되었을 때 사용 중이던 모델을 유지합니다. 해당 모델이 중단된 경우 또는 [`availableModels`](#restrict-model-selection)에 의해 제외된 경우, 세션은 일반 우선순위 순서로 폴백됩니다. 이는 다른 세션의 `/model` 선택이 재개 시 모델을 변경하는 것을 방지합니다.
 
-새 실행 시 `--model` 또는 `ANTHROPIC_MODEL`로 선택한 모델은 여전히 복원된 모델보다 우선순위를 가집니다. {/* min-version: 2.1.195 */}v2.1.195부터 [`ANTHROPIC_DEFAULT_OPUS_MODEL`](#environment-variables) 계열 변수도 마찬가지입니다.
+새 실행 시 `--model` 또는 `ANTHROPIC_MODEL`로 선택한 모델은 여전히 복원된 모델보다 우선순위를 가집니다. v2.1.195부터 [`ANTHROPIC_DEFAULT_OPUS_MODEL`](#environment-variables) 계열 변수도 마찬가지입니다.
 
 시작 시 활성 모델이 자신의 선택이 아닌 프로젝트 또는 관리되는 설정에서 나온 경우, 시작 헤더는 어느 설정 파일이 이를 설정했는지 표시합니다. `/model`을 실행하여 재정의합니다. 프로젝트 또는 관리되는 설정은 다음 실행 시 다시 적용됩니다.
 
@@ -154,9 +154,9 @@ claude --model opus
 `availableModels`이 설정되면 허용 목록은 사용자가 모델을 지정할 수 있는 모든 위치에 적용됩니다:
 
 * **메인 세션 모델**: `/model`, `--model` 플래그, `ANTHROPIC_MODEL` 환경 변수, `model` 설정 및 [세션을 재개할 때](#setting-your-model) 복원된 모델
-* **별칭 해석**: {/* min-version: 2.1.176 */}`ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, `ANTHROPIC_DEFAULT_HAIKU_MODEL` 및 `ANTHROPIC_DEFAULT_FABLE_MODEL` 환경 변수는 허용된 별칭을 목록 외부의 모델로 리디렉션할 수 없습니다
-* **빠른 모드**: {/* min-version: 2.1.176 */}`/fast`는 목록 외부의 Opus 모델로 암시적으로 전환될 때 토글을 거부하며, "is not in your organization's allowed models" 메시지를 표시합니다
-* **서브에이전트 모델**: [서브에이전트](/docs/ko/sub-agents#choose-a-model) frontmatter의 `model` 필드, Agent 도구의 `model` 매개변수, `CLAUDE_CODE_SUBAGENT_MODEL`, 그리고 v2.1.197 이하에서는 `/agents` 마법사의 모델 선택기 {/* max-version: 2.1.197 */}
+* **별칭 해석**: `ANTHROPIC_DEFAULT_OPUS_MODEL`, `ANTHROPIC_DEFAULT_SONNET_MODEL`, `ANTHROPIC_DEFAULT_HAIKU_MODEL` 및 `ANTHROPIC_DEFAULT_FABLE_MODEL` 환경 변수는 허용된 별칭을 목록 외부의 모델로 리디렉션할 수 없습니다
+* **빠른 모드**: `/fast`는 목록 외부의 Opus 모델로 암시적으로 전환될 때 토글을 거부하며, "is not in your organization's allowed models" 메시지를 표시합니다
+* **서브에이전트 모델**: [서브에이전트](/docs/ko/sub-agents#choose-a-model) frontmatter의 `model` 필드, Agent 도구의 `model` 매개변수, `CLAUDE_CODE_SUBAGENT_MODEL`, 그리고 v2.1.197 이하에서는 `/agents` 마법사의 모델 선택기&#x20;
 * **스킬 및 명령 모델**: [스킬 및 명령](/docs/ko/skills)의 `model` frontmatter
 * **어드바이저 모델**: 구성된 [`advisorModel`](/docs/ko/advisor) 설정 및 `--advisor` 플래그
 * **백그라운드 에이전트 모델**: [디스패치 선택기](/docs/ko/agent-view)에서 선택된 모델
@@ -173,7 +173,7 @@ Claude Code는 모델이 설정된 위치에 따라 다른 차단된 선택을 �
 * **`advisorModel` 설정**: 어드바이저는 세션에 대해 비활성화됩니다
 * **`--advisor` 플래그**: Claude Code는 시작 시 오류로 종료됩니다
 
-제외된 모델은 `/model` 선택기에서 숨겨집니다. {/* min-version: 2.1.199 */}}목록의 전체 모델 ID(예: 목록이 고정하는 이전 버전)에 기본 제공 선택기 행이 없으면 `/model` 선택기에 자신의 레이블이 지정된 행으로 나타납니다. v2.1.199 이전에는 그러한 ID는 `/model <id>`를 입력하여만 선택 가능합니다.
+제외된 모델은 `/model` 선택기에서 숨겨집니다. }목록의 전체 모델 ID(예: 목록이 고정하는 이전 버전)에 기본 제공 선택기 행이 없으면 `/model` 선택기에 자신의 레이블이 지정된 행으로 나타납니다. v2.1.199 이전에는 그러한 ID는 `/model <id>`를 입력하여만 선택 가능합니다.
 
 Claude Code가 사용자를 대신하여 수행하는 모델 변경은 동일한 방식으로 확인됩니다:
 
@@ -265,7 +265,7 @@ Claude Code가 사용자를 대신하여 수행하는 모델 변경은 동일한
   병합 동작
 </h3>
 
-[최고 우선순위 관리 설정 소스](/docs/ko/server-managed-settings#settings-precedence)가 `availableModels`을 정의하면 해당 목록만 적용됩니다: 사용자, 프로젝트 또는 로컬 설정의 항목은 이를 확대할 수 없으며, 관리자 배포 관리 소스는 서로 병합되지 않으므로 관리 설정 파일에 배포된 목록은 서버 관리 설정이 키를 전달할 때 무시됩니다. 그렇지 않으면 사용자, 프로젝트 및 로컬 설정의 목록은 다른 배열 설정처럼 [연결되고 중복이 제거됩니다](/docs/ko/settings#settings-precedence). {/* min-version: 2.1.175 */}Claude Code v2.1.175부터 관리 목록은 낮은 우선순위 항목을 대체합니다. 이전 버전은 이들을 병합합니다.
+[최고 우선순위 관리 설정 소스](/docs/ko/server-managed-settings#settings-precedence)가 `availableModels`을 정의하면 해당 목록만 적용됩니다: 사용자, 프로젝트 또는 로컬 설정의 항목은 이를 확대할 수 없으며, 관리자 배포 관리 소스는 서로 병합되지 않으므로 관리 설정 파일에 배포된 목록은 서버 관리 설정이 키를 전달할 때 무시됩니다. 그렇지 않으면 사용자, 프로젝트 및 로컬 설정의 목록은 다른 배열 설정처럼 [연결되고 중복이 제거됩니다](/docs/ko/settings#settings-precedence). Claude Code v2.1.175부터 관리 목록은 낮은 우선순위 항목을 대체합니다. 이전 버전은 이들을 병합합니다.
 
 유효한 목록 내에서 버전 접두사 또는 전체 모델 ID인지 여부에 관계없이 패밀리의 특정 모델을 이름 지은 항목은 해당 패밀리의 와일드카드 항목을 비활성화합니다: `["sonnet", "claude-sonnet-4-5"]`는 모든 Sonnet 모델이 아닌 Sonnet 4.5 버전만 허용합니다.
 
@@ -302,8 +302,6 @@ Claude Console에는 모델 제한 제어가 없습니다. Claude Enterprise 플
   조직 기본 모델
 </h2>
 
-{/* plan-availability: feature=org-default-model plans=enterprise */}
-
 Claude Enterprise 플랜의 조직 관리자는 claude.ai 관리 콘솔에서 Claude Code 구성원에 대한 기본 모델을 설정할 수 있으며, 전체 조직 또는 사용자 정의 역할별로 설정할 수 있습니다. 하나가 설정되면 Default 옵션은 [계정 유형 기본값](#default-model-setting) 대신 해당 모델로 확인됩니다. Claude Code v2.1.196 이상이 필요합니다.
 
 `/model` 선택기의 Default 행은 조직 기본값의 이름을 "Org default" 레이블과 함께 표시합니다. 레이블은 관리자가 전체 조직 또는 역할에 대해 기본값을 설정했는지 여부에 관계없이 "Org default"를 읽습니다. 역할 기본값은 해당 사용자 정의 역할의 구성원을 다루며 조직 전체 기본값보다 우선합니다. 여러 역할이 다른 기본값을 설정하면 가장 강력한 모델이 적용됩니다.
@@ -336,8 +334,6 @@ v2.1.199부터 조직 기본값이 계정 유형의 일반적인 기본값과 �
   조직 노력 제한
 </h2>
 
-{/* plan-availability: feature=org-effort-limits plans=enterprise */}
-
 Claude Enterprise 플랜의 조직 관리자는 [조직 모델 제한](#organization-model-restrictions)과 함께 각 사용자 정의 역할에 대해 모델별 최대 [노력 수준](#adjust-effort-level)을 설정할 수 있습니다. 상한 이상의 수준은 `/effort` 선택기에서 제공되지 않으며, `--effort` 또는 `/effort`로 더 높은 수준을 이름 지으면 상한에서 실행됩니다. 대화형 세션 및 일반 텍스트 `--print` 실행에서 경고는 요청된 수준과 적용된 수준을 이름 지으며, `json` 또는 `stream-json` 출력 또는 백그라운드 에이전트에서 클램프는 자동으로 적용됩니다. 상한은 모델별이므로 모델을 전환하면 사용 가능한 수준이 변경될 수 있습니다. 여러 역할이 동일한 모델을 부여하면 가장 제한이 적은 상한이 적용됩니다. Claude Code v2.1.195 이상이 필요합니다.
 
 노력 제한은 [조직 모델 제한](#organization-model-restrictions)과 함께 전달되며 동일한 제공자 가용성을 따릅니다: Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry 및 Claude Platform on AWS의 세션은 이를 수신하지 않습니다.
@@ -359,7 +355,7 @@ Claude Enterprise 플랜의 조직 관리자는 [조직 모델 제한](#organiza
 
 Enterprise 종량제는 구독 시트가 아닌 사용량으로 청구되는 Enterprise 조직을 의미합니다.
 
-{/* min-version: 2.1.207 */}v2.1.207 이전에는 `default`가 AWS의 Claude Platform에서 Opus 4.7로, Amazon Bedrock 및 Google Cloud의 Agent Platform에서 Sonnet 4.5로 확인되었습니다.
+v2.1.207 이전에는 `default`가 AWS의 Claude Platform에서 Opus 4.7로, Amazon Bedrock 및 Google Cloud의 Agent Platform에서 Sonnet 4.5로 확인되었습니다.
 
 관리자가 [조직 기본 모델](#organization-default-model)을 설정한 경우 `default`는 위의 계정 유형 기본값 대신 해당 모델로 확인됩니다. Claude Code v2.1.196 이상이 필요합니다.
 
@@ -487,7 +483,7 @@ Fable 5는 사이버 보안 및 생물학 콘텐츠에 대한 안전 분류기�
 
 Fable 5, Opus 4.8 또는 Opus 4.7을 처음 실행할 때 Claude Code는 이전에 다른 모델에 대해 다른 수준을 설정했더라도 해당 모델의 기본 노력을 적용합니다: Fable 5 및 Opus 4.8에서 `high`, Opus 4.7에서 `xhigh`. 전환 후 다른 수준을 선택하려면 `/effort`를 다시 실행하세요. 해당 기본값은 명시적 노력 선택(예: 대화형 세션에서 `/effort` 실행 또는 `--effort`로 시작)을 할 때까지 세션 전체에 유지됩니다.
 
-`low`, `medium`, `high` 및 `xhigh`는 대화형 세션에서 설정할 때 세션 전체에 유지됩니다. {/* min-version: 2.1.205 */}[비대화형 모드](/docs/ko/headless)에서 `/effort`로 설정된 수준은 `-p` 플래그를 사용하여 현재 세션에만 적용되며 기본값으로 저장되지 않습니다. 비대화형 `/effort`는 또한 위의 모델 기본값 보유를 해제할 수 없습니다: Fable 5, Opus 4.8 및 Opus 4.7에서 `Not applied`를 보고하고 세션은 모델의 기본 노력에 유지되므로 대신 시작 시 `--effort`를 전달하세요. `max`는 토큰 지출에 제약이 없어 가장 깊은 추론을 제공하며 현재 세션에만 적용됩니다. 단, `CLAUDE_CODE_EFFORT_LEVEL` 환경 변수를 통해 설정된 경우는 예외입니다.
+`low`, `medium`, `high` 및 `xhigh`는 대화형 세션에서 설정할 때 세션 전체에 유지됩니다. [비대화형 모드](/docs/ko/headless)에서 `/effort`로 설정된 수준은 `-p` 플래그를 사용하여 현재 세션에만 적용되며 기본값으로 저장되지 않습니다. 비대화형 `/effort`는 또한 위의 모델 기본값 보유를 해제할 수 없습니다: Fable 5, Opus 4.8 및 Opus 4.7에서 `Not applied`를 보고하고 세션은 모델의 기본 노력에 유지되므로 대신 시작 시 `--effort`를 전달하세요. `max`는 토큰 지출에 제약이 없어 가장 깊은 추론을 제공하며 현재 세션에만 적용됩니다. 단, `CLAUDE_CODE_EFFORT_LEVEL` 환경 변수를 통해 설정된 경우는 예외입니다.
 
 `/effort` 메뉴는 또한 `ultracode`를 제공합니다. Ultracode는 모델 노력 수준이 아닌 Claude Code 설정입니다: 모델에 `xhigh`를 전송하고 추가로 Claude가 실질적인 작업을 위해 [동적 워크플로우](/docs/ko/workflows)를 조율하도록 합니다. 현재 세션에만 적용됩니다.
 
@@ -713,7 +709,7 @@ Claude Code는 모델 ID를 알려진 패턴과 비교하여 [노력 수준](#ad
 | 기능 값                   | 활성화                                          |
 | ---------------------- | -------------------------------------------- |
 | `effort`               | [노력 수준](#adjust-effort-level) 및 `/effort` 명령 |
-| `xhigh_effort`         | {/* min-version: 2.1.111 */}`xhigh` 노력 수준    |
+| `xhigh_effort`         | `xhigh` 노력 수준                                |
 | `max_effort`           | `max` 노력 수준                                  |
 | `thinking`             | [확장 사고](#extended-thinking)                  |
 | `adaptive_thinking`    | 작업 복잡도에 따라 동적으로 사고를 할당하는 적응형 추론              |
@@ -758,7 +754,7 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES='effort,xhigh_effort,
 
 `modelOverrides`는 `availableModels`과 함께 작동합니다. 허용 목록은 재정의 값이 아닌 Anthropic 모델 ID에 대해 평가되므로 `availableModels`의 `"opus"`와 같은 항목은 Opus 버전이 ARN에 매핑되어도 계속 일치합니다. `enforceAvailableModels`이 관리 설정에서 설정되면 강제된 기본값은 [가장 높은 우선순위 관리 소스](/docs/ko/server-managed-settings#settings-precedence)에서만 `modelOverrides`를 통해 확인됩니다. 추론 프로필 ARN에 고정된 버전과 같은 관리자의 매핑이 강제된 기본값에서 인정됩니다. 사용자 또는 프로젝트 설정의 재정의는 이에 영향을 주지 않습니다.
 
-{/* min-version: 2.1.200 */}`availableModels`이 [관리 설정](/docs/ko/settings#settings-files)에서 설정되면 `--model` 또는 위의 환경 변수를 통해 직접 전달된 Anthropic 모델 ID에는 해당 관리 소스의 `modelOverrides`만 적용됩니다. Claude Code는 사용자 또는 프로젝트 설정의 해당 ID에 대한 재정의를 무시하며, 관리 목록이 제외하는 ID를 어떤 설정 소스의 `modelOverrides`를 통해서도 확인하지 않습니다. 이 관리 소스 제한은 Claude Code v2.1.200 이상이 필요합니다. 차단된 ID가 처리되는 방식은 [모델 선택 제한](#restrict-model-selection)을 참조하세요.
+`availableModels`이 [관리 설정](/docs/ko/settings#settings-files)에서 설정되면 `--model` 또는 위의 환경 변수를 통해 직접 전달된 Anthropic 모델 ID에는 해당 관리 소스의 `modelOverrides`만 적용됩니다. Claude Code는 사용자 또는 프로젝트 설정의 해당 ID에 대한 재정의를 무시하며, 관리 목록이 제외하는 ID를 어떤 설정 소스의 `modelOverrides`를 통해서도 확인하지 않습니다. 이 관리 소스 제한은 Claude Code v2.1.200 이상이 필요합니다. 차단된 ID가 처리되는 방식은 [모델 선택 제한](#restrict-model-selection)을 참조하세요.
 
 <h3 id="prompt-caching-configuration">
   Prompt caching 구성

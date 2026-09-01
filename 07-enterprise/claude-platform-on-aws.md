@@ -278,7 +278,7 @@ Claude Platform on AWS는 환경에 AWS 자격 증명이 있어도 선택 사항
 
 Claude Platform on AWS는 직접 Claude API와 동일한 모델 ID를 사용합니다.
 
-기본 별칭 `fable`, `opus`, `sonnet` 및 `haiku`는 Claude Platform on AWS에 대한 Claude Code의 기본 제공 기본값으로 확인되며, 이는 최신 릴리스보다 뒤떨어질 수 있습니다. `ANTHROPIC_DEFAULT_OPUS_MODEL` 없이 `opus` 별칭은 Opus 4.8로 확인됩니다. {/* min-version: 2.1.207 */}v2.1.207 이전에는 Opus 4.7로 확인되었습니다.
+기본 별칭 `fable`, `opus`, `sonnet` 및 `haiku`는 Claude Platform on AWS에 대한 Claude Code의 기본 제공 기본값으로 확인되며, 이는 최신 릴리스보다 뒤떨어질 수 있습니다. `ANTHROPIC_DEFAULT_OPUS_MODEL` 없이 `opus` 별칭은 Opus 4.8로 확인됩니다. v2.1.207 이전에는 Opus 4.7로 확인되었습니다.
 
 Claude Code를 팀에 배포하는 경우 모델 ID를 명시적으로 고정하여 새 릴리스가 모든 사람을 한 번에 이동하지 않도록 하십시오.
 

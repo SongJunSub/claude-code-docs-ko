@@ -141,7 +141,7 @@ Claude Code는 인증 자격증명을 안전하게 관리합니다:
 * **사용자 정의 자격증명 스크립트**: [`apiKeyHelper`](/docs/ko/settings#available-settings) 설정을 구성하여 API 키를 반환하는 셸 스크립트를 실행할 수 있습니다.
 * **새로고침 간격**: 기본적으로 `apiKeyHelper`는 5분 후 또는 HTTP 401 응답 시 호출됩니다. 사용자 정의 새로고침 간격을 위해 `CLAUDE_CODE_API_KEY_HELPER_TTL_MS` 환경 변수를 설정합니다.
 * **느린 도우미 알림**: `apiKeyHelper`가 키를 반환하는 데 10초 이상 걸리면 Claude Code는 경과 시간을 표시하는 프롬프트 표시줄에 경고 알림을 표시합니다. 이 알림이 정기적으로 표시되면 자격증명 스크립트를 최적화할 수 있는지 확인합니다.
-* **도우미 실패**: {/* min-version: 2.1.208 */}스크립트가 오류로 종료되거나 시간 초과되거나 아무것도 인쇄하지 않으면 요청은 3회 시도 내에 [`Your apiKeyHelper script is failing`](/docs/ko/errors#your-apikeyhelper-script-is-failing)으로 실패합니다. v2.1.208 이전에는 도우미 실패가 약 10번의 자동 재시도 후 일반 401로 표시되었습니다.
+* **도우미 실패**: 스크립트가 오류로 종료되거나 시간 초과되거나 아무것도 인쇄하지 않으면 요청은 3회 시도 내에 [`Your apiKeyHelper script is failing`](/docs/ko/errors#your-apikeyhelper-script-is-failing)으로 실패합니다. v2.1.208 이전에는 도우미 실패가 약 10번의 자동 재시도 후 일반 401로 표시되었습니다.
 
 `apiKeyHelper`, `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`은 CLI 및 VS Code 확장 프로그램, Agent SDK, GitHub Actions를 포함하여 이를 래핑하는 표면에 적용됩니다. Claude Desktop 및 클라우드 세션은 `apiKeyHelper`를 호출하거나 이러한 환경 변수를 읽지 않습니다. 이들은 OAuth를 사용하며, [타사 추론 구성](/docs/ko/llm-gateway-connect#desktop-app)을 실행하는 데스크톱 세션은 해당 구성의 자격증명으로 인증합니다.
 
@@ -153,7 +153,7 @@ Claude Code는 인증 자격증명을 안전하게 관리합니다:
 
 `/login`을 실행하여 갱신합니다. 경고는 정보 제공용이며 요청을 차단하지 않습니다: 로그인이 실제로 만료될 때까지 인증이 계속 작동합니다. 로그인 수명 자체는 변경되지 않습니다. 사전 경고는 v2.1.203이 추가한 것입니다.
 
-{/* min-version: 2.1.206 */}저장된 로그인이 만료되고 새로고칠 수 없으면 다시 로그인할 때까지 각 요청은 [`Login expired · Please run /login`](/docs/ko/errors#login-expired)으로 실패합니다. v2.1.206 이전에는 만료된 로그인이 모델 오류로 표시되었습니다.
+저장된 로그인이 만료되고 새로고칠 수 없으면 다시 로그인할 때까지 각 요청은 [`Login expired · Please run /login`](/docs/ko/errors#login-expired)으로 실패합니다. v2.1.206 이전에는 만료된 로그인이 모델 오류로 표시되었습니다.
 
 경고는 claude.ai 또는 Claude Console 로그인이 활성 자격증명일 때만 나타나며, 클라우드 제공자, `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, 또는 `apiKeyHelper`가 자격증명을 제공할 때는 나타나지 않습니다.
 

@@ -40,7 +40,7 @@ Claude Code에는 모든 세션에서 사용 가능한 번들 skills 세트가 �
 | `/verify`              | 앱을 빌드하고 실행하여 코드 변경이 의도한 대로 작동하는지 확인하며, 테스트나 타입 체크로 돌아가지 않습니다 |
 | `/run-skill-generator` | `/run`과 `/verify`에 프로젝트를 빌드하고 시작하는 방법을 가르칩니다                 |
 
-{/* min-version: 2.1.145 */}세 가지 skills 모두 Claude Code v2.1.145 이상이 필요합니다.
+세 가지 skills 모두 Claude Code v2.1.145 이상이 필요합니다.
 
 `/run`과 `/verify`는 설정 없이 작동합니다. 프로젝트 유형(CLI, 서버, TUI, 브라우저 기반)과 README, `package.json` 또는 `Makefile`의 내용으로부터 시작을 추론합니다. 이 추론은 표준 시작 이상의 것이 필요한 프로젝트(데이터베이스, env 파일, 그래픽 세션, 다단계 빌드)에 대해서는 신뢰할 수 없게 됩니다.
 

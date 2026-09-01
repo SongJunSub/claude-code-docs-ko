@@ -30,7 +30,7 @@ Claude가 도구를 요청할 때 SDK는 다음 순서로 권한을 확인합니
   <Step title="요청 규칙">
     [settings.json](/docs/ko/settings#permission-settings)에서 `ask` 규칙을 확인합니다. 요청 규칙이 일치하면 `bypassPermissions` 모드에서도 호출이 확인을 위해 [`canUseTool` 콜백](/docs/ko/agent-sdk/user-input)으로 전달됩니다.
 
-    사용자 상호작용이 필요한 도구는 동일한 방식으로 작동합니다: `AskUserQuestion` 및 서버가 [`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)을 설정하는 MCP 도구는 허용 규칙이 일치하는 경우에도 항상 콜백으로 전달됩니다. `dontAsk` 모드에서는 두 경우 모두 거부됩니다. 이 모드는 절대 프롬프트를 표시하지 않기 때문입니다. {/* min-version: 2.1.199 */}MCP 주석에는 Claude Code v2.1.199 이상이 필요합니다.
+    사용자 상호작용이 필요한 도구는 동일한 방식으로 작동합니다: `AskUserQuestion` 및 서버가 [`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)을 설정하는 MCP 도구는 허용 규칙이 일치하는 경우에도 항상 콜백으로 전달됩니다. `dontAsk` 모드에서는 두 경우 모두 거부됩니다. 이 모드는 절대 프롬프트를 표시하지 않기 때문입니다. MCP 주석에는 Claude Code v2.1.199 이상이 필요합니다.
 
     [claude.ai 커넥터](/docs/ko/mcp#organization-controls-on-connector-tools) 도구는 조직이 `ask`로 설정한 경우 이 단계에서 흐름을 떠납니다. 모든 호출은 `bypassPermissions` 모드에서도, 허용 규칙이 일치하는 경우에도 콜백으로 전달됩니다. 콜백은 `Your organization requires approval for this tool` 이유를 받습니다. `dontAsk` 모드에서는 호출이 거부됩니다. 이 모드는 절대 프롬프트를 표시하지 않기 때문입니다.
   </Step>

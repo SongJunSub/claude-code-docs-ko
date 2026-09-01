@@ -216,7 +216,7 @@ Claude는 두 가지 상황에서 사용자 입력을 요청합니다. **도구 
 | **허용** | `PermissionResultAllow(updated_input=...)` | `{ behavior: "allow", updatedInput }` |
 | **거부** | `PermissionResultDeny(message=...)`        | `{ behavior: "deny", message }`       |
 
-허용할 때 도구는 Claude가 요청한 입력으로 실행되며, 수정된 입력을 반환하지 않는 한 그렇습니다. TypeScript에서는 `updatedInput`, Python에서는 `updated_input`입니다. {/* min-version: 2.1.207 */}v2.1.207 이전에는 Claude Code가 `updatedInput`을 생략한 허용 결과를 거부하고 검증 오류로 도구 호출을 거부했습니다.
+허용할 때 도구는 Claude가 요청한 입력으로 실행되며, 수정된 입력을 반환하지 않는 한 그렇습니다. TypeScript에서는 `updatedInput`, Python에서는 `updated_input`입니다. v2.1.207 이전에는 Claude Code가 `updatedInput`을 생략한 허용 결과를 거부하고 검증 오류로 도구 호출을 거부했습니다.
 
 거부할 때 이유를 설명하는 메시지를 제공합니다. Claude는 이 메시지를 보고 접근 방식을 조정할 수 있습니다.
 

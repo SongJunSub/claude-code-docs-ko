@@ -818,7 +818,7 @@ const myHook: HookCallback = async (input, toolUseID, { signal }) => {
 * `HookMatcher` 구성에서 `timeout` 값을 증가시킵니다.
 * TypeScript에서 세 번째 콜백 인수의 `AbortSignal`을 사용하여 취소를 정상적으로 처리합니다.
 
-{/* min-version: 2.1.208 */}타임아웃을 초과하는 `UserPromptSubmit` 또는 [`UserPromptExpansion`](/docs/ko/hooks#userpromptexpansion) 콜백은 해당 프롬프트를 타임아웃 메시지로 차단하고 세션은 계속됩니다. 콜백이 대기 중인 동안 쿼리를 중단하면 대기 중인 도구 호출이 취소됩니다. v2.1.208 이전에는 이러한 이벤트에 대한 콜백 타임아웃이 `error_during_execution`으로 쿼리를 종료했으며, 대기 중인 `PreToolUse` 콜백 중에 중단하면 도구 호출이 진행될 수 있었습니다.
+타임아웃을 초과하는 `UserPromptSubmit` 또는 [`UserPromptExpansion`](/docs/ko/hooks#userpromptexpansion) 콜백은 해당 프롬프트를 타임아웃 메시지로 차단하고 세션은 계속됩니다. 콜백이 대기 중인 동안 쿼리를 중단하면 대기 중인 도구 호출이 취소됩니다. v2.1.208 이전에는 이러한 이벤트에 대한 콜백 타임아웃이 `error_during_execution`으로 쿼리를 종료했으며, 대기 중인 `PreToolUse` 콜백 중에 중단하면 도구 호출이 진행될 수 있었습니다.
 
 <h3 id="tool-blocked-unexpectedly">
   도구가 예기치 않게 차단됨

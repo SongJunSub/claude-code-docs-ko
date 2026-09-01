@@ -169,15 +169,15 @@ Anthropic은 플러그인 시스템으로 가능한 것들을 보여주는 예�
     * **Marketplaces**: 추가된 마켓플레이스 추가, 제거 또는 업데이트
     * **Errors**: 플러그인 로딩 오류 보기
 
-    방금 추가한 마켓플레이스의 플러그인을 보려면 **Discover** 탭으로 이동합니다. {/* min-version: 2.1.154 */}관리자가 [`pluginSuggestionMarketplaces`](/docs/ko/settings#available-settings) 관리 설정을 통해 마켓플레이스를 허용 목록에 추가한 경우, 현재 작업 디렉토리와 관련이 있는 것으로 표시된 플러그인은 **suggested for this directory** 레이블과 함께 맨 위에 고정됩니다.
+    방금 추가한 마켓플레이스의 플러그인을 보려면 **Discover** 탭으로 이동합니다. 관리자가 [`pluginSuggestionMarketplaces`](/docs/ko/settings#available-settings) 관리 설정을 통해 마켓플레이스를 허용 목록에 추가한 경우, 현재 작업 디렉토리와 관련이 있는 것으로 표시된 플러그인은 **suggested for this directory** 레이블과 함께 맨 위에 고정됩니다.
   </Step>
 
   <Step title="플러그인 설치">
     플러그인을 선택하여 세부 정보를 봅니다. 세부 정보 창에는 플러그인에 포함된 내용과 비용이 표시됩니다:
 
-    * {/* min-version: 2.1.143 */}플러그인이 매 턴마다 [컨텍스트 윈도우](/docs/ko/features-overview#understand-context-costs)에 추가할 토큰 수를 볼 수 있는 **Context cost** 예상치 (Claude Code v2.1.143 이상)
-    * {/* min-version: 2.1.144 */}플러그인의 **Last updated** 날짜 (v2.1.144 이상)
-    * {/* min-version: 2.1.145 */}플러그인의 명령어, 에이전트, 스킬, 훅 및 MCP와 LSP 서버를 나열하는 **Will install** 섹션으로, 설치 전에 정확히 무엇이 추가되는지 검토할 수 있습니다 (v2.1.145 이상)
+    * 플러그인이 매 턴마다 [컨텍스트 윈도우](/docs/ko/features-overview#understand-context-costs)에 추가할 토큰 수를 볼 수 있는 **Context cost** 예상치 (Claude Code v2.1.143 이상)
+    * 플러그인의 **Last updated** 날짜 (v2.1.144 이상)
+    * 플러그인의 명령어, 에이전트, 스킬, 훅 및 MCP와 LSP 서버를 나열하는 **Will install** 섹션으로, 설치 전에 정확히 무엇이 추가되는지 검토할 수 있습니다 (v2.1.145 이상)
 
     설치 범위를 선택합니다:
 
@@ -402,7 +402,7 @@ claude plugin uninstall formatter@your-org --scope project
 
 Claude Code는 모든 활성 플러그인을 다시 로드하고 플러그인, skills, agents, hooks, 플러그인 MCP servers 및 플러그인 LSP servers의 개수를 표시합니다.
 
-재로드는 다음 요청에서 토큰 비용이 발생합니다: 새로 로드된 구성 요소는 대화에 추가된 콘텐츠에서 자신을 알리고, 기존 기록은 여전히 프롬프트 캐시에서 읽습니다. MCP servers를 제공하는 플러그인은 [tool search](/docs/ko/mcp#scale-with-mcp-tool-search)에 의해 도구가 지연되지 않을 때 더 많은 비용이 발생합니다: 변경으로 인해 캐시가 무효화되고 다음 요청이 전체 대화를 다시 읽습니다. {/* min-version: 2.1.163 */}이 경우 `/reload-plugins`는 경고를 표시하고 재로드를 적용하지 않습니다. `--force`를 전달하여 어쨌든 적용합니다. 자세한 내용은 [플러그인 활성화 또는 비활성화](/docs/ko/prompt-caching#enabling-or-disabling-a-plugin)를 참조하세요.
+재로드는 다음 요청에서 토큰 비용이 발생합니다: 새로 로드된 구성 요소는 대화에 추가된 콘텐츠에서 자신을 알리고, 기존 기록은 여전히 프롬프트 캐시에서 읽습니다. MCP servers를 제공하는 플러그인은 [tool search](/docs/ko/mcp#scale-with-mcp-tool-search)에 의해 도구가 지연되지 않을 때 더 많은 비용이 발생합니다: 변경으로 인해 캐시가 무효화되고 다음 요청이 전체 대화를 다시 읽습니다. 이 경우 `/reload-plugins`는 경고를 표시하고 재로드를 적용하지 않습니다. `--force`를 전달하여 어쨌든 적용합니다. 자세한 내용은 [플러그인 활성화 또는 비활성화](/docs/ko/prompt-caching#enabling-or-disabling-a-plugin)를 참조하세요.
 
 <h2 id="manage-marketplaces">
   마켓플레이스 관리

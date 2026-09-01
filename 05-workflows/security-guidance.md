@@ -219,7 +219,7 @@ patterns:
 /plugin uninstall security-guidance@claude-plugins-official
 ```
 
-플러그인이 프로젝트의 `.claude/settings.json`을 통해 활성화된 경우 `/plugin`에서 비활성화하면 체크인된 파일을 편집하지 않고 `.claude/settings.local.json`에 재정의를 기록하므로 플러그인이 사용자에게는 꺼져 있고 팀원은 영향을 받지 않습니다. {/* min-version: 2.1.203 */}동일한 대화 상자는 공유 `.claude/settings.json`에서 제거하여 모든 사용자를 위해 플러그인을 제거할 수 있는 옵션도 제공합니다. 이 옵션은 Claude Code v2.1.203 이상이 필요합니다. [관리 설정](/docs/ko/admin-setup)을 통해 활성화된 경우 관리자만 비활성화할 수 있습니다.
+플러그인이 프로젝트의 `.claude/settings.json`을 통해 활성화된 경우 `/plugin`에서 비활성화하면 체크인된 파일을 편집하지 않고 `.claude/settings.local.json`에 재정의를 기록하므로 플러그인이 사용자에게는 꺼져 있고 팀원은 영향을 받지 않습니다. 동일한 대화 상자는 공유 `.claude/settings.json`에서 제거하여 모든 사용자를 위해 플러그인을 제거할 수 있는 옵션도 제공합니다. 이 옵션은 Claude Code v2.1.203 이상이 필요합니다. [관리 설정](/docs/ko/admin-setup)을 통해 활성화된 경우 관리자만 비활성화할 수 있습니다.
 
 <h2 id="how-the-plugin-integrates-with-claude-code">
   플러그인이 Claude Code와 통합되는 방식

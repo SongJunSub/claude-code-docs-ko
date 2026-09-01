@@ -139,7 +139,7 @@ az login
 
 **옵션 C: Bearer 토큰 인증**
 
-{/* min-version: 2.1.203 */}Claude Code는 모든 요청에서 `ANTHROPIC_FOUNDRY_AUTH_TOKEN`의 값을 `Authorization: Bearer` 헤더로 전송합니다. 호스트 애플리케이션이나 로그인 스크립트와 같은 다른 프로세스가 이미 액세스 토큰을 얻은 경우 이 옵션을 사용합니다. Claude Code v2.1.203 이상이 필요합니다.
+Claude Code는 모든 요청에서 `ANTHROPIC_FOUNDRY_AUTH_TOKEN`의 값을 `Authorization: Bearer` 헤더로 전송합니다. 호스트 애플리케이션이나 로그인 스크립트와 같은 다른 프로세스가 이미 액세스 토큰을 얻은 경우 이 옵션을 사용합니다. Claude Code v2.1.203 이상이 필요합니다.
 
 변수를 Microsoft Entra ID가 리소스에 대해 발급한 bearer 토큰으로 설정합니다:
 

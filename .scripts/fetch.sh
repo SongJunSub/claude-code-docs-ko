@@ -6,46 +6,90 @@ MANIFEST="$ROOT/.scripts/manifest.tsv"
 LOG="$ROOT/.scripts/fetch.log"
 : > "$LOG"
 
+# 받은 파일이 실제 마크다운인지 검사한다.
+# 문서 사이트가 .md 경로에 HTML 페이지를 200으로 응답하는 슬러그가 있다.
+# (예: ko/changelog.md 는 한국어판이 없어 GitHub 블롭 페이지를 그대로 돌려준다)
+# 200 이라 curl -f 로는 걸러지지 않고, 그대로 저장하면 영어 fallback 이 영영
+# 시도되지 않은 채 HTML 덤프가 한국어 페이지로 집계된다.
+# 첫 비어 있지 않은 줄이 HTML 문서 시작이면 마크다운이 아닌 것으로 본다.
+# (본문에서 <html> 을 인라인으로 언급하는 정상 문서를 오탐하지 않도록 첫 줄만 본다)
+is_markdown() {
+    local f="$1" first_line
+    [ -s "$f" ] || return 1
+    first_line="$(awk 'NF { sub(/^[[:space:]]+/, ""); print tolower($0); exit }' "$f")"
+    case "$first_line" in
+        '<!doctype html'*|'<html>'*|'<html '*) return 1 ;;
+    esac
+    return 0
+}
+
+# URL 하나를 받아 마크다운일 때만 저장한다.
+# 1차로 Content-Type 을 보고(문서 사이트는 정상 페이지에 text/markdown 을 준다),
+# 2차로 본문 첫 줄을 확인한다.
+# 실패하면 기존 파일을 건드리지 않으므로 직전 정상 내용이 남는다.
+try_download() {
+    local url="$1" out="$2" ctype
+    if ! ctype="$(curl -fsSL --max-time 30 -w '%{content_type}' "$url" -o "$out.tmp" 2>/dev/null)"; then
+        rm -f "$out.tmp"
+        return 1
+    fi
+    case "$ctype" in
+        text/markdown*|text/plain*) ;;
+        *) rm -f "$out.tmp"; return 1 ;;
+    esac
+    if is_markdown "$out.tmp"; then
+        mv "$out.tmp" "$out"
+        return 0
+    fi
+    rm -f "$out.tmp"
+    return 1
+}
+
 fetch_one() {
-    local slug="$1" cat="$2"
+    local slug="$1"
     # organize.sh가 ROOT/<slug>.md 위치를 기대하므로 슬러그 경로 그대로 루트에 받는다.
-    # (agent-sdk/* · whats-new/* 처럼 슬래시 포함 슬러그는 임시 서브디렉토리에 받고,
+    # (agent-sdk/*, whats-new/* 처럼 슬래시 포함 슬러그는 임시 서브디렉토리에 받고,
     #  이후 organize.sh가 카테고리 폴더로 옮긴 뒤 빈 디렉토리를 정리한다.)
     local out="$ROOT/$slug.md"
     mkdir -p "$(dirname "$out")"
 
-    local url_ko="https://code.claude.com/docs/ko/$slug.md"
-    local url_en="https://code.claude.com/docs/en/$slug.md"
-
-    if curl -fsSL --max-time 30 "$url_ko" -o "$out.tmp" 2>/dev/null; then
-        if [ -s "$out.tmp" ]; then
-            mv "$out.tmp" "$out"
-            echo "OK ko  $slug" >> "$LOG"
-            return 0
-        fi
+    if try_download "https://code.claude.com/docs/ko/$slug.md" "$out"; then
+        echo "OK ko  $slug" >> "$LOG"
+        return 0
     fi
-    rm -f "$out.tmp"
 
-    if curl -fsSL --max-time 30 "$url_en" -o "$out.tmp" 2>/dev/null; then
-        if [ -s "$out.tmp" ]; then
-            mv "$out.tmp" "$out"
-            echo "OK en  $slug (ko unavailable)" >> "$LOG"
-            return 0
-        fi
+    if try_download "https://code.claude.com/docs/en/$slug.md" "$out"; then
+        echo "OK en  $slug (ko unavailable)" >> "$LOG"
+        return 0
     fi
-    rm -f "$out.tmp"
+
     echo "FAIL   $slug" >> "$LOG"
     return 1
 }
 
-export -f fetch_one
+export -f fetch_one try_download is_markdown
 export ROOT LOG
 
-awk -F'\t' 'NF==2 {print $1 "\t" $2}' "$MANIFEST" \
-  | xargs -n 1 -P 12 -I {} bash -c 'IFS=$'"'"'\t'"'"' read -r s c <<<"{}"; fetch_one "$s" "$c"'
+# 매니페스트는 <slug>\t<category> 형식이지만 fetch 에는 슬러그만 필요하다.
+# 탭을 남긴 채 넘기면 xargs 가 탭에서 한 번 더 쪼개 카테고리 이름까지 슬러그로
+# 받으려 하므로(매 실행 146 회 헛요청 + 허위 FAIL 로 실패 카운터가 무의미해짐)
+# 첫 필드만 넘긴다. 카테고리 배치는 organize.sh 가 매니페스트를 다시 읽어 처리한다.
+awk -F'\t' 'NF>=2 && $1 != "" {print $1}' "$MANIFEST" \
+  | xargs -P 12 -I {} bash -c 'fetch_one "$1"' _ {}
 
-echo "--- summary ---" | tee -a "$LOG"
-grep -c '^OK ko' "$LOG"  | awk '{print "Korean OK: " $1}'  | tee -a "$LOG"
-grep -c '^OK en' "$LOG"  | awk '{print "English fallback: " $1}'  | tee -a "$LOG"
-grep -c '^FAIL'  "$LOG"  | awk '{print "Failed: " $1}'  | tee -a "$LOG"
-echo "Total expected: $(wc -l < "$MANIFEST")" | tee -a "$LOG"
+# grep -c 는 매치가 0 건이면 exit 1 이다. set -o pipefail 과 함께 쓰면
+# 영어 fallback 이 0 건인 정상 상황에서 요약 출력이 그 줄에서 그대로 끊긴다.
+# (그래서 기존 로그에는 summary 블록이 아예 남지 않았다)
+# 값을 먼저 담아 두고 한 번에 출력한다.
+ok_ko=$(grep -c '^OK ko' "$LOG" || true)
+ok_en=$(grep -c '^OK en' "$LOG" || true)
+failed=$(grep -c '^FAIL' "$LOG" || true)
+total=$(awk -F'\t' 'NF>=2 && $1 != "" {n++} END {print n+0}' "$MANIFEST")
+
+{
+    echo "--- summary ---"
+    echo "Korean OK: $ok_ko"
+    echo "English fallback: $ok_en"
+    echo "Failed: $failed"
+    echo "Total expected: $total"
+} | tee -a "$LOG"

@@ -6,20 +6,20 @@
 - **빠른 탐색**: 8개 카테고리 + 카테고리별 README가 "어디에 무엇이 있는지" 안내
 - **검색 가능**: 마크다운이라 IDE/VS Code/`grep`으로 바로 검색
 
-> Fetch 시점: **2026-06-11** · 출처: `https://code.claude.com/docs/ko/*.md`
+> Fetch 시점: **2026-09-01**, 출처: `https://code.claude.com/docs/ko/*.md`
 > 가장 최신 정보는 항상 공식 문서를 우선하세요. 이 레포는 스냅샷입니다.
 
 ## 카테고리
 
 | # | 카테고리 | 페이지 | 한 줄 |
 |---|---|---:|---|
-| 01 | [시작하기](01-getting-started/) | 10 | 설치·로그인·환경 선택·Claude Code 동작 원리·설치 트러블슈팅 |
-| 02 | [실행 환경 / 인터페이스](02-environments/) | 18 | CLI·VS Code·JetBrains·Desktop·Web·Slack·Chrome·agent view·deep links |
-| 03 | [Claude Code 확장](03-extending/) | 16 | CLAUDE.md·Skills·Sub-agents·Hooks·MCP(+빠른 시작)·Plugins |
-| 04 | [Agent SDK](04-agent-sdk/) | 30 | Claude Code를 라이브러리로 — Python/TypeScript |
-| 05 | [워크플로우 / 자동화](05-workflows/) | 27 | 일상 작업·CI 통합·예약/자율 실행·병렬/worktree·동적 워크플로우·세션·고급 모드 |
-| 06 | [설정 / 레퍼런스](06-config-reference/) | 13 | 환경 변수·플래그·권한·도구·샌드박스·에러 사전·용어집 |
-| 07 | [엔터프라이즈 / 운영](07-enterprise/) | 20 | Bedrock·Vertex·Foundry·AWS·네트워크·보안·managed MCP·비용·조직 도입 |
+| 01 | [시작하기](01-getting-started/) | 10 | 설치, 로그인, 환경 선택, Claude Code 동작 원리, 설치 트러블슈팅 |
+| 02 | [실행 환경 / 인터페이스](02-environments/) | 18 | CLI, VS Code, JetBrains, Desktop, Web, Slack, Chrome, agent view, deep links |
+| 03 | [Claude Code 확장](03-extending/) | 16 | CLAUDE.md, Skills, Sub-agents, Hooks, MCP(+빠른 시작), Plugins |
+| 04 | [Agent SDK](04-agent-sdk/) | 30 | Claude Code를 라이브러리로 사용 (Python/TypeScript) |
+| 05 | [워크플로우 / 자동화](05-workflows/) | 27 | 일상 작업, CI 통합, 예약/자율 실행, 병렬/worktree, 동적 워크플로우, 세션, 고급 모드 |
+| 06 | [설정 / 레퍼런스](06-config-reference/) | 13 | 환경 변수, 플래그, 권한, 도구, 샌드박스, 에러 사전, 용어집 |
+| 07 | [엔터프라이즈 / 운영](07-enterprise/) | 20 | Bedrock, Vertex, Foundry, AWS, 네트워크, 보안, managed MCP, 비용, 조직 도입 |
 | 08 | [What's New / 릴리스 노트](08-whats-new/) | 12 | 주별 변경 이력 (w13~w22) |
 
 ## 빠른 탐색
@@ -40,7 +40,7 @@
 | 정기 작업 예약 | [`05-workflows/scheduled-tasks.md`](05-workflows/scheduled-tasks.md) + [`routines.md`](05-workflows/routines.md) |
 | 조건 충족까지 자동 반복 (`/goal`) | [`05-workflows/goal.md`](05-workflows/goal.md) |
 | 대규모 작업을 서브에이전트로 조율 | [`05-workflows/workflows.md`](05-workflows/workflows.md) |
-| 세션 이름·재개·분기·전환 | [`05-workflows/sessions.md`](05-workflows/sessions.md) |
+| 세션 이름, 재개, 분기, 전환 | [`05-workflows/sessions.md`](05-workflows/sessions.md) |
 | 모노레포/대규모 코드베이스 설정 | [`05-workflows/large-codebases.md`](05-workflows/large-codebases.md) |
 | 내 코드 보안 취약점 자동 검토 | [`05-workflows/security-guidance.md`](05-workflows/security-guidance.md) |
 | MCP 빠르게 붙여보기 | [`03-extending/mcp-quickstart.md`](03-extending/mcp-quickstart.md) |
@@ -48,7 +48,7 @@
 | 여러 세션 한눈에 관리 | [`02-environments/agent-view.md`](02-environments/agent-view.md) |
 | 용어 빠르게 찾기 | [`06-config-reference/glossary.md`](06-config-reference/glossary.md) |
 | 설치/로그인 에러 해결 | [`01-getting-started/troubleshoot-install.md`](01-getting-started/troubleshoot-install.md) |
-| 권한·샌드박스 거는 법 | [`06-config-reference/permissions.md`](06-config-reference/permissions.md) + [`sandboxing.md`](06-config-reference/sandboxing.md) |
+| 권한, 샌드박스 거는 법 | [`06-config-reference/permissions.md`](06-config-reference/permissions.md) + [`sandboxing.md`](06-config-reference/sandboxing.md) |
 | 환경 변수 / 플래그 찾기 | [`06-config-reference/env-vars.md`](06-config-reference/env-vars.md) + [`cli-reference.md`](06-config-reference/cli-reference.md) |
 | 에러 메시지 의미 찾기 | [`06-config-reference/errors.md`](06-config-reference/errors.md) |
 | 나만의 AI 에이전트 만들기 | [`04-agent-sdk/quickstart.md`](04-agent-sdk/quickstart.md) |
@@ -57,28 +57,30 @@
 
 ### 자주 쓸 만한 개별 페이지 Top 10
 
-1. [skills.md](03-extending/skills.md) — 슬래시 명령 만들기
-2. [sub-agents.md](03-extending/sub-agents.md) — 서브에이전트
-3. [hooks-guide.md](03-extending/hooks-guide.md) — hooks 입문
-4. [mcp.md](03-extending/mcp.md) — MCP 외부 도구 연결
-5. [memory.md](03-extending/memory.md) — CLAUDE.md / auto memory
-6. [common-workflows.md](05-workflows/common-workflows.md) — 일상 작업 패턴
-7. [best-practices.md](05-workflows/best-practices.md) — 활용 패턴 모음
-8. [permissions.md](06-config-reference/permissions.md) — 권한 시스템
-9. [settings.md](06-config-reference/settings.md) — 설정 전체
-10. [cli-reference.md](06-config-reference/cli-reference.md) — CLI 레퍼런스
+1. [skills.md](03-extending/skills.md): 슬래시 명령 만들기
+2. [sub-agents.md](03-extending/sub-agents.md): 서브에이전트
+3. [hooks-guide.md](03-extending/hooks-guide.md): hooks 입문
+4. [mcp.md](03-extending/mcp.md): MCP 외부 도구 연결
+5. [memory.md](03-extending/memory.md): CLAUDE.md / auto memory
+6. [common-workflows.md](05-workflows/common-workflows.md): 일상 작업 패턴
+7. [best-practices.md](05-workflows/best-practices.md): 활용 패턴 모음
+8. [permissions.md](06-config-reference/permissions.md): 권한 시스템
+9. [settings.md](06-config-reference/settings.md): 설정 전체
+10. [cli-reference.md](06-config-reference/cli-reference.md): CLI 레퍼런스
 
 ## 한국어 / 영어 비율
 
 총 146 페이지 중:
-- 🇰🇷 **한국어 144 페이지** (99%)
-- 🇬🇧 **영어 2 페이지** (1%, 한국어 번역 미제공이라 영문 원문 그대로 보존)
+- 🇰🇷 **한국어 145 페이지** (99.3%)
+- 🇬🇧 **영어 1 페이지** (0.7%, 공식 문서에 한국어판이 없어 영어로 받은 페이지)
 
-2026-06-11 sync 기준, 이전에 영문이던 Agent SDK 전체·What's New w13~w15·`voice-dictation`·`context-window`·`github-enterprise-server` 등에 한국어 번역이 들어와 교체되었습니다. 현재 영문으로 남은 페이지는 2개뿐:
-- [`05-workflows/advisor.md`](05-workflows/advisor.md) — 신규 페이지, 아직 한국어 미제공
-- [`08-whats-new/changelog.md`](08-whats-new/changelog.md) — 전체 릴리스 노트 (영문 원문 유지)
+2026-09-01 sync 기준, 영문으로 남은 페이지는 1개입니다:
+- [`08-whats-new/changelog.md`](08-whats-new/changelog.md): 버전별 릴리스 노트. 공식 문서 인덱스(`llms.txt`)가 이 페이지를 영어 경로 하나로만 등록하고 있어 한국어판 자체가 없습니다
 
-각 카테고리 README에서 ⓔ 마크로 표시.
+`advisor`는 이전까지 영문이었으나 한국어 번역이 들어와 교체되었습니다.
+
+영어 페이지는 고정된 것이 아닙니다. 공식 문서에 한국어판이 생기면 다음 sync에서 자동으로 한국어로 바뀝니다.
+각 카테고리 README에서 ⓔ 마크로 표시합니다.
 
 ## 활용 팁
 
@@ -99,11 +101,13 @@ git clone https://github.com/SongJunSub/claude-code-docs-ko.git
 ```
 
 ### 갱신 방법
-공식 문서가 업데이트되면 동일한 fetch 스크립트로 다시 받으면 됨:
+공식 문서가 업데이트되면 동일한 fetch 스크립트로 다시 받으면 됩니다:
 ```bash
 bash .scripts/fetch.sh && bash .scripts/organize.sh
 ```
-스크립트는 `.scripts/` 폴더에 있고, 각 페이지의 한국어 페이지가 추가되면 자동으로 한국어가 우선 적용됨.
+스크립트는 `.scripts/` 폴더에 있고, 각 페이지에 한국어판이 추가되면 자동으로 한국어가 우선 적용됩니다.
+받은 응답이 마크다운이 아니면(문서 사이트가 일부 경로에 HTML 페이지를 주는 경우가 있습니다)
+저장하지 않고 영어 경로로 넘어가므로, HTML 이 페이지 파일에 섞이지 않습니다.
 
 ## 디렉토리 구조
 
@@ -112,7 +116,7 @@ claude-code-docs-ko/
 ├── README.md                    # 이 파일
 ├── .scripts/
 │   ├── manifest.tsv             # 146개 페이지 → 카테고리 매핑
-│   ├── fetch.sh                 # 한국어 우선, 영어 fallback 다운로드
+│   ├── fetch.sh                 # 한국어 우선, 영어 fallback, HTML 응답 거부
 │   └── organize.sh              # 매니페스트 기반 카테고리 정리
 ├── 01-getting-started/          # 10 pages
 ├── 02-environments/             # 18 pages
@@ -121,7 +125,7 @@ claude-code-docs-ko/
 ├── 05-workflows/                # 27 pages
 ├── 06-config-reference/         # 13 pages
 ├── 07-enterprise/               # 20 pages
-└── 08-whats-new/                # 12 pages (changelog만 영문)
+└── 08-whats-new/                # 12 pages
 ```
 
 ## 라이선스

@@ -35,7 +35,14 @@
       "Bash(gh pr checkout*)",
       "Bash(gh pr create *)",
       "Bash(gh issue list*)",
-      "Bash(gh repo view*)"
+      "Bash(gh repo view*)",
+      "Bash(bash .scripts/check-repo.sh)",
+      "Bash(python3 .scripts/check-pages.py)",
+      "Bash(gh pr merge *)",
+      "Bash(gh pr checks*)",
+      "Bash(git checkout master)",
+      "Bash(git switch master)",
+      "Bash(git pull --ff-only*)"
     ],
     "deny": [
       "Bash(git push origin master*)",

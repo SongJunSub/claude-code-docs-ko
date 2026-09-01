@@ -4,7 +4,7 @@ description: 117개 페이지의 한국어/영어 번역 비율을 점검하고,
 allowed-tools: Bash Read
 ---
 
-# /translation-status — 번역 상태 점검
+# /translation-status: 번역 상태 점검
 
 ## 절차
 
@@ -46,9 +46,9 @@ allowed-tools: Bash Read
    ```
    📊 번역 상태 (2026-XX-XX 기준)
    ─────────────────────────────────────
-     전체 페이지:        117
-     한국어:            N (N/117 = X%)
-     영문 fallback:     M (M/117 = Y%)
+     전체 페이지: 117
+     한국어: N (N/117 = X%)
+     영문 fallback: M (M/117 = Y%)
    ─────────────────────────────────────
 
    🆕 새로 한국어가 들어온 페이지 (K개):

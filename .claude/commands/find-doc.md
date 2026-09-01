@@ -6,7 +6,7 @@ arguments: keyword
 allowed-tools: Bash Read
 ---
 
-# /find-doc — 문서 검색
+# /find-doc: 문서 검색
 
 검색어: **$ARGUMENTS**
 
@@ -26,7 +26,7 @@ allowed-tools: Bash Read
    - 카테고리 (폴더명)
    - 페이지 slug
    - 매치된 줄 컨텍스트 1~2줄
-   - 한 줄로 정리: `[카테고리] slug — "...매치 컨텍스트..."`
+   - 한 줄로 정리: `[카테고리] slug: "...매치 컨텍스트..."`
 
 4. **상위 5개만 출력**. 5개 초과면 마지막에 `... 외 N개 페이지에서 매치됨` 표시.
 
@@ -45,8 +45,8 @@ allowed-tools: Bash Read
 🔍 "hooks" 검색 결과 (총 8개 페이지)
 
 먼저 볼 페이지:
-  1. [03-extending] hooks-guide.md — "Claude Code가 파일을 편집하거나..."
-  2. [03-extending] hooks.md — "hook 이벤트, 설정 스키마, JSON I/O..."
+  1. [03-extending] hooks-guide.md: "Claude Code가 파일을 편집하거나..."
+  2. [03-extending] hooks.md: "hook 이벤트, 설정 스키마, JSON I/O..."
 
 기타 매치:
   - [04-agent-sdk] hooks.md

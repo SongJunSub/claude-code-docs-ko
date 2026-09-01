@@ -168,7 +168,7 @@ Claude Code는 이 설정을 관리자 제어 정책 계층에서만 읽습니�
 
 `serverName` 검증은 두 목록 간에 다릅니다:
 
-* {/* min-version: 2.1.182 */}`deniedMcpServers`에서, `serverName`은 모든 비어있지 않은 문자열을 허용하므로, 표시 이름으로 [claude.ai 커넥터](/docs/ko/mcp#use-mcp-servers-from-claude-ai)를 차단할 수 있습니다. 예를 들어, `{ "serverName": "claude.ai Slack" }`은 Slack 커넥터를 차단합니다. 거부가 이름 변경에 강력해야 할 때 또는 커넥터 이름이 충돌하고 ` (N)` 접미사를 얻을 때 `serverUrl` 항목을 선호합니다.
+* `deniedMcpServers`에서, `serverName`은 모든 비어있지 않은 문자열을 허용하므로, 표시 이름으로 [claude.ai 커넥터](/docs/ko/mcp#use-mcp-servers-from-claude-ai)를 차단할 수 있습니다. 예를 들어, `{ "serverName": "claude.ai Slack" }`은 Slack 커넥터를 차단합니다. 거부가 이름 변경에 강력해야 할 때 또는 커넥터 이름이 충돌하고 ` (N)` 접미사를 얻을 때 `serverUrl` 항목을 선호합니다.
 * `allowedMcpServers`에서, `serverName`은 문자, 숫자, 하이픈 및 밑줄로 제한됩니다. claude.ai 커넥터를 허용 목록에 추가하려면 `serverUrl`을 사용합니다.
 
 모든 claude.ai 커넥터를 끄려면, [`disableClaudeAiConnectors`](/docs/ko/mcp#disable-claude-ai-connectors)를 참조합니다.

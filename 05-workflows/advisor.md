@@ -82,14 +82,14 @@ claude --advisor opus
 
 조언자는 주 모델 이상의 기능을 가져야 합니다. 각 주 모델에 대해 허용되는 조언자는 다음과 같습니다:
 
-| 주 모델                                            | 허용되는 조언자                  | 참고                                                                                                          |
-| ----------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Haiku 4.5                                       | Fable, Opus, Sonnet       | Haiku는 조언자를 호출할 수 있지만 조언자로 작동할 수 없습니다                                                                       |
-| Sonnet 4.6                                      | Fable, Opus, Sonnet       |                                                                                                             |
-| Sonnet 5                                        | Fable, Opus, Sonnet 5     | Sonnet 4.6 조언자는 거부됩니다                                                                                       |
-| Opus 4.6                                        | Fable, Opus, Sonnet 5     | Sonnet 5와 Opus 4.6은 동등한 기능으로 평가되므로 Opus 4.6 주 모델은 Sonnet 5 조언자를 허용합니다                                       |
-| Opus 4.7 이상                                     | Fable, Opus 4.7, Opus 4.8 | Opus 4.7과 Opus 4.8은 동등한 기능으로 평가되므로 둘 다 다른 하나를 조언자로 허용합니다. Opus 4.6 또는 Sonnet 5 조언자를 가진 Opus 4.7 주 모델은 거부됩니다 |
-| Fable 5 ({/* min-version: 2.1.170 */}v2.1.170+) | Fable                     | Opus 또는 Sonnet 조언자는 거부됩니다                                                                                   |
+| 주 모델                | 허용되는 조언자                  | 참고                                                                                                          |
+| ------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Haiku 4.5           | Fable, Opus, Sonnet       | Haiku는 조언자를 호출할 수 있지만 조언자로 작동할 수 없습니다                                                                       |
+| Sonnet 4.6          | Fable, Opus, Sonnet       |                                                                                                             |
+| Sonnet 5            | Fable, Opus, Sonnet 5     | Sonnet 4.6 조언자는 거부됩니다                                                                                       |
+| Opus 4.6            | Fable, Opus, Sonnet 5     | Sonnet 5와 Opus 4.6은 동등한 기능으로 평가되므로 Opus 4.6 주 모델은 Sonnet 5 조언자를 허용합니다                                       |
+| Opus 4.7 이상         | Fable, Opus 4.7, Opus 4.8 | Opus 4.7과 Opus 4.8은 동등한 기능으로 평가되므로 둘 다 다른 하나를 조언자로 허용합니다. Opus 4.6 또는 Sonnet 5 조언자를 가진 Opus 4.7 주 모델은 거부됩니다 |
+| Fable 5 (v2.1.170+) | Fable                     | Opus 또는 Sonnet 조언자는 거부됩니다                                                                                   |
 
 Fable 5는 주 모델로 작동하든 조언자로 작동하든 Claude Code v2.1.170 이상과 Fable 5 액세스가 필요합니다.
 
@@ -160,7 +160,7 @@ Claude는 모든 턴이 아닌 결정 지점에서 조언자를 호출하므로 
 조언자 도구는 다음 모두를 요구합니다:
 
 * **Anthropic API만**: 조언자는 서버 실행 도구입니다. Amazon Bedrock, Claude Platform on AWS, Google Cloud의 Agent Platform 또는 Microsoft Foundry에서는 사용할 수 없습니다. `ANTHROPIC_BASE_URL`로 구성된 [LLM 게이트웨이](/docs/ko/llm-gateway)를 통해 가용성은 게이트웨이가 요청을 Anthropic API로 그대로 전달하는지 여부에 따라 달라집니다.
-* **지원되는 주 모델**: Opus 4.6 이상, Sonnet 4.6 이상 또는 Haiku 4.5. {/* min-version: 2.1.170 */}Fable 5도 Claude Code v2.1.170 이상에서 적합합니다.
+* **지원되는 주 모델**: Opus 4.6 이상, Sonnet 4.6 이상 또는 Haiku 4.5. Fable 5도 Claude Code v2.1.170 이상에서 적합합니다.
 
 <h2 id="turn-the-advisor-off">
   조언자 끄기

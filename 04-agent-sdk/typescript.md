@@ -295,14 +295,14 @@ function getSessionMessages(
   반환 타입: `SessionMessage`
 </h4>
 
-| 속성                   | 타입                      | 설명                                                                                                                                                                                                 |
-| :------------------- | :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`               | `"user" \| "assistant"` | 메시지 역할                                                                                                                                                                                             |
-| `uuid`               | `string`                | 고유 메시지 식별자                                                                                                                                                                                         |
-| `session_id`         | `string`                | 이 메시지가 속한 세션                                                                                                                                                                                       |
-| `message`            | `unknown`               | 트랜스크립트의 원본 메시지 페이로드                                                                                                                                                                                |
-| `parent_tool_use_id` | `string \| null`        | 서브에이전트 메시지의 경우 생성 `Agent` 도구 호출의 `tool_use_id`입니다. 메인 세션 메시지 및 이전 세션의 경우 `null`                                                                                                                    |
-| `parent_agent_id`    | `string \| null`        | [중첩된 서브에이전트](/docs/ko/sub-agents#spawn-nested-subagents)의 메시지의 경우 이를 생성한 서브에이전트의 `agentId`입니다. 메인 세션 메시지, 최상위 서브에이전트의 메시지 및 이전 세션의 경우 `null`입니다. {/* min-version: 2.1.202 */}Claude Code v2.1.202 이상 필요 |
+| 속성                   | 타입                      | 설명                                                                                                                                                                     |
+| :------------------- | :---------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`               | `"user" \| "assistant"` | 메시지 역할                                                                                                                                                                 |
+| `uuid`               | `string`                | 고유 메시지 식별자                                                                                                                                                             |
+| `session_id`         | `string`                | 이 메시지가 속한 세션                                                                                                                                                           |
+| `message`            | `unknown`               | 트랜스크립트의 원본 메시지 페이로드                                                                                                                                                    |
+| `parent_tool_use_id` | `string \| null`        | 서브에이전트 메시지의 경우 생성 `Agent` 도구 호출의 `tool_use_id`입니다. 메인 세션 메시지 및 이전 세션의 경우 `null`                                                                                        |
+| `parent_agent_id`    | `string \| null`        | [중첩된 서브에이전트](/docs/ko/sub-agents#spawn-nested-subagents)의 메시지의 경우 이를 생성한 서브에이전트의 `agentId`입니다. 메인 세션 메시지, 최상위 서브에이전트의 메시지 및 이전 세션의 경우 `null`입니다. Claude Code v2.1.202 이상 필요 |
 
 <h4 id="example-3">
   예제
@@ -552,7 +552,7 @@ const result = query({
 ```
 
 * `API_TIMEOUT_MS`: Anthropic 클라이언트의 요청당 타임아웃 (밀리초 단위). 기본값 `600000`. 메인 루프 및 모든 서브에이전트에 적용됩니다.
-* `CLAUDE_CODE_MAX_RETRIES`: 최대 API 재시도 횟수. 기본값 `10`, 최대 `15`로 제한됩니다. 각 재시도는 자체 `API_TIMEOUT_MS` 윈도우를 가지므로 최악의 경우 벽시간은 대략 `API_TIMEOUT_MS × (CLAUDE_CODE_MAX_RETRIES + 1)` 더하기 백오프입니다. 더 긴 중단을 기다려야 하는 무인 실행의 경우 `CLAUDE_CODE_RETRY_WATCHDOG=1`을 설정하여 용량 오류를 무한정 재시도합니다. 그리고 {/* min-version: 2.1.199 */}Claude Code v2.1.199부터 다른 일시적 오류의 기본값을 `300`으로 올리고 이 변수의 상한을 제거합니다.
+* `CLAUDE_CODE_MAX_RETRIES`: 최대 API 재시도 횟수. 기본값 `10`, 최대 `15`로 제한됩니다. 각 재시도는 자체 `API_TIMEOUT_MS` 윈도우를 가지므로 최악의 경우 벽시간은 대략 `API_TIMEOUT_MS × (CLAUDE_CODE_MAX_RETRIES + 1)` 더하기 백오프입니다. 더 긴 중단을 기다려야 하는 무인 실행의 경우 `CLAUDE_CODE_RETRY_WATCHDOG=1`을 설정하여 용량 오류를 무한정 재시도합니다. 그리고 Claude Code v2.1.199부터 다른 일시적 오류의 기본값을 `300`으로 올리고 이 변수의 상한을 제거합니다.
 * `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`: `run_in_background`으로 시작된 서브에이전트에 대한 정지 감시견입니다. 기본값 `600000`. 각 스트림 이벤트에서 재설정되며, 정지 시 서브에이전트를 중단하고 작업을 실패로 표시하며 부분 결과와 함께 오류를 부모에게 표시합니다. 동기 서브에이전트에는 적용되지 않습니다.
 * `CLAUDE_ENABLE_STREAM_WATCHDOG` 및 `CLAUDE_STREAM_IDLE_TIMEOUT_MS`: 헤더가 도착했지만 응답 본문이 스트리밍을 중지할 때 요청을 중단합니다. 감시견은 모든 공급자에 대해 기본적으로 켜져 있습니다. `CLAUDE_ENABLE_STREAM_WATCHDOG=0`으로 설정하여 비활성화합니다. `CLAUDE_STREAM_IDLE_TIMEOUT_MS`는 기본값 `300000`이고 해당 최소값으로 고정됩니다. 중단된 요청은 일반 재시도 경로를 거칩니다.
 
@@ -593,27 +593,27 @@ interface Query extends AsyncGenerator<SDKMessage, void> {
   메서드
 </h4>
 
-| 메서드                                    | 설명                                                                                                                                                                                                                                                                                               |
-| :------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `interrupt()`                          | 쿼리를 중단합니다. 스트리밍 입력 모드에서만 사용 가능합니다. {/* min-version: 2.1.205 */}CLI가 [`SDKSystemMessage.capabilities`](#sdksystemmessage)에서 `interrupt_receipt_v1` 기능을 광고할 때 중단을 견디는 대기 중인 메시지를 나열하는 [`SDKControlInterruptResponse`](#sdkcontrolinterruptresponse)로 해결됩니다. v2.1.205 이전의 CLI에서는 `undefined`로 해결됩니다 |
-| `rewindFiles(userMessageId, options?)` | 파일을 지정된 사용자 메시지의 상태로 복원합니다. 변경 사항을 미리 보려면 `{ dryRun: true }`를 전달합니다. `enableFileCheckpointing: true`가 필요합니다. [파일 체크포인팅](/docs/ko/agent-sdk/file-checkpointing) 참조                                                                                                                                     |
-| `setPermissionMode()`                  | 권한 모드를 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                                                                                                                                                               |
-| `setModel()`                           | 모델을 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                                                                                                                                                                  |
-| `setMaxThinkingTokens()`               | *더 이상 사용되지 않음:* 대신 `thinking` 옵션을 사용합니다. 최대 사고 토큰을 변경합니다. `null`을 전달하면 사고를 세션 기본값으로 재설정합니다: 세션 중 재정의가 지워지고, 사고가 비활성화된 세션의 경우 사고는 비활성화 상태로 유지됩니다                                                                                                                                                  |
-| `applyFlagSettings(settings)`          | 런타임에 세션의 플래그 설정 계층으로 설정을 병합합니다 (스트리밍 입력 모드에서만 사용 가능). [`applyFlagSettings()`](#applyflagsettings) 참조                                                                                                                                                                                             |
-| `initializationResult()`               | 지원되는 명령, 모델, 계정 정보 및 출력 스타일 구성을 포함한 전체 초기화 결과를 반환합니다                                                                                                                                                                                                                                             |
-| `reinitialize()`                       | {/* min-version: 2.1.195 */}실행 중인 CLI에 `initialize` 제어 요청을 다시 보내고 캐시된 첫 연결 결과 대신 새로운 결과를 반환합니다. 연결 해제 후 세션에 다시 연결하는 것과 같은 전송 간격 후에 사용하여 보류 중인 권한 요청이 `canUseTool` 콜백에 다시 도달하도록 합니다. 응답이 손실된 요청은 다시 전달되므로 요청 ID당 콜백을 멱등성으로 만듭니다. Claude Code v2.1.195 이상이 필요합니다                                   |
-| `supportedCommands()`                  | 사용 가능한 슬래시 명령을 반환합니다                                                                                                                                                                                                                                                                             |
-| `supportedModels()`                    | 표시 정보를 포함한 사용 가능한 모델을 반환합니다                                                                                                                                                                                                                                                                      |
-| `supportedAgents()`                    | 사용 가능한 서브에이전트를 [`AgentInfo`](#agentinfo)`[]`로 반환합니다                                                                                                                                                                                                                                              |
-| `mcpServerStatus()`                    | 연결된 MCP 서버의 상태를 반환합니다                                                                                                                                                                                                                                                                            |
-| `accountInfo()`                        | 계정 정보를 반환합니다                                                                                                                                                                                                                                                                                     |
-| `reconnectMcpServer(serverName)`       | 이름으로 MCP 서버를 다시 연결합니다                                                                                                                                                                                                                                                                            |
-| `toggleMcpServer(serverName, enabled)` | 이름으로 MCP 서버를 활성화 또는 비활성화합니다                                                                                                                                                                                                                                                                      |
-| `setMcpServers(servers)`               | 이 세션의 MCP 서버 집합을 동적으로 바꿉니다. 추가, 제거 및 오류가 발생한 서버에 대한 정보를 반환합니다                                                                                                                                                                                                                                    |
-| `streamInput(stream)`                  | 다중 턴 대화를 위해 입력 메시지를 쿼리로 스트리밍합니다                                                                                                                                                                                                                                                                  |
-| `stopTask(taskId)`                     | ID로 실행 중인 백그라운드 작업을 중지합니다                                                                                                                                                                                                                                                                        |
-| `close()`                              | 쿼리를 닫고 기본 프로세스를 종료합니다. 쿼리를 강제로 종료하고 모든 리소스를 정리합니다                                                                                                                                                                                                                                                |
+| 메서드                                    | 설명                                                                                                                                                                                                                                                                   |
+| :------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `interrupt()`                          | 쿼리를 중단합니다. 스트리밍 입력 모드에서만 사용 가능합니다. CLI가 [`SDKSystemMessage.capabilities`](#sdksystemmessage)에서 `interrupt_receipt_v1` 기능을 광고할 때 중단을 견디는 대기 중인 메시지를 나열하는 [`SDKControlInterruptResponse`](#sdkcontrolinterruptresponse)로 해결됩니다. v2.1.205 이전의 CLI에서는 `undefined`로 해결됩니다 |
+| `rewindFiles(userMessageId, options?)` | 파일을 지정된 사용자 메시지의 상태로 복원합니다. 변경 사항을 미리 보려면 `{ dryRun: true }`를 전달합니다. `enableFileCheckpointing: true`가 필요합니다. [파일 체크포인팅](/docs/ko/agent-sdk/file-checkpointing) 참조                                                                                                         |
+| `setPermissionMode()`                  | 권한 모드를 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                                                                                                                                   |
+| `setModel()`                           | 모델을 변경합니다 (스트리밍 입력 모드에서만 사용 가능)                                                                                                                                                                                                                                      |
+| `setMaxThinkingTokens()`               | *더 이상 사용되지 않음:* 대신 `thinking` 옵션을 사용합니다. 최대 사고 토큰을 변경합니다. `null`을 전달하면 사고를 세션 기본값으로 재설정합니다: 세션 중 재정의가 지워지고, 사고가 비활성화된 세션의 경우 사고는 비활성화 상태로 유지됩니다                                                                                                                      |
+| `applyFlagSettings(settings)`          | 런타임에 세션의 플래그 설정 계층으로 설정을 병합합니다 (스트리밍 입력 모드에서만 사용 가능). [`applyFlagSettings()`](#applyflagsettings) 참조                                                                                                                                                                 |
+| `initializationResult()`               | 지원되는 명령, 모델, 계정 정보 및 출력 스타일 구성을 포함한 전체 초기화 결과를 반환합니다                                                                                                                                                                                                                 |
+| `reinitialize()`                       | 실행 중인 CLI에 `initialize` 제어 요청을 다시 보내고 캐시된 첫 연결 결과 대신 새로운 결과를 반환합니다. 연결 해제 후 세션에 다시 연결하는 것과 같은 전송 간격 후에 사용하여 보류 중인 권한 요청이 `canUseTool` 콜백에 다시 도달하도록 합니다. 응답이 손실된 요청은 다시 전달되므로 요청 ID당 콜백을 멱등성으로 만듭니다. Claude Code v2.1.195 이상이 필요합니다                                   |
+| `supportedCommands()`                  | 사용 가능한 슬래시 명령을 반환합니다                                                                                                                                                                                                                                                 |
+| `supportedModels()`                    | 표시 정보를 포함한 사용 가능한 모델을 반환합니다                                                                                                                                                                                                                                          |
+| `supportedAgents()`                    | 사용 가능한 서브에이전트를 [`AgentInfo`](#agentinfo)`[]`로 반환합니다                                                                                                                                                                                                                  |
+| `mcpServerStatus()`                    | 연결된 MCP 서버의 상태를 반환합니다                                                                                                                                                                                                                                                |
+| `accountInfo()`                        | 계정 정보를 반환합니다                                                                                                                                                                                                                                                         |
+| `reconnectMcpServer(serverName)`       | 이름으로 MCP 서버를 다시 연결합니다                                                                                                                                                                                                                                                |
+| `toggleMcpServer(serverName, enabled)` | 이름으로 MCP 서버를 활성화 또는 비활성화합니다                                                                                                                                                                                                                                          |
+| `setMcpServers(servers)`               | 이 세션의 MCP 서버 집합을 동적으로 바꿉니다. 추가, 제거 및 오류가 발생한 서버에 대한 정보를 반환합니다                                                                                                                                                                                                        |
+| `streamInput(stream)`                  | 다중 턴 대화를 위해 입력 메시지를 쿼리로 스트리밍합니다                                                                                                                                                                                                                                      |
+| `stopTask(taskId)`                     | ID로 실행 중인 백그라운드 작업을 중지합니다                                                                                                                                                                                                                                            |
+| `close()`                              | 쿼리를 닫고 기본 프로세스를 종료합니다. 쿼리를 강제로 종료하고 모든 리소스를 정리합니다                                                                                                                                                                                                                    |
 
 <h4 id="applyflagsettings">
   `applyFlagSettings()`
@@ -626,7 +626,7 @@ interface Query extends AsyncGenerator<SDKMessage, void> {
 * **다음 턴에 적용됨**: `model`, `effortLevel`, `ultracode`, `permissions`, `hooks`, `skillOverrides`, `fastMode`, `agent`. `agent`를 전환하면 해당 에이전트의 모델 재정의, 훅 및 시스템 프롬프트도 다음 턴에 적용됩니다.
 * **세션 중 효과 없음**: 시스템 프롬프트 옵션입니다. 이들은 시작 시 한 번 해결되므로 실행 중인 세션은 호출이 성공하더라도 원본 값을 유지합니다. 이를 변경하려면 새 세션을 시작합니다.
 
-`effortLevel`은 [노력 수준](/docs/ko/model-config#adjust-effort-level) 이름을 허용합니다. 또한 `"ultracode"`를 허용하며, 이는 세션을 `xhigh` 노력으로 실행하고 [ultracode](/docs/ko/workflows#let-claude-decide-with-ultracode)를 켭니다. `Settings` 타입은 해당 값 없이 `effortLevel`을 선언하므로 TypeScript에서 동등한 `{ ultracode: true }`를 전달합니다. {/* min-version: 2.1.203 */}`ultracode` 값은 Claude Code v2.1.203 이상이 필요하며 설정 파일의 `effortLevel` 키가 아닌 `applyFlagSettings()`에서만 허용됩니다.
+`effortLevel`은 [노력 수준](/docs/ko/model-config#adjust-effort-level) 이름을 허용합니다. 또한 `"ultracode"`를 허용하며, 이는 세션을 `xhigh` 노력으로 실행하고 [ultracode](/docs/ko/workflows#let-claude-decide-with-ultracode)를 켭니다. `Settings` 타입은 해당 값 없이 `effortLevel`을 선언하므로 TypeScript에서 동등한 `{ ultracode: true }`를 전달합니다. `ultracode` 값은 Claude Code v2.1.203 이상이 필요하며 설정 파일의 `effortLevel` 키가 아닌 `applyFlagSettings()`에서만 허용됩니다.
 
 값은 플래그 설정 계층에 기록되며, 이는 `query()`의 인라인 `settings` 옵션이 시작 시 채우는 계층과 동일합니다. 플래그 설정은 [설정 우선순위 순서](/docs/ko/settings#settings-precedence)의 상단 근처에 있습니다: 사용자, 프로젝트 및 로컬 설정을 재정의하며, 관리되는 정책 설정만 이를 재정의할 수 있습니다. 이는 [우선순위 섹션](#settings-precedence)이 프로그래밍 방식의 옵션이라고 부르는 것과 동일한 계층입니다.
 
@@ -1210,7 +1210,7 @@ type SDKUserMessageReplay = {
 };
 ```
 
-세션 외부에서 주입된 사용자 턴으로, [`origin`](#sdkmessageorigin) 종류가 `peer` 또는 `channel`인 경우, 활성 턴 중에 전달되었는지 또는 세션이 유휴 상태일 때 새 턴을 시작했는지 여부에 관계없이 스트림에 재생으로 도달합니다. {/* min-version: 2.1.207 */}v2.1.207 이전에는 세션이 유휴 상태일 때 전달된 주입된 턴이 스트림에서 메시지를 생성하지 않았으며 트랜스크립트를 다시 읽을 때만 나타났습니다.
+세션 외부에서 주입된 사용자 턴으로, [`origin`](#sdkmessageorigin) 종류가 `peer` 또는 `channel`인 경우, 활성 턴 중에 전달되었는지 또는 세션이 유휴 상태일 때 새 턴을 시작했는지 여부에 관계없이 스트림에 재생으로 도달합니다. v2.1.207 이전에는 세션이 유휴 상태일 때 전달된 주입된 턴이 스트림에서 메시지를 생성하지 않았으며 트랜스크립트를 다시 읽을 때만 나타났습니다.
 
 <h3 id="sdkresultmessage">
   `SDKResultMessage`
@@ -1312,8 +1312,6 @@ type SDKSystemMessage = {
   capabilities?: string[];
 };
 ```
-
-{/* min-version: 2.1.205 */}
 
 `capabilities` 배열은 이 CLI가 구현하는 프로토콜 동작의 이름을 지정하므로 `claude_code_version` 문자열을 비교하는 대신 기능을 감지할 수 있습니다. 이는 개방형 집합입니다: 인식하지 못하는 값은 무시하고 의존하는 동작의 특정 기능을 확인합니다. 이 필드는 Claude Code v2.1.205 이상이 필요하며 이전 CLI에는 없습니다.
 
@@ -1478,14 +1476,14 @@ type SDKMessageOrigin =
   | { kind: "auto-continuation" };
 ```
 
-| `kind`              | 의미                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `human`             | 최종 사용자의 직접 입력입니다. 사용자 메시지에서 없는 `origin`도 인간 입력을 의미합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `channel`           | [채널](/docs/ko/channels)에 도착한 메시지입니다. `server`는 소스 MCP 서버 이름입니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `peer`              | 다른 에이전트의 메시지입니다. 프로세스 내 [팀원](/docs/ko/agent-teams)이 `SendMessage`를 통해 `main`으로 보내는 경우, `from`은 팀원의 이름이고 `senderTaskId`는 해당 작업 ID입니다. 다른 로컬 Claude Code 프로세스와 같은 교차 세션 피어의 경우, `from`은 발신자 주소이고 `senderTaskId`는 없습니다. {/* min-version: 2.1.205 */}`name` 및 `body`는 Claude Code v2.1.205 이상이 필요합니다. `name`은 발신자의 표시 이름이며 Claude Code에서 정규화됩니다: 유니코드 제어, 형식, 서로게이트 및 줄 또는 단락 구분자 코드 포인트를 제거한 다음 결과를 자르고 64개 코드 포인트로 제한하고 줄임표를 추가합니다. `body`는 피어 봉투가 제거된 디코딩된 메시지 본문이며, 모델이 보는 것과 바이트 정확합니다. 팀원 메시지의 경우 `body`는 항상 존재합니다. 교차 세션 피어의 경우 Claude Code에서 형성한 정확히 하나의 피어 봉투인 경우에만 존재합니다. `name` 및 `body`를 렌더링하고 메시지 텍스트를 다시 파싱하지 마십시오. |
-| `task-notification` | 백그라운드 작업이 완료된 후 주입된 합성 턴입니다. [`SDKTaskNotificationMessage`](#sdktasknotificationmessage)를 참조하십시오.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `coordinator`       | [에이전트 팀](/docs/ko/agent-teams)의 팀 코디네이터로부터의 메시지입니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `auto-continuation` | 새로운 사용자 입력 없이 세션이 계속될 때 주입된 합성 턴입니다. 예를 들어 후속 프롬프트를 트리거하는 명령 결과입니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `kind`              | 의미                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `human`             | 최종 사용자의 직접 입력입니다. 사용자 메시지에서 없는 `origin`도 인간 입력을 의미합니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `channel`           | [채널](/docs/ko/channels)에 도착한 메시지입니다. `server`는 소스 MCP 서버 이름입니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `peer`              | 다른 에이전트의 메시지입니다. 프로세스 내 [팀원](/docs/ko/agent-teams)이 `SendMessage`를 통해 `main`으로 보내는 경우, `from`은 팀원의 이름이고 `senderTaskId`는 해당 작업 ID입니다. 다른 로컬 Claude Code 프로세스와 같은 교차 세션 피어의 경우, `from`은 발신자 주소이고 `senderTaskId`는 없습니다. `name` 및 `body`는 Claude Code v2.1.205 이상이 필요합니다. `name`은 발신자의 표시 이름이며 Claude Code에서 정규화됩니다: 유니코드 제어, 형식, 서로게이트 및 줄 또는 단락 구분자 코드 포인트를 제거한 다음 결과를 자르고 64개 코드 포인트로 제한하고 줄임표를 추가합니다. `body`는 피어 봉투가 제거된 디코딩된 메시지 본문이며, 모델이 보는 것과 바이트 정확합니다. 팀원 메시지의 경우 `body`는 항상 존재합니다. 교차 세션 피어의 경우 Claude Code에서 형성한 정확히 하나의 피어 봉투인 경우에만 존재합니다. `name` 및 `body`를 렌더링하고 메시지 텍스트를 다시 파싱하지 마십시오. |
+| `task-notification` | 백그라운드 작업이 완료된 후 주입된 합성 턴입니다. [`SDKTaskNotificationMessage`](#sdktasknotificationmessage)를 참조하십시오.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `coordinator`       | [에이전트 팀](/docs/ko/agent-teams)의 팀 코디네이터로부터의 메시지입니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `auto-continuation` | 새로운 사용자 입력 없이 세션이 계속될 때 주입된 합성 턴입니다. 예를 들어 후속 프롬프트를 트리거하는 명령 결과입니다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 <h2 id="hook-types">
   훅 타입
@@ -2110,7 +2108,7 @@ type MonitorInput = {
 };
 ```
 
-백그라운드 소스를 실행하고 각 이벤트를 Claude에 전달하므로 폴링 없이 반응할 수 있습니다: `command`는 스크립트를 실행하고 stdout 라인당 하나의 이벤트를 내보내며, `ws`는 WebSocket을 열고 텍스트 프레임당 하나의 이벤트를 내보냅니다. `command` 또는 `ws` 중 정확히 하나를 제공합니다. {/* min-version: 2.1.195 */}`ws` 소스는 Claude Code v2.1.195 이상이 필요합니다.
+백그라운드 소스를 실행하고 각 이벤트를 Claude에 전달하므로 폴링 없이 반응할 수 있습니다: `command`는 스크립트를 실행하고 stdout 라인당 하나의 이벤트를 내보내며, `ws`는 WebSocket을 열고 텍스트 프레임당 하나의 이벤트를 내보냅니다. `command` 또는 `ws` 중 정확히 하나를 제공합니다. `ws` 소스는 Claude Code v2.1.195 이상이 필요합니다.
 
 로그 테일과 같은 세션 길이 감시의 경우 `persistent: true`를 설정합니다. Monitor가 명령을 실행할 때, Bash와 동일한 권한 규칙을 따릅니다. WebSocket 감시는 별도로 승인을 요청합니다. 동작 및 공급자 가용성은 [Monitor 도구 참조](/docs/ko/tools-reference#monitor-tool)를 참조하세요.
 
@@ -2234,7 +2232,7 @@ type TaskStopInput = {
 };
 ```
 
-ID로 실행 중인 백그라운드 작업 또는 셸을 중지합니다. {/* min-version: 2.1.198 */}v2.1.198부터 `task_id`는 에이전트 팀 팀원 또는 에이전트 ID 또는 이름으로 명명된 백그라운드 에이전트도 수락합니다.
+ID로 실행 중인 백그라운드 작업 또는 셸을 중지합니다. v2.1.198부터 `task_id`는 에이전트 팀 팀원 또는 에이전트 ID 또는 이름으로 명명된 백그라운드 에이전트도 수락합니다.
 
 <h3 id="notebookedit">
   NotebookEdit
@@ -2570,7 +2568,7 @@ type AgentOutput =
 
 서브에이전트의 결과를 반환합니다. `status` 필드에서 구분됩니다: 완료된 작업의 경우 `"completed"`, 백그라운드 작업의 경우 `"async_launched"`, Claude Code가 원격 클라우드 세션으로 전달한 작업의 경우 `"remote_launched"`이며, 여기서 `sessionUrl`은 해당 세션으로 연결되고 `taskId`는 이를 식별합니다.
 
-`resolvedModel` 필드는 `completed` 및 `async_launched` 변형에서 서브에이전트가 실제로 실행된 모델의 이름을 지정하며, 이는 [`availableModels`](/docs/ko/model-config#restrict-model-selection) 또는 다른 재정의가 적용될 때 요청된 `model` 입력과 다를 수 있습니다. {/* min-version: 2.1.174 */}이 필드는 Claude Code v2.1.174 이상이 필요합니다.
+`resolvedModel` 필드는 `completed` 및 `async_launched` 변형에서 서브에이전트가 실제로 실행된 모델의 이름을 지정하며, 이는 [`availableModels`](/docs/ko/model-config#restrict-model-selection) 또는 다른 재정의가 적용될 때 요청된 `model` 입력과 다를 수 있습니다. 이 필드는 Claude Code v2.1.174 이상이 필요합니다.
 
 `completed` 변형에서 `worktreePath`는 서브에이전트가 격리된 git worktree에서 실행되었을 때 설정되며, `worktreeBranch`는 Claude Code가 생성했을 때 해당 worktree의 분기 이름을 지정합니다. `usage.service_tier`는 서브에이전트의 요청에 대해 API가 보고한 서비스 계층 문자열을 전달합니다.
 
@@ -3229,17 +3227,17 @@ type ModelInfo = {
 };
 ```
 
-| 필드                         | 타입                                                                 | 설명                                                                                                                                                                                                             |
-| :------------------------- | :----------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`                    | `string`                                                           | API 호출에서 전달할 모델 식별자                                                                                                                                                                                            |
-| `resolvedModel`            | `string \| undefined`                                              | 이 항목의 `value`가 확인되는 정규 와이어 모델 ID입니다. `sonnet`과 같은 별칭 항목은 `claude-sonnet-5`와 같은 명시적 모델 ID로 확인되므로, 호스트는 저장된 명시적 모델 ID를 이 별칭 항목이 포함하는 것과 일치시킬 수 있습니다. {/* min-version: 2.1.197 */}Claude Code v2.1.197 이상이 필요합니다. |
-| `displayName`              | `string`                                                           | 사람이 읽을 수 있는 표시 이름                                                                                                                                                                                              |
-| `description`              | `string`                                                           | 모델의 기능에 대한 설명                                                                                                                                                                                                  |
-| `supportsEffort`           | `boolean \| undefined`                                             | 이 모델이 노력 수준을 지원하는지 여부                                                                                                                                                                                          |
-| `supportedEffortLevels`    | `("low" \| "medium" \| "high" \| "xhigh" \| "max")[] \| undefined` | 이 모델이 허용하는 노력 수준                                                                                                                                                                                               |
-| `supportsAdaptiveThinking` | `boolean \| undefined`                                             | 이 모델이 Claude가 언제 그리고 얼마나 생각할지 결정하는 적응형 사고를 지원하는지 여부                                                                                                                                                            |
-| `supportsFastMode`         | `boolean \| undefined`                                             | 이 모델이 빠른 모드를 지원하는지 여부                                                                                                                                                                                          |
-| `supportsAutoMode`         | `boolean \| undefined`                                             | 이 모델이 자동 모드를 지원하는지 여부                                                                                                                                                                                          |
+| 필드                         | 타입                                                                 | 설명                                                                                                                                                                                 |
+| :------------------------- | :----------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`                    | `string`                                                           | API 호출에서 전달할 모델 식별자                                                                                                                                                                |
+| `resolvedModel`            | `string \| undefined`                                              | 이 항목의 `value`가 확인되는 정규 와이어 모델 ID입니다. `sonnet`과 같은 별칭 항목은 `claude-sonnet-5`와 같은 명시적 모델 ID로 확인되므로, 호스트는 저장된 명시적 모델 ID를 이 별칭 항목이 포함하는 것과 일치시킬 수 있습니다. Claude Code v2.1.197 이상이 필요합니다. |
+| `displayName`              | `string`                                                           | 사람이 읽을 수 있는 표시 이름                                                                                                                                                                  |
+| `description`              | `string`                                                           | 모델의 기능에 대한 설명                                                                                                                                                                      |
+| `supportsEffort`           | `boolean \| undefined`                                             | 이 모델이 노력 수준을 지원하는지 여부                                                                                                                                                              |
+| `supportedEffortLevels`    | `("low" \| "medium" \| "high" \| "xhigh" \| "max")[] \| undefined` | 이 모델이 허용하는 노력 수준                                                                                                                                                                   |
+| `supportsAdaptiveThinking` | `boolean \| undefined`                                             | 이 모델이 Claude가 언제 그리고 얼마나 생각할지 결정하는 적응형 사고를 지원하는지 여부                                                                                                                                |
+| `supportsFastMode`         | `boolean \| undefined`                                             | 이 모델이 빠른 모드를 지원하는지 여부                                                                                                                                                              |
+| `supportsAutoMode`         | `boolean \| undefined`                                             | 이 모델이 자동 모드를 지원하는지 여부                                                                                                                                                              |
 
 <h3 id="agentinfo">
   `AgentInfo`
@@ -3742,7 +3740,7 @@ type SDKTaskUpdatedMessage = {
 
 시작 시 아무것도 내보내지지 않습니다. 세션의 CLI 프로세스가 시작되거나 다시 시작될 때마다 빈 집합으로 재설정하고 다음 멤버십 변경이 다시 채우도록 하세요.
 
-{/* min-version: 2.1.203 */}Claude Code v2.1.203 이상이 필요합니다.
+Claude Code v2.1.203 이상이 필요합니다.
 
 ```typescript theme={null}
 type SDKBackgroundTasksChangedMessage = {
@@ -3764,7 +3762,7 @@ type SDKBackgroundTasksChangedMessage = {
 
 Claude가 사고 블록을 생성하는 동안 내보내집니다. 여기에는 지금까지 생성된 사고 토큰의 실행 추정치가 포함됩니다. `estimated_tokens`는 현재 사고 블록의 실행 합계이고 `estimated_tokens_delta`는 이 프레임에서 전달된 증분입니다. 진행 상황 표시에 사용하세요. 최상위 에이전트 루프의 최종 개수는 결과 메시지의 `usage.output_tokens`입니다. 이는 [서브에이전트 토큰을 포함하지 않습니다](/docs/ko/agent-sdk/cost-tracking#get-the-total-cost-of-a-query). 전체 트리 회계를 위해 [`modelUsage`](#modelusage)를 사용하세요.
 
-{/* min-version: 2.1.153 */}Claude Code v2.1.153 이상이 필요합니다.
+Claude Code v2.1.153 이상이 필요합니다.
 
 ```typescript theme={null}
 type SDKThinkingTokensMessage = {
@@ -3817,7 +3815,7 @@ type SDKRateLimitEvent = {
 };
 ```
 
-{/* min-version: 2.1.181 */}`errorCode`가 `"credits_required"`일 때, 거부는 포함된 사용량이 소진된 claude.ai 구독에서 발생하며, 사용자가 사용 크레딧을 구매할 때까지 세션을 계속할 수 없습니다. `canUserPurchaseCredits`는 인증된 사용자가 계정에 대한 크레딧을 구매할 수 있는지 여부를 나타내고, `hasChargeableSavedPaymentMethod`는 저장된 결제 방법이 파일에 있는지 여부를 나타냅니다. 세 필드 모두 크레딧 필수 거부가 아닌 속도 제한 이벤트에서는 없습니다. Claude Code v2.1.181 이상이 필요합니다.
+`errorCode`가 `"credits_required"`일 때, 거부는 포함된 사용량이 소진된 claude.ai 구독에서 발생하며, 사용자가 사용 크레딧을 구매할 때까지 세션을 계속할 수 없습니다. `canUserPurchaseCredits`는 인증된 사용자가 계정에 대한 크레딧을 구매할 수 있는지 여부를 나타내고, `hasChargeableSavedPaymentMethod`는 저장된 결제 방법이 파일에 있는지 여부를 나타냅니다. 세 필드 모두 크레딧 필수 거부가 아닌 속도 제한 이벤트에서는 없습니다. Claude Code v2.1.181 이상이 필요합니다.
 
 <h3 id="sdklocalcommandoutputmessage">
   `SDKLocalCommandOutputMessage`
@@ -3881,7 +3879,7 @@ type SDKConversationResetMessage = {
 };
 ```
 
-{/* min-version: 2.1.203 */}SDK의 게시된 타이핑은 Claude Code v2.1.203 이상에서 `SDKConversationResetMessage`를 선언합니다. v2.1.203 이전에는 `SDKMessage`가 타입을 선언하지 않고 참조했으므로, `skipLibCheck`가 비활성화되었을 때 `type === "conversation_reset"`에 대한 좁혀지기가 타입 검사에 실패했습니다.
+SDK의 게시된 타이핑은 Claude Code v2.1.203 이상에서 `SDKConversationResetMessage`를 선언합니다. v2.1.203 이전에는 `SDKMessage`가 타입을 선언하지 않고 참조했으므로, `skipLibCheck`가 비활성화되었을 때 `type === "conversation_reset"`에 대한 좁혀지기가 타입 검사에 실패했습니다.
 
 <h3 id="aborterror">
   `AbortError`

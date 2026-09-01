@@ -254,7 +254,7 @@ Claude Code는 고정 변수가 설정되지 않았을 때 이러한 기본 모�
   Opus 모델은 Sonnet 모델보다 토큰당 가격이 높으므로, 주 모델을 고정하지 않는 배포는 v2.1.207 이상으로 업데이트되면 Opus 요금으로 청구됩니다. Sonnet 4.5를 주 모델로 유지하려면 `ANTHROPIC_MODEL`을 전체 모델 ID로 설정합니다. `ANTHROPIC_DEFAULT_SONNET_MODEL`으로 기본값을 조정하고 `ANTHROPIC_DEFAULT_OPUS_MODEL`을 설정하지 않는 배포는 조정된 Sonnet 모델을 기본값으로 유지합니다.
 </Warning>
 
-{/* min-version: 2.1.207 */}v2.1.207 이전에는 Google Cloud의 Agent Platform의 주 모델이 기본적으로 Sonnet 4.5였고, `opus` 별칭이 Opus 4.6으로 확인되었으며, 백그라운드 작업은 항상 주 모델을 사용했습니다.
+v2.1.207 이전에는 Google Cloud의 Agent Platform의 주 모델이 기본적으로 Sonnet 4.5였고, `opus` 별칭이 Opus 4.6으로 확인되었으며, 백그라운드 작업은 항상 주 모델을 사용했습니다.
 
 모델을 추가로 사용자 정의하려면:
 

@@ -966,7 +966,7 @@ options = ClaudeAgentOptions(
 ```
 
 * `API_TIMEOUT_MS`: Anthropic 클라이언트의 요청당 시간 초과 (밀리초). 기본값 `600000`. 주 루프 및 모든 서브에이전트에 적용됩니다.
-* `CLAUDE_CODE_MAX_RETRIES`: 최대 API 재시도. 기본값 `10`, 최대 `15`로 제한됨. 각 재시도는 자체 `API_TIMEOUT_MS` 윈도우를 가지므로, 최악의 경우 벽시간은 대략 `API_TIMEOUT_MS × (CLAUDE_CODE_MAX_RETRIES + 1)` 더하기 백오프입니다. 더 긴 중단을 기다려야 하는 무인 실행의 경우, `CLAUDE_CODE_RETRY_WATCHDOG=1`을 설정하여 용량 오류를 무한정 재시도합니다. 그리고 {/* min-version: 2.1.199 */}Claude Code v2.1.199 기준으로 다른 일시적 오류의 기본값을 `300`으로 올리고 이 변수의 상한을 제거합니다.
+* `CLAUDE_CODE_MAX_RETRIES`: 최대 API 재시도. 기본값 `10`, 최대 `15`로 제한됨. 각 재시도는 자체 `API_TIMEOUT_MS` 윈도우를 가지므로, 최악의 경우 벽시간은 대략 `API_TIMEOUT_MS × (CLAUDE_CODE_MAX_RETRIES + 1)` 더하기 백오프입니다. 더 긴 중단을 기다려야 하는 무인 실행의 경우, `CLAUDE_CODE_RETRY_WATCHDOG=1`을 설정하여 용량 오류를 무한정 재시도합니다. 그리고 Claude Code v2.1.199 기준으로 다른 일시적 오류의 기본값을 `300`으로 올리고 이 변수의 상한을 제거합니다.
 * `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`: `run_in_background`으로 시작된 서브에이전트의 정지 감시견. 기본값 `600000`. 각 스트림 이벤트에서 재설정됩니다. 정지 시 서브에이전트를 중단하고, 작업을 실패로 표시하고, 부분 결과와 함께 오류를 부모에게 표시합니다. 동기 서브에이전트에는 적용되지 않습니다.
 * `CLAUDE_ENABLE_STREAM_WATCHDOG` with `CLAUDE_STREAM_IDLE_TIMEOUT_MS`: 헤더가 도착했지만 응답 본문이 스트리밍을 중지할 때 요청을 중단합니다. 감시견은 모든 공급자에 대해 기본적으로 켜져 있습니다. `CLAUDE_ENABLE_STREAM_WATCHDOG=0`으로 설정하여 비활성화합니다. `CLAUDE_STREAM_IDLE_TIMEOUT_MS`는 기본값 `300000`이고 해당 최소값으로 제한됩니다. 중단된 요청은 정상 재시도 경로를 거칩니다.
 
@@ -2717,7 +2717,7 @@ async for message in query(prompt="Analyze this codebase", options=options):
 
 백그라운드 소스를 실행하고 각 이벤트를 Claude에 전달하여 폴링 없이 반응할 수 있도록 합니다. `command`는 스크립트를 실행하고 stdout 줄당 하나의 이벤트를 내보내며, `ws`는 WebSocket을 열고 텍스트 프레임당 하나의 이벤트를 내보냅니다. `command` 또는 `ws` 중 정확히 하나를 제공하십시오.
 
-Monitor가 명령을 실행할 때, Bash와 동일한 권한 규칙을 따릅니다. WebSocket 감시는 별도로 승인을 요청합니다. {/* min-version: 2.1.195 */}`ws` 소스는 Claude Code v2.1.195 이상이 필요합니다. 동작 및 제공자 가용성은 [Monitor 도구 참조](/docs/ko/tools-reference#monitor-tool)를 참조하십시오.
+Monitor가 명령을 실행할 때, Bash와 동일한 권한 규칙을 따릅니다. WebSocket 감시는 별도로 승인을 요청합니다. `ws` 소스는 Claude Code v2.1.195 이상이 필요합니다. 동작 및 제공자 가용성은 [Monitor 도구 참조](/docs/ko/tools-reference#monitor-tool)를 참조하십시오.
 
 **입력:**
 

@@ -16,17 +16,17 @@
 
 Claude Code offers three ways to schedule recurring or one-off work:
 
-|                            | [Cloud](/docs/en/routines)          | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
-| :------------------------- | :----------------------------- | :------------------------------------- | :---------------------------------- |
-| Runs on                    | Anthropic cloud                | Your machine                           | Your machine                        |
-| Requires machine on        | No                             | Yes                                    | Yes                                 |
-| Requires open session      | No                             | No                                     | Yes                                 |
-| Persistent across restarts | Yes                            | Yes                                    | Restored on `--resume` if unexpired |
-| Access to local files      | No (fresh clone)               | Yes                                    | Yes                                 |
-| MCP servers                | Connectors configured per task | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
-| Permission prompts         | No (runs autonomously)         | Configurable per task                  | Inherits from session               |
-| Customizable schedule      | Via `/schedule` in the CLI     | Yes                                    | Yes                                 |
-| Minimum interval           | 1 hour                         | 1 minute                               | 1 minute                            |
+|                            | [Cloud](/docs/en/routines)               | [Desktop](/docs/en/desktop-scheduled-tasks) | [`/loop`](/docs/en/scheduled-tasks)      |
+| :------------------------- | :---------------------------------- | :------------------------------------- | :---------------------------------- |
+| Runs on                    | Cloud, Anthropic-managed by default | Your machine                           | Your machine                        |
+| Requires machine on        | No                                  | Yes                                    | Yes                                 |
+| Requires open session      | No                                  | No                                     | Yes                                 |
+| Persistent across restarts | Yes                                 | Yes                                    | Restored on `--resume` if unexpired |
+| Access to local files      | No (fresh clone)                    | Yes                                    | Yes                                 |
+| MCP servers                | Connectors configured per task      | [Config files](/docs/en/mcp) and connectors | Inherits from session               |
+| Permission prompts         | No (runs autonomously)              | Configurable per task                  | Inherits from session               |
+| Customizable schedule      | Via `/schedule` in the CLI          | Yes                                    | Yes                                 |
+| Minimum interval           | 1 hour                              | 1 minute                               | 1 minute                            |
 
 <Tip>
   Use **cloud tasks** for work that should run reliably without your machine. Use **Desktop tasks** when you need access to local files and tools. Use **`/loop`** for quick polling during a session.
@@ -44,7 +44,7 @@ Claude Code offers three ways to schedule recurring or one-off work:
 | 프롬프트만          | `/loop check the deploy`    | 프롬프트가 각 반복에서 [Claude가 선택한 간격](#let-claude-choose-the-interval)으로 실행됩니다                |
 | 간격만 또는 아무것도 없음 | `/loop`                     | [내장 유지보수 프롬프트](#run-the-built-in-maintenance-prompt)가 실행되거나, 존재하는 경우 `loop.md`가 실행됩니다 |
 
-또한 스킬을 프롬프트로 전달할 수 있습니다. 예를 들어 `/loop 20m /review-pr 1234`는 각 반복에서 해당 스킬을 다시 실행합니다. {/* min-version: 2.1.196 */}v2.1.196부터 스케줄된 실행은 Claude가 [자체적으로 호출할 수 있도록 허용된](/docs/ko/skills#control-who-invokes-a-skill) 스킬만 실행합니다. 다음은 Claude에 일반 텍스트로 전달되며 실행되지 않습니다.
+또한 스킬을 프롬프트로 전달할 수 있습니다. 예를 들어 `/loop 20m /review-pr 1234`는 각 반복에서 해당 스킬을 다시 실행합니다. v2.1.196부터 스케줄된 실행은 Claude가 [자체적으로 호출할 수 있도록 허용된](/docs/ko/skills#control-who-invokes-a-skill) 스킬만 실행합니다. 다음은 Claude에 일반 텍스트로 전달되며 실행되지 않습니다.
 
 * `/permissions`, `/model`, `/clear`와 같은 내장 명령어
 * [`disable-model-invocation: true`](/docs/ko/skills#frontmatter-reference)로 표시된 스킬

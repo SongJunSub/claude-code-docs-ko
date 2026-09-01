@@ -163,7 +163,7 @@ JSON Schema가 유효하지 않으면 `claude`는 `Error: --json-schema is not a
 claude -p "Explain recursion" --output-format stream-json --verbose --include-partial-messages
 ```
 
-스트림의 마지막 줄은 최종 응답 텍스트, 비용 및 세션 메타데이터가 포함된 `result` 메시지입니다. {/* min-version: 2.1.208 */}v2.1.208 이전에는 큰 응답을 파이프하면 최종 줄이 잘리고 `result` 메시지가 생략될 수 있었습니다.
+스트림의 마지막 줄은 최종 응답 텍스트, 비용 및 세션 메타데이터가 포함된 `result` 메시지입니다. v2.1.208 이전에는 큰 응답을 파이프하면 최종 줄이 잘리고 `result` 메시지가 생략될 수 있었습니다.
 
 다음 예제는 [jq](https://jqlang.github.io/jq/)를 사용하여 텍스트 델타를 필터링하고 스트리밍 텍스트만 표시합니다. `-r` 플래그는 원본 문자열(따옴표 없음)을 출력하고 `-j`는 줄 바꿈 없이 조인하므로 토큰이 계속 스트리밍됩니다:
 
@@ -189,7 +189,7 @@ API 요청이 재시도 가능한 오류로 실패하면 Claude Code는 재시�
 `system/init` 이벤트는 모델, 도구, MCP 서버 및 로드된 플러그인을 포함한 세션 메타데이터를 보고합니다. 이는 시작 이벤트가 앞에 오지 않는 한 스트림의 첫 번째 이벤트입니다:
 
 * [`CLAUDE_CODE_SYNC_PLUGIN_INSTALL`](/docs/ko/env-vars)이 설정되었을 때 `plugin_install` 이벤트입니다.
-* {/* min-version: 2.1.204 */}구성된 [`SessionStart`](/docs/ko/hooks#sessionstart) 또는 [`Setup`](/docs/ko/hooks#setup) 훅이 실행되는 동안 [`hook_started`, `hook_progress` 및 `hook_response` 이벤트](/docs/ko/agent-sdk/typescript#sdkhookstartedmessage)입니다. 이들은 훅이 생성할 때 스트리밍됩니다. Claude Code v2.1.169부터 v2.1.203까지는 훅이 완료된 후 한 배치로 전달했으며, 여전히 `system/init` 앞에 있었습니다. v2.1.204는 라이브 전달을 복원했습니다.
+* 구성된 [`SessionStart`](/docs/ko/hooks#sessionstart) 또는 [`Setup`](/docs/ko/hooks#setup) 훅이 실행되는 동안 [`hook_started`, `hook_progress` 및 `hook_response` 이벤트](/docs/ko/agent-sdk/typescript#sdkhookstartedmessage)입니다. 이들은 훅이 생성할 때 스트리밍됩니다. Claude Code v2.1.169부터 v2.1.203까지는 훅이 완료된 후 한 배치로 전달했으며, 여전히 `system/init` 앞에 있었습니다. v2.1.204는 라이브 전달을 복원했습니다.
 
 이 이벤트는 또한 이 Claude Code 버전이 구현하는 프로토콜 동작의 이름을 지정하는 선택적 `capabilities` 문자열 배열을 전달합니다(예: `interrupt_receipt_v1`). 버전 문자열을 비교하는 대신 기능을 감지하는 데 사용하고 인식하지 못하는 값은 무시합니다. 이 필드는 Claude Code v2.1.205 이상이 필요하며 이전 버전에는 없습니다. 기능 목록은 [`SDKSystemMessage`](/docs/ko/agent-sdk/typescript#sdksystemmessage)를 참조하십시오.
 
@@ -247,7 +247,7 @@ claude -p "Look at my staged changes and create an appropriate commit" \
 `--allowedTools` 플래그는 [권한 규칙 구문](/docs/ko/settings#permission-rule-syntax)을 사용합니다. 뒤의 ` *`는 접두사 일치를 활성화하므로 `Bash(git diff *)`는 `git diff`로 시작하는 모든 명령을 허용합니다. 공백이 중요합니다: 없으면 `Bash(git diff*)`도 `git diff-index`와 일치합니다.
 
 <Note>
-  사용자가 호출한 [skills](/docs/ko/skills) 및 사용자 정의 명령은 `-p` 모드에서 작동합니다: 프롬프트 문자열에 `/skill-name`을 포함하면 Claude Code가 실행하기 전에 이를 확장합니다. `/login`과 같은 대화형 대화를 열어주는 기본 제공 명령은 `-p` 모드에서 사용할 수 없습니다. {/* min-version: 2.1.205 */}`/model`, `/effort`, `/fast`, `/color` 및 `/rename`은 값을 인수로 받습니다(예: `/model sonnet`). `/mcp`는 인수 없이 서버 상태의 텍스트 요약을 출력합니다. 이러한 형식은 Claude Code v2.1.205 이상이 필요하며 각 명령의 [가용성 참고 사항](/docs/ko/commands#all-commands)을 따릅니다. {/* min-version: 2.1.181 */}`-p` 호출에서 설정을 변경하려면 `/config`에 `key=value`를 전달합니다(예: `/config thinking=false`).
+  사용자가 호출한 [skills](/docs/ko/skills) 및 사용자 정의 명령은 `-p` 모드에서 작동합니다: 프롬프트 문자열에 `/skill-name`을 포함하면 Claude Code가 실행하기 전에 이를 확장합니다. `/login`과 같은 대화형 대화를 열어주는 기본 제공 명령은 `-p` 모드에서 사용할 수 없습니다. `/model`, `/effort`, `/fast`, `/color` 및 `/rename`은 값을 인수로 받습니다(예: `/model sonnet`). `/mcp`는 인수 없이 서버 상태의 텍스트 요약을 출력합니다. 이러한 형식은 Claude Code v2.1.205 이상이 필요하며 각 명령의 [가용성 참고 사항](/docs/ko/commands#all-commands)을 따릅니다. `-p` 호출에서 설정을 변경하려면 `/config`에 `key=value`를 전달합니다(예: `/config thinking=false`).
 </Note>
 
 <h3 id="customize-the-system-prompt">

@@ -38,15 +38,15 @@ claude --worktree
 
 저장소의 `.claude/worktrees/` 디렉터리 외부의 경로에 들어가면 먼저 승인을 요청합니다. 왜냐하면 세션의 작업 디렉터리, 쓰기 액세스 및 `CLAUDE.md` 및 설정과 같은 프로젝트 구성을 해당 위치로 이동하기 때문입니다. `EnterWorktree` [권한 규칙](/docs/ko/permissions) 또는 "다시 묻지 않기"를 선택해도 이 프롬프트를 억제하지 않습니다. `bypassPermissions` 모드만 이를 건너뜁니다. v2.1.206 이전에는 Claude가 승인을 요청하지 않고 기존 worktree 경로에 들어갈 수 있었습니다.
 
-{/* min-version: 2.1.198 */}v2.1.198부터 worktree에 들어가거나 나갈 때 세션 트랜스크립트도 해당 디렉터리의 프로젝트 저장소로 재배치되며, [`/cd`](/docs/ko/commands)와 동일한 방식으로 작동하므로 `/desktop`과 `--resume`이 이후에 해당 위치에서 세션을 찾습니다. [`WorktreeCreate` 훅](#non-git-version-control)으로 생성된 Worktree는 제외되며 트랜스크립트를 시작 디렉터리에 유지합니다.
+v2.1.198부터 worktree에 들어가거나 나갈 때 세션 트랜스크립트도 해당 디렉터리의 프로젝트 저장소로 재배치되며, [`/cd`](/docs/ko/commands)와 동일한 방식으로 작동하므로 `/desktop`과 `--resume`이 이후에 해당 위치에서 세션을 찾습니다. [`WorktreeCreate` 훅](#non-git-version-control)으로 생성된 Worktree는 제외되며 트랜스크립트를 시작 디렉터리에 유지합니다.
 
 Worktree는 [샌드박싱](/docs/ko/sandboxing#filesystem-isolation)이 활성화된 상태에서 작동합니다. 샌드박스는 메인 저장소의 공유 `.git` 디렉터리에 대한 쓰기를 허용하므로 `git commit`과 같은 명령이 연결된 worktree 내부에서 refs 및 인덱스를 업데이트할 수 있습니다.
 
 처음으로 디렉터리에서 `--worktree`를 사용하기 전에 해당 디렉터리에서 `claude`를 한 번 실행하여 작업 공간 신뢰 대화를 수락합니다. 신뢰가 아직 수락되지 않았으면 `--worktree`는 오류와 함께 종료되고 먼저 디렉터리에서 `claude`를 실행하도록 요청합니다. `-p`를 사용한 비대화형 실행은 [신뢰 확인](/docs/ko/security)을 건너뛰므로 `claude -p --worktree`는 이를 수행하지 않고 진행됩니다.
 
-{/* min-version: 2.1.205 */}Claude Code가 시작 시 worktree 디렉터리에 들어갈 수 없는 경우, 예를 들어 [`WorktreeCreate` 훅](/docs/ko/hooks#worktreecreate)이 생성한 디렉터리 이외의 다른 것을 출력했거나 설정 후 디렉터리가 삭제된 경우, Claude Code는 경로를 명시하는 오류를 출력하고 코드 1로 종료됩니다. v2.1.205 이전에는 이로 인해 세션이 충돌했으며, `-p`를 사용하면 약 30초 동안 정지한 후 코드 0으로 종료되었습니다.
+Claude Code가 시작 시 worktree 디렉터리에 들어갈 수 없는 경우, 예를 들어 [`WorktreeCreate` 훅](/docs/ko/hooks#worktreecreate)이 생성한 디렉터리 이외의 다른 것을 출력했거나 설정 후 디렉터리가 삭제된 경우, Claude Code는 경로를 명시하는 오류를 출력하고 코드 1로 종료됩니다. v2.1.205 이전에는 이로 인해 세션이 충돌했으며, `-p`를 사용하면 약 30초 동안 정지한 후 코드 0으로 종료되었습니다.
 
-{/* min-version: 2.1.200 */}[프로젝트 범위](/docs/ko/plugins-reference#plugin-installation-scopes)에서 메인 체크아웃에서 설치된 플러그인도 동일한 저장소의 worktree에 로드되므로 worktree마다 다시 설치할 필요가 없습니다. 이는 `--worktree` 또는 `git worktree add`로 worktree를 생성하든 적용됩니다. Claude Code v2.1.200 이상이 필요합니다.
+[프로젝트 범위](/docs/ko/plugins-reference#plugin-installation-scopes)에서 메인 체크아웃에서 설치된 플러그인도 동일한 저장소의 worktree에 로드되므로 worktree마다 다시 설치할 필요가 없습니다. 이는 `--worktree` 또는 `git worktree add`로 worktree를 생성하든 적용됩니다. Claude Code v2.1.200 이상이 필요합니다.
 
 <Tip>
   `.claude/worktrees/`를 `.gitignore`에 추가하여 worktree 내용이 메인 체크아웃에서 추적되지 않은 파일로 나타나지 않도록 합니다.

@@ -162,7 +162,7 @@ aws sso login --profile=your-profile-name
 export AWS_PROFILE=your-profile-name
 ```
 
-Claude Code는 프로필의 `sso_region`으로 명명된 IAM Identity Center 지역에서 역할 자격 증명을 요청하며, 이는 Amazon Bedrock을 실행하는 지역과 일치할 필요가 없습니다. {/* min-version: 2.1.208 */}v2.1.207에서는 Amazon Bedrock 지역이 `sso_region`을 재정의했으므로 IAM Identity Center 인스턴스가 다른 지역에 있는 프로필은 `Session token not found or invalid` 오류로 인증에 실패했습니다.
+Claude Code는 프로필의 `sso_region`으로 명명된 IAM Identity Center 지역에서 역할 자격 증명을 요청하며, 이는 Amazon Bedrock을 실행하는 지역과 일치할 필요가 없습니다. v2.1.207에서는 Amazon Bedrock 지역이 `sso_region`을 재정의했으므로 IAM Identity Center 인스턴스가 다른 지역에 있는 프로필은 `Session token not found or invalid` 오류로 인증에 실패했습니다.
 
 **옵션 D: AWS Management Console 자격 증명**
 
@@ -235,9 +235,9 @@ Claude Code는 AWS SSO 및 회사 ID 공급자에 대한 자동 자격 증명 �
 }
 ```
 
-{/* min-version: 2.1.181 */}`aws configure export-credentials --format process`의 평면 출력도 허용되며, 동일한 키가 `Credentials` 아래에 중첩되지 않고 최상위 수준에 있습니다.
+`aws configure export-credentials --format process`의 평면 출력도 허용되며, 동일한 키가 `Credentials` 아래에 중첩되지 않고 최상위 수준에 있습니다.
 
-`Expiration`은 선택 사항입니다. {/* min-version: 2.1.176 */}Claude Code v2.1.176부터 명령이 유효한 ISO 8601 `Expiration`을 반환하면 Claude Code는 해당 시간 5분 전까지 자격 증명을 캐시합니다. 이것이 없거나 이전 버전에서는 자격 증명이 1시간 동안 캐시됩니다.
+`Expiration`은 선택 사항입니다. Claude Code v2.1.176부터 명령이 유효한 ISO 8601 `Expiration`을 반환하면 Claude Code는 해당 시간 5분 전까지 자격 증명을 캐시합니다. 이것이 없거나 이전 버전에서는 자격 증명이 1시간 동안 캐시됩니다.
 
 `awsCredentialExport`를 `awsAuthRefresh` 없이 구성하면 Claude Code는 내보낸 자격 증명을 직접 사용하고 시작 시 AWS 기본 자격 증명 공급자 체인을 다시 해결하지 않습니다. v2.1.206 이전에는 시작 시 기본 공급자 체인도 다시 해결했으며, 이는 프록시 구성 외부에서 라이브 SSO 또는 STS 호출을 수행했으며 제한된 송신이 있는 네트워크에서 첫 번째 프롬프트를 몇 분 동안 차단할 수 있었습니다.
 
@@ -263,7 +263,7 @@ export ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION=us-west-2
 
 Claude Code에 대해 Amazon Bedrock을 활성화할 때 다음을 염두에 두십시오:
 
-* {/* min-version: 2.1.172 */}v2.1.172부터 AWS 프로필의 지역을 재정의하거나 프로필에 지역이 없을 때만 `AWS_REGION`을 설정하면 됩니다. Claude Code는 다음 순서로 지역을 확인합니다:
+* v2.1.172부터 AWS 프로필의 지역을 재정의하거나 프로필에 지역이 없을 때만 `AWS_REGION`을 설정하면 됩니다. Claude Code는 다음 순서로 지역을 확인합니다:
 
   * `AWS_REGION`
   * `AWS_DEFAULT_REGION`
@@ -311,7 +311,7 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
   Opus 모델은 Sonnet 모델보다 토큰당 가격이 높으므로 기본 모델을 고정하지 않는 배포는 v2.1.207 이상으로 업데이트되면 Opus 요금으로 청구됩니다. Sonnet 4.5를 기본 모델로 유지하려면 `ANTHROPIC_MODEL`을 전체 모델 ID로 설정하십시오. `ANTHROPIC_DEFAULT_SONNET_MODEL`로 기본값을 조종하고 `ANTHROPIC_DEFAULT_OPUS_MODEL`을 설정하지 않는 배포는 조종된 Sonnet 모델을 기본값으로 유지합니다.
 </Warning>
 
-{/* min-version: 2.1.207 */}v2.1.207 이전에는 Amazon Bedrock의 기본 모델이 Sonnet 4.5로 기본 설정되었고 `opus` 별칭은 Opus 4.6으로 확인되었으며 백그라운드 작업은 항상 기본 모델을 사용했습니다.
+v2.1.207 이전에는 Amazon Bedrock의 기본 모델이 Sonnet 4.5로 기본 설정되었고 `opus` 별칭은 Opus 4.6으로 확인되었으며 백그라운드 작업은 항상 기본 모델을 사용했습니다.
 
 모델을 추가로 사용자 정의하려면 다음 방법 중 하나를 사용하십시오:
 
@@ -353,7 +353,7 @@ export ENABLE_PROMPT_CACHING_1H=1
 }
 ```
 
-사용자가 `/model`에서 이러한 버전 중 하나를 선택하면 Claude Code는 매핑된 ARN으로 Amazon Bedrock을 호출합니다. {/* min-version: 2.1.200 */}동일한 매핑은 `--model` 또는 `ANTHROPIC_MODEL`을 통해 Anthropic 모델 ID를 직접 전달할 때도 적용됩니다. 재정의가 없는 버전은 기본 제공 Amazon Bedrock 모델 ID 또는 시작 시 발견된 일치하는 추론 프로필로 폴백됩니다. v2.1.200 이전에는 `--model` 및 `ANTHROPIC_MODEL` 값이 재정의 맵을 거치지 않고 Amazon Bedrock에 그대로 도달했습니다. 재정의가 `availableModels` 및 기타 모델 설정과 상호 작용하는 방식에 대한 자세한 내용은 [버전별 모델 ID 재정의](/docs/ko/model-config#override-model-ids-per-version)를 참조하십시오.
+사용자가 `/model`에서 이러한 버전 중 하나를 선택하면 Claude Code는 매핑된 ARN으로 Amazon Bedrock을 호출합니다. 동일한 매핑은 `--model` 또는 `ANTHROPIC_MODEL`을 통해 Anthropic 모델 ID를 직접 전달할 때도 적용됩니다. 재정의가 없는 버전은 기본 제공 Amazon Bedrock 모델 ID 또는 시작 시 발견된 일치하는 추론 프로필로 폴백됩니다. v2.1.200 이전에는 `--model` 및 `ANTHROPIC_MODEL` 값이 재정의 맵을 거치지 않고 Amazon Bedrock에 그대로 도달했습니다. 재정의가 `availableModels` 및 기타 모델 설정과 상호 작용하는 방식에 대한 자세한 내용은 [버전별 모델 ID 재정의](/docs/ko/model-config#override-model-ids-per-version)를 참조하십시오.
 
 <h2 id="startup-model-checks">
   시작 모델 확인
@@ -473,7 +473,7 @@ export CLAUDE_CODE_USE_MANTLE=1
 export AWS_REGION=us-east-1
 ```
 
-Claude Code는 AWS 지역에서 엔드포인트 URL을 구성합니다. {/* min-version: 2.1.172 */}v2.1.172부터 지역은 [위의 Amazon Bedrock](#3-configure-claude-code)과 동일한 우선순위로 해결되며, 이전 버전은 `AWS_REGION`만 사용합니다. 사용자 정의 엔드포인트 또는 게이트웨이를 위해 URL을 재정의하려면 `ANTHROPIC_BEDROCK_MANTLE_BASE_URL`을 설정하십시오.
+Claude Code는 AWS 지역에서 엔드포인트 URL을 구성합니다. v2.1.172부터 지역은 [위의 Amazon Bedrock](#3-configure-claude-code)과 동일한 우선순위로 해결되며, 이전 버전은 `AWS_REGION`만 사용합니다. 사용자 정의 엔드포인트 또는 게이트웨이를 위해 URL을 재정의하려면 `ANTHROPIC_BEDROCK_MANTLE_BASE_URL`을 설정하십시오.
 
 Claude Code 내에서 `/status`를 실행하여 확인하십시오. Mantle이 활성화되면 제공자 줄에 `Amazon Bedrock (Mantle)`이 표시됩니다.
 
@@ -579,7 +579,7 @@ v2.1.208 이전에는 동일한 잘못된 구성이 전체 응답이 버퍼링�
   /context의 0 토큰 개수
 </h3>
 
-`/context` 명령은 도구 스키마를 Amazon Bedrock count-tokens API로 전송하여 각 도구 그룹의 토큰을 계산합니다. {/* min-version: 2.1.196 */}v2.1.196 이전의 Claude Code 버전에서는 Amazon Bedrock이 스키마가 count-tokens API에서 허용하지 않는 필드를 포함하고 있어서 해당 요청을 거부했으므로 모든 도구 그룹이 0 토큰을 표시했습니다. 메시지 및 메모리 파일과 같은 분석의 다른 행은 영향을 받지 않습니다.
+`/context` 명령은 도구 스키마를 Amazon Bedrock count-tokens API로 전송하여 각 도구 그룹의 토큰을 계산합니다. v2.1.196 이전의 Claude Code 버전에서는 Amazon Bedrock이 스키마가 count-tokens API에서 허용하지 않는 필드를 포함하고 있어서 해당 요청을 거부했으므로 모든 도구 그룹이 0 토큰을 표시했습니다. 메시지 및 메모리 파일과 같은 분석의 다른 행은 영향을 받지 않습니다.
 
 v2.1.196 이상으로 업데이트하십시오.
 

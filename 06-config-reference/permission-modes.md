@@ -37,7 +37,7 @@ Claude가 파일을 편집하거나 셸 명령을 실행하거나 네트워크 �
 
 <Tabs>
   <Tab title="CLI">
-    **세션 중**: `Shift+Tab`을 눌러 `default` → `acceptEdits` → `plan`을 순환합니다. 현재 모드는 상태 표시줄에 나타납니다. {/* min-version: 2.1.203 */}수동 모드인 `default`는 회색 `⏸ manual mode on` 배지를 표시합니다. v2.1.203 이전에는 상태 표시줄이 수동 모드에서 배지를 표시하지 않았습니다.
+    **세션 중**: `Shift+Tab`을 눌러 `default` → `acceptEdits` → `plan`을 순환합니다. 현재 모드는 상태 표시줄에 나타납니다. 수동 모드인 `default`는 회색 `⏸ manual mode on` 배지를 표시합니다. v2.1.203 이전에는 상태 표시줄이 수동 모드에서 배지를 표시하지 않았습니다.
 
     모든 모드가 기본 순환에 포함되는 것은 아닙니다:
 
@@ -121,7 +121,7 @@ Claude가 파일을 편집하거나 셸 명령을 실행하거나 네트워크 �
     [claude.ai/code](https://claude.ai/code)의 모드 드롭다운 또는 모바일 앱의 프롬프트 상자 옆을 사용합니다. 권한 프롬프트는 승인을 위해 claude.ai에 나타납니다. 나타나는 모드는 세션이 실행되는 위치에 따라 달라집니다:
 
     * **Cloud sessions** on [Claude Code on the web](/docs/ko/claude-code-on-the-web): Accept edits, Plan, and Auto. Accept edits는 `default` 모드에 해당합니다: 클라우드 환경은 모드에 관계없이 파일 편집을 사전 승인하므로 드롭다운은 수동 대신 Accept edits를 표시합니다. 클라우드 세션은 여전히 설정의 `defaultMode: "acceptEdits"`를 준수합니다. 자동 모드는 조직이 허용하고 선택한 모델이 지원할 때만 나타납니다. 권한 무시는 사용할 수 없습니다.
-    * **[Remote Control](/docs/ko/remote-control) sessions** on your local machine: Manual, Accept edits, and Plan. 앱에서 Auto 또는 Bypass permissions를 선택할 수 없습니다. {/* min-version: 2.1.202 */}드롭다운은 터미널에서 설정된 모드를 포함하여 로컬 세션이 있는 모드를 표시하며, 앱 또는 터미널에서 모드가 변경될 때 업데이트됩니다. 한 가지 예외는 권한 무시입니다: 세션은 해당 모드를 claude.ai에 보고하지 않으므로 터미널에서 전환해도 드롭다운이 표시하는 내용이 변경되지 않습니다. v2.1.202 이전에는 `/remote-control` 또는 `claude --remote-control`로 연결된 세션이 모드를 전혀 보고하지 않았으므로 claude.ai 및 모바일 앱이 세션이 실제로 있지 않은 모드를 표시할 수 있었습니다. 불일치는 레이블에만 영향을 미쳤습니다: Claude Code는 세션의 실제 모드에서 권한 프롬프트를 생성했으며, 여전히 승인을 위해 앱에 나타났습니다.
+    * **[Remote Control](/docs/ko/remote-control) sessions** on your local machine: Manual, Accept edits, and Plan. 앱에서 Auto 또는 Bypass permissions를 선택할 수 없습니다. 드롭다운은 터미널에서 설정된 모드를 포함하여 로컬 세션이 있는 모드를 표시하며, 앱 또는 터미널에서 모드가 변경될 때 업데이트됩니다. 한 가지 예외는 권한 무시입니다: 세션은 해당 모드를 claude.ai에 보고하지 않으므로 터미널에서 전환해도 드롭다운이 표시하는 내용이 변경되지 않습니다. v2.1.202 이전에는 `/remote-control` 또는 `claude --remote-control`로 연결된 세션이 모드를 전혀 보고하지 않았으므로 claude.ai 및 모바일 앱이 세션이 실제로 있지 않은 모드를 표시할 수 있었습니다. 불일치는 레이블에만 영향을 미쳤습니다: Claude Code는 세션의 실제 모드에서 권한 프롬프트를 생성했으며, 여전히 승인을 위해 앱에 나타났습니다.
 
     Remote Control의 경우 호스트를 시작할 때 시작 모드를 설정할 수도 있습니다:
 
@@ -201,7 +201,7 @@ claude --permission-mode plan
 
 자동 모드를 사용하면 Claude가 일상적인 권한 프롬프트 없이 실행됩니다. 별도의 분류기 모델이 실행 전에 작업을 검토하여 요청을 초과하는 모든 항목, 인식되지 않은 인프라를 대상으로 하는 항목, 또는 Claude가 읽은 악의적인 콘텐츠로 인해 발생한 것으로 보이는 항목을 차단합니다. 명시적 [요청 규칙](/docs/ko/permissions#manage-permissions)은 여전히 프롬프트를 강제합니다.
 
-파일 시스템 루트 또는 홈 디렉토리를 대상으로 하는 제거(예: `rm -rf /` 및 `rm -rf ~`)는 분류기로 이동하는 대신 승인을 위해 프롬프트합니다. {/* min-version: 2.1.208 */}이 프롬프트는 또한 명령에 `$(...)` 또는 백틱을 사용한 명령 치환이나 `<(...)`를 사용한 프로세스 치환이 포함될 때 발생하며, 제거가 `echo "$(rm -rf ~)"`처럼 치환 내부에 있거나 같은 명령의 다른 곳에 있는지 여부입니다. v2.1.208 이전에는 이러한 형식을 포함하는 명령이 프롬프트하는 대신 분류기로 이동했습니다.
+파일 시스템 루트 또는 홈 디렉토리를 대상으로 하는 제거(예: `rm -rf /` 및 `rm -rf ~`)는 분류기로 이동하는 대신 승인을 위해 프롬프트합니다. 이 프롬프트는 또한 명령에 `$(...)` 또는 백틱을 사용한 명령 치환이나 `<(...)`를 사용한 프로세스 치환이 포함될 때 발생하며, 제거가 `echo "$(rm -rf ~)"`처럼 치환 내부에 있거나 같은 명령의 다른 곳에 있는지 여부입니다. v2.1.208 이전에는 이러한 형식을 포함하는 명령이 프롬프트하는 대신 분류기로 이동했습니다.
 
 자동 모드는 또한 Claude가 명확한 질문을 위해 멈추지 않고 계속 작업하도록 유도하지만, Claude는 프롬프트나 스킬이 명시적으로 이를 필요로 할 때 여전히 질문합니다. 권한 프롬프트를 유지하면서 더 강력한 자율 동작을 원하면 [사전 예방적 출력 스타일](/docs/ko/output-styles)을 대신 설정하십시오.
 
@@ -214,7 +214,7 @@ claude --permission-mode plan
 * **플랜**: 모든 플랜.
 * **소유자**: Team 및 Enterprise에서 소유자는 사용자가 켤 수 있기 전에 [Claude Code 관리자 설정](https://claude.ai/admin-settings/claude-code)에서 이를 활성화해야 합니다. 관리자는 [관리 설정](/docs/ko/permissions#managed-settings)에서 `permissions.disableAutoMode`를 `"disable"`로 설정하여 자동 모드를 끌 수도 있습니다. 데스크톱 앱의 Code 탭의 경우 `disableAutoMode`는 조직 수준 제어이며 관리자 설정 토글은 적용되지 않습니다.
 * **모델**: Anthropic API에서 Claude Opus 4.6 이상 또는 Sonnet 4.6 이상. Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry 및 로그인한 [Claude 앱 게이트웨이](/docs/ko/claude-apps-gateway) 세션에서는 Claude Sonnet 5, Opus 4.7 및 Opus 4.8만 지원됩니다. Sonnet 4.5, Opus 4.5, Haiku 및 claude-3 모델을 포함한 이전 모델은 어떤 제공자에서도 지원되지 않습니다.
-* **제공자**: Anthropic API, Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry 및 로그인한 Claude 앱 게이트웨이 세션에서 기본적으로 사용 가능합니다. {/* min-version: 2.1.207 */}v2.1.158부터 v2.1.206까지 자동 모드는 `CLAUDE_CODE_ENABLE_AUTO_MODE=1`을 설정할 때까지 Anthropic API를 제외한 모든 제공자에서 꺼져 있었습니다. v2.1.207은 이 요구 사항을 제거했습니다.
+* **제공자**: Anthropic API, Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry 및 로그인한 Claude 앱 게이트웨이 세션에서 기본적으로 사용 가능합니다. v2.1.158부터 v2.1.206까지 자동 모드는 `CLAUDE_CODE_ENABLE_AUTO_MODE=1`을 설정할 때까지 Anthropic API를 제외한 모든 제공자에서 꺼져 있었습니다. v2.1.207은 이 요구 사항을 제거했습니다.
 
 Claude Code가 자동 모드를 사용할 수 없다고 보고하면 이러한 요구 사항 중 하나가 충족되지 않은 것입니다. 이는 일시적인 중단이 아닙니다. 모델의 이름을 지정하고 자동 모드가 작업의 안전성을 "결정할 수 없다"고 말하는 별도의 메시지는 일시적인 분류기 중단입니다. [오류 참조](/docs/ko/errors#auto-mode-cannot-determine-the-safety-of-an-action)를 참조하십시오.
 
@@ -236,7 +236,7 @@ v2.1.158부터 v2.1.206까지 자동 모드는 `CLAUDE_CODE_ENABLE_AUTO_MODE=1`�
   분류기가 기본적으로 차단하는 항목
 </h3>
 
-분류기는 작업 디렉토리와 세션이 시작될 때 구성된 원격을 신뢰합니다. {/* min-version: 2.1.200 */}세션 중에 `git remote add` 또는 `git remote set-url`로 추가되거나 다시 지정된 원격은 신뢰되지 않으며, [신뢰할 수 있는 인프라를 구성](/docs/ko/auto-mode-config)할 때까지 다른 모든 것은 외부로 취급됩니다. v2.1.200 이전에는 세션 중에 추가된 원격도 신뢰되었습니다.
+분류기는 작업 디렉토리와 세션이 시작될 때 구성된 원격을 신뢰합니다. 세션 중에 `git remote add` 또는 `git remote set-url`로 추가되거나 다시 지정된 원격은 신뢰되지 않으며, [신뢰할 수 있는 인프라를 구성](/docs/ko/auto-mode-config)할 때까지 다른 모든 것은 외부로 취급됩니다. v2.1.200 이전에는 세션 중에 추가된 원격도 신뢰되었습니다.
 
 **기본적으로 차단됨**:
 
@@ -248,10 +248,10 @@ v2.1.158부터 v2.1.206까지 자동 모드는 `CLAUDE_CODE_ENABLE_AUTO_MODE=1`�
 * 공유 인프라 수정
 * 세션 전에 존재했던 파일을 되돌릴 수 없게 파괴
 * Force push
-* {/* min-version: 2.1.203 */}비밀 또는 개인 또는 위탁받은 데이터와 같은 민감한 콘텐츠를 전달하는 저장소의 기본 분기로의 푸시, 요청한 것과 관련하여 숨겨지거나 잘못 설명된 변경 사항을 전달하는 푸시, 저장소 외부에서 포팅되거나 처음 읽은 콘텐츠를 전달하는 푸시, 또는 요청한 풀 요청, 검토 또는 확인을 우회하는 푸시. 기본 분기로의 일반 푸시는 자체적으로 차단되지 않으며, 플래그된 푸시를 지우려면 플래그된 콘텐츠 또는 우회된 검토의 이름을 지정해야 하며, 푸시만 지정하는 것이 아닙니다. 분류기는 한 계층입니다. [`permissions.deny` 규칙](/docs/ko/permissions#manage-permissions)은 모든 모드에서 적용되며 기본 분기로의 푸시를 완전히 차단할 수 있으며, 원격의 자체 분기 보호는 여전히 적용됩니다. v2.1.203 이전에는 기본 분기로의 직접 푸시가 차단되었습니다.
-* {/* min-version: 2.1.182 */}분류기가 커밋되지 않은 변경 사항을 버릴 것으로 가정하는 `git reset --hard`, `git checkout -- .`, `git restore .`, `git clean -fd`, `git stash drop` 또는 `git stash clear`
+* 비밀 또는 개인 또는 위탁받은 데이터와 같은 민감한 콘텐츠를 전달하는 저장소의 기본 분기로의 푸시, 요청한 것과 관련하여 숨겨지거나 잘못 설명된 변경 사항을 전달하는 푸시, 저장소 외부에서 포팅되거나 처음 읽은 콘텐츠를 전달하는 푸시, 또는 요청한 풀 요청, 검토 또는 확인을 우회하는 푸시. 기본 분기로의 일반 푸시는 자체적으로 차단되지 않으며, 플래그된 푸시를 지우려면 플래그된 콘텐츠 또는 우회된 검토의 이름을 지정해야 하며, 푸시만 지정하는 것이 아닙니다. 분류기는 한 계층입니다. [`permissions.deny` 규칙](/docs/ko/permissions#manage-permissions)은 모든 모드에서 적용되며 기본 분기로의 푸시를 완전히 차단할 수 있으며, 원격의 자체 분기 보호는 여전히 적용됩니다. v2.1.203 이전에는 기본 분기로의 직접 푸시가 차단되었습니다.
+* 분류기가 커밋되지 않은 변경 사항을 버릴 것으로 가정하는 `git reset --hard`, `git checkout -- .`, `git restore .`, `git clean -fd`, `git stash drop` 또는 `git stash clear`
 * 이 세션에서 생성되지 않은 HEAD의 커밋에 대한 `git commit --amend`
-* {/* min-version: 2.1.198 */}v2.1.198부터 HEAD의 커밋이 이미 푸시된 경우 `git commit --amend`. 메시지 전용 단어 변경은 차단되지 않습니다. 이 세션 중에 Claude가 생성한 커밋에서 새로 스테이징된 것이 없는 `--amend -m`
+* v2.1.198부터 HEAD의 커밋이 이미 푸시된 경우 `git commit --amend`. 메시지 전용 단어 변경은 차단되지 않습니다. 이 세션 중에 Claude가 생성한 커밋에서 새로 스테이징된 것이 없는 `--amend -m`
 * `terraform destroy`, `pulumi destroy`, `cdk destroy` 또는 `terragrunt destroy`, 그리고 리소스를 파괴하는 계획 적용
 
 Claude Code v2.1.195 이상은 기본적으로 더 많은 범주를 차단합니다. 여러 개는 민감한 원격 대상 및 보호된 IaC 범위와 같은 [환경](/docs/ko/auto-mode-config#define-trusted-infrastructure) 항목에 따라 달라지며, 이를 구체적인 이름으로 좁힐 수 있습니다.
@@ -266,16 +266,16 @@ Claude Code v2.1.195 이상은 기본적으로 더 많은 범주를 차단합니
 * 민감한 원격 대상으로의 대화형 셸 또는 포트 포워드
 * 로컬 서비스를 공개 인터넷에서 도달 가능하게 하는 터널 또는 역셸 열기
 * 라이브 자격 증명 또는 토큰을 기록 또는 파일로 인쇄
-* [환경](/docs/ko/auto-mode-config#define-trusted-infrastructure)에서 민감한 데이터 위치로 나열된 위치에 액세스하거나 데이터를 복사합니다. {/* min-version: 2.1.198 */}v2.1.198부터 이는 또한 항목이 제외하는 대상으로 한 위치에서 데이터를 전송하는 것을 차단합니다.
-* 내부 패키지 레지스트리를 공개 레지스트리로 우회하는 패키지 설치. {/* min-version: 2.1.198 */}v2.1.198부터 이는 환경에 나열된 경우뿐만 아니라 대화에서 Claude에게 내부 레지스트리 또는 미러가 존재한다고 말한 경우에도 적용됩니다.
+* [환경](/docs/ko/auto-mode-config#define-trusted-infrastructure)에서 민감한 데이터 위치로 나열된 위치에 액세스하거나 데이터를 복사합니다. v2.1.198부터 이는 또한 항목이 제외하는 대상으로 한 위치에서 데이터를 전송하는 것을 차단합니다.
+* 내부 패키지 레지스트리를 공개 레지스트리로 우회하는 패키지 설치. v2.1.198부터 이는 환경에 나열된 경우뿐만 아니라 대화에서 Claude에게 내부 레지스트리 또는 미러가 존재한다고 말한 경우에도 적용됩니다.
 * `--insecure`와 같은 안전 가드를 해제하는 플래그로 명령 실행
-* `--dangerously-skip-permissions` 또는 `--no-sandbox`로 시작된 것과 같이 인간 승인 또는 샌드박스 없이 실행되는 자율 에이전트 루프 시작. {/* min-version: 2.1.198 */}v2.1.198부터 이는 또한 `--yes-always`로 시작된 러너와 같이 격리 및 작업별 승인이 비활성화된 제3자 에이전트 또는 평가 하네스를 실행하는 것을 포함합니다.
+* `--dangerously-skip-permissions` 또는 `--no-sandbox`로 시작된 것과 같이 인간 승인 또는 샌드박스 없이 실행되는 자율 에이전트 루프 시작. v2.1.198부터 이는 또한 `--yes-always`로 시작된 러너와 같이 격리 및 작업별 승인이 비활성화된 제3자 에이전트 또는 평가 하네스를 실행하는 것을 포함합니다.
 * 페이지 콘텐츠, 쿠키 또는 자격 증명을 원본 외부로 보낼 수 있는 [Chrome의 Claude](/docs/ko/chrome) 브라우저 작업
 
 Claude Code v2.1.198 이상도 기본적으로 다음을 차단합니다:
 
 * 특정 명명된 경로가 아닌 와일드카드, glob 또는 나이 필터로 `/tmp`, `$TMPDIR` 또는 다른 공유 스크래치 또는 캐시 디렉토리의 파일 삭제
-* 자신의 메시지가 해당 수신자에게 이러한 세부 정보를 승인하지 않은 경우 다른 사람 또는 공유 시스템으로 전송, 업로드, 게시 또는 작성된 콘텐츠에 민감한 세부 정보 포함. {/* min-version: 2.1.200 */}PR 및 이슈 본문, 커밋 메시지 및 댓글은 저장소가 신뢰 경계 외부이거나 공개인 경우 이러한 종류의 아웃바운드 콘텐츠로 계산되며, 조직의 자체 공개 저장소 포함; 내부 파일 경로, 코드명, 이메일 또는 계정 식별자와 같은 라이브 API 응답 데이터 및 인프라 식별자는 민감한 세부 정보로 계산됩니다. PR, 이슈 및 커밋 메시지 범위 지정은 Claude Code v2.1.200 이상이 필요합니다. {/* min-version: 2.1.203 */}PR 또는 이슈 본문의 API 응답의 라이브 개인 데이터(예: 이메일 주소, 계정 또는 조직 식별자 또는 사용 메트릭)는 저장소의 가시성 또는 신뢰 경계에 관계없이 이러한 세부 정보와 수신자의 이름을 지정해야 합니다. 이 확인은 Claude Code v2.1.203 이상이 필요합니다.
+* 자신의 메시지가 해당 수신자에게 이러한 세부 정보를 승인하지 않은 경우 다른 사람 또는 공유 시스템으로 전송, 업로드, 게시 또는 작성된 콘텐츠에 민감한 세부 정보 포함. PR 및 이슈 본문, 커밋 메시지 및 댓글은 저장소가 신뢰 경계 외부이거나 공개인 경우 이러한 종류의 아웃바운드 콘텐츠로 계산되며, 조직의 자체 공개 저장소 포함; 내부 파일 경로, 코드명, 이메일 또는 계정 식별자와 같은 라이브 API 응답 데이터 및 인프라 식별자는 민감한 세부 정보로 계산됩니다. PR, 이슈 및 커밋 메시지 범위 지정은 Claude Code v2.1.200 이상이 필요합니다. PR 또는 이슈 본문의 API 응답의 라이브 개인 데이터(예: 이메일 주소, 계정 또는 조직 식별자 또는 사용 메트릭)는 저장소의 가시성 또는 신뢰 경계에 관계없이 이러한 세부 정보와 수신자의 이름을 지정해야 합니다. 이 확인은 Claude Code v2.1.203 이상이 필요합니다.
 * Claude Code의 자체 tmux 창으로 키스트로크를 전송하여 자체 인터페이스를 구동합니다. 분류기는 이를 Claude가 자체 권한 또는 감시를 변경하는 것으로 취급합니다.
 
 Claude Code v2.1.200 이상도 기본적으로 다음을 차단합니다:
@@ -284,7 +284,7 @@ Claude Code v2.1.200 이상도 기본적으로 다음을 차단합니다:
 * Claude가 세션에서 생성하지 않은 상태 저장 리소스 삭제 또는 해제, 더 구체적인 삭제 규칙이 적용되지 않고 해당 리소스의 이름을 지정하지 않은 경우
 * API 기본 URL, 프록시 엔드포인트, 웹훅 수신자 또는 레지스트리 미러를 작업에 맞지 않는 제3자 호스트로 다시 지정(`.env.example`과 같은 예제 파일 포함)
 * `git remote set-url` 또는 `git remote add`로 푸시가 가는 위치 변경, 새 원격의 이름을 지정하지 않은 경우
-* 공개로 알려진 저장소로 비밀 또는 개인 또는 위탁받은 데이터 푸시, 또는 해당 저장소의 자체 작업의 일부가 아닌 기밀 자료 푸시. {/* min-version: 2.1.203 */}dotfiles 저장소의 자체 주제는 개인 또는 위탁받은 데이터의 유일한 예외이며, 개인 저장소에서 공개 표면에 도달하는 콘텐츠는 동일한 방식으로 차단됩니다. 두 개선 사항 모두 Claude Code v2.1.203 이상이 필요합니다. v2.1.203 이전에는 개인 데이터가 기밀 자료와 함께 그룹화되었으며 해당 저장소의 자체 작업의 일부가 아닌 경우에만 차단되었습니다. 저장소의 가시성이 설정되지 않은 경우 분류기는 단독으로 차단하지 않습니다. 대신 다른 규칙에 대해 콘텐츠를 판단합니다.
+* 공개로 알려진 저장소로 비밀 또는 개인 또는 위탁받은 데이터 푸시, 또는 해당 저장소의 자체 작업의 일부가 아닌 기밀 자료 푸시. dotfiles 저장소의 자체 주제는 개인 또는 위탁받은 데이터의 유일한 예외이며, 개인 저장소에서 공개 표면에 도달하는 콘텐츠는 동일한 방식으로 차단됩니다. 두 개선 사항 모두 Claude Code v2.1.203 이상이 필요합니다. v2.1.203 이전에는 개인 데이터가 기밀 자료와 함께 그룹화되었으며 해당 저장소의 자체 작업의 일부가 아닌 경우에만 차단되었습니다. 저장소의 가시성이 설정되지 않은 경우 분류기는 단독으로 차단하지 않습니다. 대신 다른 규칙에 대해 콘텐츠를 판단합니다.
 * 다른 저장소 또는 조직에 대한 풀 요청 열기, `gh repo fork`로 포킹, 또는 제3자 저장소로 푸시, 해당 외부 대상의 이름을 지정하지 않은 경우
 
 Claude Code v2.1.203 이상도 기본적으로 다음을 차단합니다:
@@ -303,7 +303,7 @@ Claude Code v2.1.205 이상도 기본적으로 다음을 차단합니다:
 * `.env` 읽기 및 자격 증명을 일치하는 API로 전송
 * 읽기 전용 HTTP 요청
 * 시작한 분기 또는 Claude가 생성한 분기로 푸시
-* {/* min-version: 2.1.203 */}저장소 기본 분기로의 일상적인 푸시. v2.1.203 이전에는 기본 분기로의 직접 푸시가 차단되었습니다.
+* 저장소 기본 분기로의 일상적인 푸시. v2.1.203 이전에는 기본 분기로의 직접 푸시가 차단되었습니다.
 
 Claude Code v2.1.195 이상도 기본적으로 다음을 허용합니다:
 
@@ -313,7 +313,7 @@ Claude Code v2.1.195 이상도 기본적으로 다음을 허용합니다:
 * [`environment`](/docs/ko/auto-mode-config#define-trusted-infrastructure)에 나열한 신뢰할 수 있는 도메인, 버킷 및 서비스로 데이터 전송. 이는 동일한 인프라에 대한 파괴적 또는 자격 증명 작업이 아닌 데이터 흐름만 포함합니다.
 * [Chrome의 Claude](/docs/ko/chrome) 신뢰할 수 있는 내부 도메인, localhost 또는 명명한 URL로 탐색
 
-샌드박스 네트워크 액세스 요청은 기본적으로 허용되는 대신 분류기를 통해 라우팅됩니다. {/* min-version: 2.1.198 */}v2.1.198부터 분류기는 모든 연결에서 다시 실행하는 대신 네트워크 호스트 및 포트에 대한 판정을 재사용합니다:
+샌드박스 네트워크 액세스 요청은 기본적으로 허용되는 대신 분류기를 통해 라우팅됩니다. v2.1.198부터 분류기는 모든 연결에서 다시 실행하는 대신 네트워크 호스트 및 포트에 대한 판정을 재사용합니다:
 
 * 허용은 새 콘텐츠가 대화에 들어올 때까지 재사용되며, 이 시점에서 해당 호스트가 다시 확인됩니다.
 * 대화형 CLI에서 거부는 턴이 끝날 때 삭제됩니다.
@@ -350,7 +350,7 @@ Claude Code v2.1.195 이상도 기본적으로 다음을 허용합니다:
 
     1. [허용, 요청 또는 거부 규칙](/docs/ko/permissions#manage-permissions)과 일치하는 작업은 [보호된 경로](#protected-paths)에 대한 쓰기를 제외하고 즉시 해결되며, 이는 허용 규칙이 일치하더라도 분류기로 라우팅됩니다. [조직이 `ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 커넥터 도구 및 [`requiresUserInteraction`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시된 MCP 도구는 허용 규칙이 일치하더라도 직접 프롬프트합니다. 콘텐츠 범위 요청 규칙은 권한 프롬프트로 폴백합니다.
     2. 읽기 전용 작업 및 작업 디렉토리의 파일 편집은 [보호된 경로](#protected-paths)에 대한 쓰기를 제외하고 자동 승인됩니다.
-    3. 다른 모든 것은 분류기로 이동합니다. [조직이 `ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 커넥터 도구는 분류기를 건너뛰고 직접 프롬프트하므로 조직 필수 승인은 자동 승인되지 않습니다. {/* min-version: 2.1.199 */}v2.1.199부터 [`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시된 MCP 도구도 분류기를 건너뛰고 직접 프롬프트하므로 동의 단계는 도구 작성자를 대신하여 자동 승인되지 않습니다.
+    3. 다른 모든 것은 분류기로 이동합니다. [조직이 `ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 커넥터 도구는 분류기를 건너뛰고 직접 프롬프트하므로 조직 필수 승인은 자동 승인되지 않습니다. v2.1.199부터 [`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시된 MCP 도구도 분류기를 건너뛰고 직접 프롬프트하므로 동의 단계는 도구 작성자를 대신하여 자동 승인되지 않습니다.
     4. 분류기가 차단하면 Claude는 이유를 받고 대안을 시도합니다.
 
     자동 모드에 들어가면 임의의 코드 실행을 부여하는 광범위한 허용 규칙이 삭제됩니다:
@@ -386,7 +386,7 @@ Claude Code v2.1.195 이상도 기본적으로 다음을 허용합니다:
 
 `dontAsk` 모드를 설정하면 Claude Code는 그 외에 프롬프트를 표시할 모든 도구 호출을 자동으로 거부합니다. Claude는 `permissions.allow` 규칙, [읽기 전용 Bash 명령어](/docs/ko/permissions#read-only-commands), 그리고 [PreToolUse 훅](/docs/ko/permissions#extend-permissions-with-hooks)으로 승인된 호출과 일치하는 작업만 실행합니다. CI 파이프라인이나 Claude가 정확히 수행할 수 있는 작업을 사전에 정의하는 제한된 환경에서 이 모드를 사용하세요. 세션은 입력을 기다리지 않습니다. 이 모드가 활성화되어 있는 동안 상태 표시줄에 `⏵⏵ don't ask on`이 표시됩니다.
 
-Claude Code는 명시적인 [`ask` 규칙](/docs/ko/permissions#manage-permissions)과 일치하는 호출을 프롬프트를 표시하지 않고 거부합니다. 또한 내장 `AskUserQuestion` 도구와 [조직에서 `ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 커넥터 도구도 거부합니다. allow 규칙이 일치하더라도 마찬가지입니다. {/* min-version: 2.1.199 */}[`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시된 MCP 도구도 동일한 방식으로 거부됩니다. 왜냐하면 승인 카드가 이 모드에서 수집하지 않는 답변이 필요하기 때문입니다. 이는 Claude Code v2.1.199 이상이 필요합니다.
+Claude Code는 명시적인 [`ask` 규칙](/docs/ko/permissions#manage-permissions)과 일치하는 호출을 프롬프트를 표시하지 않고 거부합니다. 또한 내장 `AskUserQuestion` 도구와 [조직에서 `ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 커넥터 도구도 거부합니다. allow 규칙이 일치하더라도 마찬가지입니다. [`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)으로 표시된 MCP 도구도 동일한 방식으로 거부됩니다. 왜냐하면 승인 카드가 이 모드에서 수집하지 않는 답변이 필요하기 때문입니다. 이는 Claude Code v2.1.199 이상이 필요합니다.
 
 [Claude Code on the web](/docs/ko/claude-code-on-the-web)의 클라우드 세션은 `defaultMode: "dontAsk"`를 무시합니다. 자세한 내용은 [bypassPermissions](#skip-all-checks-with-bypasspermissions-mode)를 참조하세요.
 
@@ -402,9 +402,9 @@ claude --permission-mode dontAsk
 
 `bypassPermissions` 모드는 권한 프롬프트와 안전 확인을 비활성화하여 도구 호출이 즉시 실행되도록 합니다. v2.1.126 이전에는 [보호된 경로](#protected-paths)에 대한 쓰기가 여전히 이 모드에서 프롬프트를 표시했습니다.
 
-명시적 [ask 규칙](/docs/ko/permissions#manage-permissions)과 커넥터 도구 [조직에서 `ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 도구는 여전히 이 모드에서 프롬프트를 강제합니다. {/* min-version: 2.1.199 */}[`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)로 표시된 MCP 도구도 여전히 프롬프트를 표시합니다. 이는 Claude Code v2.1.199 이상이 필요합니다.
+명시적 [ask 규칙](/docs/ko/permissions#manage-permissions)과 커넥터 도구 [조직에서 `ask`로 설정한](/docs/ko/mcp#organization-controls-on-connector-tools) 도구는 여전히 이 모드에서 프롬프트를 강제합니다. [`_meta["anthropic/requiresUserInteraction"]`](/docs/ko/mcp#require-approval-for-a-specific-tool)로 표시된 MCP 도구도 여전히 프롬프트를 표시합니다. 이는 Claude Code v2.1.199 이상이 필요합니다.
 
-파일 시스템 루트 또는 홈 디렉터리를 대상으로 하는 제거(예: `rm -rf /` 및 `rm -rf ~`)는 모델 오류에 대한 차단기로서 여전히 프롬프트를 표시합니다. {/* min-version: 2.1.208 */}차단기는 또한 명령에 `$(...)` 또는 백틱을 사용한 명령 치환이나 `<(...)`를 사용한 프로세스 치환이 포함될 때 작동합니다. 제거가 `echo "$(rm -rf ~)"`처럼 치환 내부에 있든 같은 명령의 다른 곳에 있든 상관없습니다. 일반 형식은 자체 명령으로 입력되었을 때 차단기가 도입된 이후 이 모드에서 프롬프트를 표시했습니다. v2.1.208 이전에는 이러한 형식을 포함하는 명령이 프롬프트를 표시하지 않았습니다.
+파일 시스템 루트 또는 홈 디렉터리를 대상으로 하는 제거(예: `rm -rf /` 및 `rm -rf ~`)는 모델 오류에 대한 차단기로서 여전히 프롬프트를 표시합니다. 차단기는 또한 명령에 `$(...)` 또는 백틱을 사용한 명령 치환이나 `<(...)`를 사용한 프로세스 치환이 포함될 때 작동합니다. 제거가 `echo "$(rm -rf ~)"`처럼 치환 내부에 있든 같은 명령의 다른 곳에 있든 상관없습니다. 일반 형식은 자체 명령으로 입력되었을 때 차단기가 도입된 이후 이 모드에서 프롬프트를 표시했습니다. v2.1.208 이전에는 이러한 형식을 포함하는 명령이 프롬프트를 표시하지 않았습니다.
 
 <Warning>
   이 모드는 Claude Code가 호스트 시스템에 손상을 줄 수 없는 인터넷 접근이 없는 컨테이너, VM 또는 dev 컨테이너와 같은 격리된 환경에서만 사용하십시오.

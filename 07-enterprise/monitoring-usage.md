@@ -93,7 +93,7 @@ Claude Code는 `OTEL_*` 환경 변수를 Bash 도구, 훅, MCP 서버 및 언어
 | `OTEL_METRIC_EXPORT_INTERVAL`                       | 내보내기 간격 (밀리초 단위, 기본값: 60000)                                                                                                                                                                                                                   | `5000`, `60000`                                                             |
 | `OTEL_LOGS_EXPORT_INTERVAL`                         | 로그 내보내기 간격 (밀리초 단위, 기본값: 5000)                                                                                                                                                                                                                 | `1000`, `10000`                                                             |
 | `OTEL_LOG_USER_PROMPTS`                             | 사용자 프롬프트 콘텐츠 로깅 활성화 (기본값: 비활성화)                                                                                                                                                                                                                | `1`로 활성화                                                                    |
-| `OTEL_LOG_ASSISTANT_RESPONSES`                      | `assistant_response` 이벤트에서 어시스턴트 응답 텍스트 로깅 활성화 (기본값: 비활성화). 설정되지 않으면 `OTEL_LOG_USER_PROMPTS`의 값으로 폴백됩니다. {/* min-version: 2.1.193 */}Claude Code v2.1.193 이상 필요                                                                                | `1`로 활성화, `0`으로 수정된 상태 유지                                                   |
+| `OTEL_LOG_ASSISTANT_RESPONSES`                      | `assistant_response` 이벤트에서 어시스턴트 응답 텍스트 로깅 활성화 (기본값: 비활성화). 설정되지 않으면 `OTEL_LOG_USER_PROMPTS`의 값으로 폴백됩니다. Claude Code v2.1.193 이상 필요                                                                                                            | `1`로 활성화, `0`으로 수정된 상태 유지                                                   |
 | `OTEL_LOG_TOOL_DETAILS`                             | 도구 이벤트 및 추적 스팬 속성에서 도구 매개변수 및 입력 인수 로깅 활성화: Bash 명령, MCP 서버 및 도구 이름, 스킬 이름 및 도구 입력. 또한 `user_prompt` 이벤트에서 사용자 정의, 플러그인 및 MCP 명령 이름을 활성화합니다 (기본값: 비활성화)                                                                                        | `1`로 활성화                                                                    |
 | `OTEL_LOG_TOOL_CONTENT`                             | 스팬 이벤트에서 도구 입력 및 출력 콘텐츠 로깅 활성화 (기본값: 비활성화). [추적](#traces-beta)이 필요합니다. 콘텐츠는 60KB에서 잘립니다                                                                                                                                                        | `1`로 활성화                                                                    |
 | `OTEL_LOG_RAW_API_BODIES`                           | 전체 Anthropic Messages API 요청 및 응답 JSON을 `api_request_body` / `api_response_body` 로그 이벤트로 내보냅니다 (기본값: 비활성화). 본문에는 전체 대화 기록이 포함됩니다. 이를 활성화하면 `OTEL_LOG_USER_PROMPTS`, `OTEL_LOG_TOOL_DETAILS` 및 `OTEL_LOG_TOOL_CONTENT`가 공개할 모든 것에 동의하는 것을 의미합니다 | `1`로 60KB에서 잘린 인라인 본문, 또는 `file:<dir>`로 디스크의 잘리지 않은 본문과 이벤트의 `body_ref` 포인터 |
@@ -447,8 +447,8 @@ Claude Code가 [Claude 앱 게이트웨이](/docs/ko/claude-apps-gateway)에 로
 
 * `prompt.id`: 사용자 프롬프트를 다음 프롬프트까지의 모든 후속 이벤트와 상관시키는 UUID입니다. [이벤트 상관 속성](#event-correlation-attributes)을 참조하세요.
 * `workspace.host_paths`: 데스크톱 앱에서 선택한 호스트 작업 공간 디렉토리 (문자열 배열)
-* `workflow.run_id`: API 및 [Workflow](/docs/ko/workflows) 도구 실행에 속하는 에이전트가 내보낸 도구 이벤트의 실행 식별자 (접두사 `wf_`). 하나의 `workflow.run_id`로 이벤트를 필터링하면 해당 실행의 API 요청 및 도구 결과를 재구성합니다. 식별자는 워크플로우 스크립트가 생성하는 에이전트 및 이들이 차례로 생성하는 모든 에이전트 (예: 스킬 호출)를 포함합니다. Workflow 도구 결과에서 보고된 실행 식별자와 일치합니다. 다른 모든 이벤트에는 없습니다. {/* min-version: 2.1.202 */}Claude Code v2.1.202 이상 필요
-* `workflow.name`: 워크플로우의 이름 (스크립트의 `meta.name`), `workflow.run_id`와 함께 내보내집니다. 기본 제공 워크플로우 이름은 수정되지 않은 기본 제공 스크립트를 실행할 때 그대로 나타납니다. 기본 제공 스크립트의 편집된 복사본을 포함한 사용자 작성 이름은 `OTEL_LOG_TOOL_DETAILS=1`이 설정되지 않으면 `custom`으로 대체됩니다. {/* min-version: 2.1.202 */}Claude Code v2.1.202 이상 필요
+* `workflow.run_id`: API 및 [Workflow](/docs/ko/workflows) 도구 실행에 속하는 에이전트가 내보낸 도구 이벤트의 실행 식별자 (접두사 `wf_`). 하나의 `workflow.run_id`로 이벤트를 필터링하면 해당 실행의 API 요청 및 도구 결과를 재구성합니다. 식별자는 워크플로우 스크립트가 생성하는 에이전트 및 이들이 차례로 생성하는 모든 에이전트 (예: 스킬 호출)를 포함합니다. Workflow 도구 결과에서 보고된 실행 식별자와 일치합니다. 다른 모든 이벤트에는 없습니다. Claude Code v2.1.202 이상 필요
+* `workflow.name`: 워크플로우의 이름 (스크립트의 `meta.name`), `workflow.run_id`와 함께 내보내집니다. 기본 제공 워크플로우 이름은 수정되지 않은 기본 제공 스크립트를 실행할 때 그대로 나타납니다. 기본 제공 스크립트의 편집된 복사본을 포함한 사용자 작성 이름은 `OTEL_LOG_TOOL_DETAILS=1`이 설정되지 않으면 `custom`으로 대체됩니다. Claude Code v2.1.202 이상 필요
 
 <h3 id="metrics">
   메트릭
@@ -622,7 +622,7 @@ Claude Code는 OpenTelemetry 로그/이벤트를 통해 다음 이벤트를 내�
   어시스턴트 응답 이벤트
 </h4>
 
-각 API 요청이 모델의 텍스트 콘텐츠를 반환한 후 기록됩니다. 응답의 텍스트 블록만 포함됩니다. 사고 블록 및 도구 사용 블록은 제외됩니다. {/* min-version: 2.1.193 */}Claude Code v2.1.193 이상 필요.
+각 API 요청이 모델의 텍스트 콘텐츠를 반환한 후 기록됩니다. 응답의 텍스트 블록만 포함됩니다. 사고 블록 및 도구 사용 블록은 제외됩니다. Claude Code v2.1.193 이상 필요.
 
 **이벤트 이름**: `claude_code.assistant_response`
 
@@ -945,11 +945,11 @@ Claude Code가 예상치 못한 내부 오류를 포착할 때 기록됩니다. 
 * `plugin_id_hash`: 플러그인 이름 및 마켓플레이스의 결정론적 해시 (구성된 내보내기로만 전송됨). 플릿 전체에서 로드된 서로 다른 타사 플러그인 수를 세는 것을 허용합니다 (이름 기록 없이)
 * `has_hooks`: 플러그인이 훅을 제공하는지 여부
 * `has_mcp`: 플러그인이 MCP 서버를 제공하는지 여부
-* `host_owned_mcp`: SDK 호스트가 이 플러그인의 MCP 연결을 관리하고 Claude Code가 플러그인의 MCP 서버 구성 읽기를 건너뛸 때 `true`, 그 외에는 `false`. {/* min-version: 2.1.172 */}Claude Code v2.1.172 이상 필요
+* `host_owned_mcp`: SDK 호스트가 이 플러그인의 MCP 연결을 관리하고 Claude Code가 플러그인의 MCP 서버 구성 읽기를 건너뛸 때 `true`, 그 외에는 `false`. Claude Code v2.1.172 이상 필요
 * `skill_path_count`: 플러그인이 선언하는 스킬 디렉토리 수
 * `command_path_count`: 플러그인이 선언하는 명령 디렉토리 수
 * `agent_path_count`: 플러그인이 선언하는 에이전트 디렉토리 수
-* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. 안전 모드에서 이 이벤트는 구성된 인벤토리만 보고합니다. 플러그인의 명령, 스킬, 훅 및 MCP 서버는 로드되지 않습니다. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. 안전 모드에서 이 이벤트는 구성된 인벤토리만 보고합니다. 플러그인의 명령, 스킬, 훅 및 MCP 서버는 로드되지 않습니다. Claude Code v2.1.169 이상 필요
 
 <h4 id="skill-activated-event">
   스킬 활성화됨 이벤트
@@ -1027,7 +1027,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `hook_event`: 훅 이벤트 유형, 예: `"PreToolUse"` 또는 `"PostToolUse"`
 * `hook_type`: 훅 구현 유형: `"command"`, `"prompt"`, `"mcp_tool"`, `"http"` 또는 `"agent"`
 * `hook_source`: 훅이 정의된 위치: `"userSettings"`, `"projectSettings"`, `"localSettings"`, `"flagSettings"`, `"policySettings"` 또는 `"pluginHook"`
-* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. Claude Code v2.1.169 이상 필요
 * `hook_matcher` (`OTEL_LOG_TOOL_DETAILS=1`일 때): 설정된 경우 훅 구성의 매처 문자열
 * `plugin.name` (`hook_source`가 `"pluginHook"`일 때): 기여하는 플러그인의 이름. 공식 마켓플레이스 및 기본 제공 번들 외부의 플러그인의 경우 `OTEL_LOG_TOOL_DETAILS=1`이 아니면 값은 `"third-party"`입니다
 * `plugin_id_hash` (`hook_source`가 `"pluginHook"`일 때): 플러그인 이름 및 마켓플레이스의 결정론적 해시 (구성된 내보내기로만 전송됨). 이름을 기록하지 않고 기여하는 서로 다른 플러그인을 세는 것을 허용합니다
@@ -1051,7 +1051,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `num_hooks`: 일치하는 훅 명령 수
 * `managed_only`: 관리 정책 훅만 허용될 때 `"true"`
 * `hook_source`: `"policySettings"` 또는 `"merged"`
-* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. Claude Code v2.1.169 이상 필요
 * `hook_definitions`: JSON 직렬화된 훅 구성. 상세 베타 추적과 `OTEL_LOG_TOOL_DETAILS=1`이 모두 활성화되어 있을 때만 포함됨
 
 <h4 id="hook-execution-complete-event">
@@ -1078,7 +1078,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `total_duration_ms`: 모든 일치하는 훅의 벽시계 지속 시간
 * `managed_only`: 관리 정책 훅만 허용될 때 `"true"`
 * `hook_source`: `"policySettings"` 또는 `"merged"`
-* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. {/* min-version: 2.1.169 */}Claude Code v2.1.169 이상 필요
+* `safe_mode`: 세션이 [`--safe-mode`](/docs/ko/cli-reference)로 시작되었을 때 `"true"`, 그 외에는 `"false"`. Claude Code v2.1.169 이상 필요
 * `hook_definitions`: JSON 직렬화된 훅 구성. 상세 베타 추적과 `OTEL_LOG_TOOL_DETAILS=1`이 모두 활성화되어 있을 때만 포함됨
 
 <h4 id="hook-plugin-metrics-event">
@@ -1119,7 +1119,7 @@ API 요청이 두 번 이상 시도 후 실패할 때 한 번 기록됩니다. �
 * `pre_tokens`: 압축 전 대략적인 토큰 수
 * `post_tokens`: 압축 후 대략적인 토큰 수
 * `error`: 압축이 실패했을 때 오류 메시지
-* `precompute_reuse`: `trigger`가 `"manual"`일 때만 설정됩니다. 자동 압축은 컨텍스트 윈도우가 가득 차기 전에 백그라운드에서 요약을 준비할 수 있으며, 이 속성은 `/compact`가 해당 준비된 요약을 재사용했는지 기록합니다. `"hit"`은 재사용되었음을 의미합니다. `"miss_custom_instructions"`, `"miss_hook"` 및 `"miss_not_ready"`는 대신 새로운 요약이 계산된 이유를 제공합니다. {/* min-version: 2.1.153 */}Claude Code v2.1.153 이상 필요
+* `precompute_reuse`: `trigger`가 `"manual"`일 때만 설정됩니다. 자동 압축은 컨텍스트 윈도우가 가득 차기 전에 백그라운드에서 요약을 준비할 수 있으며, 이 속성은 `/compact`가 해당 준비된 요약을 재사용했는지 기록합니다. `"hit"`은 재사용되었음을 의미합니다. `"miss_custom_instructions"`, `"miss_hook"` 및 `"miss_not_ready"`는 대신 새로운 요약이 계산된 이유를 제공합니다. Claude Code v2.1.153 이상 필요
 
 <h4 id="feedback-survey-event">
   피드백 설문 이벤트

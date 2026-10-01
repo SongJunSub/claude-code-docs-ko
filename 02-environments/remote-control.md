@@ -6,22 +6,16 @@
 
 > Remote Control을 사용하여 휴대폰, 태블릿 또는 모든 브라우저에서 로컬 Claude Code 세션을 계속할 수 있습니다. claude.ai/code 및 Claude 모바일 앱과 함께 작동합니다.
 
-<Note>
-  Remote Control은 연구 미리보기 단계이며 모든 요금제에서 사용할 수 있습니다. Team 및 Enterprise의 경우 관리자가 [Claude Code 관리자 설정](https://claude.ai/admin-settings/claude-code)에서 Remote Control 토글을 활성화할 때까지 기본적으로 꺼져 있습니다.
-</Note>
+Remote Control은 [claude.ai/code](https://claude.ai/code) 또는 [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) 및 [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude)용 Claude 앱을 사용자의 머신에서 실행 중인 Claude Code 세션에 연결합니다. 책상에서 작업을 시작한 후 소파의 휴대폰이나 다른 컴퓨터의 브라우저에서 계속할 수 있습니다.
 
-Remote Control은 [claude.ai/code](https://claude.ai/code) 또는 [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) 및 [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude)용 Claude 앱을 컴퓨터에서 실행 중인 Claude Code 세션에 연결합니다. 책상에서 작업을 시작한 다음 소파의 휴대폰이나 다른 컴퓨터의 브라우저에서 계속할 수 있습니다.
+사용자의 머신에서 Remote Control 세션을 시작하면 Claude는 전체 시간 동안 로컬에서 계속 실행되므로 코드 실행 및 파일시스템 액세스는 사용자의 머신에 유지됩니다. Remote Control을 사용하면 다음을 수행할 수 있습니다:
 
-컴퓨터에서 Remote Control 세션을 시작하면 Claude는 전체 시간 동안 로컬에서 실행되므로 코드 실행 및 파일 시스템 접근이 컴퓨터에 유지됩니다. Remote Control을 사용하면 다음을 수행할 수 있습니다:
+* **전체 로컬 환경을 원격으로 사용**: 파일시스템, [MCP 서버](/docs/ko/mcp), 도구 및 프로젝트 구성이 모두 사용 가능하게 유지되며, `@`를 입력하면 로컬 프로젝트의 파일 경로가 자동 완성됩니다.
+* **두 개의 표면에서 동시에 작업**: 대화 및 [서브에이전트](/docs/ko/sub-agents) 및 [동적 워크플로우](/docs/ko/workflows)의 진행 상황이 모든 연결된 기기에서 동기화되므로 터미널, 브라우저 및 휴대폰에서 상호 교환 가능하게 메시지를 보낼 수 있습니다.
+* **휴대폰 또는 브라우저에서 이미지 및 파일 전송**: Claude 앱 또는 claude.ai/code에서 캡션 포함 여부와 관계없이 사진 또는 파일을 첨부합니다. Claude는 첨부된 사진을 메시지의 일부로 직접 봅니다. Claude Code는 다른 파일을 사용자의 머신에 다운로드하고 `@` 파일 참조로 Claude에 전달합니다.
+* **중단에서 복구**: 노트북이 절전 모드로 전환되거나 네트워크가 끊어지면 머신이 다시 온라인 상태가 될 때 Claude Code가 자동으로 다시 연결됩니다.
 
-* **전체 로컬 환경을 원격으로 사용**: 파일 시스템, [MCP servers](/docs/ko/mcp), 도구 및 프로젝트 구성이 모두 사용 가능하게 유지되며, `@`를 입력하면 로컬 프로젝트의 파일 경로가 자동 완성됩니다
-* **두 표면에서 동시에 작업**: 대화 및 [subagents](/docs/ko/sub-agents) 및 [dynamic workflows](/docs/ko/workflows)의 진행 상황이 모든 연결된 기기에서 동기화되므로 터미널, 브라우저 및 휴대폰에서 메시지를 교대로 보낼 수 있습니다. v2.1.207 이전에는 [Desktop app](/docs/ko/desktop)에서 호스팅하는 세션이 연결된 기기에 subagent 또는 workflow 진행 상황을 보내지 않았습니다.
-* **휴대폰 또는 브라우저에서 이미지 및 파일 전송**: Claude 앱 또는 claude.ai/code에서 첨부 파일을 추가하면 Claude Code가 이를 컴퓨터에 다운로드하고 캡션 유무와 관계없이 `@` 파일 참조로 Claude에 전달합니다. v2.1.202 이전에는 Claude Code가 캡션 없이 전송된 첨부 파일을 세션에 도달하기 전에 삭제할 수 있었습니다.
-* **중단 극복**: 노트북이 절전 모드로 전환되거나 네트워크가 끊어지면 컴퓨터가 다시 온라인 상태가 될 때 세션이 자동으로 다시 연결됩니다. Claude Code는 연결이 재구축되는 동안 subagents 및 workflows의 상태 업데이트를 대기열에 넣고 복구되면 전달합니다. v2.1.207 이전에는 재연결 또는 자격 증명 새로 고침 중에 전송된 업데이트가 손실될 수 있으므로 연결된 기기가 완료된 작업을 계속 실행 중으로 표시했습니다.
-
-클라우드 인프라에서 실행되는 [웹의 Claude Code](/docs/ko/claude-code-on-the-web)와 달리 Remote Control 세션은 컴퓨터에서 직접 실행되며 로컬 파일 시스템과 상호 작용합니다. 웹 및 모바일 인터페이스는 단지 해당 로컬 세션의 창일 뿐입니다.
-
-이 페이지에서는 설정, 세션을 시작하고 연결하는 방법, Remote Control과 웹의 Claude Code를 비교하는 방법을 다룹니다.
+[클라우드 세션](/docs/ko/claude-code-on-the-web)은 클라우드 인프라에서 실행되는 것과 달리, Remote Control 세션은 사용자의 머신에서 직접 실행되며 로컬 파일시스템과 상호 작용합니다. 웹 및 모바일 인터페이스는 해당 로컬 세션으로의 창이므로 컴퓨터는 계속 켜져 있어야 하고 `claude` 프로세스는 계속 실행되어야 합니다.
 
 <h2 id="requirements">
   요구 사항
@@ -30,39 +24,56 @@ Remote Control은 [claude.ai/code](https://claude.ai/code) 또는 [iOS](https://
 Remote Control을 사용하기 전에 환경이 다음 조건을 충족하는지 확인하세요:
 
 * **구독**: Pro, Max, Team 및 Enterprise 요금제에서 사용 가능합니다. API 키는 지원되지 않습니다. Team 및 Enterprise의 경우 Owner가 먼저 [Claude Code 관리자 설정](https://claude.ai/admin-settings/claude-code)에서 Remote Control 토글을 활성화해야 합니다.
-* **인증**: `claude`를 실행하고 아직 로그인하지 않았다면 `/login`을 사용하여 claude.ai를 통해 로그인하세요.
-* **API 엔드포인트**: Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry에서는 사용할 수 없습니다. v2.1.196부터 [`ANTHROPIC_BASE_URL`](/docs/ko/env-vars)이 `api.anthropic.com` 이외의 호스트(예: [LLM gateway](/docs/ko/llm-gateway) 또는 프록시)를 가리킬 때도 Remote Control이 비활성화됩니다. Remote Control을 사용하려면 변수를 설정 해제하세요.
-* **작업 공간 신뢰**: 작업 공간 신뢰 대화를 수락하려면 프로젝트 디렉토리에서 최소한 한 번 `claude`를 실행하세요.
+* **인증**: `claude`를 실행하고 아직 로그인하지 않았다면 `/login`을 사용하여 claude.ai를 통해 로그인하세요. 적격 로그인이 없으면 `claude remote-control`은 오류로 종료되고, `claude --remote-control`은 여전히 대화형 세션을 시작하며 시작 직후 Remote Control 실패 알림을 표시합니다.
+* **API 엔드포인트**: 다음 구성 중 어느 것도 사용할 수 없습니다:
+  * Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry를 사용합니다.
+  * [`ANTHROPIC_BASE_URL`](/docs/ko/env-vars)이 `api.anthropic.com` 이외의 호스트(예: [LLM gateway](/docs/ko/llm-gateway) 또는 프록시)를 가리킵니다. Remote Control을 사용하려면 변수를 설정 해제하세요.
+  * enterprise [Claude apps gateway](/docs/ko/claude-apps-gateway)를 통해 로그인합니다.
+* **기능 플래그 평가**: [환경 변수를 설정하여 기능 플래그 평가를 비활성화](/docs/ko/env-vars#features-that-need-feature-flag-fetching)하는 경우, Remote Control의 가용성은 어느 것을 설정했는지에 따라 달라집니다:
+  * `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 또는 `DISABLE_GROWTHBOOK`을 설정하면 Remote Control을 사용할 수 없습니다. Remote Control을 사용하려면 셸 환경이나 [`settings.json` 파일](/docs/ko/settings-reference#all-settings)의 `env` 블록에서 변수가 설정된 곳 어디든 설정 해제하세요.
+  * 만약 `DISABLE_TELEMETRY` 또는 `DO_NOT_TRACK`만 설정하면, 조직에서 [신뢰할 수 있는 디바이스](#trusted-devices)를 요구하지 않는 한 Remote Control은 계속 사용 가능합니다. 요구하는 경우 Remote Control을 사용하려면 변수를 설정 해제하세요. 두 변수 중 하나를 설정한 상태에서 Remote Control을 사용하려면 Claude Code v2.1.283 이상이 필요합니다.
+* **작업 공간 신뢰**: 아직 신뢰하지 않은 디렉토리에서 `claude remote-control`은 신뢰하면 어떤 기능이 활성화되는지 출력하고 시작하기 전에 `Trust <directory>? [y/N]`을 묻습니다. `y`로 답하면 선택 사항이 저장되지만, 홈 디렉토리에서는 신뢰가 절대 저장되지 않으며 매번 실행할 때마다 질문이 반복됩니다. 표준 입력 또는 출력이 터미널이 아닐 때, 명령은 질문할 수 없으며 [`Workspace not trusted`](/docs/ko/errors#workspace-not-trusted-when-starting-remote-control) 오류로 종료됩니다.
 
 <h2 id="start-a-remote-control-session">
   Remote Control 세션 시작
 </h2>
 
-CLI 또는 VS Code 확장에서 Remote Control 세션을 시작할 수 있습니다. CLI는 세 가지 호출 모드를 제공하며, VS Code는 `/remote-control` 명령을 사용합니다.
+CLI, [Claude Desktop 앱](/docs/ko/desktop) 또는 VS Code 확장에서 Remote Control 세션을 시작할 수 있습니다. CLI는 세 가지 호출 모드를 제공하며, Desktop 앱과 VS Code는 `/remote-control` 명령을 사용합니다.
 
 <Tabs>
   <Tab title="서버 모드">
-    프로젝트 디렉토리로 이동하여 다음을 실행하세요:
+    프로젝트 디렉토리에서 다음을 실행하세요:
 
     ```bash theme={null}
     claude remote-control
     ```
 
+    Remote Control의 일회성 확인을 수락할 때까지 `claude remote-control`은 수행하는 작업을 설명하고 시작하기 전에 `Enable Remote Control? (y/n)`을 묻습니다. `y`를 입력하여 수락하고 서버를 시작하세요. 거절하면 Claude Code는 서버를 시작하지 않고 종료되며 다음에 명령을 실행할 때 다시 묻습니다.
+
     프로세스는 터미널에서 서버 모드로 계속 실행되어 원격 연결을 기다립니다. [다른 기기에서 연결](#connect-from-another-device)하는 데 사용할 수 있는 세션 URL을 표시하며, 스페이스바를 눌러 휴대폰에서 빠르게 액세스할 수 있는 QR 코드를 표시할 수 있습니다. 원격 세션이 활성화되어 있는 동안 터미널은 연결 상태 및 도구 활동을 표시합니다.
 
-    사용 가능한 플래그:
+    `remote-control` 뒤에 다음 플래그들을 입력하세요:
 
-    | 플래그                                             | 설명                                                                                                                                                                                                                                                                                                                     |
-    | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `--name "My Project"`                           | claude.ai/code의 세션 목록에 표시되는 사용자 정의 세션 제목을 설정합니다.                                                                                                                                                                                                                                                                       |
-    | `--remote-control-session-name-prefix <prefix>` | 명시적 이름이 설정되지 않았을 때 자동 생성된 세션 이름의 접두사입니다. 기본값은 컴퓨터의 호스트 이름이며, `myhost-graceful-unicorn`과 같은 이름을 생성합니다. 동일한 효과를 위해 `CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX`를 설정하세요.                                                                                                                                                   |
-    | `-c`, `--continue`                              | 이 디렉토리에서 시작한 가장 최근의 Remote Control 세션을 재개하여 새로운 세션을 만드는 대신 사용합니다. `--session-id`, `--spawn`, `--capacity` 또는 `--create-session-in-dir`과 함께 사용할 수 없습니다. Claude Code v2.1.200 이상이 필요하며, 이전 버전은 이 플래그를 알 수 없는 인수로 거부합니다.                                                                                                  |
-    | `--session-id <id>`                             | ID로 특정 Remote Control 세션을 재개합니다. `--continue`, `--spawn`, `--capacity` 또는 `--create-session-in-dir`과 함께 사용할 수 없습니다. Claude Code v2.1.200 이상이 필요하며, 이전 버전은 이 플래그를 알 수 없는 인수로 거부합니다.                                                                                                                                     |
-    | `--spawn <mode>`                                | 서버가 세션을 생성하는 방식입니다.<br />• `same-dir` (기본값): 모든 세션이 현재 작업 디렉토리를 공유하므로 동일한 파일을 편집할 때 충돌할 수 있습니다.<br />• `worktree`: 각 온디맨드 세션은 자체 [git worktree](/docs/ko/worktrees)를 가져옵니다. git 저장소가 필요합니다.<br />• `session`: 단일 세션 모드입니다. 정확히 하나의 세션을 제공하고 추가 연결을 거부합니다. 시작 시에만 설정합니다.<br />런타임에 `w`를 눌러 `same-dir`과 `worktree` 사이를 전환하세요. |
-    | `--capacity <N>`                                | 최대 동시 세션 수입니다. 기본값은 32입니다. `--spawn=session`과 함께 사용할 수 없습니다.                                                                                                                                                                                                                                                           |
-    | `--[no-]create-session-in-dir`                  | 서버가 시작할 때 현재 디렉토리에 하나의 세션을 미리 생성하여 즉시 입력할 수 있는 위치를 제공합니다. `worktree` 모드에서 이 세션은 현재 디렉토리에 유지되고 온디맨드 세션은 격리된 worktree를 가져옵니다. 기본적으로 켜져 있으며, `--no-create-session-in-dir`을 전달하여 아무것도 없이 시작할 수 있습니다.                                                                                                                       |
-    | `--verbose`                                     | 자세한 연결 및 세션 로그를 표시합니다.                                                                                                                                                                                                                                                                                                 |
-    | `--sandbox` / `--no-sandbox`                    | 파일 시스템 및 네트워크 격리를 위해 [샌드박싱](/docs/ko/sandboxing)을 활성화하거나 비활성화합니다. 기본적으로 꺼져 있습니다.                                                                                                                                                                                                                                            |
+    | 플래그 | 설명 |
+    | - | - |
+    | `--name "My Project"` | claude.ai/code의 세션 목록에 표시되는 사용자 정의 세션 제목을 설정합니다. |
+    | `--remote-control-session-name-prefix <prefix>` | 명시적 이름이 설정되지 않았을 때 자동 생성된 세션 이름의 접두사입니다. 기본값은 컴퓨터의 호스트 이름이며, `myhost-graceful-unicorn`과 같은 이름을 생성합니다. 동일한 효과를 위해 `CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX`를 설정하세요. |
+    | `-c`, `--continue` | 이 디렉토리에서 마지막 서버가 시작한 세션을 다시 가져오며, 새로운 세션을 만드는 대신 사용합니다. [서버를 중지한 후 세션 재개](#resume-sessions-after-stopping-the-server)를 참조하세요. `--session-id`, `--spawn`, `--capacity` 또는 `--create-session-in-dir`과 함께 사용할 수 없습니다. Claude Code v2.1.200 이상이 필요합니다. |
+    | `--session-id <id>` | ID로 특정 세션을 다시 가져옵니다. [서버를 중지한 후 세션 재개](#resume-sessions-after-stopping-the-server)를 참조하세요. `--continue`, `--spawn`, `--capacity` 또는 `--create-session-in-dir`과 함께 사용할 수 없습니다. Claude Code v2.1.200 이상이 필요합니다. |
+    | `--spawn <mode>` | 서버가 세션을 생성하는 방식입니다.<br />• `same-dir` (기본값): 모든 세션이 현재 작업 디렉토리를 공유하므로 동일한 파일을 편집할 때 충돌할 수 있습니다.<br />• `worktree`: 각 온디맨드 세션은 자체 [git worktree](/docs/ko/worktrees)를 가져옵니다. git 저장소가 필요합니다.<br />• `session`: 단일 세션 모드입니다. 정확히 하나의 세션을 제공하고 추가 연결을 거부합니다. 시작 시에만 설정합니다.<br />런타임에 `w`를 눌러 `same-dir`과 `worktree` 사이를 전환하세요. |
+    | `--capacity <N>` | 최대 동시 세션 수입니다. 기본값은 32입니다. `--spawn=session`과 함께 사용할 수 없습니다. |
+    | `--[no-]create-session-in-dir` | 서버가 시작할 때 현재 디렉토리에 하나의 세션을 미리 생성하여 즉시 입력할 수 있는 위치를 제공합니다. `worktree` 모드에서 이 세션은 현재 디렉토리에 유지되고 온디맨드 세션은 격리된 worktree를 가져옵니다. 기본적으로 켜져 있습니다. `--no-create-session-in-dir`을 전달하여 아무것도 없이 시작하면 Claude Code는 서버의 세션을 보관하므로 [재개](#resume-sessions-after-stopping-the-server)할 것이 없습니다. |
+    | `--permission-mode <mode>` | 서버의 세션에 대한 시작 [권한 모드](/docs/ko/permission-modes)를 설정합니다(예: `acceptEdits`). `manual`을 `default`의 별칭으로 허용합니다. 인식되지 않는 모드는 시작 시 서버를 중지하고 유효한 모드를 나열합니다. |
+    | `--chrome` / `--no-chrome` | 서버가 생성하는 세션에서 [Chrome 통합](/docs/ko/chrome)을 켜거나 끕니다. 이렇게 하면 다른 기기에서 작업하는 동안 Claude가 컴퓨터에서 Chrome을 사용할 수 있습니다. 어느 플래그도 없으면 서버가 미리 생성하는 세션과 claude.ai/code 또는 Claude 앱에서 직접 시작하는 모든 세션은 [기본적으로 Chrome을 활성화](/docs/ko/chrome#enable-chrome-by-default)했더라도 Chrome이 꺼진 상태로 시작됩니다. 서버가 [프로젝트](/docs/ko/claude-projects) 스레드 중 하나에 대해 시작하는 세션은 `bypassPermissions` 모드를 제외하고 해당 설정을 대신 따릅니다. Claude Code v2.1.273 이상이 필요합니다. |
+    | `-d`, `--debug[=<filter>]` | 서버에 대한 디버그 로깅을 켜며, 선택적으로 카테고리별로 필터링합니다. 필터는 `--debug=api,hooks`와 같은 `=` 형식으로만 전달하세요. Claude Code v2.1.282 이상이 필요합니다. |
+    | `--debug-file <path>` | 주어진 파일에 디버그 로그를 작성합니다. |
+    | `--verbose` | 자세한 연결 및 세션 로그를 표시합니다. |
+
+    `remote-control` 앞에 전역 `claude` 플래그를 전달하거나 래퍼 스크립트가 하나를 추가하면 Claude Code는 서버가 생성하는 세션으로 플래그를 이월하지 않습니다. Claude Code는 `--verbose` 또는 `--model`과 같이 플래그를 삭제해도 해당 세션이 수행할 수 있는 작업이 변경되지 않는 경우에만 플래그를 통과시킵니다. 다른 플래그(예: `--settings`)의 경우 Claude Code는 [시작을 거부](/docs/ko/errors#not-carried-over-to-the-sessions-remote-control-starts)하고 제거할 플래그를 이름으로 지정합니다.
+
+    세션이 시작하는 서버를 샌드박싱하려면 설정 파일에서 [샌드박싱](/docs/ko/sandboxing)을 켜세요.
+
+    Claude Code는 도움말을 인쇄하기 전에 Remote Control 적격성을 확인하므로 적격 계정으로 로그인하지 않았을 때 `claude remote-control --help`는 이 플래그 목록 대신 오류를 반환합니다.
   </Tab>
 
   <Tab title="대화형 세션">
@@ -96,21 +107,33 @@ CLI 또는 VS Code 확장에서 Remote Control 세션을 시작할 수 있습니
 
     이렇게 하면 현재 대화 기록을 이어받는 Remote Control 세션이 시작됩니다.
 
-    `--verbose`, `--sandbox` 및 `--no-sandbox` 플래그는 이 명령에서 사용할 수 없습니다.
+    Remote Control의 일회성 확인을 수락할 때까지 `/remote-control`이 연결되기 전에 대화 상자가 나타납니다. **Enable Remote Control**을 선택하여 수락하고 연결하세요. **Never mind**를 선택하거나 Esc를 누르면 Claude Code는 연결하지 않으며 다음에 `/remote-control`을 실행할 때 다시 묻습니다.
+
+    `--verbose` 플래그는 이 명령에서 사용할 수 없습니다.
   </Tab>
 
   <Tab title="VS Code">
-    [Claude Code VS Code 확장](/docs/ko/vs-code)에서 프롬프트 상자에 `/remote-control` 또는 `/rc`를 입력하거나 `/`로 명령 메뉴를 열고 선택하세요.
+    [Claude Code VS Code 확장](/docs/ko/vs-code)에서 프롬프트 상자에 `/remote-control` 또는 `/rc`를 입력하세요.
 
     ```text theme={null}
     /remote-control
     ```
 
-    프롬프트 상자 위에 연결 상태를 표시하는 배너가 나타납니다. 연결되면 배너의 **브라우저에서 열기**를 클릭하여 세션으로 직접 이동하거나 [claude.ai/code](https://claude.ai/code)의 세션 목록에서 찾으세요. 세션 URL도 대화에 게시됩니다.
-
-    연결을 끊으려면 배너의 닫기 아이콘을 클릭하거나 `/remote-control`을 다시 실행하세요.
+    Remote Control이 켜져 있는 동안 Claude Code는 프롬프트 상자 바닥글에 **Remote Control** 표시기를 표시합니다. 세션이 연결되면 표시기를 클릭하여 세션으로 직접 이동하거나 [claude.ai/code](https://claude.ai/code)의 세션 목록에서 찾으세요. Claude Code는 또한 대화에 세션 URL을 게시합니다. 연결을 끊으려면 `/remote-control`을 다시 실행하세요.
 
     CLI와 달리 VS Code 명령은 이름 인수를 허용하지 않으며 QR 코드를 표시하지 않습니다. 세션 제목은 대화 기록 또는 첫 번째 프롬프트에서 파생됩니다.
+  </Tab>
+
+  <Tab title="Desktop 앱">
+    [Claude Desktop 앱](/docs/ko/desktop)의 Code 탭에서 프롬프트 상자에 `/remote-control` 또는 `/rc`를 입력하세요.
+
+    ```text theme={null}
+    /remote-control
+    ```
+
+    세션이 연결되면 [claude.ai/code](https://claude.ai/code)의 세션 목록에서 찾으세요. 연결을 끊으려면 `/remote-control`을 다시 실행하세요.
+
+    모든 세션에 대해 기본적으로 Remote Control을 켜려면 [모든 세션에 대해 Remote Control 활성화](#enable-remote-control-for-all-sessions)를 참조하세요.
   </Tab>
 </Tabs>
 
@@ -118,9 +141,13 @@ CLI 또는 VS Code 확장에서 Remote Control 세션을 시작할 수 있습니
   연결 상태 확인
 </h3>
 
-대화형 터미널 세션에서 `/rc active` 표시기는 연결이 유지되는 동안 입력 상자 아래 바닥글에 있으며, 터미널이 너무 좁으면 숨겨집니다. 표시기 텍스트는 claude.ai의 세션으로 연결되는 링크입니다. 아래쪽 화살표 키로 선택하고 Enter를 눌러 세션 URL과 [다른 기기에서 연결](#connect-from-another-device)하는 데 사용할 수 있는 QR 코드가 있는 상태 패널을 열거나, `/remote-control`을 다시 실행하여 다시 시도하세요.
+대화형 세션에서 Remote Control이 연결되어 있는 동안 터미널은 `/rc active` 표시기를 표시하며, 이는 claude.ai의 세션으로 연결됩니다. 터미널이 너무 좁으면 표시기가 숨겨집니다. [다른 기기에서 연결](#connect-from-another-device)하는 데 사용할 수 있는 세션 URL과 QR 코드를 보려면 `/remote-control`을 다시 실행하여 상태 패널을 엽니다. 패널은 또한 Remote Control을 연결 해제할 수 있게 하며, 로컬 세션은 계속 실행됩니다.
 
-연결이 실패하면 알림이 나타나고 실패 이유가 표시되며 표시기가 바닥글에서 사라집니다. `/remote-control`을 다시 실행하여 다시 시도하세요.
+<span id="session-ended-elsewhere" />대화형 세션에서 연결이 실패하면 표시기가 실패를 표시하도록 변경되고, Claude Code는 이유를 알림으로 표시하고 대화에 추가합니다. 다시 연결하려면 `/remote-control`을 실행하세요. 단, 이유가 다음 중 하나를 말하는 경우는 제외합니다:
+
+* **다른 연결이 이 세션을 인수했습니다**: 다른 기기 또는 Claude Code 세션이 이제 이를 가지고 있습니다. 세션을 다시 가져오려는 경우에만 `/remote-control`을 실행하세요.
+* **이 세션이 다른 기기 또는 앱에서 종료되거나 보관되었습니다**: 세션을 다시 원하는 경우에만 `/remote-control`을 실행하세요. Claude Code는 보관된 세션을 다시 엽니다.
+* **서버가 더 이상 이 세션을 보고하지 않습니다**: 다른 기기 또는 앱에서 삭제되었을 수 있습니다.
 
 <h3 id="connect-from-another-device">
   다른 기기에서 연결
@@ -132,7 +159,7 @@ Remote Control 세션이 활성화되면 다른 기기에서 연결하는 몇 �
 * **QR 코드 스캔**: 세션 URL 옆에 표시된 QR 코드를 스캔하여 Claude 앱에서 직접 열 수 있습니다. `claude remote-control`을 사용하면 스페이스바를 눌러 QR 코드 표시를 전환할 수 있습니다.
 * **[claude.ai/code](https://claude.ai/code) 또는 Claude 앱 열기**: 세션 목록에서 이름으로 세션을 찾습니다. Claude 모바일 앱에서 네비게이션의 **코드**를 탭하여 세션 목록에 도달하세요. Remote Control 세션은 온라인 상태일 때 녹색 상태 점이 있는 컴퓨터 아이콘을 표시합니다.
 
-연결하면 기기에 세션이 이미 백그라운드에서 실행 중인 모든 서브에이전트 및 워크플로우가 표시됩니다. v2.1.208 이전에는 대화형 터미널에서 호스팅되는 세션에 연결하는 기기가 이미 실행 중인 서브에이전트 및 워크플로우를 표시하지 않았으며, 그 중 하나가 시작되거나 중지될 때까지 표시되지 않았습니다.
+연결하면 기기에 세션이 이미 백그라운드에서 실행 중인 모든 서브에이전트 및 워크플로우가 표시됩니다. 기기에서 그 중 하나를 중지하면 Claude Code는 컴퓨터에서 해당 작업을 중지합니다.
 
 원격 세션 제목은 다음 순서로 선택됩니다:
 
@@ -141,19 +168,63 @@ Remote Control 세션이 활성화되면 다른 기기에서 연결하는 몇 �
 3. 기존 대화 기록의 마지막 의미 있는 메시지
 4. `myhost-graceful-unicorn`과 같은 자동 생성된 이름입니다. 여기서 `myhost`는 컴퓨터의 호스트 이름 또는 `--remote-control-session-name-prefix`로 설정한 접두사입니다.
 
-명시적 이름을 설정하지 않았다면 메시지를 보낸 후 제목이 프롬프트를 반영하도록 업데이트됩니다. Claude Code v2.1.176부터 자동 생성된 제목은 대화의 언어 또는 구성된 [`language`](/docs/ko/settings#available-settings) 설정과 일치합니다. claude.ai 또는 Claude 앱에서 세션의 이름을 바꾸면 `claude --resume`에 표시되는 로컬 제목도 업데이트됩니다.
+명시적 이름을 설정하지 않았다면 메시지를 보낸 후 제목이 프롬프트를 반영하도록 업데이트됩니다. claude.ai 또는 Claude 앱에서 세션의 이름을 바꾸면 `claude --resume`에 표시되는 로컬 제목도 업데이트됩니다.
 
-환경에 이미 활성 세션이 있으면 계속할지 새로 시작할지 묻는 메시지가 표시됩니다.
+Claude 앱이 아직 없으면 Claude Code 내에서 `/mobile`을 실행하여 [claude.ai/mobile](https://claude.ai/mobile)에 대한 QR 코드를 표시하세요. 이는 휴대폰에 맞는 앱 스토어를 엽니다.
 
-Claude 앱이 아직 없으면 Claude Code 내에서 `/mobile` 명령을 사용하여 [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) 또는 [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude)용 다운로드 QR 코드를 표시하세요.
+<h3 id="what-connected-devices-see">
+  연결된 기기가 보는 것
+</h3>
+
+연결된 기기는 터미널의 대화를 실시간으로 표시합니다. 이러한 경우는 일반 메시지를 넘어갑니다:
+
+* **압축 및 `/clear`**: Claude Code가 [대화를 압축](/docs/ko/context-window#what-survives-compaction)하는 동안 연결된 기기는 진행 상황을 표시한 다음 대화가 압축된 위치를 표시합니다. `/clear`를 실행하면 연결된 기기에서도 대화가 재설정됩니다.
+* **`/resume`으로 대화 전환**: 연결된 기기는 전환된 대화의 제목 또는 이전 기록을 받지 않지만 양방향의 새 메시지는 터미널에서 열려 있는 대화로 이동합니다. 기기에서 원래 대화로 다시 작업하려면 터미널에서 `/resume`을 실행하고 다시 전환하세요.
+* **`/teleport`로 세션 끌어오기**: [클라우드 세션](/docs/ko/claude-code-on-the-web#from-cloud-to-terminal)을 `/teleport`로 터미널로 끌어올 때 연결된 기기는 끌어온 대화의 이전 기록을 받지 않습니다. 양방향의 새 메시지는 이제 터미널에서 열려 있는 끌어온 대화로 이동합니다.
+* **다른 세션의 메시지**: [교차 세션 메시징](/docs/ko/cross-session-messaging)을 사용하면 동일한 연결이 다른 컴퓨터의 자신의 세션 간 메시지와 [클라우드 세션](/docs/ko/claude-code-on-the-web)에서 메시지를 전달합니다.
+* **변경 사항의 diff**: 세션의 디렉토리가 git 저장소에 있을 때 연결된 기기의 diff 창은 변경 사항을 표시합니다. 저장소의 기본 분기보다 앞에 있는 커밋이 있는 분기에서 창은 분기가 분기한 이후의 분기 변경 사항을 표시하며, 커밋되지 않은 편집을 포함합니다. 기본 분기 자체에서 또는 앞에 있지 않은 분기에서 창은 커밋되지 않은 변경 사항만 표시합니다.
+* **모델**: 연결된 기기에서 [모델](/docs/ko/model-config)을 선택하면 Claude Code는 해당 모델에서 세션을 실행합니다. Claude Code v2.1.238 이상이 필요합니다. 기기의 모델 제어에서 선택한 모델은 현재 세션에만 적용됩니다. 기기에서 대화형 세션으로 `/model <name>`을 보내면 Claude Code는 새 세션의 기본값도 설정합니다.
+* **노력 수준**: 연결된 기기에서 `/effort` 또는 기기의 노력 제어로 [노력 수준](/docs/ko/model-config#adjust-effort-level)을 설정하면 Claude Code는 이를 컴퓨터의 세션에 적용합니다. `CLAUDE_CODE_EFFORT_LEVEL`로 수준을 고정했으면 세션은 해당 수준을 유지하고 Claude Code는 노력 제어에서 다른 선택을 거부합니다. 노력 제어에서 수준을 선택하려면 컴퓨터에 Claude Code v2.1.234 이상이 필요합니다.
+* **연결 실패 후 다시 연결**: `/remote-control`을 실행하여 다시 연결하세요. 압축이 대화를 다시 작성했거나 그 사이에 `/resume`으로 대화를 전환했으면 Claude Code는 사용 중이던 서버 세션을 세션 목록에 남겨두는 대신 보관합니다. [보관된 세션 필터링](/docs/ko/claude-code-on-the-web#archive-sessions)으로 여전히 찾을 수 있습니다. 기기가 여전히 연결되어 있는 동안 대화를 전환해도 세션이 보관되지 않습니다.
 
 <h3 id="enable-remote-control-for-all-sessions">
   모든 세션에 대해 Remote Control 활성화
 </h3>
 
-Remote Control은 `claude remote-control`, `claude --remote-control` 또는 `/remote-control`을 명시적으로 실행할 때만 활성화되며, 자동 연결이 켜져 있지 않으면 활성화되지 않습니다. 모든 대화형 세션에 대해 자동으로 활성화하려면 Claude Code 내에서 `/config`를 실행하고 **모든 세션에 대해 Remote Control 활성화**를 `true`로 설정하세요. 비활성화하려면 `false`로 설정하거나, 조직의 기본값을 따르려면 설정하지 않은 상태로 두세요. Desktop 앱에서는 **설정 → Claude Code → 기본적으로 원격 제어 활성화**에서도 전환할 수 있습니다. [VS Code 확장](/docs/ko/vs-code#use-the-prompt-box)에서는 동일한 토글이 명령 메뉴의 설정 섹션에 **모든 세션에 대해 Remote Control 활성화**로 나타나며, Claude Code v2.1.203 이상이 필요합니다.
+Remote Control은 `claude remote-control`, `claude --remote-control` 또는 `/remote-control`을 명시적으로 실행할 때만 활성화되며, 자동 연결이 켜져 있지 않으면 활성화되지 않습니다. 모든 대화형 세션에 대해 자동으로 활성화하려면 Claude Code 내에서 `/config`를 실행하고 **모든 세션에 대해 Remote Control 활성화**를 설정하세요. 토글은 세 가지 값을 가집니다:
 
-이 설정이 켜져 있으면 각 대화형 Claude Code 프로세스는 하나의 원격 세션을 등록합니다. 여러 인스턴스를 실행하면 각각 자체 환경 및 세션을 가져옵니다. 단일 프로세스에서 여러 동시 세션을 실행하려면 [서버 모드](#start-a-remote-control-session)를 대신 사용하세요.
+* **`true`**: 대화형 세션이 시작될 때 자동으로 연결합니다.
+* **`false`**: 자동 연결을 끕니다. 단, [관리 설정](/docs/ko/managed-settings)의 `true`가 이를 무시합니다. Claude Code는 선택을 사용자 설정에 저장하기 때문입니다. 프로젝트 또는 로컬 설정(`.claude/settings.json`, `.claude/settings.local.json`)의 `false`는 관리 `true`보다도 자동 연결을 끕니다.
+* **`default`**: 선택을 지우고 설정된 경우 조직의 관리자 기본값을 따르거나, 그렇지 않으면 Claude Code의 현재 기본값을 따릅니다.
+
+동일한 토글은 CLI 외부에도 나타납니다:
+
+* **Desktop 앱**: **설정 > Claude Code > 기본적으로 원격 제어 활성화**.
+* **VS Code 확장**: [명령 메뉴](/docs/ko/vs-code#use-the-prompt-box)의 설정 섹션에서 **모든 세션에 대해 Remote Control 활성화**.
+
+설정 파일에서 자동 연결을 켜려면 사용자 `~/.claude/settings.json` 또는 [관리 설정](/docs/ko/managed-settings)에서 [`remoteControlAtStartup`](/docs/ko/settings-reference#remotecontrolatstartup)을 `true`로 설정하세요. 프로젝트 또는 로컬 설정(`.claude/settings.json`, `.claude/settings.local.json`)에서 Claude Code는 `false`를 준수하고 해당 저장소에 대해 자동 연결을 끕니다. 하지만 `true`는 무시하므로 체크인된 파일이 저장소를 여는 모든 사람에 대해 Remote Control을 켤 수 없습니다.
+
+자동 연결은 자신의 claude.ai 계정으로 로그인하므로 시작하는 세션은 자신의 계정의 Claude 앱에만 나타나고 다른 사람에게 액세스 권한을 부여하지 않습니다.
+
+이 설정이 켜져 있으면 각 대화형 Claude Code 프로세스는 하나의 원격 세션을 등록합니다. 여러 인스턴스를 실행하면 각각 자체 원격 세션을 가져옵니다. 단일 프로세스에서 여러 동시 세션을 실행하려면 [서버 모드](#start-a-remote-control-session)를 대신 사용하세요.
+
+<h3 id="resume-sessions-after-stopping-the-server">
+  서버를 중지한 후 세션 재개
+</h3>
+
+Ctrl+C로 `claude remote-control`을 중지하면 제공하던 세션이 휴대폰 또는 브라우저에서 응답하지 않습니다. 동일한 디렉토리에서 다른 `claude remote-control`을 실행하지 않았고 `--no-create-session-in-dir`으로 이를 시작하지 않았으면 Claude Code는 이들을 보관하지 않습니다. 이들을 다시 가져오려면 동일한 디렉토리에서 다음 명령 중 하나를 실행하세요:
+
+* **`claude remote-control`**: 서버가 제공하던 모든 세션을 다시 가져옵니다.
+* **`claude remote-control --continue`**: 서버가 시작한 세션만 다시 가져오고 해당 세션이 끝나면 종료합니다. 이 디렉토리에 기록이 없으면 Claude Code는 이 저장소의 다른 git worktree에서 가장 최신 것을 사용합니다.
+* **`claude remote-control --session-id <id>`**: 전달한 ID의 세션만 다시 가져오고 해당 세션이 끝나면 종료합니다. ID는 claude.ai/code의 세션 URL에서 `/code/`와 모든 `?` 사이의 부분입니다.
+
+이 명령들은 서버가 중지된 후 약 4시간 동안 작동합니다. 그 후에는 `claude remote-control`을 실행하여 새 세션을 시작하세요. 그 사이에 세션을 보관했으면 `--continue` 및 `--session-id`는 Claude Code v2.1.228 이상에서 이를 보관 해제합니다.
+
+`claude --remote-control` 또는 `/remote-control`로 시작한 세션을 다시 가져오려면 `claude --continue` 또는 `claude --resume`으로 대화를 재개하세요. Remote Control이 다시 연결되지 않으면 [Remote Control 세션에 다시 연결할 수 없음](#couldnt-reconnect-to-your-remote-control-session)을 참조하세요.
+
+첫 번째 터미널이 여전히 Remote Control이 켜져 있는 동안 두 번째 터미널에서 대화를 재개하면 Claude Code는 두 번째 터미널에 `Remote Control not started here` 알림을 인쇄하고 세션을 첫 번째에서 가져가는 대신 Remote Control을 끕니다. 두 번째 터미널에서 `/remote-control`을 실행하여 Remote Control을 이동하세요.
+
+Remote Control이 켜져 있던 Claude Desktop 또는 IDE 확장에서 대화를 재개하면 Claude Code는 세션 목록에 새로운 것을 추가하는 대신 기존 claude.ai 세션에 다시 연결합니다.
 
 <h2 id="connection-and-security">
   연결 및 보안
@@ -165,7 +236,7 @@ Remote Control은 `claude remote-control`, `claude --remote-control` 또는 `/re
 
 Remote Control이 연결되어 있는 동안 메시지, Claude의 응답 및 도구 활동을 포함한 세션 기록이 Anthropic 서버에 저장됩니다. 저장된 기록은 기기 간에 대화를 동기화 상태로 유지하고 네트워크 중단 후 세션을 다시 연결할 수 있게 합니다. 실행 및 파일 시스템 액세스는 컴퓨터에 유지되며, 저장된 기록은 [데이터 사용](/docs/ko/data-usage) 정책에 따라 보관됩니다.
 
-Remote Control을 완전히 끄려면 [`disableRemoteControl`](/docs/ko/settings#available-settings) 설정을 사용합니다. Zero Data Retention과 같은 규정 준수 요구 사항이 있는 조직은 Remote Control을 활성화할 수 없습니다.
+Remote Control을 완전히 끄려면 [`disableRemoteControl`](/docs/ko/settings-reference#disableremotecontrol) 설정을 사용합니다. Zero Data Retention과 같은 규정 준수 요구 사항이 있는 조직은 Remote Control을 활성화할 수 없습니다.
 
 <h2 id="trusted-devices">
   신뢰할 수 있는 기기
@@ -174,10 +245,10 @@ Remote Control을 완전히 끄려면 [`disableRemoteControl`](/docs/ko/settings
 <Note>
   신뢰할 수 있는 기기는 현재 베타 단계입니다. 경험이 개선됨에 따라 기능이 변할 수 있습니다.
 
-  신뢰할 수 있는 기기는 Team 및 Enterprise 요금제에서 사용할 수 있습니다. 기본적으로 꺼져 있으며 관리자가 활성화해야 합니다.
+  신뢰할 수 있는 기기는 Pro, Max, Team 및 Enterprise 요금제에서 사용할 수 있으며 기본적으로 꺼져 있습니다. Team 및 Enterprise 요금제에서는 소유자가 조직에 대해 이를 켭니다. Pro 및 Max 요금제에서는 설정의 Cowork 또는 Account 페이지에서 **신뢰할 수 있는 기기 필요**를 직접 켭니다.
 </Note>
 
-신뢰할 수 있는 기기는 조직 전체 설정으로, 구성원이 claude.ai, Claude 모바일 앱 또는 Claude Desktop에서 Remote Control 세션을 보거나 제어하기 전에 기기를 확인해야 합니다. Remote Control 액세스를 서명된 계정이 아닌 알려진 기기 및 최근 인증에 연결합니다.
+신뢰할 수 있는 기기는 조직의 각 구성원 또는 Pro 또는 Max 요금제의 경우 사용자 혼자서 claude.ai, Claude 모바일 앱 또는 Claude Desktop에서 Remote Control 세션을 보거나 제어하기 전에 기기를 확인해야 합니다. Remote Control 액세스를 서명된 계정이 아닌 알려진 기기 및 최근 인증에 연결합니다.
 
 설정이 켜져 있으면 Remote Control 세션과 상호 작용하려면 다음 두 가지가 모두 필요합니다:
 
@@ -189,14 +260,14 @@ Remote Control을 완전히 끄려면 [`disableRemoteControl`](/docs/ko/settings
 설정은 Remote Control에만 적용됩니다. 일반 Claude 채팅, 터미널의 Claude Code 및 API 사용은 영향을 받지 않습니다.
 
 <h3 id="enable-trusted-devices-for-your-organization">
-  조직에 대해 신뢰할 수 있는 기기 활성화
+  Team 또는 Enterprise 조직에 대해 신뢰할 수 있는 기기 활성화
 </h3>
 
-관리자는 Claude Code 관리자 콘솔에서 설정을 활성화합니다.
+소유자는 claude.ai 조직 설정에서 설정을 활성화합니다.
 
 <Steps>
-  <Step title="Claude Code 관리자 설정 열기">
-    [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)로 이동합니다. **신뢰할 수 있는 기기 필요** 토글이 Remote Control 설정 아래에 나타납니다.
+  <Step title="Capabilities 페이지로 이동">
+    [**조직 설정 > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities)로 이동합니다. **신뢰할 수 있는 기기 필요** 토글이 해당 섹션에 나타납니다.
   </Step>
 
   <Step title="신뢰할 수 있는 기기 필요 켜기">
@@ -230,122 +301,180 @@ Remote Control을 완전히 끄려면 [`disableRemoteControl`](/docs/ko/settings
 
 분실하거나 도난당한 기기의 경우 구성원이 이 페이지에서 제거합니다. 구성원이 로그인할 수 없으면 관리자는 관리자 콘솔에서 **모든 곳에서 로그아웃**을 사용하여 해당 구성원의 모든 세션 및 등록된 기기를 취소한 후 구성원이 여전히 보유한 기기를 다시 등록합니다.
 
-<h2 id="remote-control-vs-claude-code-on-the-web">
-  Remote Control과 웹의 Claude Code 비교
+<h2 id="remote-control-vs-cloud-sessions">
+  원격 제어 vs 클라우드 세션
 </h2>
 
-Remote Control과 [웹의 Claude Code](/docs/ko/claude-code-on-the-web)는 모두 claude.ai/code 인터페이스를 사용합니다. 주요 차이점은 세션이 실행되는 위치입니다: Remote Control은 컴퓨터에서 실행되므로 로컬 MCP servers, 도구 및 프로젝트 구성이 사용 가능하게 유지됩니다. 웹의 Claude Code는 Anthropic 관리 클라우드 인프라에서 실행됩니다.
+원격 제어와 [클라우드 세션](/docs/ko/claude-code-on-the-web)은 모두 claude.ai/code 인터페이스를 사용합니다. 주요 차이점은 세션이 실행되는 위치입니다. 원격 제어는 사용자의 컴퓨터에서 실행되므로 로컬 MCP 서버, 도구 및 프로젝트 구성이 계속 사용 가능합니다. 클라우드 세션은 클라우드 인프라에서 실행되며, 기본적으로 Anthropic에서 관리합니다.
 
-로컬 작업 중간에 있고 다른 기기에서 계속하려고 할 때 Remote Control을 사용하세요. 로컬 설정 없이 작업을 시작하거나, 복제하지 않은 저장소에서 작업하거나, 여러 작업을 병렬로 실행하려고 할 때 웹의 Claude Code를 사용하세요.
+로컬 작업 중에 있으면서 다른 기기에서 계속 진행하고 싶을 때는 원격 제어를 사용하세요. 로컬 설정 없이 작업을 시작하거나, 복제하지 않은 저장소에서 작업하거나, 여러 작업을 병렬로 실행하고 싶을 때는 클라우드 세션을 사용하세요. [프로젝트](/docs/ko/claude-projects)는 두 가지를 결합합니다. 프로젝트의 스레드는 클라우드에서 실행되며, 사용자가 요청할 때 원격 제어를 사용하여 [컴퓨터에서 스레드를 실행](/docs/ko/claude-projects#run-a-thread-on-your-own-computer)합니다.
+
+Claude Code는 터미널에 있지 않을 때 작업할 수 있는 여러 방법을 제공합니다. 이들은 작업을 트리거하는 것, Claude가 실행되는 위치, 그리고 설정해야 할 양이 다릅니다.
+
+| | 트리거 | Claude 실행 위치 | 설정 | 최적 용도 |
+| :- | :- | :- | :- | :- |
+| [Dispatch](/docs/ko/desktop#sessions-from-dispatch) | Claude 모바일 앱에서 작업 메시지 전송 | 사용자 머신 (Desktop) | [모바일 앱을 Desktop과 페어링](https://support.claude.com/en/articles/13947068) | 외출 중 작업 위임, 최소 설정 |
+| [Remote Control](/docs/ko/remote-control) | [claude.ai/code](https://claude.ai/code) 또는 Claude 모바일 앱에서 실행 중인 세션 제어 | 사용자 머신 (CLI, Desktop, 또는 VS Code) | [`claude remote-control` 또는 `/remote-control` 실행](/docs/ko/remote-control#start-a-remote-control-session) | 다른 기기에서 진행 중인 작업 조종 |
+| [Channels](/docs/ko/channels) | Telegram 또는 Discord와 같은 채팅 앱이나 자체 서버에서 이벤트 푸시 | 사용자 머신 (CLI) | [채널 플러그인 설치](/docs/ko/channels#quickstart) 또는 [직접 구축](/docs/ko/channels-reference) | CI 실패 또는 채팅 메시지와 같은 외부 이벤트에 반응 |
+| [Slack](/docs/ko/slack) | 팀 채널에서 `@Claude` 언급 | Anthropic 클라우드 | [Claude Code on the web](/docs/ko/claude-code-on-the-web)이 활성화된 상태에서 [Slack 앱 설치](/docs/ko/slack#setting-up-claude-code-in-slack) | 팀 채팅에서 PR 및 리뷰 |
+| [Self-hosted environments](/docs/ko/self-hosted-environments) | [클라우드 세션](/docs/ko/claude-code-on-the-web)을 시작하고 조직의 환경 선택 | 조직의 인프라 | [러너 배포](/docs/ko/self-hosted-environments-quickstart), Team 및 Enterprise 플랜 | 네트워크 내에서 실행해야 하는 클라우드 세션 |
+| [Scheduled tasks](/docs/ko/scheduled-tasks) | 일정 설정 | [CLI](/docs/ko/scheduled-tasks), [Desktop](/docs/ko/desktop-scheduled-tasks), 또는 [클라우드](/docs/ko/routines) | 빈도 선택 | 일일 검토와 같은 반복 자동화 |
 
 <h2 id="mobile-push-notifications">
   모바일 푸시 알림
 </h2>
 
-Remote Control이 활성화되면 Claude는 휴대폰으로 푸시 알림을 보낼 수 있습니다.
+Remote Control이 활성화되어 있으면 Claude가 휴대폰으로 푸시 알림을 보낼 수 있습니다.
 
-Claude는 언제 푸시할지 결정합니다. 일반적으로 오래 실행되는 작업이 완료되거나 계속하기 위해 사용자의 결정이 필요할 때 하나를 보냅니다. 프롬프트에서 푸시를 요청할 수도 있습니다. 예를 들어 `테스트가 완료되면 알려주세요`. 아래의 켜기/끄기 토글 외에는 이벤트별 구성이 없습니다.
+Claude가 푸시를 보낼 시기를 결정합니다. 일반적으로 오래 실행되는 작업이 완료되거나 계속 진행하기 위해 사용자의 결정이 필요할 때 알림을 보냅니다. 프롬프트에서 푸시를 요청할 수도 있습니다. 예를 들어 `notify me when the tests finish`와 같이 입력할 수 있습니다. 아래의 두 가지 켜기/끄기 토글 외에는 이벤트별 구성이 없습니다.
 
 모바일 푸시 알림을 설정하려면:
 
 <Steps>
   <Step title="Claude 모바일 앱 설치">
-    [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) 또는 [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude)용 Claude 앱을 다운로드하세요.
+    [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id6473753684) 또는 [Android](https://play.google.com/store/apps/details?id=com.anthropic.claude)용 Claude 앱을 다운로드합니다.
   </Step>
 
   <Step title="Claude Code 계정으로 로그인">
-    터미널에서 Claude Code에 사용하는 동일한 계정 및 조직을 사용하세요.
+    터미널에서 Claude Code에 사용하는 동일한 계정 및 조직을 사용합니다.
   </Step>
 
   <Step title="알림 허용">
-    운영 체제의 알림 권한 프롬프트를 수락하세요.
+    운영 체제의 알림 권한 프롬프트를 수락합니다.
   </Step>
 
   <Step title="Claude Code에서 푸시 활성화">
-    터미널에서 `/config`를 실행하고 사전 알림을 위해 **Claude가 결정할 때 푸시**를 활성화하거나, 권한 프롬프트 및 질문을 위해 **작업이 필요할 때 푸시**를 활성화하거나, 둘 다 활성화하세요.
+    터미널에서 `/config`를 실행하고 사전 알림을 위해 **Push when Claude decides**를 활성화하거나, 권한 프롬프트 및 질문을 위해 **Push when actions required**를 활성화하거나, 둘 다 활성화합니다.
   </Step>
 </Steps>
 
-알림이 도착하지 않으면:
+알림이 도착하지 않는 경우:
 
-* `/config`에 **등록된 모바일 없음**이 표시되면 휴대폰에서 Claude 앱을 열어 푸시 토큰을 새로 고칠 수 있습니다. Remote Control이 다음에 연결할 때 경고가 지워집니다.
-* iOS에서 포커스 모드 및 알림 요약이 푸시를 억제하거나 지연시킬 수 있습니다. 설정 → 알림 → Claude를 확인하세요.
-* Android에서 적극적인 배터리 최적화가 전달을 지연시킬 수 있습니다. 시스템 설정에서 Claude 앱을 배터리 최적화에서 제외하세요.
+* `/config`에 **No mobile registered**가 표시되면 휴대폰에서 Claude 앱을 열어 푸시 토큰을 새로 고칠 수 있도록 합니다. Remote Control이 다음에 연결될 때 경고가 해제됩니다.
+* iOS에서는 포커스 모드 및 알림 요약이 푸시를 억제하거나 지연시킬 수 있습니다. 설정 → 알림 → Claude를 확인합니다.
+* Android에서는 적극적인 배터리 최적화로 인해 전달이 지연될 수 있습니다. 시스템 설정에서 Claude 앱을 배터리 최적화에서 제외합니다.
 
-Claude Code는 터미널에 입력하거나 연결된 터미널에 집중하는 동안 모바일 푸시 알림을 건너뜁니다. v2.1.181부터 [`CLAUDE_CLIENT_PRESENCE_FILE`](/docs/ko/env-vars)을 마커 파일 경로로 설정하여 다른 창에 있더라도 기계에 있는 모든 시간으로 확장할 수 있습니다. 파일이 존재하는 동안 알림이 건너뛰어집니다. 화면 잠금 해제 시 파일을 생성하고 화면이 잠길 때 파일을 삭제하도록 화면 잠금 리스너 또는 유사한 도구를 구성하세요.
+Claude Code는 사용자가 연결된 터미널에 입력하거나 포커스할 때 모바일 푸시 알림을 건너뜁니다. 이를 다른 창에 있더라도 기계에 있는 모든 시간으로 확장하려면 [`CLAUDE_CLIENT_PRESENCE_FILE`](/docs/ko/env-vars)을 마커 파일 경로로 설정합니다. 파일이 존재하는 동안 알림이 건너뜁니다. 화면이 잠금 해제될 때 파일을 생성하고 화면이 잠금될 때 파일을 삭제하도록 화면 잠금 수신기 또는 유사한 도구를 구성합니다.
 
 <h2 id="limitations">
   제한 사항
 </h2>
 
-* **대화형 프로세스당 하나의 원격 세션**: 서버 모드 외부에서 각 Claude Code 인스턴스는 한 번에 하나의 원격 세션을 지원합니다. 단일 프로세스에서 여러 동시 세션을 실행하려면 [서버 모드](#start-a-remote-control-session)를 사용하세요.
-* **로컬 프로세스는 계속 실행되어야 함**: Remote Control은 로컬 프로세스로 실행됩니다. 터미널을 닫거나, VS Code를 종료하거나, 다른 방식으로 `claude` 프로세스를 중지하면 세션이 종료됩니다.
-* **장시간 네트워크 중단**: 컴퓨터가 켜져 있지만 약 10분 이상 네트워크에 도달할 수 없으면 세션이 시간 초과되고 프로세스가 종료됩니다. `claude remote-control`을 다시 실행하여 새 세션을 시작하세요.
-* **Ultraplan이 Remote Control 연결 해제**: [ultraplan](/docs/ko/ultraplan) 세션을 시작하면 활성 Remote Control 세션이 연결 해제됩니다. 두 기능 모두 claude.ai/code 인터페이스를 차지하고 한 번에 하나만 연결될 수 있기 때문입니다.
-* **일부 명령은 로컬 전용**: `/plugin` 또는 `/resume`과 같이 터미널 인터페이스에서만 실행되는 명령은 인수를 전달하는지 여부와 관계없이 로컬 CLI에서만 작동합니다. 다음은 모바일 및 웹에서 작동합니다:
-  * 텍스트 출력 명령: `/compact`, `/clear`, `/context`, `/usage`, `/exit`, `/usage-credits` (CLI 내 대화 상자를 열지 않고 텍스트 형식으로 실행), `/recap`, `/reload-plugins`
-  * `/model`, `/effort`, `/fast`, `/color`, `/rename`: 값을 인수로 전달합니다. 예를 들어 `/model sonnet` 또는 `/effort high`입니다. 모바일 및 웹에서 `/model`과 `/effort`는 터미널 선택기 또는 슬라이더 대신 인수를 사용합니다.
-  * `/mcp`, v2.1.166부터: 모바일 앱에서는 선택기를 열지 않고 서버 상태의 텍스트 요약을 반환합니다. 웹에서는 `/mcp`만으로 요약을 반환하는 대신 [claude.ai 커넥터](/docs/ko/mcp#use-mcp-servers-from-claude-ai)의 디렉토리를 엽니다. `reconnect`, `enable`, `disable` [하위 명령](/docs/ko/commands#all-commands)은 둘 다에서 작동합니다. 로컬 CLI와 달리, 서버 이름 없이 `/mcp reconnect`를 실행하면 실패했거나 인증이 필요한 모든 서버를 다시 연결합니다.
-  * `/config`, v2.1.181부터: 모바일 앱에서는 `key=value`를 전달하여 설정을 지정하거나, 인수 없이 실행하여 설정할 수 있는 키를 나열합니다. 웹에서는 `/config`가 설정의 Claude Code 섹션을 열고 명령 뒤의 텍스트는 무시합니다.
+* **대화형 프로세스당 하나의 원격 세션**: 서버 모드 외에는 각 Claude Code 인스턴스가 한 번에 하나의 원격 세션을 지원합니다. [서버 모드](#start-a-remote-control-session)를 사용하여 단일 프로세스에서 여러 개의 동시 세션을 실행하십시오.
+* **로컬 프로세스는 계속 실행되어야 함**: Remote Control은 로컬 프로세스로 실행됩니다. 터미널을 닫거나, Desktop 앱 또는 VS Code를 종료하거나, 그 외 다른 방식으로 `claude` 프로세스를 중지하면 [다시 시작](#resume-sessions-after-stopping-the-server)할 때까지 세션이 오프라인 상태가 됩니다. SSH에서 연결을 해제한 후 원격 머신에서 세션을 계속 실행하려면 `tmux` 또는 `screen` 내에서 시작하십시오.
+* **서버 모드에서 충돌한 세션**: `claude remote-control`로 제공되는 세션이 충돌하면 연결된 디바이스에서 메시지를 보내십시오. Claude Code가 다시 제공합니다. 서버를 다시 시작할 필요가 없습니다. Claude Code v2.1.238 이상이 필요합니다.
+* **연결된 세션에서 HTTP 403 거부**: 대화형 세션이 연결되면 Claude Code는 VPN 또는 네트워크 변경 후 발생할 수 있는 것처럼 머신과 Anthropic의 서버 사이의 무언가가 HTTP 403으로 응답할 때 최대 3분 동안 재시도를 계속합니다. 거부가 더 오래 지속되면 Claude Code는 연결을 해제하고 거부한 대상을 명시합니다: 네트워크 엣지 또는 자신의 네트워크의 프록시, VPN 또는 방화벽.
+* **확장된 네트워크 중단**: 머신이 켜져 있지만 네트워크에 도달할 수 없는 경우 다음 작업은 모드에 따라 달라집니다:
+  * **서버 모드**: Claude Code는 약 10분 후에 포기하고 `claude remote-control` 프로세스가 종료됩니다. 새 세션을 시작하려면 `claude remote-control`을 다시 실행하십시오.
+  * **대화형 세션**: 로컬에서 계속 작업하십시오. Claude Code는 중단이 지속되는 동안 재시도를 계속하고 네트워크가 복구되면 자동으로 다시 연결됩니다.
+* **현재 상태 하트비트 실패**: 대화형 세션이 `could not reach the Remote Control server for about 30 minutes`로 연결이 끊어지면 `/remote-control`을 실행하여 다시 연결하십시오.
+* **전달된 대화 상자 만료**: Claude Code는 권한 프롬프트와 `AskUserQuestion` 질문을 답변할 때까지 열어 둡니다. Claude Code가 안전 거부 후 표시되는 모델 선택 프롬프트와 같은 다른 종류의 대화 상자를 원격 세션으로 전달할 때 기본적으로 5분을 기다린 후 대화 상자를 닫고 대화 상자의 작업 없음 기본값으로 계속합니다. [`dialogExpiry`](/docs/ko/settings-reference#dialogexpiry)를 설정하여 기한을 조정하거나 비활성화하십시오. Claude Code v2.1.224 이상이 필요합니다.
+* **Fable 사용 크레딧 동의 프롬프트는 전달되지 않음**: Claude Code는 세션이 실행되는 위치에만 중간 세션 [Fable 사용 크레딧 동의 프롬프트](/docs/ko/model-config#fable-and-usage-credits)를 표시하며, 디바이스에는 표시하지 않습니다. 세션이 터미널에서 실행되고 Claude Code가 프롬프트를 닫기 전에 아무도 응답하지 않으면 요청을 보내지 않고 턴이 종료됩니다. [프롬프트 확인이 응답되지 않음](/docs/ko/errors#the-prompt-to-confirm-went-unanswered)을 참조하십시오.
+* **일부 명령은 로컬 전용**: `/plugin` 또는 `/resume`과 같이 터미널 인터페이스에서만 실행되는 명령은 인수를 전달하는지 여부에 관계없이 로컬 CLI에서만 작동합니다. 다음은 모바일 및 웹에서 작동합니다:
+  * 텍스트 출력 명령: `/compact`, `/clear`, `/context`, `/usage`, `/exit`, `/usage-credits`, `/recap`, 및 `/reload-plugins`. `/usage-credits`는 브라우저를 열지 않고 청구 URL을 인쇄합니다. `/reload-plugins`는 세션이 대화형 터미널에서 실행될 때만 작동합니다. 터미널이 없는 세션은 이를 거부합니다.
+  * `/model`, `/effort`, `/fast`, `/color`, 및 `/rename`: 값을 인수로 전달하십시오. 예를 들어 `/model sonnet` 또는 `/effort high`. 모바일 및 웹에서 `/model`과 `/effort`는 터미널 선택기 또는 슬라이더 대신 인수를 사용합니다.
+  * `/mcp`: 모바일 앱에서는 선택기를 열지 않고 서버 상태의 텍스트 요약을 반환합니다. 웹에서 `/mcp`는 요약을 반환하지 않고 [claude.ai 커넥터](/docs/ko/mcp#use-mcp-servers-from-claude-ai)의 디렉토리를 엽니다. `reconnect`, `enable`, 및 `disable` [하위 명령](/docs/ko/commands#all-commands)은 둘 다에서 작동합니다. 로컬 CLI와 달리 서버 이름 없이 `/mcp reconnect`는 실패했거나 인증이 필요한 모든 서버를 다시 연결합니다.
+  * `/config`: 모바일 앱에서 `key=value`를 전달하여 설정을 지정하거나 인수 없이 실행하여 설정할 수 있는 키를 나열하십시오. 웹에서 `/config`는 대신 설정의 Claude Code 섹션을 열고 명령 뒤의 텍스트를 무시합니다.
+  * Team 및 Enterprise에서 모바일 또는 웹의 `/usage-credits`는 [관리자에게 사용 크레딧 요청](/docs/ko/costs#add-usage-credits-to-your-subscription)을 보내지 않습니다. 전송하려면 대화형 CLI에만 나타나는 확인이 필요하므로 명령은 대신 거기서 실행하도록 지시합니다.
+  * `/autocompact`, v2.1.221부터: 창 크기를 인수로 전달하십시오. 예를 들어 `/autocompact 500k`. 인수 없이 실행하면 터미널 세션에서 명령이 표시하는 대화 상자를 열지 않고 현재 창 크기를 텍스트로 인쇄합니다.
+  * `/advisor`, v2.1.260부터: 모델을 인수로 전달하십시오. 예를 들어 `/advisor opus` 또는 `off`를 전달하여 어드바이저를 끕니다. 두 형식 모두 현재 세션에만 적용되며 저장된 기본값은 변경하지 않습니다. 인수 없이 실행하면 현재 어드바이저를 텍스트로 인쇄합니다.
+  * `/output-style`, v2.1.269부터: 스타일 이름을 인수로 전달하십시오. 예를 들어 `/output-style concise` 또는 인수 없이 실행하여 스타일을 나열하십시오. 모바일 및 웹에서 [기본 제공 스타일](/docs/ko/output-styles#built-in-output-styles)만 나열하고 선택할 수 있습니다. [사용자 정의 스타일](/docs/ko/output-styles#create-a-custom-output-style)을 사용하려면 세션 자체에서 선택하십시오.
+  * `/focus`, v2.1.281부터: 인수로 `on` 또는 `off`를 전달하십시오. 예를 들어 `/focus on` 또는 인수 없이 실행하여 [포커스 보기](/docs/ko/commands#all-commands)를 전환하십시오. 두 형식 모두 현재 세션에만 적용되며 저장된 선택은 변경하지 않습니다.
 
 <h2 id="troubleshooting">
   문제 해결
 </h2>
 
 <h3 id="remote-control-requires-a-claude-ai-subscription">
-  "Remote Control에는 claude.ai 구독이 필요합니다"
+  "Remote Control requires a claude.ai subscription"
 </h3>
 
-claude.ai 계정으로 인증되지 않았습니다. `claude auth login`을 실행하고 claude.ai 옵션을 선택하세요. `ANTHROPIC_API_KEY`가 환경에 설정되어 있으면 먼저 설정을 해제하세요.
+Claude.ai 계정으로 로그인하지 않았거나 다른 자격증명이 로그인보다 우선순위를 가지고 있습니다. 메시지는 다음 중 하나의 형태를 띱니다:
 
-v2.1.206 이전에는 로그아웃 상태에서 `/remote-control`을 실행하면 이 메시지 대신 `Unknown command: /remote-control`을 보고했습니다.
+* 로그아웃 상태, `/remote-control` 또는 `--remote-control`에서: `Remote Control requires a claude.ai subscription.` 또는 `/remote-control requires a claude.ai subscription.`
+* 로그아웃 상태, `claude remote-control`에서: `You must be logged in to use Remote Control. Remote Control is only available with claude.ai subscriptions.`
+* 로그인 상태이지만 API 키 또는 토큰이 사용 중: `Remote Control requires claude.ai subscription auth.` 뒤에 사용 중인 자격증명이 따라옵니다. 예: `ANTHROPIC_API_KEY is set, so this session is using API-key auth`. `apiKeyHelper` 설정과 `ANTHROPIC_AUTH_TOKEN`도 같은 방식으로 명명됩니다.
+
+`claude auth login`을 실행하고 claude.ai 옵션을 선택합니다. 메시지에 `ANTHROPIC_API_KEY` 또는 `ANTHROPIC_AUTH_TOKEN`이 명시되어 있으면, 설정된 위치(셸 환경 또는 [설정 파일](/docs/ko/settings-reference#env)의 `env` 블록)에서 제거합니다. `apiKeyHelper`가 명시되어 있으면 해당 설정을 제거합니다.
 
 <h3 id="remote-control-requires-a-full-scope-login-token">
-  "Remote Control에는 전체 범위 로그인 토큰이 필요합니다"
+  "Remote Control requires a full-scope login token"
 </h3>
 
-`claude setup-token` 또는 `CLAUDE_CODE_OAUTH_TOKEN` 환경 변수의 장기 토큰으로 인증되었습니다. 이러한 토큰은 추론 전용으로 제한되며 Remote Control 세션을 설정할 수 없습니다. 대신 `claude auth login`을 실행하여 전체 범위 세션 토큰으로 인증하세요.
+`claude setup-token` 또는 `CLAUDE_CODE_OAUTH_TOKEN` 환경 변수에서 얻은 장기 토큰으로 인증되었습니다. 이러한 토큰은 모델 요청만 수행할 수 있으므로 Remote Control 세션을 설정할 수 없습니다. 대신 `claude auth login`을 실행하여 전체 범위 세션 토큰으로 인증합니다.
 
 <h3 id="unable-to-determine-your-organization-for-remote-control-eligibility">
-  "Remote Control 적격성을 위해 조직을 결정할 수 없습니다"
+  "Unable to determine your organization for Remote Control eligibility"
 </h3>
 
-캐시된 계정 정보가 오래되었거나 불완전합니다. `claude auth login`을 실행하여 새로 고치세요.
+캐시된 계정 정보가 오래되었거나 불완전합니다. `claude auth login`을 실행하여 새로고침합니다.
 
-<h3 id="remote-control-is-not-yet-enabled-for-your-account">
-  "Remote Control이 아직 계정에 대해 활성화되지 않았습니다"
+<h3 id="remote-control-isn’t-enabled-for-this-account">
+  "Remote Control isn't enabled for this account"
 </h3>
 
-Remote Control 롤아웃이 계정에 도달하지 않았거나 캐시된 자격이 최신이 아닙니다. 최근에 요금제를 변경한 경우 `claude auth logout`을 실행한 다음 `claude auth login`을 실행하여 새로 고치세요. `claude doctor`를 실행하여 어떤 개별 적격성 확인이 실패했는지 확인하세요. 환경 변수 충돌, 도달할 수 없는 확인, 조직 정책은 각각 자신의 메시지를 생성하므로 이 오류는 롤아웃 게이트 자체를 의미합니다.
+Claude Code가 로그인한 계정의 Remote Control 가용성을 확인했고 비활성화 상태로 반환되었습니다. 일반적인 원인은 플랜 변경 후 오래된 캐시된 권한입니다. `claude auth logout`을 실행한 후 `claude auth login`을 실행하여 새로고침하고, 이전 버전을 사용 중인 경우 Claude Code를 업데이트합니다.
+
+`claude doctor`를 실행하여 어떤 개별 적격성 확인이 실패했는지 확인합니다. 환경 변수 충돌, 도달 불가능한 확인, 조직의 Remote Control 설정은 각각 자신의 메시지를 생성하므로, 이 오류는 계정 수준 확인 자체를 의미합니다.
+
+v2.1.239 이전에는 이 메시지가 "Remote Control is not yet enabled for your account"로 표시되었습니다.
 
 <h3 id="couldn’t-verify-remote-control-eligibility">
-  "Remote Control 적격성을 확인할 수 없습니다"
+  "Couldn't verify Remote Control eligibility"
 </h3>
 
-Claude Code가 Remote Control이 계정에 대해 활성화되어 있는지 확인하기 위해 기능 플래그 서비스에 도달할 수 없습니다. 일반적으로 오프라인 상태이거나 프록시가 요청을 차단하고 있기 때문입니다. 네트워크 액세스가 있으면 다시 시도하거나 `claude doctor`를 실행하여 세부 정보를 확인하세요. 관련 메시지인 "조직의 Remote Control 정책을 확인할 수 없습니다"는 동일한 원인과 동일한 해결책을 가집니다. 두 메시지 모두 v2.1.178에서 추가되었습니다.
+Claude Code가 Remote Control이 계정에 대해 활성화되어 있는지 확인하기 위해 기능 플래그 서비스에 도달할 수 없습니다. 일반적으로 오프라인 상태이거나 프록시가 요청을 차단하고 있기 때문입니다. 네트워크 액세스가 있으면 다시 시도하거나 `claude doctor`를 실행하여 세부 정보를 확인합니다. 관련 메시지 "Couldn't verify your organization's Remote Control policy"는 Claude Code가 해당 정책을 읽는 중에 오류가 발생했음을 의미하며, 동일한 해결 방법이 있습니다.
+
+<h3 id="remote-control-requires-feature-flag-evaluation">
+  "Remote Control requires feature-flag evaluation"
+</h3>
+
+기능 플래그 평가를 비활성화하는 [환경 변수](/docs/ko/env-vars#features-that-need-feature-flag-fetching)가 설정되어 있으며, 전체 메시지는 Claude Code가 찾은 변수를 명시합니다. v2.1.154 이전 버전에서는 동일한 구성이 대신 "Remote Control is not yet enabled for your account"를 생성합니다. 수행할 작업은 메시지가 명시하는 변수에 따라 다릅니다:
+
+* **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 또는 `DISABLE_GROWTHBOOK`**: 설정된 위치(셸 환경 또는 [`settings.json` 파일](/docs/ko/settings-reference#all-settings)의 `env` 블록)에서 변수를 설정 해제합니다.
+* **`DISABLE_TELEMETRY` 또는 `DO_NOT_TRACK`**: Pro, Max, Team 또는 Enterprise 플랜에서 `DISABLE_GROWTHBOOK`이 설정 해제된 경우, 이러한 변수는 조직이 [Trusted Devices](#trusted-devices)를 요구하지 않는 한 Remote Control을 사용 가능하게 둡니다. 요구하는 경우, Remote Control을 사용하기 위해 설정된 위치에서 변수를 설정 해제합니다. v2.1.154부터 v2.1.282까지, 어느 변수든 이 메시지를 생성했으므로 Claude Code를 v2.1.283 이상으로 업데이트합니다.
 
 <h3 id="remote-control-is-only-available-when-using-claude-via-api-anthropic-com">
-  "Remote Control은 api.anthropic.com을 통해 Claude를 사용할 때만 사용 가능합니다"
+  "Remote Control is only available when using Claude via api.anthropic.com"
 </h3>
 
-세션이 Anthropic API와 직접 통신하지 않으므로 페어링할 claude.ai 백엔드가 없습니다. 이는 Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry에서 발생합니다. v2.1.196부터는 [`ANTHROPIC_BASE_URL`](/docs/ko/env-vars)이 `api.anthropic.com` 이외의 호스트(예: [LLM 게이트웨이](/docs/ko/llm-gateway) 또는 프록시)를 가리킬 때도 발생하며, claude.ai로 로그인한 경우에도 마찬가지입니다. `ANTHROPIC_BASE_URL`을 설정 해제하고 세션을 다시 시작하여 Remote Control을 사용하세요.
+세션이 Anthropic API와 직접 통신하지 않으므로 Remote Control이 필요합니다. 이는 Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry에서 발생합니다. [`ANTHROPIC_BASE_URL`](/docs/ko/env-vars)이 `api.anthropic.com` 이외의 호스트(예: [LLM gateway](/docs/ko/llm-gateway) 또는 프록시)를 가리킬 때도 발생하며, claude.ai로 로그인한 경우에도 마찬가지입니다. 전체 원인 목록은 [오류 참조](/docs/ko/errors#remote-control-requires-the-anthropic-api)를 참조하세요.
+
+메시지는 세션을 Anthropic API에서 멀어지게 한 것을 명시합니다. 예: `CLAUDE_CODE_USE_BEDROCK` 또는 사용자 정의 `ANTHROPIC_BASE_URL`. 적격 claude.ai 로그인이 있으면, 명시된 변수를 설정 해제하고, [설정](/docs/ko/settings)에서 `env` 키에 설정한 경우 제거한 후 세션을 다시 시작합니다.
 
 <h3 id="remote-control-is-disabled-by-your-organization’s-policy">
-  "Remote Control은 조직의 정책에 의해 비활성화되었습니다"
+  "Remote Control is disabled by your organization's policy"
 </h3>
 
-이 오류에는 네 가지 서로 다른 원인이 있습니다. 먼저 `/status`를 실행하여 사용 중인 로그인 방법과 구독을 확인하세요.
+정책이 Remote Control을 차단합니다. 다음 원인을 순서대로 확인합니다:
 
-* **API 키 또는 Console 계정으로 인증됨**: Remote Control은 claude.ai OAuth가 필요합니다. `/login`을 실행하고 claude.ai 옵션을 선택하세요. `ANTHROPIC_API_KEY`가 환경에 설정되어 있으면 설정을 해제하세요.
-* **Team 또는 Enterprise 관리자가 활성화하지 않음**: Remote Control은 이러한 요금제에서 기본적으로 꺼져 있습니다. 관리자는 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)에서 **Remote Control** 토글을 켜서 활성화할 수 있습니다. 이 토글은 서버 측 조직 설정입니다.
-* **관리자 토글이 회색으로 표시됨**: 조직에 Remote Control과 호환되지 않는 데이터 보존 또는 규정 준수 구성이 있습니다. 이는 관리자 패널에서 변경할 수 없습니다. Anthropic 지원팀에 문의하여 옵션을 논의하세요.
-* **오류에 `disableRemoteControl`이 언급됨**: IT 관리자가 조직 전체 토글과 무관하게 [관리 설정](/docs/ko/settings#settings-files)을 통해 이 장치에서 Remote Control을 비활성화했습니다.
+* **오류에 `disableRemoteControl`이 언급됨**: IT 관리자가 [관리 설정](/docs/ko/managed-settings)을 통해 이 장치에서 Remote Control을 비활성화했으며, 조직 전체 토글 및 로그인 방식과 무관합니다.
+* **Claude.ai 플랜이 Pro 또는 Max**: Claude Code가 여전히 이전 로그인의 Team 또는 Enterprise 조직 아래에 로그인되어 있으므로, 해당 조직의 Remote Control 정책을 확인합니다. `/status`를 실행하여 로그인이 사용하는 플랜과 조직을 확인합니다. `claude auth logout`을 실행한 후 `claude auth login`을 실행하여 현재 플랜 아래에서 다시 로그인합니다.
+* **메시지에 조직 관리자에게 문의하라고 하지 않음**: 조직이 Remote Control과 호환되지 않는 HIPAA 구성을 가지고 있으며, `/status`는 `Compliance` 행에 `HIPAA`를 나열합니다. 이 상태에서 관리자 패널의 Remote Control 토글은 회색으로 표시되므로 Owner가 변경할 수 없습니다. 옵션을 논의하려면 Anthropic 지원팀에 문의합니다. v2.1.267 이전에는 이 경우 "Remote Control isn't available for your organization due to its compliance policy"로 표시되었습니다.
+* **그 외의 경우, Owner가 조직에 대해 활성화하지 않음**: Remote Control은 Team 및 Enterprise 플랜에서 기본적으로 비활성화됩니다. Owner는 [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code)에서 **Remote Control** 토글을 켜서 활성화할 수 있습니다. 이 토글은 서버 측 조직 설정입니다.
+
+v2.1.281 이전에는 이 메시지가 Claude Code가 이 머신에서 조직의 정책을 로드하지 않았을 때도 나타났습니다. 예를 들어 오프라인으로 시작한 후입니다. 이후 버전은 해당 상태를 [`Couldn't verify your organization's policy for remote control`](#couldnt-verify-your-organizations-policy-for-remote-control)로 보고합니다.
+
+<h3 id="couldnt-verify-your-organizations-policy-for-remote-control">
+  "Couldn't verify your organization's policy for remote control"
+</h3>
+
+Claude Code가 조직의 정책을 가져올 수 없으며 이 머신에 대신 사용할 저장된 복사본이 없으므로, 조직이 이를 허용한다는 것을 확인할 때까지 Remote Control을 비활성화 상태로 유지합니다. 이는 일반적으로 Claude Code를 오프라인으로 시작하거나 VPN이 연결되기 전에 시작할 때, 또는 프록시가 요청을 방해할 때 발생합니다. 느린 연결에서는 첫 번째 요청이 아직 진행 중일 때도 나타날 수 있습니다.
+
+메시지는 다음 중 하나의 형태를 띱니다:
+
+* `/remote-control`, `claude remote-control` 또는 `claude --remote-control`에서: `Couldn't verify your organization's policy for remote control. Check your network connection and try again.`
+* [자동 연결](#enable-remote-control-for-all-sessions)에서 세션이 시작될 때: `couldn't verify your organization's policy — check your network connection and try again`. 알림에서 `Remote Control failed`로 접두사가 붙고 대화에서 `Remote Control disconnected`로 접두사가 붙습니다. 그러면 세션이 Remote Control을 비활성화 상태로 둡니다.
+
+네트워크 연결을 복구한 후 `/remote-control`을 실행하거나 명령을 다시 실행합니다. 각 시도는 정책을 다시 확인하므로 Claude Code를 다시 시작할 필요가 없습니다. 메시지가 계속 나타나면 `claude doctor`를 실행하고 `Organization policy` 행을 읽으면 정책이 로드되지 않은 이유가 표시됩니다.
+
+v2.1.281 이전에는 이 상태가 `Remote Control is disabled by your organization's policy`로 표시되었습니다.
 
 <h3 id="remote-credentials-fetch-failed">
-  "원격 자격 증명 가져오기 실패"
+  "Remote credentials fetch failed"
 </h3>
 
-Claude Code가 Anthropic API에서 연결을 설정하기 위한 단기 자격 증명을 얻을 수 없습니다. `--verbose`로 다시 실행하여 전체 오류를 확인하세요:
+Claude Code가 Anthropic API에서 연결을 설정하기 위한 단기 자격증명을 얻을 수 없습니다. `--verbose`로 다시 실행하여 전체 오류를 확인합니다:
 
 ```bash theme={null}
 claude remote-control --verbose
@@ -353,56 +482,53 @@ claude remote-control --verbose
 
 일반적인 원인:
 
-* 로그인하지 않음: `claude`를 실행하고 `/login`을 사용하여 claude.ai 계정으로 인증하세요. API 키 인증은 Remote Control에서 지원되지 않습니다.
+* 로그인하지 않음: `claude`를 실행하고 `/login`을 사용하여 claude.ai 계정으로 인증합니다. API 키 인증은 Remote Control에 지원되지 않습니다.
 * 네트워크 또는 프록시 문제: 방화벽 또는 프록시가 아웃바운드 HTTPS 요청을 차단할 수 있습니다. Remote Control은 포트 443의 Anthropic API에 대한 액세스가 필요합니다.
-* 세션 생성 실패: `Session creation failed — see debug log`도 표시되면 설정 초기에 실패가 발생했습니다. 구독이 활성 상태인지 확인하세요.
+* 세션 생성 실패: `Session creation failed — see debug log`도 표시되면, 실패가 설정의 이전 단계에서 발생했습니다. 구독이 활성화되어 있는지 확인합니다.
 
-<h3 id="couldn’t-reconnect-to-your-remote-control-session">
-  "Remote Control 세션에 다시 연결할 수 없습니다"
+<h3 id="couldnt-reconnect-to-your-remote-control-session">
+  "Couldn't reconnect to your Remote Control session"
 </h3>
 
-`claude --resume` 또는 `claude --continue`로 대화를 재개할 때 Claude Code는 해당 대화에 기록된 Remote Control 세션에 다시 연결합니다. 이 메시지는 네트워크 중단 또는 서버 오류와 같이 일시적일 수 있는 이유로 재연결이 실패했음을 의미하므로 Claude Code는 원격 세션이 여전히 존재하는지 확인할 수 없습니다. 서버가 이전 세션이 더 이상 존재하지 않음을 확인하면 Claude Code는 이 메시지를 표시하지 않고 새 Remote Control 세션을 생성합니다.
+`claude --resume` 또는 `claude --continue`로 대화를 재개할 때, Claude Code는 해당 대화에 기록된 Remote Control 세션에 다시 연결합니다. 이 메시지는 네트워크 중단 또는 서버 오류와 같이 일시적일 수 있는 이유로 재연결이 실패했음을 의미하므로, Claude Code는 원격 세션이 여전히 존재하는지 확인할 수 없습니다.
 
-로컬 세션은 Remote Control 없이 계속 실행됩니다. `/remote-control`을 실행하여 연결을 다시 시도하거나 `--resume` 없이 Claude Code를 시작하여 새 Remote Control 세션을 생성하세요.
+`/remote-control`을 실행하여 연결을 다시 시도하거나, `claude --remote-control`로 새 세션을 시작하여 새 Remote Control 세션을 만듭니다. 로컬 세션은 그 동안 Remote Control 없이 계속 실행됩니다.
 
-v2.1.200 이전에는 재연결 실패로 인해 이 메시지를 표시하는 대신 새 Remote Control 세션이 생성되었으며, 이로 인해 claude.ai/code의 세션 목록에 추가 세션이 남겨졌습니다.
+<h3 id="previous-session-is-unavailable">
+  "Previous session is unavailable — run /remote-control to start a new one"
+</h3>
+
+Claude Code가 이전 Remote Control 세션을 복구할 수 없었고 자체적으로 새 세션을 시작하지 않고 대신 중지했습니다. `claude --resume` 또는 `claude --continue`로 대화를 재개한 후, 또는 Claude Code가 [연결 해제 후 자체적으로 다시 연결](/docs/ko/errors#remote-control-couldnt-refresh-your-login)한 후 이 메시지를 볼 수 있습니다.
+
+`/remote-control`을 실행하여 현재 로그인 아래에서 새 Remote Control 세션을 시작합니다. 로컬 세션은 그 동안 Remote Control 없이 계속 실행됩니다. 관련 메시지 `Remote Control could not verify the signed-in account — run /remote-control to reconnect`는 동일한 해결 방법이 있습니다. Claude Code를 다시 시작하지 않고 `Previous session is unavailable` 후에 `/remote-control`을 실행하면, Claude Code는 대화의 이전 메시지를 새 세션에서 제외합니다.
+
+<h3 id="remote-control-got-an-unexpected-server-response">
+  "Remote Control got an unexpected server response"
+</h3>
+
+Remote Control 서버가 요청을 수락했지만 이 버전의 Claude Code가 읽을 수 없는 형태로 응답했으며, 원격 세션을 생성하거나 자격증명을 가져올 때입니다. 동일한 버전에서 다시 시도하면 동일한 방식으로 실패합니다. `claude update`를 실행한 후 `/remote-control`을 실행하여 다시 연결합니다.
 
 <h3 id="your-organization-requires-trusted-devices-for-remote-control-but-this-device-is-not-enrolled">
-  "조직에서 Remote Control에 신뢰할 수 있는 기기를 요구하지만 이 기기는 등록되지 않았습니다"
+  "Your organization requires Trusted Devices for Remote Control, but this device is not enrolled"
 </h3>
 
-조직에 [신뢰할 수 있는 기기](#trusted-devices)가 활성화되어 있고 이 기계가 아직 등록되지 않았습니다. Claude Code에서 `/login`을 실행하세요. 등록은 로그인의 일부로 발생하며 별도의 등록 명령이 없습니다.
+조직이 [Trusted Devices](#trusted-devices)를 활성화했으며 이 머신이 아직 등록되지 않았습니다. Claude Code에서 `/login`을 실행합니다. 등록은 로그인의 일부로 발생하며 별도의 등록 명령이 없습니다.
 
 <h3 id="session-expired-for-trusted-device-check">
-  "신뢰할 수 있는 기기 확인을 위해 세션이 만료되었습니다"
+  "session expired for trusted-device check"
 </h3>
 
-로그인이 18시간 이상 되었습니다. Claude Code에서 `/login`을 실행하거나, claude.ai 또는 모바일 앱에서 Face ID, Touch ID, Windows Hello 또는 passkey로 확인하세요. [신뢰할 수 있는 기기](#trusted-devices)를 참조하세요.
-
-<h2 id="choose-the-right-approach">
-  올바른 접근 방식 선택
-</h2>
-
-Claude Code offers several ways to work when you're not at your terminal. They differ in what triggers the work, where Claude runs, and how much you need to set up.
-
-|                                                          | Trigger                                                                                        | Claude runs on                                                                               | Setup                                                                                                                                | Best for                                                      |
-| :------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
-| [Dispatch](/docs/en/desktop#sessions-from-dispatch)           | Message a task from the Claude mobile app                                                      | Your machine (Desktop)                                                                       | [Pair the mobile app with Desktop](https://support.claude.com/en/articles/13947068)                                                  | Delegating work while you're away, minimal setup              |
-| [Remote Control](/docs/en/remote-control)                     | Drive a running session from [claude.ai/code](https://claude.ai/code) or the Claude mobile app | Your machine (CLI or VS Code)                                                                | Run `claude remote-control`                                                                                                          | Steering in-progress work from another device                 |
-| [Channels](/docs/en/channels)                                 | Push events from a chat app like Telegram or Discord, or your own server                       | Your machine (CLI)                                                                           | [Install a channel plugin](/docs/en/channels#quickstart) or [build your own](/docs/en/channels-reference)                                      | Reacting to external events like CI failures or chat messages |
-| [Slack](/docs/en/slack)                                       | Mention `@Claude` in a team channel                                                            | Anthropic cloud                                                                              | [Install the Slack app](/docs/en/slack#setting-up-claude-code-in-slack) with [Claude Code on the web](/docs/en/claude-code-on-the-web) enabled | PRs and reviews from team chat                                |
-| [Self-hosted environments](/docs/en/self-hosted-environments) | Start a [cloud session](/docs/en/claude-code-on-the-web) and pick your organization's environment   | Your organization's infrastructure                                                           | [Deploy runners](/docs/en/self-hosted-environments-quickstart), on Team and Enterprise plans                                              | Cloud sessions that must run inside your network              |
-| [Scheduled tasks](/docs/en/scheduled-tasks)                   | Set a schedule                                                                                 | [CLI](/docs/en/scheduled-tasks), [Desktop](/docs/en/desktop-scheduled-tasks), or [cloud](/docs/en/routines) | Pick a frequency                                                                                                                     | Recurring automation like daily reviews                       |
+로그인이 18시간 이상 경과했습니다. Claude Code에서 `/login`을 실행하거나, claude.ai 또는 모바일 앱이 Face ID, Touch ID, Windows Hello 또는 passkey로 확인하라고 할 때 확인합니다. [Trusted Devices](#trusted-devices)를 참조하세요.
 
 <h2 id="related-resources">
   관련 리소스
 </h2>
 
-* [웹의 Claude Code](/docs/ko/claude-code-on-the-web): 컴퓨터 대신 Anthropic 관리 클라우드 환경에서 세션 실행
-* [Ultraplan](/docs/ko/ultraplan): 터미널에서 클라우드 계획 세션을 시작하고 브라우저에서 계획을 검토합니다
+* [웹의 Claude Code](/docs/ko/claude-code-on-the-web): 머신 대신 클라우드에서 세션을 실행하며, [클라우드 환경](/docs/ko/cloud-environments)을 통해 구성합니다
+* [크로스 세션 메시징](/docs/ko/cross-session-messaging): Claude가 다른 머신이나 [클라우드 세션](/docs/ko/claude-code-on-the-web)으로 메시지를 보낼 수 있습니다
 * [채널](/docs/ko/channels): Telegram, Discord 또는 iMessage를 세션으로 전달하여 Claude가 자리를 비운 동안 메시지에 반응하도록 합니다
 * [Dispatch](/docs/ko/desktop#sessions-from-dispatch): 휴대폰에서 작업을 메시지로 보내면 Desktop 세션을 생성하여 처리할 수 있습니다
 * [인증](/docs/ko/authentication): `/login` 설정 및 claude.ai 자격 증명 관리
 * [CLI 참조](/docs/ko/cli-reference): `claude remote-control`을 포함한 플래그 및 명령의 전체 목록
 * [보안](/docs/ko/security): Remote Control 세션이 Claude Code 보안 모델에 어떻게 적합한지
-* [데이터 사용](/docs/ko/data-usage): 로컬 및 원격 세션 중에 Anthropic API를 통해 흐르는 데이터
+* [데이터 사용](/docs/ko/data-usage): 로컬, Remote Control 및 클라우드 세션 중에 Anthropic API를 통해 흐르는 데이터

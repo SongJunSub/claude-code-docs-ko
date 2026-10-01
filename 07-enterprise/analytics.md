@@ -8,10 +8,10 @@
 
 Claude Code는 조직이 개발자 사용 패턴을 이해하고, 기여도 지표를 추적하며, Claude Code가 엔지니어링 속도에 미치는 영향을 측정할 수 있도록 분석 대시보드를 제공합니다. 귀사의 플랜에 맞는 대시보드에 접근하세요:
 
-| 플랜                            | 대시보드 URL                                                                   | 포함 사항                                         | 자세히 알아보기                                           |
-| ----------------------------- | -------------------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------- |
+| 플랜 | 대시보드 URL | 포함 사항 | 자세히 알아보기 |
+| - | - | - | - |
 | Claude for Teams / Enterprise | [claude.ai/analytics/claude-code](https://claude.ai/analytics/claude-code) | 사용량 지표, GitHub 통합을 포함한 기여도 지표, 리더보드, 데이터 내보내기 | [세부 정보](#access-analytics-for-team-and-enterprise) |
-| API (Claude Console)          | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 사용량 지표, 지출 추적, 팀 인사이트                         | [세부 정보](#access-analytics-for-api-customers)       |
+| API (Claude Console) | [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | 사용량 지표, 지출 추적, 팀 인사이트 | [세부 정보](#access-analytics-for-api-customers) |
 
 <h2 id="access-analytics-for-team-and-enterprise">
   Team 및 Enterprise를 위한 분석 접근
@@ -138,12 +138,6 @@ Team 및 Enterprise 대시보드에는 다음이 포함됩니다:
 </h3>
 
 기여도 지표가 활성화되면 Claude Code는 병합된 풀 요청을 분석하여 Claude Code 지원으로 작성된 코드를 결정합니다. 이는 Claude Code 세션 활동을 각 PR의 코드와 일치시켜 수행됩니다.
-
-<h4 id="tagging-criteria">
-  태깅 기준
-</h4>
-
-PR은 Claude Code 세션 중에 작성된 코드 라인이 하나 이상 포함되어 있으면 "Claude Code 포함"으로 태깅됩니다. 시스템은 보수적인 일치를 사용합니다: Claude Code의 관여도가 높은 코드만 지원되는 것으로 계산됩니다.
 
 <h4 id="attribution-process">
   속성 프로세스

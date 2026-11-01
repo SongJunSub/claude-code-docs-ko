@@ -6,157 +6,156 @@
 
 > Claude Code 세션의 키보드 단축키, 입력 모드 및 대화형 기능에 대한 완전한 참조입니다.
 
-<h2 id="keyboard-shortcuts">
-  키보드 단축키
-</h2>
+## 키보드 단축키
 
-<Note>
-  키보드 단축키는 플랫폼 및 터미널에 따라 다를 수 있습니다. [전체 화면 렌더링](/docs/ko/fullscreen)에서 트랜스크립트 뷰어의 `?`를 눌러 사용 가능한 단축키를 확인하세요.
+> [!NOTE]
+>
+> 키보드 단축키는 플랫폼과 터미널에 따라 다를 수 있습니다. [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md)에서 트랜스크립트 뷰어의 `?`를 눌러 사용 가능한 단축키를 확인하세요.
+>
+> **macOS 사용자**: Option/Alt 키 단축키(`Alt+B`, `Alt+F`, `Alt+D`, `Alt+Y`, `Alt+P`)를 사용하려면 터미널에서 Option을 Meta로 구성해야 합니다. 각 터미널의 설정은 [macOS에서 Option 키 단축키 활성화](https://code.claude.com/docs/ko/terminal-config.md#enable-option-key-shortcuts-on-macos)를 참조하세요.
 
-  **macOS 사용자**: Option/Alt 키 단축키(`Alt+B`, `Alt+F`, `Alt+Y`, `Alt+M`, `Alt+P`)를 사용하려면 터미널에서 Option을 Meta로 구성해야 합니다:
+### 일반 제어
 
-  * **iTerm2**: 설정 → 프로필 → 키 → 일반 → Left/Right Option 키를 "Esc+"로 설정
-  * **Apple Terminal**: 설정 → 프로필 → 키보드 → "Option을 Meta 키로 사용" 확인
-  * **VS Code**: VS Code 설정에서 `"terminal.integrated.macOptionIsMeta": true`로 설정
+| 단축키 | 설명 | 컨텍스트 |
+| :- | :- | :- |
+| `Ctrl+C` | 중단 또는 입력 지우기 | 실행 중인 작업을 중단합니다. 실행 중인 작업이 없으면 첫 번째 누름은 프롬프트 입력을 지우고 두 번째 누름은 Claude Code를 종료합니다. 지운 초안을 다시 불러오려면 [지운 초안 되살리기](#bring-back-a-cleared-draft)를 참조하세요 |
+| `Ctrl+X Ctrl+K` | 이 세션의 모든 실행 중인 [백그라운드 서브에이전트](https://code.claude.com/docs/ko/sub-agents.md#run-subagents-in-foreground-or-background)를 중지하고 나머지 세션에 대해 [아티팩트 자동 회신](https://code.claude.com/docs/ko/artifacts.md#let-claude-reply-to-comments-on-its-own)을 끕니다. 3초 이내에 두 번 누르면 확인됩니다. 백그라운드 서브에이전트의 권한 프롬프트가 열려 있는 동안에도 누를 수 있습니다 | 서브에이전트 제어 |
+| `Ctrl+D` | Claude Code 세션 종료 | 첫 번째 누름은 확인 힌트를 표시하고 800ms 이내에 두 번째 누름은 종료합니다. 프롬프트에 텍스트가 있을 때 `Ctrl+D`는 커서 뒤의 문자를 삭제합니다 |
+| `Ctrl+G` 또는 `Ctrl+X Ctrl+E` | 기본 텍스트 편집기에서 열기 | 기본 텍스트 편집기에서 프롬프트 또는 사용자 정의 응답을 편집합니다. `Ctrl+X Ctrl+E`는 readline 기본 바인딩입니다. `/config`에서 **Show last response in external editor**를 켜면 Claude의 이전 회신을 `#`-주석 처리된 컨텍스트로 프롬프트 위에 추가합니다. Claude Code는 저장할 때 주석 블록을 제거합니다 |
+| `Ctrl+L` | 화면 다시 그리기 | 입력 및 대화 기록을 유지하면서 전체 터미널을 다시 그립니다. 디스플레이가 손상되거나 부분적으로 비어 있을 때 이를 사용하여 복구합니다. [대화 지우기](https://code.claude.com/docs/ko/fullscreen.md#clear-the-conversation)를 참조하세요 |
+| `Ctrl+O` | 트랜스크립트 뷰어 전환 | 각 어시스턴트 메시지에 타임스탬프와 사용된 모델이 있는 자세한 도구 사용 및 실행을 표시합니다. 또한 MCP 호출처럼 기본적으로 축소되는 줄을 확장하고 `Called slack 3 times` 한 줄로 표시되며 [다른 세션의 메시지](https://code.claude.com/docs/ko/cross-session-messaging.md#what-a-message-looks-like)는 한 줄 `Message from @<sender>` 미리보기로 표시됩니다 |
+| `Ctrl+R` | 역방향 검색 명령 기록 | 이전 명령을 대화형으로 검색합니다 |
+| `Ctrl+V` 또는 `Cmd+V` (iTerm2) 또는 `Alt+V` (Windows 및 WSL) | 클립보드에서 이미지 붙여넣기 | 커서에 `[Image #N]` 칩을 삽입하여 프롬프트에서 위치별로 참조할 수 있습니다. WSL에서는 `Ctrl+V`와 `Alt+V` 모두 바인딩되어 있습니다. 터미널이 `Ctrl+V`를 가로채면 `Alt+V`를 사용하세요 |
+| `Ctrl+B` | 백그라운드 실행 작업 | Bash 명령 및 에이전트를 백그라운드로 실행합니다. Tmux 사용자는 두 번 누르세요 |
+| `Ctrl+T` | Claude의 작업 체크리스트 전환 | 상태 영역에서 [Claude의 할 일 체크리스트](#task-list)를 표시하거나 숨깁니다. 이것은 백그라운드 작업 보기가 아닙니다. 실행 중인 셸 및 서브에이전트를 보려면 [`/tasks`](https://code.claude.com/docs/ko/commands)를 사용하세요 |
+| `Ctrl+S` | 프롬프트 숨기기 또는 복원 | 입력에 텍스트가 있으면 숨기고 프롬프트를 지웁니다. 빈 프롬프트에서 다시 누르면 숨겨진 텍스트, 커서 위치, 붙여넣은 콘텐츠 및 입력 모드를 복원하므로 숨겨진 `!` [셸 명령](#shell-mode-with-prefix)은 셸 모드로 돌아옵니다 |
+| `Ctrl+Z` | Claude Code 일시 중단 | Unix만 해당. 프로세스를 셸로 일시 중단합니다. `fg`를 실행하여 재개합니다 |
+| `Left/Right arrows` | 대화 상자 탭 순환 | 권한 대화 상자 및 메뉴의 탭 사이를 탐색합니다. 탭 대화 상자에서 탭 행에 포커스가 있을 때 키가 탭을 전환합니다. [탭 작업](https://code.claude.com/docs/ko/keybindings.md#tabs-actions)에서 포커스가 어떻게 이동하는지 확인하세요 |
+| `Tab` | 자동 완성 제안 수락 또는 권한 답변에 주석 추가 | 자동 완성 제안이 프롬프트 입력에 표시되는 동안 선택된 제안을 수락합니다. 대부분의 권한 프롬프트에서 **Yes** 또는 **No**에 포커스가 있으면 해당 옵션에 주석 필드를 열고 다시 누르면 필드를 닫습니다. [권한 프롬프트에 답할 때 주석 추가](https://code.claude.com/docs/ko/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)를 참조하세요 |
+| `Up/Down arrows` 또는 `Ctrl+P`/`Ctrl+N` | 커서 이동 또는 명령 기록 탐색 | 입력이 래핑되거나 여러 줄인지 여부에 관계없이 한 줄 이상의 시각적 행에 걸쳐 있으면 먼저 프롬프트 내에서 커서를 이동합니다. 커서가 첫 번째 또는 마지막 시각적 행에 있으면 다시 누르면 명령 기록을 탐색합니다. 메시지가 대기 중이면 첫 번째 행에서 `Up`은 대신 [대기 중인 메시지를 되돌립니다](#take-back-what-you-queued) |
+| `Esc` | Claude 중단 또는 대화 상자 닫기 | 현재 응답 또는 도구 호출을 중간에 중지하여 리디렉션할 수 있습니다. Claude는 지금까지 수행한 작업을 유지합니다. [메시지가 대기 중](#queue-messages-while-claude-works)이면 Claude Code는 이어서 그 메시지를 보냅니다. 대화 상자가 열려 있으면 `Esc`는 대화 상자를 닫습니다. 푸터 항목(예: 프롬프트 아래의 [서브에이전트 패널](https://code.claude.com/docs/ko/sub-agents.md#run-subagents-in-foreground-or-background))이 선택되어 있으면 `Esc`는 중단하는 대신 [선택을 해제합니다](https://code.claude.com/docs/ko/keybindings.md#footer-actions). 권한 프롬프트에서 `Esc`는 [**No** 주석 없음](https://code.claude.com/docs/ko/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)과 동일하게 작업을 거부합니다 |
+| `Esc` + `Esc` | 입력 초안 지우기 또는 되감기 | 프롬프트 입력에 텍스트가 있으면 이중 `Esc`는 이를 지우고 초안을 기록에 저장하여 `Up`이 이를 회상할 수 있습니다. 입력이 비어 있으면 이중 `Esc`는 [되감기 메뉴](https://code.claude.com/docs/ko/checkpointing.md)를 열어 이전 지점에서 코드 및 대화를 복원하거나 요약합니다 |
+| `Ctrl+Enter` 또는 `Ctrl+X Ctrl+S` | 대기 중인 메시지 지금 보내기 | [대기 중인 메시지](#queue-messages-while-claude-works)와 초안을 지금 바로 보냅니다. [Claude Code가 대기 중인 메시지를 보낼 때](#when-claude-code-sends-what-you-queued)는 Claude가 작업 중인 턴에 어떤 일이 발생하는지 설명합니다. [셸 모드](#shell-mode-with-prefix)에서 키는 명령만 대기열에 넣습니다. 확장 키를 보고하지 않는 터미널에서 `Ctrl+Enter`는 일반 `Enter`로 도착합니다. `Ctrl+X Ctrl+S`는 모든 터미널에서 작동합니다. Claude Code v2.1.275 이상 필요 |
+| `Shift+Tab` 또는 Node 또는 Bun 런타임이 VT 입력 모드를 활성화하지 않을 때 Windows의 `Alt+M` | 권한 모드 순환 | `default` (모드 표시기에서 Manual로 표시됨), `acceptEdits`, `plan` 및 사용 가능할 때 `bypassPermissions` 및 `auto`를 순환합니다. `auto`에서 첫 번째 누름은 `default`로 전환합니다. [권한 모드](https://code.claude.com/docs/ko/permission-modes.md)를 참조하세요. 파일 권한 프롬프트에서 동일한 키는 열린 [주석 필드](https://code.claude.com/docs/ko/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)를 닫습니다. 필드가 열려 있지 않으면 프롬프트가 나머지 세션에 대해 작업을 허용하는 옵션을 선택합니다 |
+| `Option+P` (macOS) 또는 `Alt+P` (Windows/Linux) | 모델 전환 | 프롬프트를 지우지 않고 모델을 전환합니다 |
+| `Option+T` (macOS) 또는 `Alt+T` (Windows/Linux) | 확장 사고 전환 | 확장 사고 모드를 활성화하거나 비활성화합니다. Opus 5.5, Sonnet 5.5, Haiku 5.5 또는 Fable 모델에는 영향을 주지 않으며, 이들은 항상 확장 사고를 사용합니다. Option을 Meta로 구성하지 않고도 macOS에서 작동합니다 |
+| `Option+O` (macOS) 또는 `Alt+O` (Windows/Linux) | 빠른 모드 전환 | [빠른 모드](https://code.claude.com/docs/ko/fast-mode.md)를 활성화하거나 비활성화합니다 |
 
-  자세한 내용은 [터미널 구성](/docs/ko/terminal-config)을 참조하세요.
-</Note>
+### 텍스트 편집
 
-<h3 id="general-controls">
-  일반 제어
-</h3>
+| 단축키 | 설명 | 컨텍스트 |
+| :- | :- | :- |
+| `Ctrl+A` | 현재 줄의 시작으로 커서 이동 | 여러 줄 입력에서 현재 논리 줄의 시작으로 이동합니다 |
+| `Ctrl+E` | 현재 줄의 끝으로 커서 이동 | 여러 줄 입력에서 현재 논리 줄의 끝으로 이동합니다 |
+| `Ctrl+K` | 줄 끝까지 삭제 | 삭제된 텍스트를 붙여넣기 위해 저장합니다 |
+| `Ctrl+U` | 커서에서 줄 시작까지 삭제 | 삭제된 텍스트를 붙여넣기 위해 저장합니다. 여러 줄 입력에서 줄 전체를 지우려면 반복합니다. macOS에서 iTerm2 및 Terminal.app을 포함한 터미널 에뮬레이터는 `Cmd+Backspace`를 이 단축키로 매핑합니다 |
+| `Ctrl+W` | 이전 공백으로 뒤로 삭제 | 삭제된 텍스트를 붙여넣기 위해 저장합니다. 한 번 누르면 전체 경로 또는 `--flag=value`를 제거합니다. 이전 단어만 삭제하려면 macOS에서 `Option+Delete`를 누르거나 Windows에서 `Ctrl+Backspace`를 누르세요 |
+| `Ctrl+Y` | 삭제된 텍스트 붙여넣기 | `Ctrl+K`, `Ctrl+U` 또는 `Ctrl+W`와 같은 단어 또는 줄 삭제 단축키로 마지막으로 삭제한 텍스트를 붙여넣습니다 |
+| `Alt+Y` (`Ctrl+Y` 후) | 붙여넣기 기록 순환 | 붙여넣은 후 이전에 삭제한 텍스트를 순환합니다. macOS에서 [Option을 Meta로](#keyboard-shortcuts) 설정해야 합니다 |
+| `Alt+B` | 커서를 한 단어 뒤로 이동 | 단어 탐색. macOS에서 [Option을 Meta로](#keyboard-shortcuts) 설정해야 합니다 |
+| `Alt+F` | 커서를 한 단어 앞으로 이동 | 현재 단어의 끝으로 이동하거나 커서가 단어 사이에 있을 때 다음 단어의 끝으로 이동합니다. macOS에서 [Option을 Meta로](#keyboard-shortcuts) 설정해야 합니다 |
+| `Alt+D` | 단어 끝까지 삭제 | 현재 단어의 끝까지 삭제하거나 커서가 단어 사이에 있을 때 다음 단어의 끝까지 삭제합니다. 삭제된 텍스트를 붙여넣기 위해 저장합니다. macOS에서 [Option을 Meta로](#keyboard-shortcuts) 설정해야 합니다 |
+| `Ctrl+_` 또는 `Ctrl+Shift+-` | 마지막 입력 편집 실행 취소 | 이전 입력 텍스트 및 커서 위치를 복원합니다 |
 
-| 단축키                                                     | 설명                                                                                                                 | 컨텍스트                                                                                                                                                                                               |
-| :------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Ctrl+C`                                                | 중단 또는 입력 지우기                                                                                                       | 실행 중인 작업을 중단합니다. 실행 중인 작업이 없으면 첫 번째 누르기는 프롬프트 입력을 지우고 두 번째 누르기는 Claude Code를 종료합니다                                                                                                                 |
-| `Ctrl+X Ctrl+K`                                         | 이 세션에서 모든 실행 중인 [백그라운드 서브에이전트](/docs/ko/sub-agents#run-subagents-in-foreground-or-background)를 종료합니다. 3초 이내에 두 번 누르면 확인 | 서브에이전트 제어                                                                                                                                                                                          |
-| `Ctrl+D`                                                | Claude Code 세션 종료                                                                                                  | EOF 신호                                                                                                                                                                                             |
-| `Ctrl+G` 또는 `Ctrl+X Ctrl+E`                             | 기본 텍스트 편집기에서 열기                                                                                                    | 기본 텍스트 편집기에서 프롬프트 또는 사용자 정의 응답을 편집합니다. `Ctrl+X Ctrl+E`는 readline 기본 바인딩입니다. `/config`에서 외부 편집기에서 마지막 응답 표시를 켜면 Claude의 이전 응답을 `#`-주석 처리된 컨텍스트로 프롬프트 위에 앞에 붙입니다. 저장할 때 주석 블록이 제거됩니다                 |
-| `Ctrl+L`                                                | 화면 다시 그리기                                                                                                          | 전체 터미널 다시 그리기를 강제합니다. 입력 및 대화 기록은 유지됩니다. 디스플레이가 손상되거나 부분적으로 공백이 되면 이를 사용하여 복구하세요                                                                                                                   |
-| `Ctrl+O`                                                | 트랜스크립트 뷰어 토글                                                                                                       | 자세한 도구 사용 및 실행을 표시합니다. MCP 호출도 확장하며, 기본적으로 "Slack 3회 호출됨"과 같은 단일 줄로 축소됩니다                                                                                                                          |
-| `Ctrl+R`                                                | 역방향 검색 명령 기록                                                                                                       | 이전 명령을 대화형으로 검색                                                                                                                                                                                    |
-| `Ctrl+V` 또는 `Cmd+V` (iTerm2) 또는 `Alt+V` (Windows 및 WSL) | 클립보드에서 이미지 붙여넣기                                                                                                    | 커서에 `[Image #N]` 칩을 삽입하여 프롬프트에서 위치별로 참조할 수 있습니다. WSL에서는 `Ctrl+V`와 `Alt+V` 모두 바인딩되어 있습니다. 터미널이 `Ctrl+V`를 가로채면 `Alt+V`를 사용하세요                                                                        |
-| `Ctrl+B`                                                | 백그라운드 실행 작업                                                                                                        | Bash 명령 및 에이전트를 백그라운드로 실행합니다. Tmux 사용자는 두 번 누르기                                                                                                                                                    |
-| `Ctrl+T`                                                | Claude의 작업 체크리스트 토글                                                                                                | 상태 영역에서 [Claude의 할 일 체크리스트](#task-list)를 표시하거나 숨깁니다. 이는 백그라운드 작업 보기가 아닙니다. [`/tasks`](/docs/ko/commands)를 사용하여 실행 중인 셸 및 서브에이전트를 확인하세요                                                                  |
-| `Left/Right 화살표`                                        | 대화 상자 탭 순환                                                                                                         | 권한 대화 상자 및 메뉴의 탭 간 탐색                                                                                                                                                                              |
-| `Up/Down 화살표` 또는 `Ctrl+P`/`Ctrl+N`                      | 커서 이동 또는 명령 기록 탐색                                                                                                  | 입력이 여러 시각적 줄에 걸쳐 있을 때(줄 바꿈 또는 여러 줄 여부), 먼저 프롬프트 내에서 커서를 이동합니다. 커서가 첫 번째 또는 마지막 시각적 줄에 있으면 다시 누르면 명령 기록을 탐색합니다. v2.1.169부터 줄 바꿈된 단일 줄 입력은 여러 줄과 동일하게 작동합니다                                          |
-| `Esc`                                                   | Claude 중단 또는 대화 상자 닫기                                                                                              | 현재 응답 또는 도구 호출을 중간에 중지하여 리다이렉트할 수 있습니다. Claude는 지금까지 수행한 작업을 유지합니다. 권한 프롬프트와 같은 대화 상자가 열려 있으면 `Esc`는 Claude를 중단하는 대신 대화 상자를 닫습니다. v2.1.202 이전에는 일부 대화 상자에서 `Esc`가 Claude를 중단하고 대화 상자를 열린 상태로 두었습니다 |
-| `Esc` + `Esc`                                           | 입력 초안 지우기 또는 되돌리기                                                                                                  | 프롬프트 입력에 텍스트가 포함되어 있으면 이중 `Esc`는 이를 지우고 초안을 기록에 저장하여 `Up`으로 회수할 수 있습니다. 입력이 비어 있으면 이중 `Esc`는 [되돌리기 메뉴](/docs/ko/checkpointing)를 열어 이전 지점에서 코드 및 대화를 복원하거나 요약합니다                                         |
-| `Shift+Tab` 또는 `Alt+M` (일부 구성)                          | 권한 모드 순환                                                                                                           | `default`(모드 표시기에서 Manual로 표시됨), `acceptEdits`, `plan` 및 `auto` 또는 `bypassPermissions`와 같이 활성화한 모든 모드를 순환합니다. [권한 모드](/docs/ko/permission-modes)를 참조하세요.                                                |
-| `Option+P` (macOS) 또는 `Alt+P` (Windows/Linux)           | 모델 전환                                                                                                              | 프롬프트를 지우지 않고 모델 전환                                                                                                                                                                                 |
-| `Option+T` (macOS) 또는 `Alt+T` (Windows/Linux)           | 확장 사고 토글                                                                                                           | 확장 사고 모드를 활성화 또는 비활성화합니다. Fable 5에는 영향을 주지 않으며, 항상 확장 사고를 사용합니다. v2.1.132부터 이 단축키는 macOS에서 Option을 Meta로 구성하지 않고도 작동합니다                                                                            |
-| `Option+O` (macOS) 또는 `Alt+O` (Windows/Linux)           | 빠른 모드 토글                                                                                                           | [빠른 모드](/docs/ko/fast-mode) 활성화 또는 비활성화                                                                                                                                                                 |
+### 편집 단축키의 단어 경계
 
-<h3 id="text-editing">
-  텍스트 편집
-</h3>
+단어 단축키 `Alt+B`, `Alt+F`, `Alt+D`, `Option+Delete` 및 `Ctrl+Backspace`는 단어를 문자와 숫자의 실행으로 취급하므로 `_`, `.` 및 `/`와 같은 구두점이 단어를 구분합니다. 프롬프트에 `src/utils/foo.ts`가 있으면 `Alt+B`를 반복해서 누르면 `ts`, `foo`, `utils` 및 `src`의 시작 부분에서 멈춥니다.
 
-| 단축키                   | 설명               | 컨텍스트                                                                                                                           |
-| :-------------------- | :--------------- | :----------------------------------------------------------------------------------------------------------------------------- |
-| `Ctrl+A`              | 현재 줄의 시작으로 커서 이동 | 여러 줄 입력에서 현재 논리 줄의 시작으로 이동합니다                                                                                                  |
-| `Ctrl+E`              | 현재 줄의 끝으로 커서 이동  | 여러 줄 입력에서 현재 논리 줄의 끝으로 이동합니다                                                                                                   |
-| `Ctrl+K`              | 줄 끝까지 삭제         | 삭제된 텍스트를 붙여넣기용으로 저장                                                                                                            |
-| `Ctrl+U`              | 커서에서 줄 시작까지 삭제   | 삭제된 텍스트를 붙여넣기용으로 저장합니다. 여러 줄 입력에서 반복하여 여러 줄을 지웁니다. macOS에서 iTerm2 및 Terminal.app을 포함한 터미널 에뮬레이터는 `Cmd+Backspace`를 이 단축키로 매핑합니다 |
-| `Ctrl+W`              | 이전 단어 삭제         | 삭제된 텍스트를 붙여넣기용으로 저장합니다. Windows에서 `Ctrl+Backspace`도 이전 단어를 삭제합니다                                                               |
-| `Ctrl+Y`              | 삭제된 텍스트 붙여넣기     | `Ctrl+K`, `Ctrl+U` 또는 `Ctrl+W`로 삭제한 텍스트 붙여넣기                                                                                   |
-| `Alt+Y` (`Ctrl+Y` 이후) | 붙여넣기 기록 순환       | 붙여넣기 후 이전에 삭제한 텍스트를 순환합니다. macOS에서 [Option을 Meta로](#keyboard-shortcuts) 설정 필요                                                  |
-| `Alt+B`               | 커서를 한 단어 뒤로 이동   | 단어 탐색. macOS에서 [Option을 Meta로](#keyboard-shortcuts) 설정 필요                                                                      |
-| `Alt+F`               | 커서를 한 단어 앞으로 이동  | 단어 탐색. macOS에서 [Option을 Meta로](#keyboard-shortcuts) 설정 필요                                                                      |
+`Ctrl+W`는 다릅니다. 구두점을 무시하고 이전 공백으로 뒤로 삭제하므로 한 번 누르면 `src/utils/foo.ts` 전체를 제거합니다.
 
-<h3 id="theme-and-display">
-  테마 및 표시
-</h3>
+중국어 또는 일본어와 같이 공백 없이 작성된 텍스트에서 단어 단축키는 여전히 한 번에 한 단어씩 이동하거나 삭제합니다.
 
-| 단축키      | 설명              | 컨텍스트                                                                |
-| :------- | :-------------- | :------------------------------------------------------------------ |
-| `Ctrl+T` | 코드 블록의 구문 강조 토글 | `/theme` 선택기 메뉴 내에서만 작동합니다. Claude의 응답에서 코드가 구문 색상을 사용하는지 여부를 제어합니다 |
+이러한 readline 규칙은 Claude Code v2.1.261 이상에 적용됩니다. 이전 버전에서 이를 켠 [`keybindingFlavor`](https://code.claude.com/docs/ko/settings-reference#keybindingflavor) 설정은 더 이상 사용되지 않으며 효과가 없습니다.
 
-<h3 id="multiline-input">
-  여러 줄 입력
-</h3>
+[키바인딩 구성 파일](https://code.claude.com/docs/ko/keybindings.md)에서 이러한 단축키를 다시 매핑할 수 없으며, 이들에 대한 작업이 없습니다.
 
-| 방법          | 단축키            | 컨텍스트                                                                                     |
-| :---------- | :------------- | :--------------------------------------------------------------------------------------- |
-| 빠른 이스케이프    | `\` + `Enter`  | 모든 터미널에서 작동                                                                              |
-| Option 키    | `Option+Enter` | macOS에서 [Option을 Meta로](/docs/ko/terminal-config#enable-option-key-shortcuts-on-macos) 활성화한 후 |
-| Shift+Enter | `Shift+Enter`  | iTerm2, WezTerm, Ghostty, Kitty, Warp, Apple Terminal, Windows Terminal에서 기본적으로 작동       |
-| 제어 시퀀스      | `Ctrl+J`       | 구성 없이 모든 터미널에서 작동                                                                        |
-| 붙여넣기 모드     | 직접 붙여넣기        | 코드 블록, 로그의 경우                                                                            |
+### 테마 및 디스플레이
 
-<Tip>
-  Shift+Enter는 iTerm2, WezTerm, Ghostty, Kitty, Warp, Apple Terminal 및 Windows Terminal에서 구성 없이 작동합니다. VS Code, Cursor, Devin Desktop, Alacritty 및 Zed의 경우 `/terminal-setup`을 실행하여 바인딩을 설치하세요.
-</Tip>
+| 단축키 | 설명 | 컨텍스트 |
+| :- | :- | :- |
+| `Ctrl+T` | 코드 블록의 구문 강조 전환 | `/theme` 선택기 메뉴 내에서만 작동합니다. Claude의 응답에서 코드가 구문 색상을 사용하는지 여부를 제어합니다 |
 
-<h3 id="quick-commands">
-  빠른 명령
-</h3>
+### 여러 줄 입력
 
-| 단축키    | 설명          | 참고                                               |
-| :----- | :---------- | :----------------------------------------------- |
-| `/` 시작 | 명령 또는 skill | [명령](#commands) 및 [skills](/docs/ko/skills) 참조        |
-| `!` 시작 | Shell 모드    | 명령을 직접 실행하고 실행 출력을 세션에 추가하며 Claude가 이에 응답하도록 합니다 |
-| `@`    | 파일 경로 언급    | 파일 경로 자동 완성 트리거                                  |
+| 방법 | 단축키 | 컨텍스트 |
+| :- | :- | :- |
+| 빠른 탈출 | `\` + `Enter` | 모든 터미널에서 작동합니다 |
+| Option 키 | `Option+Enter` | macOS에서 [Option을 Meta로](https://code.claude.com/docs/ko/terminal-config.md#enable-option-key-shortcuts-on-macos) 활성화한 후 |
+| Shift+Enter | `Shift+Enter` | iTerm2, WezTerm, Ghostty, Kitty, Warp, Apple Terminal, Windows Terminal에서 기본적으로 지원됩니다. 다른 터미널의 경우 [여러 줄 프롬프트 입력](https://code.claude.com/docs/ko/terminal-config.md#enter-multiline-prompts)을 참조하세요 |
+| 제어 시퀀스 | `Ctrl+J` | 구성 없이 모든 터미널에서 작동합니다 |
+| 붙여넣기 모드 | 직접 붙여넣기 | 코드 블록, 로그의 경우 |
 
-<h3 id="transcript-viewer">
-  트랜스크립트 뷰어
-</h3>
+### 빠른 명령
 
-트랜스크립트 뷰어가 열려 있을 때(`Ctrl+O`로 토글), 이 단축키를 사용할 수 있습니다. [전체 화면 렌더링](/docs/ko/fullscreen)에서 `?`를 눌러 뷰어 내에서 전체 단축키 참조 패널을 표시합니다. `Ctrl+E`는 [`transcript:toggleShowAll`](/docs/ko/keybindings)을 통해 재바인딩할 수 있습니다.
+| 단축키 | 설명 | 참고 |
+| :- | :- | :- |
+| `/` 시작 | 명령 또는 스킬 | [명령](#commands) 및 [스킬](https://code.claude.com/docs/ko/skills.md)을 참조하세요 |
+| `!` 시작 | 셸 모드 | 명령을 직접 실행하고 출력을 세션에 추가하며 Claude가 이에 응답하도록 합니다 |
+| `@` | 파일 경로 언급 | 파일 경로 자동 완성을 트리거합니다. [교차 세션 메시징](https://code.claude.com/docs/ko/cross-session-messaging.md#message-another-session)이 있는 세션에서 `@` 뒤에 최소 한 글자를 입력하면 Claude Code는 이 머신의 다른 라이브 세션도 제안하므로 Claude에게 선택한 세션에 메시지를 보내도록 할 수 있습니다. Claude Code v2.1.232 이상 필요 |
+| `:` | 이모지 단축코드 | 전체 `:name:`을 입력하여 이모지를 삽입하거나 두 글자 이상을 입력하여 제안을 봅니다. [이모지 단축코드](#emoji-shortcodes)를 참조하세요 |
+| `?` 빈 입력 | 단축키 도움말 패널 전환 | 입력에 이미 텍스트가 있을 때 `?`를 입력하면 문자를 삽입합니다 |
 
-| 단축키                  | 설명                                                                                                                                         |
-| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
-| `?`                  | 키보드 단축키 도움말 패널 토글. [전체 화면 렌더링](/docs/ko/fullscreen) 필요                                                                                          |
-| `{` / `}`            | vim 단락 이동처럼 이전 또는 다음 사용자 프롬프트로 이동합니다. [전체 화면 렌더링](/docs/ko/fullscreen) 필요                                                                       |
-| `Ctrl+E`             | 모든 콘텐츠 표시 토글                                                                                                                               |
-| `[`                  | 전체 대화를 터미널의 기본 스크롤백에 작성하여 `Cmd+F`, tmux 복사 모드 및 기타 기본 도구가 검색할 수 있도록 합니다. [전체 화면 렌더링](/docs/ko/fullscreen#search-and-review-the-conversation) 필요 |
-| `v`                  | 대화를 임시 파일에 작성하고 `$VISUAL` 또는 `$EDITOR`에서 엽니다. [전체 화면 렌더링](/docs/ko/fullscreen) 필요                                                               |
-| `q`, `Ctrl+C`, `Esc` | 트랜스크립트 보기 종료. 세 가지 모두 [`transcript:exit`](/docs/ko/keybindings)를 통해 재바인딩할 수 있습니다                                                                |
+### 트랜스크립트 뷰어
 
-<h3 id="voice-input">
-  음성 입력
-</h3>
+트랜스크립트 뷰어가 열려 있을 때 (`Ctrl+O`로 전환), 이러한 단축키를 사용할 수 있습니다. 어떤 렌더러가 활성화되어 있는지 확인하려면 인수 없이 `/tui`를 실행하세요. `Ctrl+E`는 [`transcript:toggleShowAll`](https://code.claude.com/docs/ko/keybindings)을 통해 다시 바인딩할 수 있습니다.
 
-| 단축키                 | 설명      | 참고                                                                                                                                               |
-| :------------------ | :------ | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Space` 길게 누르기 또는 탭 | 음성 받아쓰기 | [음성 받아쓰기](/docs/ko/voice-dictation)가 활성화되어야 합니다. 길게 누르면 녹음하거나 `/voice tap`을 실행하여 탭-토글을 사용합니다. [재바인딩 가능](/docs/ko/voice-dictation#rebind-the-dictation-key) |
+| 단축키 | 설명 |
+| :- | :- |
+| `?` | 키보드 단축키 도움말 패널을 전환합니다. [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md) 필요 |
+| `{` / `}` | vim 단락 모션처럼 이전 또는 다음 사용자 프롬프트로 이동합니다. [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md) 필요 |
+| `Ctrl+E` | 모든 콘텐츠 표시를 전환합니다. 클래식 렌더러에서만 사용 가능하며 [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md)에서는 사용 불가 |
+| `[` | 전체 대화를 터미널의 기본 스크롤백에 작성하여 `Cmd+F`, tmux 복사 모드 및 기타 기본 도구가 이를 검색할 수 있습니다. [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md#search-and-review-the-conversation) 필요 |
+| `v` | 대화를 임시 파일에 작성하고 `$VISUAL` 또는 `$EDITOR`에서 엽니다. [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md) 필요 |
+| `q`, `Ctrl+C`, `Esc` | 트랜스크립트 보기를 종료합니다. 세 가지 모두 [`transcript:exit`](https://code.claude.com/docs/ko/keybindings)를 통해 다시 바인딩할 수 있습니다 |
 
-<h2 id="commands">
-  명령
-</h2>
+### 음성 입력
 
-Claude Code에서 `/`를 입력하여 사용 가능한 모든 명령을 보거나, `/` 다음에 문자를 입력하여 필터링하세요. `/` 메뉴는 호출할 수 있는 모든 것을 표시합니다: 기본 제공 명령, 번들 및 사용자 작성 [skills](/docs/ko/skills), 그리고 [plugins](/docs/ko/plugins) 및 [MCP servers](/docs/ko/mcp#use-mcp-prompts-as-commands)에서 제공하는 명령. 플랫폼 또는 요금제에 따라 달라지므로 모든 명령이 모든 사용자에게 표시되지는 않습니다.
+| 단축키 | 설명 | 참고 |
+| :- | :- | :- |
+| `Space` 누르기 또는 탭 | 음성 받아쓰기 | [음성 받아쓰기](https://code.claude.com/docs/ko/voice-dictation.md)를 활성화해야 합니다. 누르고 있으면 녹음하거나 탭 전환을 위해 `/voice tap`을 실행하세요. [다시 바인딩 가능](https://code.claude.com/docs/ko/voice-dictation.md#rebind-the-dictation-key) |
 
-[전체 화면 렌더링](/docs/ko/fullscreen#use-the-mouse)에서 `/` 명령 및 `@` 파일 제안 목록도 마우스에 응답합니다: 행 위에 마우스를 올리면 강조 표시되고 클릭하면 선택됩니다.
+## 명령어
 
-Claude Code에 포함된 명령의 전체 목록은 [명령 참조](/docs/ko/commands)를 참조하세요.
+Claude Code에서 `/`를 입력하면 사용 가능한 명령어를 확인할 수 있습니다. 또는 `/` 다음에 문자를 입력하여 필터링할 수 있습니다. `/` 메뉴에는 기본 제공 명령어, 번들로 제공되는 사용자 작성 [skills](https://code.claude.com/docs/ko/skills.md), [plugins](https://code.claude.com/docs/ko/plugins/overview.md) 및 [MCP servers](https://code.claude.com/docs/ko/mcp.md#use-mcp-prompts-as-commands)에서 제공하는 명령어가 나열됩니다. 일부 기본 제공 명령어는 플랫폼이나 요금제에 따라 달라지므로 모든 사용자에게 표시되지 않으며, [일부 사용 가능한 명령어는 설계상 메뉴에서 숨겨져 있으며](https://code.claude.com/docs/ko/commands.md#how-the-command-menu-matches-what-you-type) 전체 이름을 입력할 때 실행됩니다.
 
-<h2 id="vim-editor-mode">
-  Vim 편집기 모드
-</h2>
+[전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md#use-the-mouse)에서 `/` 명령어와 `@` 파일 제안 목록도 마우스에 응답합니다. 행 위에 마우스를 올리면 강조 표시되고 클릭하면 선택됩니다.
 
-`/config` → 편집기 모드를 통해 vim 스타일 편집을 활성화합니다.
+Claude Code에 포함된 명령어의 전체 목록은 [명령어 참조](https://code.claude.com/docs/ko/commands.md)를 참조하십시오.
 
-<h3 id="mode-switching">
-  모드 전환
-</h3>
+### 프롬프트 중간에 명령어 완성
 
-| 명령    | 작업              | 모드에서           |
-| :---- | :-------------- | :------------- |
-| `Esc` | NORMAL 모드 진입    | INSERT, VISUAL |
-| `i`   | 커서 앞에 삽입        | NORMAL         |
-| `I`   | 줄 시작에 삽입        | NORMAL         |
-| `a`   | 커서 뒤에 삽입        | NORMAL         |
-| `A`   | 줄 끝에 삽입         | NORMAL         |
-| `o`   | 아래 줄 열기         | NORMAL         |
-| `O`   | 위 줄 열기          | NORMAL         |
-| `v`   | 문자 단위 시각적 선택 시작 | NORMAL         |
-| `V`   | 줄 단위 시각적 선택 시작  | NORMAL         |
+명령어 완성은 프롬프트 중간에도 작동합니다. 공백 다음에 `/`를 입력한 후 이름의 첫 글자를 입력합니다. 예를 들어 `run the tests, then /com`과 같이 입력합니다. 이름이 해당 글자로 시작하는 명령어만 일치하므로 `/tmp/notes.md`와 같은 파일 경로는 목록을 유지하지 않습니다. Claude Code는 명령어가 [메시지를 시작할 때](https://code.claude.com/docs/ko/commands.md)만 명령어를 자체적으로 실행합니다.
 
-<h3 id="remap-insert-mode-key-sequences">
-  INSERT 모드 키 시퀀스 다시 매핑
-</h3>
+* **[전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md)에서**: 입력하는 동안 일치 항목이 목록으로 열리며 강조 표시된 행이 없으므로 `Enter`를 누르면 입력한 대로 프롬프트가 전송됩니다. `Tab`을 눌러 상단 일치 항목을 삽입하거나 화살표 키와 `Enter`로 행을 선택합니다.
+* **전체 화면 외부**: 상단 일치 항목의 나머지 부분이 커서에서 유령 텍스트로 나타나며, 더 많은 명령어가 일치할 때 `+2`와 같은 개수가 표시됩니다. `Tab`을 눌러 유일한 일치 항목을 삽입하거나 여러 항목이 일치할 때 목록을 열고 화살표 키와 `Enter`로 행을 선택합니다.
 
-[`vimInsertModeRemaps`](/docs/ko/settings#available-settings) 설정은 두 개의 키 INSERT 모드 시퀀스를 Escape로 매핑하므로 `jj`와 같은 매핑은 사용자를 NORMAL 모드로 돌려보냅니다. Claude Code v2.1.208 이상이 필요합니다.
+두 렌더러 모두에서 빈 중간 프롬프트 `/`에 `Tab`을 누르면 모든 명령어가 나열됩니다.
+
+플러그인 스킬은 기본 이름으로도 일치하므로 `/deploy`는 `myplugin:deploy-app`이라는 이름의 스킬을 찾습니다. 일치 항목을 삽입하면 Claude Code는 전체 `/myplugin:deploy-app`을 작성합니다.
+
+## Vim 편집기 모드
+
+`/config` → 편집기 모드에서 vim 스타일 편집을 활성화합니다.
+
+Claude Code는 `Ctrl+O`로 [트랜스크립트 뷰어](#transcript-viewer)를 전환하거나 `/config`와 같은 패널을 열고 닫을 때 vim 모드와 커서 위치를 유지합니다. 프롬프트를 NORMAL 모드로 두면, 돌아올 때도 여전히 NORMAL 모드이며 커서는 남겨둔 위치에 있습니다.
+
+### 모드 전환
+
+| 명령어 | 작업 | 시작 모드 |
+| :- | :- | :- |
+| `Esc` 또는 `Ctrl+[` | NORMAL 모드로 진입합니다. Kitty 키보드 프로토콜을 사용하는 터미널에서 `Ctrl+[`는 v2.1.242 이상이 필요합니다 | INSERT, VISUAL |
+| `i` | 커서 앞에 삽입 | NORMAL |
+| `I` | 줄의 시작에 삽입 | NORMAL |
+| `a` | 커서 뒤에 삽입 | NORMAL |
+| `A` | 줄의 끝에 삽입 | NORMAL |
+| `o` | 아래에 줄 열기 | NORMAL |
+| `O` | 위에 줄 열기 | NORMAL |
+| `v` | 문자 단위 시각적 선택 시작 | NORMAL |
+| `V` | 줄 단위 시각적 선택 시작 | NORMAL |
+
+### INSERT 모드 키 시퀀스 재매핑
+
+[`vimInsertModeRemaps`](https://code.claude.com/docs/ko/settings-reference#viminsertmoderemaps) 설정은 두 개의 키 INSERT 모드 시퀀스를 Escape로 매핑하므로, `jj`와 같은 매핑은 사용자를 NORMAL 모드로 돌려보냅니다.
 
 다음 `~/.claude/settings.json` 예제는 vim 모드를 켜고 `jj`를 Escape로 매핑합니다:
 
@@ -167,174 +166,185 @@ Claude Code에 포함된 명령의 전체 목록은 [명령 참조](/docs/ko/com
 }
 ```
 
-각 키는 정확히 두 개의 인쇄 가능한 문자이며 순서대로 입력되고, `"<Esc>"`는 유일하게 지원되는 대상입니다. 다른 길이 또는 대상을 가진 항목은 무시됩니다.
+각 키는 정확히 순서대로 입력된 두 개의 인쇄 가능한 문자이며, `"<Esc>"`는 유일하게 지원되는 대상입니다. 다른 길이 또는 대상을 가진 항목은 무시됩니다.
 
-시퀀스의 첫 번째 문자를 입력하면 정상적으로 삽입됩니다. 1초 이내에 두 번째 문자를 누르면 대기 중인 문자가 제거되고 NORMAL 모드로 전환되며, 입력에 두 문자 모두 남지 않습니다. 1초 창이 지난 후 또는 다른 키가 뒤따르면 두 문자 모두 리터럴 텍스트로 유지되므로 두 키 사이에 일시 중지하여 시퀀스를 포함하는 단어를 여전히 입력할 수 있습니다.
+시퀀스의 첫 번째 문자를 입력하면 정상적으로 삽입됩니다. 1초 이내에 두 번째 문자를 누르면 대기 중인 문자가 제거되고 NORMAL 모드로 전환되며, 입력에 어느 문자도 남지 않습니다. 1초 창이 지난 후 또는 다른 키가 뒤따르면, 두 문자 모두 리터럴 텍스트로 유지되므로, 두 키 사이에 일시 중지하여 시퀀스를 포함하는 단어를 입력할 수 있습니다.
 
-Claude Code는 사용자 설정 파일, `--settings` 플래그 및 [관리되는 설정](/docs/ko/permissions#managed-settings)에서만 이 설정을 읽습니다. 프로젝트의 `.claude/settings.json` 또는 `.claude/settings.local.json`의 항목은 무시되므로 체크아웃된 저장소는 사용자의 키 입력을 다시 매핑할 수 없습니다.
+Claude Code는 사용자 설정 파일, `--settings` 플래그 및 [관리되는 설정](https://code.claude.com/docs/ko/managed-settings.md)에서만 이 설정을 읽습니다. 프로젝트의 `.claude/settings.json` 또는 `.claude/settings.local.json`의 항목은 무시되므로, 체크아웃된 저장소는 사용자의 키 입력을 재매핑할 수 없습니다.
 
-<h3 id="navigation-normal-mode">
-  탐색 (NORMAL 모드)
-</h3>
+### 네비게이션 (NORMAL 모드)
 
-| 명령              | 작업                                                                                                            |
-| :-------------- | :------------------------------------------------------------------------------------------------------------ |
-| `h`/`j`/`k`/`l` | 왼쪽/아래/위/오른쪽 이동                                                                                                |
-| `Space`         | 오른쪽 이동                                                                                                        |
-| `w`             | 다음 단어                                                                                                         |
-| `e`             | 단어 끝                                                                                                          |
-| `b`             | 이전 단어                                                                                                         |
-| `0`             | 줄 시작                                                                                                          |
-| `$`             | 줄 끝                                                                                                           |
-| `^`             | 첫 번째 공백이 아닌 문자                                                                                                |
-| `gg`            | 입력 시작                                                                                                         |
-| `G`             | 입력 끝                                                                                                          |
-| `f{char}`       | 다음 문자 발생으로 점프                                                                                                 |
-| `F{char}`       | 이전 문자 발생으로 점프                                                                                                 |
-| `t{char}`       | 다음 문자 발생 직전으로 점프                                                                                              |
-| `T{char}`       | 이전 문자 발생 직후로 점프                                                                                               |
-| `;`             | 마지막 f/F/t/T 동작 반복                                                                                             |
-| `,`             | 마지막 f/F/t/T 동작을 역순으로 반복                                                                                       |
-| `/`             | 역방향 기록 검색 열기, `Ctrl+R`과 동일합니다. v2.1.191부터 빈 검색 프롬프트는 힌트를 표시합니다: 명령 메뉴를 대신 열려면 `Esc`를 누른 후 `i`를 누른 후 `/`를 누르세요 |
+| 명령어 | 작업 |
+| :- | :- |
+| `h`/`j`/`k`/`l` | 왼쪽/아래/위/오른쪽으로 이동 |
+| `Space` | 오른쪽으로 이동 |
+| `w` | 다음 단어 |
+| `e` | 단어의 끝 |
+| `b` | 이전 단어 |
+| `0` | 줄의 시작 |
+| `$` | 줄의 끝 |
+| `^` | 첫 번째 공백이 아닌 문자 |
+| `gg` | 입력의 시작 |
+| `G` | 마지막 줄의 시작 |
+| `f{char}` | 현재 줄에서 다음 문자 발생으로 점프 |
+| `F{char}` | 현재 줄에서 이전 문자 발생으로 점프 |
+| `t{char}` | 현재 줄에서 다음 문자 발생 바로 앞으로 점프 |
+| `T{char}` | 현재 줄에서 이전 문자 발생 바로 뒤로 점프 |
+| `;` | 마지막 f/F/t/T 모션 반복 |
+| `,` | 마지막 f/F/t/T 모션을 역순으로 반복 |
+| `%` | 일치하는 `()`, `[]` 또는 `{}` 괄호로 점프합니다. 커서가 괄호 위에 있지 않으면 현재 줄의 다음 괄호부터 시작합니다. Claude Code v2.1.301 이상이 필요합니다 |
+| `/` | 역방향 히스토리 검색을 열기, `Ctrl+R`과 동일합니다. 빈 검색 프롬프트는 힌트를 표시합니다: `Esc`를 누른 후 `i`를 누른 후 `/`를 눌러 명령어 메뉴를 대신 열기 |
 
-<Note>
-  vim 일반 모드에서 커서가 입력의 시작 또는 끝에 있고 더 이상 이동할 수 없으면 `j`/`k` 및 화살표 키가 명령 기록을 탐색합니다.
-</Note>
+> [!NOTE]
+>
+> vim NORMAL 모드에서 커서가 입력의 시작 또는 끝에 있고 더 이상 이동할 수 없으면, `j`/`k` 및 `↑`/`↓`는 명령 히스토리를 네비게이션합니다. 빈 프롬프트에서 `←`를 누르면 INSERT 모드뿐만 아니라 NORMAL 모드에서도 [에이전트 뷰](https://code.claude.com/docs/ko/agent-view.md)가 열립니다.
 
-<h3 id="editing-normal-mode">
-  편집 (NORMAL 모드)
-</h3>
+### 편집 (NORMAL 모드)
 
-| 명령             | 작업           |
-| :------------- | :----------- |
-| `x`            | 문자 삭제        |
-| `dd`           | 줄 삭제         |
-| `D`            | 줄 끝까지 삭제     |
+| 명령어 | 작업 |
+| :- | :- |
+| `x` | 문자 삭제 |
+| `r{char}` | 커서 아래의 문자를 `{char}`로 바꾸기 |
+| `dd` | 줄 삭제 |
+| `D` | 줄의 끝까지 삭제 |
 | `dw`/`de`/`db` | 단어 삭제/끝까지/뒤로 |
-| `cc`           | 줄 변경         |
-| `C`            | 줄 끝까지 변경     |
+| `df{char}`/`dt{char}` | 현재 줄에서 다음 문자 발생 위치까지(해당 문자 포함 또는 바로 앞까지) 삭제 |
+| `dj`/`dk` | 현재 줄과 아래 또는 위의 줄 삭제 |
+| `dgg`/`dG` | 현재 줄에서 첫 번째 또는 마지막 줄까지 삭제 |
+| `d0`/`c0`/`y0` | 커서에서 줄의 시작까지 삭제, 변경 또는 야앙크합니다. Claude Code v2.1.281 이상이 필요합니다 |
+| `d%`/`c%`/`y%` | 커서에서 `%`가 점프하는 괄호까지 삭제, 변경 또는 양크합니다. Claude Code v2.1.301 이상이 필요합니다 |
+| `cc` | 줄 변경 |
+| `C` | 줄의 끝까지 변경 |
 | `cw`/`ce`/`cb` | 단어 변경/끝까지/뒤로 |
-| `yy`/`Y`       | 줄 복사         |
-| `yw`/`ye`/`yb` | 단어 복사/끝까지/뒤로 |
-| `p`            | 커서 뒤에 붙여넣기   |
-| `P`            | 커서 앞에 붙여넣기   |
-| `>>`           | 줄 들여쓰기       |
-| `<<`           | 줄 내어쓰기       |
-| `J`            | 줄 결합         |
-| `u`            | 실행 취소        |
-| `.`            | 마지막 변경 반복    |
+| `s` | 문자 대체: 커서 아래의 문자를 삭제하고 INSERT 모드로 진입합니다 |
+| `S` | 줄 대체: 줄을 지우고 INSERT 모드로 진입합니다 |
+| `yy`/`Y` | 줄 야앙크(복사) |
+| `yw`/`ye`/`yb` | 단어 야앙크/끝까지/뒤로 |
+| `p` | 커서 뒤에 붙여넣기 |
+| `P` | 커서 앞에 붙여넣기 |
+| `>>` | 줄 들여쓰기 |
+| `<<` | 줄 내어쓰기 |
+| `J` | 줄 결합 |
+| `u` | 실행 취소 |
+| `.` | 마지막 변경 반복 |
 
-<h3 id="text-objects-normal-mode">
-  텍스트 객체 (NORMAL 모드)
-</h3>
+### 텍스트 객체 (NORMAL 모드)
 
 텍스트 객체는 `d`, `c`, `y`와 같은 연산자와 함께 작동합니다:
 
-| 명령        | 작업                   |
-| :-------- | :------------------- |
-| `iw`/`aw` | 내부/주변 단어             |
+| 명령어 | 작업 |
+| :- | :- |
+| `iw`/`aw` | 내부/주변 단어 |
 | `iW`/`aW` | 내부/주변 WORD (공백으로 구분) |
-| `i"`/`a"` | 내부/주변 큰따옴표           |
-| `i'`/`a'` | 내부/주변 작은따옴표          |
-| `i(`/`a(` | 내부/주변 괄호             |
-| `i[`/`a[` | 내부/주변 대괄호            |
-| `i{`/`a{` | 내부/주변 중괄호            |
+| `i"`/`a"` | 내부/주변 큰따옴표 |
+| `i'`/`a'` | 내부/주변 작은따옴표 |
+| `i(`/`a(` | 내부/주변 괄호 |
+| `i[`/`a[` | 내부/주변 대괄호 |
+| `i{`/`a{` | 내부/주변 중괄호 |
 
-<h3 id="visual-mode">
-  시각적 모드
-</h3>
+### 시각적 모드
 
-문자 단위 선택을 위해 `v`를 누르거나 줄 단위 선택을 위해 `V`를 누릅니다. 동작은 선택을 확장하고 연산자는 이에 직접 작용합니다.
+문자 단위 선택을 위해 `v`를 누르거나 줄 단위 선택을 위해 `V`를 누릅니다. 모션은 선택을 확장하고, 연산자는 직접 작동합니다.
 
-| 명령               | 작업                       |
-| :--------------- | :----------------------- |
-| `d`/`x`          | 선택 삭제                    |
-| `y`              | 선택 복사                    |
-| `c`/`s`          | 선택 변경                    |
-| `p`              | 선택을 레지스터 내용으로 바꾸기        |
-| `r{char}`        | 선택된 모든 문자를 `{char}`로 바꾸기 |
-| `~`/`u`/`U`      | 선택 토글, 소문자 또는 대문자        |
-| `>`/`<`          | 선택된 줄 들여쓰기 또는 내어쓰기       |
-| `J`              | 선택된 줄 결합                 |
-| `o`              | 커서와 앵커 교환                |
-| `iw`/`aw`/`i"`/… | 텍스트 객체 선택                |
-| `v`/`V`          | 문자 단위와 줄 단위 간 토글 또는 종료   |
+| 명령어 | 작업 |
+| :- | :- |
+| `d`/`x` | 선택 삭제 |
+| `y` | 선택 야앙크 |
+| `c`/`s` | 선택 변경 |
+| `p` | 선택을 레지스터 내용으로 바꾸기 |
+| `r{char}` | 선택된 모든 문자를 `{char}`로 바꾸기 |
+| `~`/`u`/`U` | 선택 전환, 소문자 또는 대문자 |
+| `>`/`<` | 선택된 줄 들여쓰기 또는 내어쓰기 |
+| `J` | 선택된 줄 결합 |
+| `o` | 커서와 앵커 교환 |
+| `iw`/`aw`/`i"`/… | 텍스트 객체 선택 |
+| `v`/`V` | 문자 단위와 줄 단위 사이 전환 또는 종료 |
 
 `Ctrl+V`를 사용한 블록 단위 시각적 모드는 지원되지 않습니다.
 
-<h2 id="command-history">
-  명령 기록
-</h2>
+### vim 모드에서 질문 취소
 
-Claude Code는 현재 세션의 명령 기록을 유지합니다:
+[Claude가 묻는 질문](https://code.claude.com/docs/ko/tools-reference.md#askuserquestion-tool-behavior)의 `Other` 행에 직접 답변을 입력하는 중에는 `Esc`를 두 번 눌러 질문을 취소합니다.
+
+대신 키를 한 번 눌러 취소하려면 [질문을 취소할 다른 키를 바인딩](https://code.claude.com/docs/ko/keybindings.md#cancel-a-question-with-one-key-press)합니다.
+
+## 명령어 기록
+
+Claude Code는 입력한 프롬프트의 기록을 유지하며, 위쪽 화살표 키를 통한 회상은 동일한 프로젝트의 이전 세션에서 프롬프트를 검색합니다:
 
 * 입력 기록은 작업 디렉토리별로 저장됩니다
-* 입력 기록은 `/clear`를 실행하여 새 세션을 시작할 때 재설정됩니다. 이전 세션의 대화는 보존되며 재개할 수 있습니다.
-* 동일한 프롬프트를 연속으로 두 번 제출하면 하나의 기록 항목만 기록되므로 위쪽 화살표를 누르면 이전의 서로 다른 프롬프트로 이동합니다
-* Up/Down 화살표를 사용하여 탐색하세요 (위의 키보드 단축키 참조)
-* 기록 확장(`!`)은 기본적으로 비활성화됩니다
+* `/clear`를 실행하면 새 세션이 시작됩니다: 회상 시 새 세션의 프롬프트가 먼저 나열되고, 이전 세션의 프롬프트가 그 뒤에 나타납니다. 이전 세션의 대화는 보존되며 재개할 수 있습니다.
+* 동일한 프롬프트를 연속으로 두 번 제출하면 하나의 기록 항목만 기록되므로, 위쪽 화살표를 누르면 이전의 서로 다른 프롬프트로 이동합니다
+* 붙여넣은 텍스트가 포함된 프롬프트를 회상할 때, Claude Code는 재제출 시 전체 붙여넣은 콘텐츠를 다시 전송합니다. 콘텐츠가 이후 [자동으로 정리](https://code.claude.com/docs/ko/claude-directory.md#cleaned-up-automatically)된 경우, Claude Code는 문자 그대로의 `[Pasted text #N]` 문자열을 전송하지 않습니다. 프롬프트에 어떤 일이 발생하는지는 [대용량 콘텐츠 붙여넣기](https://code.claude.com/docs/ko/terminal-config.md#paste-large-content)를 참조하세요
+* `!`를 사용한 기록 확장은 기본적으로 비활성화되어 있습니다
 
-<h3 id="reverse-search-with-ctrl-r">
-  Ctrl+R을 사용한 역방향 검색
-</h3>
+### 지운 초안 되돌리기
 
-`Ctrl+R`을 눌러 명령 기록을 대화형으로 검색하세요:
+`Ctrl+C`로 지운 초안을 되돌리려면, 지운 직후 또는 메시지나 명령을 보낸 후에 `Up`을 누릅니다:
 
-1. **검색 시작**: `Ctrl+R`을 눌러 역방향 기록 검색 활성화
-2. **쿼리 입력**: 이전 명령에서 검색할 텍스트를 입력하세요. 검색어는 일치하는 결과에서 강조됩니다
-3. **일치 탐색**: `Ctrl+R`을 다시 눌러 더 오래된 일치를 순환하세요
-4. **범위 변경**: 검색은 기본적으로 모든 프로젝트의 프롬프트로 범위가 지정됩니다. `Ctrl+S`를 눌러 이 세션, 이 프로젝트, 모든 프로젝트 간에 범위를 순환하세요
-5. **일치 수락**:
-   * `Tab` 또는 `Esc`를 눌러 현재 일치를 수락하고 편집 계속
-   * `Enter`를 눌러 명령을 수락하고 즉시 실행
+* **초안을 지운 직후**: 프롬프트가 아직 비어 있는 동안 `Up`을 한 번 누릅니다. Claude Code v2.1.288 이상이 필요합니다.
+* **메시지나 명령을 보낸 후**: `Up`을 눌러 초안으로 되돌아갑니다. Claude Code는 현재 세션에서 가장 최근에 지운 초안 10개를 붙여넣은 텍스트 및 이미지와 함께 보관하며, 종료 시 이를 삭제합니다. Claude Code v2.1.292 이상이 필요합니다.
+
+### Ctrl+R을 사용한 역방향 검색
+
+`Ctrl+R`을 눌러 명령 기록을 대화형으로 검색합니다. [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md)에서는 `Ctrl+R`이 검색 대화상자를 열어줍니다: 입력하여 필터링하고, `Up` 및 `Down`을 눌러 일치 항목을 이동하며, `Ctrl+S`를 눌러 범위를 이 세션, 이 프로젝트, 모든 프로젝트를 통해 순환합니다. `Enter` 또는 `Tab`을 눌러 일치 항목을 프롬프트 입력에 배치하거나, `Esc`를 눌러 취소합니다. 아래 단계는 클래식 렌더러의 인라인 검색을 설명합니다:
+
+1. **검색 시작**: `Ctrl+R`을 눌러 역방향 기록 검색을 활성화합니다
+2. **쿼리 입력**: 이전 명령어에서 검색할 텍스트를 입력합니다. 검색어는 일치하는 결과에서 강조 표시됩니다
+3. **일치 항목 탐색**: `Ctrl+R`을 다시 눌러 더 오래된 일치 항목을 순환합니다
+4. **검색 범위**: 인라인 검색은 항상 모든 프로젝트의 프롬프트를 검색합니다
+5. **일치 항목 수락**:
+   * `Tab` 또는 `Esc`를 눌러 현재 일치 항목을 수락하고 편집을 계속합니다
+   * `Enter`를 눌러 수락하고 명령어를 즉시 실행합니다
 6. **검색 취소**:
-   * `Ctrl+C`를 눌러 취소하고 원래 입력 복원
-   * 빈 검색에서 `Backspace`를 눌러 취소
+   * `Ctrl+C`를 눌러 취소하고 원래 입력을 복원합니다
+   * 빈 검색에서 `Backspace`를 눌러 취소합니다
 
-검색은 선택한 범위에서 가장 최근의 고유한 프롬프트 100개를 로드하며, 중복은 가장 최신 항목으로 축소됩니다. 일치하는 프롬프트는 검색어가 강조된 상태로 표시되므로 이전 입력을 찾아 재사용할 수 있습니다.
+인라인 검색은 전체 프롬프트 기록을 최신 항목부터 검색하며, 중복은 최신 항목으로 축소됩니다. 전체 화면 대화상자는 선택된 범위에서 전체 프롬프트 기록을 최신 항목부터 검색하며, 중복은 최신 항목으로 축소됩니다: 가장 최근의 프롬프트가 즉시 나타나고, 더 오래된 프롬프트의 일치 항목은 Claude Code가 나머지 기록을 로드할 때 채워집니다. 일치하는 프롬프트는 검색어가 강조 표시되어 표시되므로, 이전 입력을 찾아 재사용할 수 있습니다.
 
-일치를 수락하거나 검색을 취소하면 Claude Code가 여전히 기록을 로드 중이더라도 즉시 적용됩니다. v2.1.202 이전에는 로드 중에 수락하거나 취소하면 내부 오류가 보고될 수 있었습니다.
+일치 항목을 수락하거나 검색을 취소하면 Claude Code가 여전히 기록을 로드 중이더라도 즉시 적용됩니다.
 
-<h2 id="background-bash-commands">
-  백그라운드 Bash 명령
-</h2>
+## 백그라운드 Bash 명령어
 
-Claude Code는 Bash 명령을 백그라운드에서 실행하도록 지원하여 장시간 실행되는 프로세스가 실행되는 동안 계속 작업할 수 있습니다.
+Claude Code는 백그라운드에서 Bash 명령어를 실행할 수 있으므로, 오래 걸리는 프로세스가 실행되는 동안 계속 작업할 수 있습니다.
 
-<h3 id="how-backgrounding-works">
-  백그라운드 실행 방식
-</h3>
+### 백그라운드 실행 방식
 
-Claude Code가 명령을 백그라운드에서 실행하면 명령을 비동기적으로 실행하고 즉시 백그라운드 작업 ID를 반환합니다. Claude Code는 명령이 백그라운드에서 계속 실행되는 동안 새 프롬프트에 응답할 수 있습니다.
+Claude Code가 명령어를 백그라운드에서 실행하면, 명령어를 비동기적으로 실행하고 즉시 백그라운드 작업 ID를 반환합니다. Claude Code는 명령어가 백그라운드에서 계속 실행되는 동안 새로운 프롬프트에 응답할 수 있습니다.
 
-명령을 백그라운드에서 실행하려면 다음 중 하나를 수행할 수 있습니다:
+명령어를 백그라운드에서 실행하려면 다음 중 하나를 수행할 수 있습니다.
 
-* Claude Code에 명령을 백그라운드에서 실행하도록 프롬프트
-* `Ctrl+B`를 눌러 일반 Bash 도구 호출을 백그라운드로 이동합니다. Tmux 사용자는 tmux의 접두사 키로 인해 `Ctrl+B`를 두 번 눌러야 합니다.
+* Claude Code에 명령어를 백그라운드에서 실행하도록 프롬프트합니다.
+* `Ctrl+B`를 눌러 일반 Bash 도구 호출을 백그라운드로 이동합니다. Tmux 사용자는 tmux의 접두사 키 때문에 `Ctrl+B`를 두 번 눌러야 합니다.
+
+명령이 완료되기 전에 타임아웃에 도달하면, Claude Code는 명령을 중지하는 대신 자동으로 [명령을 백그라운드로 이동](https://code.claude.com/docs/ko/tools-reference.md#foreground-commands-that-move-to-the-background)합니다. 단, `sleep`으로 시작하는 명령은 제외됩니다. [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ko/env-vars#variables)를 사용하여 백그라운드 명령을 껐거나 [bare 모드](https://code.claude.com/docs/ko/headless.md#start-faster-with-bare-mode)로 시작한 경우, 명령은 타임아웃 시 중지됩니다. 타임아웃을 변경하려면 [Bash 타임아웃 환경 변수](https://code.claude.com/docs/ko/tools-reference.md#timeout-and-output-limits)를 설정합니다.
 
 **주요 기능:**
 
-* 출력은 파일에 기록되며 Claude는 Read 도구를 사용하여 검색할 수 있습니다
-* 백그라운드 작업에는 추적 및 출력 검색을 위한 고유 ID가 있습니다
-* 백그라운드 작업은 Claude Code가 종료될 때 자동으로 정리됩니다. 세션을 종료하는 대신 백그라운드로 설정하면 백그라운드 세션에 전달되어 계속 실행됩니다. [실행 중인 세션을 백그라운드로 설정](/docs/ko/agent-view#from-inside-a-session)을 참조하세요
-* 백그라운드 작업은 출력이 5GB를 초과하면 자동으로 종료되며, stderr에 이유를 설명하는 메모가 있습니다
-* v2.1.193부터 macOS 및 Linux에서는 세션이 최소 30분 동안 유휴 상태이고 실행 중인 턴이나 서브에이전트가 없을 때 운영 체제가 메모리 압박 신호를 보내면 실행 중인 백그라운드 작업이 종료됩니다. [`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](/docs/ko/env-vars)를 `1`로 설정하여 이를 비활성화할 수 있습니다
+* 출력은 파일에 기록되며 Claude는 Read 도구를 사용하여 이를 검색할 수 있습니다.
+* 백그라운드 작업은 추적 및 출력 검색을 위한 고유 ID를 가집니다.
+* 백그라운드 작업은 Claude Code가 종료될 때 자동으로 정리됩니다. macOS 및 Linux에서 [`/tasks`](https://code.claude.com/docs/ko/commands)에서 백그라운드 작업을 중지하거나 Claude Code가 종료 시 중지할 때, `setsid` 또는 `timeout` 아래에서 시작된 것처럼 작업의 셸에서 분리된 프로세스도 중지됩니다.
+* 세션을 종료하는 대신 백그라운드로 설정하면, 백그라운드 작업이 백그라운드 세션에서 계속 실행됩니다. [백그라운드 세션 실행](https://code.claude.com/docs/ko/agent-view.md#from-inside-a-session)을 참조하세요.
+* 백그라운드 작업은 출력이 5GB를 초과하면 자동으로 종료되며, stderr에 이유를 설명하는 메모가 표시됩니다.
+* macOS 및 Linux에서 Claude Code는 운영 체제가 심각한 메모리 압박을 보고하면 실행 중인 백그라운드 작업을 중지합니다. 단, 세션이 최소 30분 동안 유휴 상태이고 턴 또는 서브에이전트가 실행 중이지 않아야 합니다.
+  * [디버그 로그](https://code.claude.com/docs/ko/debug-your-config.md)에 작업이 중지된 이유 또는 압박 이벤트가 작업을 실행 중인 상태로 둔 이유가 표시됩니다.
+  * [`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`](https://code.claude.com/docs/ko/env-vars)을 `1`로 설정하여 메모리 압박으로 인한 중지를 끕니다.
+* 터미널, 데스크톱 앱 또는 VS Code 확장에서 작업하는 로컬 세션의 백그라운드 명령에는 시간 제한이 없습니다. `-p` 실행이나 클라우드 세션처럼 무인으로 실행되는 세션에서는 Claude Code가 백그라운드 명령을 [시간 제한](https://code.claude.com/docs/ko/tools-reference.md#time-limit-for-background-commands)에 도달했을 때 중지합니다.
+* 포그라운드 [서브에이전트](https://code.claude.com/docs/ko/sub-agents.md#run-subagents-in-foreground-or-background)가 시작한 백그라운드 명령어는 해당 서브에이전트의 실행이 끝날 때 종료됩니다. 완료, 실패 또는 중단 여부와 관계없이 종료됩니다. 도구 참조의 [백그라운드 명령어가 중지될 때](https://code.claude.com/docs/ko/tools-reference.md#when-a-background-command-stops)를 참조하세요.
 
-모든 백그라운드 작업 기능을 비활성화하려면 `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` 환경 변수를 `1`로 설정하세요. 자세한 내용은 [환경 변수](/docs/ko/env-vars)를 참조하세요.
+백그라운드 명령을 끄려면 [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ko/env-vars#variables) 환경 변수를 `1`로 설정합니다. 이 변수를 설정하면 `Ctrl+B` 단축키와 [스킬을 백그라운드에서 실행](https://code.claude.com/docs/ko/skills.md#run-skills-in-a-subagent)하는 것과 같은 [기타 백그라운드 기능](https://code.claude.com/docs/ko/env-vars.md#variables)도 사용할 수 없게 됩니다. [bare 모드](https://code.claude.com/docs/ko/headless.md#start-faster-with-bare-mode)로 시작해도 같은 효과가 있습니다.
 
-**일반적인 백그라운드 명령:**
+**일반적인 백그라운드 명령어:**
 
 * 빌드 도구 (webpack, vite, make)
 * 패키지 관리자 (npm, yarn, pnpm)
 * 테스트 러너 (jest, pytest)
 * 개발 서버
-* 장시간 실행 프로세스 (docker, terraform)
+* 오래 걸리는 프로세스 (docker, terraform)
 
-<h3 id="shell-mode-with-prefix">
-  `!` 접두사를 사용한 Shell 모드
-</h3>
+### `!` 접두사를 사용한 셸 모드
 
-입력 앞에 `!`를 붙여 Claude를 거치지 않고 bash 명령을 직접 실행하세요:
+입력 앞에 `!`를 붙여 Claude를 거치지 않고 셸 명령어를 직접 실행합니다.
 
 ```bash theme={null}
 ! npm test
@@ -342,116 +352,509 @@ Claude Code가 명령을 백그라운드에서 실행하면 명령을 비동기�
 ! ls -la
 ```
 
-Shell 모드:
+셸 모드:
 
-* 명령 및 출력을 대화 컨텍스트에 추가합니다
-* 실시간 진행 상황 및 출력을 표시합니다
-* 장시간 실행 명령에 대해 동일한 `Ctrl+B` 백그라운드 실행을 지원합니다
-* Claude가 명령을 해석하거나 승인할 필요가 없습니다
-* 기록 기반 자동 완성을 지원합니다: 부분 명령을 입력하고 `Tab`을 눌러 현재 프로젝트의 이전 `!` 명령에서 완성합니다
-* v2.1.193부터 모든 플랫폼에서 라이브 파일 경로 자동 완성을 지원합니다: `./src/` 또는 `~/`와 같이 슬래시를 포함하는 토큰을 입력하면 일치하는 파일 및 디렉터리의 드롭다운이 표시되고, `Tab`을 눌러 수락합니다. Windows에서도 슬래시를 사용하세요. 드롭다운은 `/`로 트리거되며 `\`로는 아닙니다
-* 빈 프롬프트에서 `Escape`, `Backspace` 또는 `Ctrl+U`로 종료합니다
-* 빈 프롬프트에 `!`로 시작하는 텍스트를 붙여넣으면 입력된 `!` 동작과 일치하여 shell 모드에 자동으로 진입합니다
+* 명령어와 그 출력을 대화 컨텍스트에 추가합니다.
+* 실시간 진행 상황 및 출력을 표시합니다.
+* 오래 걸리는 명령어에 대해 동일한 `Ctrl+B` 백그라운드 실행을 지원합니다.
+* Claude가 명령어를 해석하거나 승인할 필요가 없습니다.
+* 기록 기반 자동 완성을 지원합니다. 부분 명령어를 입력하고 `Tab`을 눌러 현재 프로젝트의 이전 `!` 명령어에서 완성합니다.
+* 라이브 파일 경로 자동 완성을 지원합니다. `./src/` 또는 `~/`와 같이 슬래시를 포함하는 토큰을 입력하면 일치하는 파일 및 디렉터리의 드롭다운이 표시되고, `Tab`을 눌러 수락합니다. Windows에서도 슬래시를 사용합니다. 드롭다운은 `/`로 트리거되며 `\`로는 트리거되지 않습니다.
+* 빈 프롬프트에서 `Escape`, `Backspace` 또는 `Ctrl+U`로 종료합니다.
+* 빈 프롬프트에 `!`로 시작하는 텍스트를 붙여넣으면 입력된 `!` 동작과 일치하여 자동으로 셸 모드에 진입합니다.
 
-v2.1.186부터 Claude는 명령 출력이 대화 기록에 나타나면 자동으로 응답하므로 `! npm test`를 실행하고 실패에 대한 설명을 두 번째 프롬프트 없이 얻을 수 있습니다. 응답 비용은 일반 프롬프트를 보내는 것과 동일합니다. 출력이 응답 없이 컨텍스트에 추가되는 이전 동작을 복원하려면 `settings.json`에서 [`respondToBashCommands`](/docs/ko/settings#available-settings)를 `false`로 설정하세요. v2.1.186 이전에는 shell 모드가 항상 응답 없이 출력을 컨텍스트에 추가했습니다.
+[엄격한 샌드박스 모드](https://code.claude.com/docs/ko/sandboxing.md#turn-off-the-retry-with-strict-sandbox-mode)에 나열된 세션이 아닌 경우, 샌드박싱을 활성화했을 때도 셸 모드에서 입력한 명령은 [샌드박스](https://code.claude.com/docs/ko/sandboxing.md) 외부에서 실행됩니다. 이는 샌드박스가 Claude가 실행하는 명령에 적용되기 때문입니다.
 
-이는 대화 컨텍스트를 유지하면서 빠른 셸 작업에 유용합니다.
+Claude는 명령 출력이 트랜스크립트에 도착하면 자동으로 응답하므로, `! npm test`를 실행하고 두 번째 프롬프트 없이 실패에 대한 설명을 얻을 수 있습니다. 응답 비용은 일반 프롬프트를 보내는 것과 동일합니다. 대신 응답 없이 출력을 컨텍스트에 추가하려면 `settings.json`에서 [`respondToBashCommands`](https://code.claude.com/docs/ko/settings-reference#respondtobashcommands)를 `false`로 설정합니다.
 
-<h2 id="prompt-suggestions">
-  프롬프트 제안
-</h2>
+## Claude가 작업 중일 때 메시지 큐에 추가
 
-세션을 처음 열 때 시작하는 데 도움이 되는 회색으로 표시된 예제 명령이 프롬프트 입력에 나타납니다. Claude Code는 프로젝트의 git 기록에서 이를 선택하므로 최근에 작업한 파일을 반영합니다.
+Claude가 작업 중인 동안 메시지를 입력하고 `Enter`를 누르면 Claude Code가 턴을 중단하지 않고 메시지를 큐에 추가합니다. Claude Code는 큐에 추가된 항목을 대화에 나열하고 전송될 때까지 표시합니다. `!` [셸 명령](#shell-mode-with-prefix)과 대부분의 [명령](https://code.claude.com/docs/ko/commands.md)을 같은 방식으로 큐에 추가할 수 있습니다. 단, `/status`와 같이 Claude Code가 전송 시 즉시 실행하는 명령은 제외됩니다.
 
-Claude가 응답한 후 다중 부분 요청의 후속 단계 또는 워크플로우의 자연스러운 계속과 같은 대화 기록을 기반으로 제안이 계속 나타납니다.
+전송된 메시지와 큐에 추가된 메시지는 Claude가 응답하기 시작할 때까지 회색으로 표시되므로, Claude가 아직 처리하지 않은 메시지를 구분할 수 있습니다.
 
-* `Tab` 또는 `Right arrow`를 눌러 제안을 프롬프트 입력에 배치한 후 `Enter`를 눌러 제출합니다
-* 입력을 시작하여 제안을 해제합니다
+[연결된 IDE](https://code.claude.com/docs/ko/vs-code.md#the-built-in-ide-mcp-server)에서 선택 항목이 첨부된 메시지를 큐에 추가하면, `Enter`를 누를 때 있던 선택 항목이 유지되며, 그 이후에 선택하는 항목과 관계없이 유지됩니다.
 
-제안은 부모 대화의 프롬프트 캐시를 재사용하는 백그라운드 요청으로 실행되므로 추가 비용은 최소입니다. Claude Code는 불필요한 비용을 피하기 위해 캐시가 콜드일 때 제안 생성을 건너뜁니다.
+### Claude Code가 큐에 추가한 항목을 전송하는 시점
 
-제안은 대화의 첫 번째 턴 이후 및 Plan Mode에서 자동으로 건너뜁니다. 인쇄 모드에서는 기본적으로 꺼져 있습니다. [`--prompt-suggestions`](/docs/ko/cli-reference#cli-flags)를 `--output-format stream-json --verbose`와 함께 전달하여 각 턴 이후에 `prompt_suggestion` 메시지를 내보냅니다.
+큐에 추가된 항목이 Claude에게 전달되는 시점은 큐에 추가한 항목의 종류에 따라 다릅니다.
 
-프롬프트 제안을 완전히 비활성화하려면 환경 변수를 설정하거나 `/config`에서 설정을 토글하세요:
+* 메시지: Claude가 도구 호출을 실행 중인 동안 메시지를 큐에 추가하면, Claude Code는 해당 도구 호출이 완료되는 즉시 같은 턴 내에서 Claude에게 메시지를 전달합니다. 턴이 끝났을 때 메시지가 여전히 큐에 있으면, Claude Code는 다른 키 입력 없이 입력한 순서대로 메시지를 전송합니다.
+* 명령 및 셸 명령: Claude Code는 턴이 끝날 때까지 이들을 보관했다가 한 번에 하나씩 실행하며, 큐에 추가한 순서를 유지합니다.
 
-```bash theme={null}
-export CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false
+큐에 추가한 항목을 기다리지 않고 전송하려면 `Ctrl+Enter`를 누르세요. 큐에 추가된 메시지가 즉시 전송되며, 입력한 초안이 있으면 그 뒤에 큐에 추가됩니다. Claude Code v2.1.275 이상이 필요합니다.
+
+큐에 추가된 `!` 셸 명령이 메시지보다 앞에 있으면, 이 키는 턴을 중단합니다. 그 외의 경우에는 키를 누를 때 Claude가 수행 중인 작업에 따라 다릅니다.
+
+* [백그라운드](#background-bash-commands)로 이동할 수 있는 셸 명령, 서브에이전트 또는 기타 작업을 실행 중: 해당 작업이 백그라운드로 이동하고 계속 실행되며, Claude는 같은 턴에서 메시지를 읽습니다.
+* 응답만 작성 중이거나 백그라운드로 이동할 수 없는 작업을 실행 중: Claude Code는 턴을 중단하고 메시지를 다음으로 전송합니다. v2.1.281 이전에는 두 경우 모두에서 키가 턴을 중단했습니다.
+
+[셸 모드](#shell-mode-with-prefix)에서는 이 키가 명령을 큐에 추가하기만 합니다. 확장 키를 보고하지 않는 터미널에서는 `Ctrl+Enter`가 일반 `Enter`로 인식되어 초안을 큐에 추가합니다. `Ctrl+X Ctrl+S`는 모든 터미널에서 작동합니다. 두 키 모두 [`chat:sendNow` 작업](https://code.claude.com/docs/ko/keybindings#chat-actions)의 바인딩입니다.
+
+`Esc`를 눌러 초안을 제출하지 않고 턴을 중단할 수 있습니다. Claude Code는 큐에 추가한 항목을 유지하고 즉시 전송합니다.
+
+Claude Code는 일부 명령을 큐에 추가하지 않고 전송 시 즉시 실행합니다. 그 중에는 `/model`, `/effort`, `/fast`가 있습니다. 이 세 명령은 각각 설정을 변경합니다. 모델, effort 수준, 또는 빠른 모드입니다. Claude Code가 새 설정을 Claude가 이미 작업 중인 턴에 적용할지, 아니면 다음 턴부터만 적용할지는 명령에 따라 다릅니다.
+
+* [`/model`](https://code.claude.com/docs/ko/model-config#setting-your-model): [캐시 경고](https://code.claude.com/docs/ko/prompt-caching.md#switching-models)를 확인하면(Claude Code가 표시하는 경우), Claude Code는 해당 턴에서 다음 요청부터 새 모델을 사용합니다.
+* `/effort`: 다음에 전송하는 메시지가 새 수준으로 실행됩니다. [Claude가 이미 작업 중인 턴에서 새 수준을 시작하려면](https://code.claude.com/docs/ko/model-config.md#when-a-new-effort-level-starts) Claude가 도구 호출을 실행하는 동안 메시지를 큐에 추가하세요.
+* [`/fast`](https://code.claude.com/docs/ko/fast-mode#toggle-fast-mode): Claude Code는 턴이 시작될 때 활성화되어 있던 빠른 모드 설정을 유지하므로, 속도 변경은 다음 턴부터 적용됩니다. 현재 모델이 빠른 모드를 지원하지 않으면, 빠른 모드를 켜면 [모델도 전환](https://code.claude.com/docs/ko/prompt-caching.md#turning-on-fast-mode)되며, Claude Code는 해당 턴에서 다음 요청부터 새 모델을 사용합니다.
+
+### 메시지가 큐에 있는 상태에서 세션을 백그라운드로 전환
+
+[`←`를 눌러](https://code.claude.com/docs/ko/agent-view#switch-sessions-without-leaving-the-terminal) 세션이 백그라운드로 이동하면, 큐에 추가한 메시지도 함께 이동합니다. Claude는 백그라운드에서 전송된 순서대로 메시지를 읽습니다.
+
+명령과 `!` 셸 명령은 이동할 수 없으며, [IDE 선택 항목](https://code.claude.com/docs/ko/vs-code.md#the-built-in-ide-mcp-server)이 첨부된 메시지 등 일부 메시지도 이동할 수 없습니다. 이러한 항목 중 하나가 큐에 있는 동안 `←`를 누르면 세션은 포그라운드에 유지되고 `Cannot open agents`로 시작하는 알림이 표시됩니다. 세션을 백그라운드로 전환하려면 해당 항목을 큐에서 빼낸 다음 `←`를 다시 누르세요.
+
+* **명령 및 `!` 셸 명령**: 턴이 끝날 때 실행될 때까지 기다리거나, [취소](#take-back-what-you-queued)한 후 입력 상자를 비웁니다. 다른 항목이 큐에 있는 동안에는 `!` 셸 명령을 취소할 수 없으므로 실행될 때까지 기다리세요.
+* **이동할 수 없는 메시지**: Claude가 메시지를 읽을 때까지 기다립니다.
+
+### 큐에 추가한 항목 취소
+
+입력 상자의 첫 번째 줄에서 `Up`을 눌러 큐에 추가된 메시지와 명령을 취소할 수 있습니다. Claude Code는 이들을 큐에서 제거하고 입력 상자에 넣습니다. 한 줄에 하나씩, 입력한 텍스트보다 앞에 배치됩니다. 텍스트를 편집하고 `Enter`를 눌러 하나의 항목으로 다시 큐에 추가하거나, 입력 상자를 비워 삭제할 수 있습니다.
+
+Claude Code는 입력 상자가 비어 있고 큐에 추가된 다른 항목이 없을 때만 큐에 추가된 셸 명령을 취소하며, 이때 입력 상자를 셸 모드로 전환합니다. 그 외의 경우에는 이들을 큐에 남겨 두고 `!` 접두사와 함께 나열하며, 턴이 끝난 후 실행합니다.
+
+`←`가 [세션을 백그라운드로 전환하기 위해 대기하는](https://code.claude.com/docs/ko/agent-view.md#switch-sessions-without-leaving-the-terminal) 동안 큐에 추가한 텍스트를 취소하면, 텍스트는 입력 상자에 남고 Claude Code는 전환을 취소합니다. 세션이 이동하는 순간에 취소하면 텍스트는 포그라운드 화면과 함께 사라지며, 전송되지 않습니다. 취소한 각 메시지는 [명령 기록](#command-history)에 개별 항목으로 저장됩니다. 메시지를 복구하려면 세션을 다시 열고 큐에 아무것도 없는 빈 프롬프트에서 `Up`을 누르세요.
+
+## 프롬프트 제안
+
+세션을 처음 열 때, Claude Code는 시작하는 데 도움이 되도록 프롬프트 입력에 회색으로 표시된 예제 명령을 표시합니다. 이는 프로젝트의 git 히스토리에서 선택되므로, 예제는 최근에 작업 중인 파일을 반영합니다.
+
+Claude가 응답한 후, Claude Code는 대화 히스토리를 기반으로 다음 프롬프트를 제안할 수 있습니다. 예를 들어 다중 부분 요청의 후속 단계 또는 워크플로우의 자연스러운 연속입니다.
+
+* `Tab` 또는 `오른쪽 화살표`를 눌러 제안을 프롬프트 입력에 배치한 후 `Enter`를 눌러 제출합니다.
+* 입력을 시작하여 제안을 해제합니다.
+
+Claude Code는 이러한 각 다음 프롬프트 제안을 세션이 사용 중인 동일한 모델에 대한 짧은 백그라운드 요청으로 생성합니다. 이 요청은 플랜의 사용량 한도 또는 API 비용에 포함됩니다. 대화의 프롬프트 캐시를 재사용하므로, 대부분 캐시 읽기와 몇 가지 출력 토큰이므로 추가 비용은 최소한입니다.
+
+### Claude Code가 제안을 건너뛰는 경우
+
+대화형 모드에서 Claude Code는 기본적으로 프롬프트 제안을 끄고 `/config`에서 **프롬프트 제안** 토글을 숨깁니다. 이는 [기능 플래그를 가져오지 않는 세션](https://code.claude.com/docs/ko/env-vars.md#features-that-need-feature-flag-fetching)(예: 타사 제공자 또는 Claude 앱 게이트웨이를 통한 세션)과 [설치 또는 업그레이드 후 첫 번째 세션](https://code.claude.com/docs/ko/env-vars.md#first-session-after-an-install-or-upgrade)(플래그가 아직 도착하지 않은 경우)에서 발생합니다.
+
+Claude Code는 또한 다음을 포함한 여러 상황에서 개별 제안을 건너뜁니다:
+
+* 불필요한 비용을 피하기 위해 프롬프트 캐시가 콜드 상태입니다.
+* 대화의 첫 번째 턴 이후, 일부 세션에서
+* 이전 응답이 오류로 끝났습니다.
+* Plan Mode에 있는 동안
+* 계정이 사용 한도에 가깝거나 도달했습니다. 한도에 도달할 때까지 이 건너뛰기가 적용되지 않도록 하려면 [`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](https://code.claude.com/docs/ko/env-vars)을 `true`로 설정합니다. v2.1.238 이전에는 Claude Code가 변수를 `true`로 설정해도 한도 근처에서 제안을 건너뛰었습니다.
+* [에이전트 팀](https://code.claude.com/docs/ko/agent-teams.md)에서 기본적으로 팀원의 세션에서. 리드의 세션은 제안을 표시합니다.
+
+`Showing fewer prompt suggestions · use one to bring them back` 알림은 연속으로 많은 제안을 사용하지 않고 넘겼기 때문에 Claude Code가 제안을 덜 자주 표시하고 있다는 의미입니다. 평소 빈도로 되돌리려면 제안을 사용하거나 [`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](https://code.claude.com/docs/ko/env-vars)을 `true`로 설정합니다.
+
+인쇄 모드에서 Claude Code는 기본적으로 제안을 생성하지 않습니다. Claude Code가 각 턴 후에 `prompt_suggestion` 메시지를 내보내도록 하려면 `-p "<prompt>" --output-format stream-json --verbose`와 함께 [`--prompt-suggestions`](https://code.claude.com/docs/ko/cli-reference#cli-flags)를 전달합니다. 생성기는 여기서도 매우 짧은 대화와 콜드 프롬프트 캐시를 건너뛰므로, 단일 짧은 `-p` 쿼리는 아무것도 내보내지 않을 수 있습니다.
+
+### 프롬프트 제안 끄기
+
+프롬프트 제안을 완전히 비활성화하려면 다음 중 하나를 사용합니다:
+
+* `/config`에서 **프롬프트 제안**을 끕니다.
+* 설정 파일에서 [`promptSuggestionEnabled`](https://code.claude.com/docs/ko/settings-reference#promptsuggestionenabled)를 `false`로 설정합니다.
+* [`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](https://code.claude.com/docs/ko/env-vars) 환경 변수를 `false`로 설정합니다. 이는 설정보다 우선합니다:
+  ```bash theme={null}
+  export CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false
+  ```
+
+조직 전체에서 프롬프트 제안을 끄려면 [관리되는 설정](https://code.claude.com/docs/ko/managed-settings.md)에서 `promptSuggestionEnabled`를 `false`로 설정합니다. 또한 관리되는 [`env`](https://code.claude.com/docs/ko/settings-reference#env) 키 아래에서 `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`을 `false`로 설정하여 사용자가 자신의 환경 변수로 다시 활성화할 수 없도록 합니다.
+
+## You should know 제안
+
+"You should know"는 알아야 하지만 놓쳤을 수 있는 한 가지를 찾습니다. 예를 들어 Claude가 명시하지 않고 선택한 트레이드오프나 잘못되었을 수 있는 결과 등입니다. 이를 발견하면 프롬프트 입력 위에 짧은 메모를 표시합니다:
+
+```text theme={null}
+✦ Heads up · There was a change to how folder sharing starts in June, which may have bumped usage metrics artificially.
+  1: Learn more   2: Knew this already   0: Dismiss
 ```
 
-<h2 id="side-questions-with-/btw">
-  /btw를 사용한 측면 질문
-</h2>
+이는 Claude Code의 [내장 mod](https://code.claude.com/docs/ko/plugins/mods/overview.md#mods-built-into-claude-code) 중 하나로, Claude Code에 내장되어 있으며 기본적으로 꺼져 있는 플러그인입니다. Claude Code v2.1.287 이상이 필요합니다.
 
-`/btw`를 사용하여 현재 작업에 대한 빠른 질문을 하되 대화 기록에 추가하지 않으세요. 이는 빠른 답변을 원하지만 주 컨텍스트를 복잡하게 하거나 Claude의 장시간 실행 작업을 방해하고 싶지 않을 때 유용합니다.
+켜져 있는 동안에는 Claude가 긴 작업을 진행하는 사이 사이드 에이전트가 때때로 대화를 다시 읽습니다. 사이드 에이전트는 같은 모델에 대한 별도의 요청이며 도구가 없으므로 파일을 읽거나, 명령을 실행하거나, Claude의 동작을 변경할 수 없습니다.
+
+조직에서 이 mod를 사용할 수 있는 경우, claude.ai 계정 또는 Console API 키로 Claude API에 직접 연결하면 `/plugin`에 표시됩니다. [LLM 게이트웨이](https://code.claude.com/docs/ko/llm-gateway) 또는 [Claude apps 게이트웨이](https://code.claude.com/docs/ko/claude-apps-gateway)를 통해 연결하거나 [`apiKeyHelper`](https://code.claude.com/docs/ko/settings-reference#apikeyhelper)에서 키를 가져오는 경우에는 표시되지 않습니다. 직접 연결하더라도 다음 세션에서는 표시되지 않습니다:
+
+* mod가 의존하는 [기능 플래그를 가져오지 않는](https://code.claude.com/docs/ko/env-vars.md#features-that-need-feature-flag-fetching) 세션(예: `DISABLE_TELEMETRY`가 설정된 세션)
+* 플래그가 아직 도착하지 않은 [설치 또는 업그레이드 후 첫 세션](https://code.claude.com/docs/ko/env-vars.md#first-session-after-an-install-or-upgrade)
+
+켜려면 Claude Code 프롬프트에서 다음을 실행합니다:
+
+```text theme={null}
+/plugin enable cc-plugin-you-should-know@builtin
+```
+
+`/plugin`에 mod가 표시되지 않는 경우, 활성화 명령은 `Plugin "cc-plugin-you-should-know@builtin" is not installed in this project`라고 응답합니다.
+
+### 검사 비용
+
+mod가 켜져 있는 동안 검사는 세션에서 사용 중인 것과 같은 모델에 대한 백그라운드 요청이며, 플랜의 사용 한도 또는 API 비용에 포함됩니다. 각 검사는 Claude의 컨텍스트에 이미 있는 내용, 즉 지금까지의 대화와 그 도구 결과를 보내고, 그 뒤에 mod 자체의 지침과 최근 메모의 텍스트를 보냅니다. 대화 부분은 Claude의 다음 요청과 동일한 조건으로 세션의 [프롬프트 캐시](https://code.claude.com/docs/ko/prompt-caching.md)에서 읽힙니다. 수천 토큰 분량의 지침과 사이드 에이전트의 응답은 매 검사마다 전액 청구됩니다.
+
+검사가 실행되는 것을 확인하려면 Claude Code를 시작하기 전에 셸에서 [`CLAUDE_CODE_YOU_SHOULD_KNOW_DEBUG=1`](https://code.claude.com/docs/ko/env-vars)을 설정합니다.
+
+### 메모에 응답하기
+
+빈 프롬프트 입력에 선택지의 숫자만 입력합니다. 메모는 다음 선택지를 제공합니다:
+
+* **Learn more**: 메모 아래에 짧은 설명을 열며, 설명에는 자체 선택지가 있습니다:
+  * **Understood**: 설명을 닫고 해당 주제를 이미 아는 것으로 표시합니다
+  * **Chat in main session**: 메모를 프롬프트 입력에 인용하여 질문을 추가하고 Claude에게 보낼 수 있게 합니다
+  * **Dismiss**: 해당 주제를 이미 아는 것으로 표시하지 않고 설명을 닫습니다
+* **Knew this already**: 메모를 닫고 해당 주제를 이미 아는 것으로 표시합니다.
+* **Dismiss**: 메모를 닫습니다.
+
+**Chat in main session**으로 보내지 않는 한 메인 에이전트는 메모를 보지 않습니다.
+
+Claude Code는 최근 메모와 이미 아는 것으로 표시한 주제를 `~/.claude/plugins/store/` 아래 이름이 `cc-plugin-you-should-know`로 시작하는 파일에 보관합니다. 이 세션과 이후 세션의 각 검사는 이를 반복하지 말아야 할 항목으로 사이드 에이전트에 전달합니다. 세션이 [`cleanupPeriodDays`](https://code.claude.com/docs/ko/settings-reference#cleanupperioddays) 동안 파일을 읽거나 쓰지 않으면 Claude Code가 파일을 삭제합니다. 더 빨리 지우려면 실행 중인 세션이 없을 때 해당 파일을 삭제합니다.
+
+### You should know 끄기
+
+You should know를 끄려면 다음 중 하나를 사용합니다:
+
+* Claude Code 프롬프트에서 `/plugin disable cc-plugin-you-should-know@builtin`을 실행하거나, `/plugin`의 **Installed** 탭에서 끕니다
+* 먼저 **Learn more**를 열지 않고 메모에서 **Dismiss**를 선택한 후, 20초 뒤에 사라지는 `Dismissed.` 줄에서 **Turn off suggestions**를 선택합니다
+
+## 이모지 단축코드
+
+프롬프트 입력에서 `:`를 입력한 후 이모지 단축코드를 입력하여 이모지를 삽입합니다.
+
+* `:heart:`와 같은 완전한 단축코드를 입력하면 Claude Code가 닫는 `:`를 입력하는 즉시 ❤️로 바꿉니다
+* `:hea`와 같이 `:`에 이름의 최소 2자 이상을 입력하여 제안 팝업을 열고, `Tab` 또는 `Enter`를 눌러 강조된 이모지를 삽입합니다
+
+단축코드는 입력의 시작 부분이거나 공백 다음에 와야 하므로, 단어나 URL 내부의 `:`는 제안을 열지 않습니다.
+
+이 기능을 끄려면 `settings.json`에서 [`emojiCompletionEnabled`](https://code.claude.com/docs/ko/settings-reference#emojicompletionenabled)를 `false`로 설정합니다. 이렇게 하면 제안 팝업과 인라인 바꾸기가 모두 비활성화됩니다.
+
+## 입력하면서 맞춤법 확인
+
+Claude Code는 입력하면서 프롬프트 입력 상자의 맞춤법이 틀린 단어에 밑줄을 그을 수 있습니다. 입력 상자의 텍스트만 확인하며, Claude의 답변이나 파일은 확인하지 않습니다. 또한 입력 상자가 [셸 모드](#shell-mode-with-prefix)에 있거나, `Ctrl+R` 기록 검색 중이거나, [음성 받아쓰기](https://code.claude.com/docs/ko/voice-dictation.md) 중일 때는 아무것도 확인하지 않습니다.
+
+맞춤법 확인은 기본적으로 꺼져 있으며, Claude Code는 [화면 읽기 모드](https://code.claude.com/docs/ko/accessibility.md)에서 아무것도 확인하지 않습니다. Claude Code v2.1.235 이상이 필요합니다.
+
+### 필수 조건
+
+* [aspell](https://github.com/GNUAspell/aspell), [hunspell](https://github.com/hunspell/hunspell), 또는 [ispell](https://en.wikipedia.org/wiki/Ispell)을 설치하고 `PATH`에 있는지 확인하세요. Claude Code는 Windows의 패키지 관리자가 설치하는 `.cmd` shim을 포함하여 모든 플랫폼에서 찾은 세 가지 중 첫 번째를 실행합니다.
+* 프로그램이 `PATH`에 있는지 확인하려면 터미널에서 `aspell --version`, `hunspell --version`, 또는 `ispell -v`를 실행하세요. "command not found" 오류는 아직 `PATH`에 없다는 의미입니다.
+
+### 맞춤법 확인 켜기 또는 끄기
+
+Claude Code는 [`spellcheck`](https://code.claude.com/docs/ko/settings-reference#spellcheck) 설정을 세 곳에서 읽으며, 프로젝트의 `.claude/settings.json` 및 `.claude/settings.local.json`에서는 무시합니다. 사용하는 곳에서 켜세요:
+
+> [tab] 사용자 설정
+>
+> `~/.claude/settings.json`에 `spellcheck`를 추가하세요. 나머지 [사용자 설정](https://code.claude.com/docs/ko/settings.md#where-settings-live)처럼 열어본 모든 프로젝트에 적용됩니다:
+>
+> ```json theme={null}
+> {
+>   "spellcheck": { "enabled": true }
+> }
+> ```
+
+> [tab] 명령줄
+>
+> `spellcheck.json`과 같은 JSON 파일에 `spellcheck`를 저장하세요:
+>
+> ```json theme={null}
+> {
+>   "spellcheck": { "enabled": true }
+> }
+> ```
+>
+> 그런 다음 파일을 `--settings`에 전달하세요. 해당 세션에만 적용됩니다:
+>
+> ```bash theme={null}
+> claude --settings spellcheck.json
+> ```
+
+> [tab] 관리되는 설정
+>
+> 조직의 [관리되는 설정 소스](https://code.claude.com/docs/ko/permissions.md#managed-settings) 중 하나에 `spellcheck`를 추가하세요. 해당 설정을 받는 모든 사용자에게 적용되며, 사용자는 이를 끌 수 없습니다:
+>
+> ```json theme={null}
+> {
+>   "spellcheck": { "enabled": true }
+> }
+> ```
+
+맞춤법 확인이 켜져 있는지 확인하려면 맞춤법이 틀린 단어와 공백을 입력하세요. Claude Code가 단어에 밑줄을 그을 것입니다. 그렇지 않으면 [Claude Code가 아무것도 밑줄을 긋지 않을 때](#when-claude-code-underlines-nothing)를 참조하세요. 맞춤법 확인을 다시 끄려면 같은 곳에서 `enabled`를 `false`로 설정하거나 `spellcheck`를 제거하세요.
+
+Claude Code가 실행하는 세 가지 프로그램 중 어느 것을 선택할지, 어떤 사전을 사용할지, 또는 밑줄 색상을 선택하려면 같은 곳에서 `enabled` 옆에 다음 필드 중 하나를 추가하세요:
+
+* `checker`: `aspell`, `hunspell`, 또는 `ispell`. Claude Code는 이름을 지정한 checker에서 폴백하지 않으며, 다른 값은 `auto`로 취급합니다.
+* `language`: `en_GB`와 같은 checker 형식의 사전 이름입니다. Claude Code는 경로나 공백이 있는 이름과 같이 일반 사전 이름이 아닌 값을 무시하며, checker는 기본 사전을 사용합니다.
+* `color`: `yellow`와 같은 색상 이름, 또는 `#rrggbb`, `#rgb`, `rgb(r,g,b)`, `ansi256(n)`, 또는 `ansi:<name>` 값입니다. Claude Code는 기본적으로 테마의 오류 색상을 사용하며, 인식하지 못하는 값에 대해서도 마찬가지입니다.
+
+예를 들어, 이 `spellcheck` 설정은 hunspell을 `en_GB` 사전과 함께 실행하고 단어에 노란색으로 밑줄을 그습니다. `~/.claude/settings.json`, `--settings`에 전달하는 파일, 그리고 관리되는 설정에서 동일하게 작동합니다:
+
+```json theme={null}
+{
+  "spellcheck": {
+    "enabled": true,
+    "checker": "hunspell",
+    "language": "en_GB",
+    "color": "yellow"
+  }
+}
+```
+
+세 곳 중 두 곳 이상에 `spellcheck` 설정이 있으면 Claude Code는 그 중 하나만 사용합니다: 먼저 관리되는 설정, 그 다음 `--settings`, 그 다음 사용자 설정입니다. 두 곳의 필드를 결합하지 않습니다. 예를 들어, `--settings`가 `spellcheck`를 설정할 때, 사용자 설정의 `language`는 효과가 없습니다.
+
+### Claude Code가 밑줄을 긋는 것
+
+입력을 일시 중지한 후 얼마 지나지 않아 Claude Code는 사전이 모르는 단어에 밑줄을 그을 것입니다. 아직 입력 중인 단어는 그 단어를 지나갈 때까지 그대로 두며, 텍스트를 절대 변경하지 않습니다. 또한 코드처럼 보이는 텍스트를 건너뜁니다:
+
+* `/help`, `@` 언급, URL, 파일 경로, `--verbose`와 같은 플래그 등의 명령어
+* 숫자, 밑줄, 또는 첫 번째 이후의 대문자가 있는 단어, 그리고 백틱 안의 텍스트
+
+Claude Code는 또한 중국어, 일본어, 한국어, 태국어, 라오어, 크메르어, 미얀마어 텍스트를 건너뜁니다.
+
+Claude Code는 자체 단어 목록이 없습니다: checker가 맞춤법이 틀렸다고 말하면 단어는 맞춤법이 틀린 것입니다. Claude Code가 단어에 밑줄을 긋지 않도록 하려면 checker의 설명서에 따라 checker의 개인 사전에 단어를 추가하세요. Claude Code는 다시 시작한 후 새 단어를 선택합니다.
+
+### Claude Code가 아무것도 밑줄을 긋지 않을 때
+
+Claude Code는 checker를 계속 실행할 수 없을 때 아무것도 밑줄을 긋지 않습니다:
+
+* checker가 설치되지 않았거나, `checker`에서 이름을 지정한 것이 없습니다
+* checker가 시작 시 또는 세션 중에 연속으로 두 번 실패합니다. Claude Code는 첫 번째 실패 후 다시 시작하고 두 번째 실패 후 Claude Code를 다시 시작할 때까지 확인을 중지합니다
+* checker가 답변하는 데 15초 이상 걸립니다(3회). 매번 Claude Code는 기다리던 단어를 표시하지 않은 상태로 두고, 세 번째 후에는 Claude Code를 다시 시작할 때까지 확인을 중지합니다
+
+이 중 어느 것이 발생했는지 알아보려면 맞춤법 확인을 켜고 `claude --debug`를 시작한 다음 단어를 입력하세요. 그런 다음 `~/.claude/debug/<session-id>.txt`의 디버그 로그에서 `[spellcheck]` 줄을 찾으세요. 한 줄은 Claude Code가 시작한 프로그램의 이름을 표시하거나, 찾아보았지만 발견하지 못한 것들을 나열합니다. 나중 줄은 중지된 이유를 설명합니다. 거기의 missing-dictionary 오류는 checker가 `language` 값에 대한 사전이 없거나, `language`가 설정되지 않았을 때 기본값이 없다는 의미입니다. 하나를 설치하거나, `language`를 가지고 있는 사전으로 설정하세요.
+
+## 프롬프트의 보이지 않는 문자
+
+붙여넣은 텍스트는 터미널이 아무것도 그리지 않는 태그 문자, 양방향 제어, 영폭 공백 등의 유니코드 문자를 포함할 수 있으므로, 프롬프트에는 사용자가 절대 볼 수 없는 텍스트가 포함될 수 있습니다. 복사한 텍스트가 터미널이 그리지 않는 지시를 포함하지 않도록 하기 위해 Claude Code는 Enter를 누를 때 이러한 문자를 제거한 후 전송합니다. 프롬프트와 프롬프트에 포함된 모든 축소된 [붙여넣은 텍스트 참조](https://code.claude.com/docs/ko/terminal-config.md#paste-large-content)의 내용을 정리합니다. Claude Code는 페르시아어 및 인도 문자가 작성하는 결합자와 이모지 시퀀스 내의 선택자를 유지합니다.
+
+Claude Code가 무언가를 제거한 경우, 해당 Enter는 아무것도 전송하지 않습니다. 정리된 프롬프트는 `Removed 3 invisible characters · review and press Enter to send`과 같은 알림과 함께 입력 상자로 돌아가며, 다시 Enter를 누르면 표시된 대로 텍스트를 전송합니다.
+
+`claude "fix the login bug"`와 같이 명령줄에서 프롬프트를 전달할 때, Claude Code는 두 번째 Enter를 기다리지 않습니다. 문자를 제거하고 알림을 표시한 후 정리된 프롬프트를 전송합니다. 정리된 프롬프트가 `/`로 시작하는 경우, Claude Code는 대신 사용자가 검토하고 전송할 수 있도록 입력 상자에 배치합니다.
+
+## /diff로 변경 사항 검토하기
+
+`/diff`를 실행하여 Claude Code를 떠나지 않고 작업 트리의 변경 사항을 검토합니다. Claude가 지금까지 수행한 편집 내용과 아직 커밋하지 않은 다른 모든 내용을 함께 볼 수 있습니다. `/diff`가 여는 항목은 활성화된 렌더러에 따라 다릅니다.
+
+* **[전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md)**: [diff 패널](#diff-panel)이 대화 옆에 열립니다. 계속 작업하는 동안 열린 상태로 유지되고 업데이트됩니다.
+* **클래식 렌더러**: [diff 대화 상자](#diff-dialog)가 프롬프트 위에 열리며, 읽기를 마치면 닫을 수 있습니다.
+
+패널과 대화 상자는 모두 [Claude Code에 내장된 mod](https://code.claude.com/docs/ko/plugins/mods/overview.md#mods-built-into-claude-code) 중 하나인 `cc-plugin-diff`에서 제공됩니다. `/plugin`에서 이 mod를 비활성화하면 `/diff`는 Claude Code의 이전 패널과 [diff 뷰어](https://code.claude.com/docs/ko/keybindings.md#diff-actions)를 대신 엽니다.
+
+`/diff`가 git에서 읽는 변경 사항에서 서브모듈은 단일 항목으로 나타나며, 가리키는 커밋이 변경될 때만 표시됩니다. 서브모듈 내부의 파일 편집은 여기에 나타나지 않습니다. Claude가 파일을 편집하면 패널과 대화 상자에서 각 턴의 편집 내용 뷰도 제공합니다. 이러한 턴 뷰는 git이 아닌 Claude의 파일 편집에서 구성되므로, Claude가 셸 명령을 통해 수행한 변경 사항은 작업 트리 뷰인 `Current` 아래에만 나타납니다.
+
+### Diff 패널
+
+diff 패널은 변경된 파일을 추가 및 제거된 줄 수와 함께 나열하고, 목록 아래에 각 파일의 diff를 표시합니다. Claude Code는 Claude가 파일을 편집하거나 셸 명령을 실행할 때마다 이를 새로 고칩니다. 패널을 닫으려면 `/diff`를 다시 실행하거나 헤더의 `✕`를 클릭합니다.
+
+패널을 사용하려면 다음이 필요합니다.
+
+* [전체 화면 렌더링](https://code.claude.com/docs/ko/fullscreen.md)
+* Git 저장소
+* 최소 110개 열의 너비를 가진 터미널
+* Claude Code v2.1.287 이상
+
+터미널이 최소 144개 열의 너비를 가지면 Claude가 파일 편집을 시작할 때 패널이 자동으로 열립니다. `/diff`로 직접 연 후에는, 이후 세션에서 패널을 표시할 수 있을 만큼 넓은 터미널이라면 Claude가 파일을 편집하는 즉시 패널이 열립니다. 패널을 닫으면 이 세션과 이후 세션에서 `/diff`를 다시 실행할 때까지 닫힌 상태로 유지됩니다.
+
+패널이 열려 있는 동안 다음을 수행할 수 있습니다.
+
+* **파일로 이동**: 목록의 해당 행을 클릭합니다. 마우스 휠로 패널을 스크롤합니다. 파일 목록 자체가 너무 길어서 맞지 않으면 `Alt+Up` 및 `Alt+Down`, 또는 `Ctrl+Up` 및 `Ctrl+Down`으로 스크롤합니다.
+* **파일의 변경 사항에 대해 Claude에게 질문**: diff 위의 파일 이름 오른쪽에 있는 `ask`를 클릭합니다. Claude Code는 해당 파일의 diff를 다음 프롬프트에 첨부하며, 해당 프롬프트를 전송할 때까지 버튼에 `asked ✓`가 표시됩니다. 두 번째 파일에서 질문하면 첫 번째 파일을 대체합니다.
+* **한 턴의 편집 내용 표시**: 패널 헤더의 `source` 선택기를 클릭한 다음 `Up` 및 `Down`으로 턴을 선택하고 `Enter`를 누릅니다. 턴에는 `T1`, `T2` 등의 레이블이 지정됩니다. 선택기는 Claude가 파일을 편집하면 나타나며, `Current`를 선택하면 작업 트리로 돌아갑니다.
+* **패널이 제외한 파일 표시**: 목록은 테스트 파일과 생성된 파일을 건너뛰고, 이 세션 이전의 변경 사항을 맨 아래의 한 줄로 축소합니다. 두 개의 개수 줄 중 하나를 클릭하여 확장합니다.
+* **패널이 비교하는 대상 변경**: `Ctrl+X B`를 눌러 이 세션의 변경 사항에서 커밋되지 않은 변경 사항을 한 목록으로, 브랜치가 기본 브랜치에서 분리된 이후의 모든 항목으로 순환합니다. Claude Code는 각 저장소에 대한 선택을 기억합니다.
+
+파일 목록을 스크롤하거나 비교 대상을 변경하는 키를 다시 바인딩하려면 [Diff 패널 작업](https://code.claude.com/docs/ko/keybindings.md#diff-panel-actions)을 참조하세요.
+
+완료되지 않은 병합, 리베이스, 체리픽 또는 되돌리기 작업 중에는 패널이 git에서 마지막으로 읽은 변경 사항을 계속 표시하므로, 해당 작업으로 들어오는 변경 사항으로 채워지지 않습니다. 작업이 끝난 후 첫 번째 새로 고침 시점, 예를 들어 Claude가 다음에 파일을 편집할 때 패널이 업데이트됩니다.
+
+### Diff 대화 상자
+
+diff 대화 상자는 프롬프트 위에 테두리가 있는 블록으로 열리며, 변경된 파일을 추가 및 제거된 줄 수와 함께 나열합니다. 파일을 `HEAD`와 비교하거나, 이 저장소에 대해 마지막으로 [diff 패널에서 선택한](#diff-panel) 대상과 비교합니다.
+
+Claude가 파일을 편집하면 목록 위에 `source` 선택기가 나타납니다. 선택기는 Claude가 파일을 편집하게 만든 각 프롬프트마다 `T1`, `T2` 등의 레이블이 지정된 턴 뷰를 하나씩 제공합니다. 턴 뷰는 해당 턴의 편집 내용만 표시하며, `Current`를 선택하면 작업 트리로 돌아갑니다.
+
+대화 상자에서 다음 키를 사용합니다.
+
+* **위 및 아래**: 파일을 선택합니다.
+* **Enter**: 선택한 파일의 diff를 엽니다. 위 및 아래, 또는 PageUp 및 PageDown으로 스크롤합니다.
+* **Esc**: 파일의 diff에서 목록으로 돌아가거나, 목록에서 대화 상자를 닫습니다.
+* **Tab**: `source` 선택기로 이동한 다음 위 및 아래로 `Current` 또는 턴 뷰를 선택하고 Enter를 누릅니다. 파일의 diff에서는 Tab을 누르면 `ask` 버튼으로 이동합니다. Enter를 눌러 해당 파일의 diff를 다음 프롬프트에 첨부합니다.
+
+## /btw로 곁질문하기
+
+`/btw`를 사용하여 현재 작업에 대한 질문을 하되, 대화 기록에 추가하지 않습니다.
 
 ```
 /btw what was the name of that config file again?
 ```
 
-측면 질문은 현재 대화에 완전히 표시되므로 Claude가 이미 읽은 코드, 이전에 내린 결정 또는 세션의 다른 모든 것에 대해 질문할 수 있습니다. 질문과 답변은 임시적입니다: 해제 가능한 오버레이에 나타나며 대화 기록에 절대 입력되지 않습니다.
+Claude는 이미 대화에 있는 내용에서 곁질문에 답변합니다: 사용자의 메시지, Claude의 답변, 그리고 수집한 도구 결과입니다. Claude가 이미 읽은 코드, 이전에 내린 결정, 또는 세션의 다른 모든 내용에 대해 질문할 수 있습니다. 나중의 곁질문은 이전의 곁질문도 봅니다: Claude Code는 각 질문마다 최신 20개의 교환을 재생하며, 이를 지울 때까지 유지됩니다. 질문과 답변은 대화 기록에 들어가지 않습니다. 터미널에서는 해제 가능한 오버레이에 나타납니다. 터미널은 스레드를 메모리에 유지합니다: `x`를 눌러 이전 교환을 지우면, Claude Code를 종료할 때 사라집니다.
 
-* **Claude가 작업하는 동안 사용 가능**: Claude가 응답을 처리하는 동안에도 `/btw`를 실행할 수 있습니다. 측면 질문은 독립적으로 실행되며 주 턴을 중단하지 않습니다.
-* **도구 액세스 없음**: 측면 질문은 이미 컨텍스트에 있는 것에서만 답변합니다. Claude는 측면 질문에 답할 때 파일을 읽거나, 명령을 실행하거나, 검색할 수 없습니다.
-* **단일 응답**: 오버레이에는 후속 턴이 없습니다. 스레드를 계속하려면 `f`를 사용하여 자신의 세션으로 포크하세요.
-* **낮은 비용**: 측면 질문은 부모 대화의 프롬프트 캐시를 재사용하므로 추가 비용은 최소입니다.
+[VS Code 확장 프로그램](https://code.claude.com/docs/ko/vs-code.md#use-the-prompt-box)의 채팅 패널에서 `/btw`는 이 섹션에서 설명하는 오버레이가 아닌 패널을 엽니다. 패널에서 바로 후속 질문을 할 수 있습니다. 패널의 스레드는 창 다시 로드 시에도 유지되며, 해당 페이지에서 설명하는 보존 일정을 따릅니다. 확장 프로그램 v2.1.227 이상이 필요합니다. 이전 확장 프로그램 버전은 `/btw`를 제공하지 않습니다.
 
-답변이 나타나면 오버레이는 이 키들을 허용합니다. 같은 세션의 이전 측면 질문들은 현재 답변 위에 흐릿한 목록으로 나타나며, 대화 기록에는 들어가지 않지만 오버레이에서 지울 때까지 표시된 상태로 유지됩니다.
+* **Claude가 작업 중일 때 사용 가능**: Claude가 응답을 처리하는 동안에도 `/btw`를 실행할 수 있습니다. 곁질문은 독립적으로 실행되며 주요 턴을 방해하지 않습니다. 지금까지의 대화의 모든 내용을 봅니다. 단, Claude가 아직 작성 중인 답변은 제외됩니다.
+* **도구 접근 불가**: 곁질문은 이미 컨텍스트에 있는 내용에서만 답변합니다. Claude는 곁질문에 답변할 때 파일을 읽거나, 명령을 실행하거나, 검색할 수 없습니다. Claude가 도구 호출을 텍스트로 작성하더라도 답변은 아무것도 실행되지 않았다는 메모로 끝납니다.
+* **단일 응답**: 오버레이에는 후속 턴이 없습니다. 스레드를 계속하려면 다른 `/btw` 질문을 하세요. 로컬 세션에서 전체 도구 접근으로 계속하려면 `f`를 눌러 이 질문과 답변을 [백그라운드 서브에이전트](https://code.claude.com/docs/ko/sub-agents.md#fork-the-current-conversation)로 포크하세요.
+* **낮은 비용**: 대화의 [프롬프트 캐시](https://code.claude.com/docs/ko/prompt-caching.md)가 워밍된 상태에서 곁질문은 답변 자체 외에는 거의 비용이 들지 않습니다.
 
-| 키                          | 작업                                                                                                                                       |
-| :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
-| `Space`, `Enter`, `Escape` | 답변을 해제하고 프롬프트로 돌아가기                                                                                                                      |
-| `Up` / `Down`              | 답변 스크롤                                                                                                                                   |
-| `Left` / `Right`           | 이 답변과 세션의 이전 `/btw` 답변 사이를 이동합니다. `Left`는 이전 답변으로 이동하고 `Right`는 현재 답변으로 돌아갑니다. Claude Code v2.1.187 이상 필요                                |
-| `c`                        | 답변을 클립보드에 원본 Markdown으로 복사합니다. 하드 래핑된 터미널 렌더링이 아닌 소스 텍스트를 캡처하는 마우스 선택 대신 이를 사용하세요                                                        |
-| `f`                        | 새 세션으로 포크합니다. 포크는 부모 대화에 이 질문과 답변을 실제 트랜스크립트 턴으로 상속하므로 전체 도구 액세스로 계속할 수 있습니다. 원본 세션은 [`/resume`](/docs/ko/commands) 아래에 보존됩니다. 로컬 세션에서만 사용 가능 |
-| `x`                        | 현재 답변 위에 표시된 이전 `/btw` 교환 목록 지우기                                                                                                         |
+가장 최신의 이전 곁질문 5개가 현재 답변 위에 흐릿한 목록으로 나타나며, 더 오래된 것의 개수가 표시됩니다. 이들은 대화 기록에서 벗어납니다.
 
-`/btw`는 [subagent](/docs/ko/sub-agents)의 역입니다: 전체 대화를 보지만 도구가 없는 반면, subagent는 전체 도구를 가지지만 빈 컨텍스트로 시작합니다. `/btw`를 사용하여 Claude가 이 세션에서 이미 알고 있는 것에 대해 질문하세요; subagent를 사용하여 새로운 것을 찾아내세요.
+오버레이를 해제한 후 돌아가려면 질문 없이 `/btw`를 실행하세요. 오버레이는 가장 최근의 교환에서 다시 열립니다.
 
-<h2 id="task-list">
-  작업 목록
-</h2>
+답변이 나타나면 오버레이는 다음 키를 허용합니다.
 
-작업 목록은 Claude의 할 일 체크리스트입니다: Claude가 다단계 작업을 계획하기 위해 생성한 항목으로, 보류 중, 진행 중 또는 완료된 항목을 나타내는 표시기가 있습니다. 이는 백그라운드 작업 보기와는 별개입니다. 실행 중인 셸과 서브에이전트를 보려면 [`/tasks`](/docs/ko/commands) 대신 사용하세요.
+| 키 | 작업 |
+| :- | :- |
+| `Space`, `Enter`, `Escape` | 답변을 해제하고 프롬프트로 돌아가기 |
+| `Up` / `Down` | 답변 스크롤 |
+| `Shift+Left` / `Shift+Right` | 이 답변과 이전의 `/btw` 답변 사이를 이동합니다. `Shift+Left`는 더 오래된 답변으로 이동하고 `Shift+Right`는 현재 답변으로 돌아갑니다. `[` 및 `]`도 동일하게 작동하며, 화살표 키로 `Shift`를 보고하지 않는 터미널용입니다. `Tab` / `Shift+Tab`은 동일한 답변들을 순환합니다. Claude Code v2.1.257 이상이 필요합니다. v2.1.187과 v2.1.256 사이에는 키가 일반 `Left` / `Right`였습니다. |
+| `c` | 답변을 원본 Markdown으로 클립보드에 복사합니다. 마우스 선택 대신 이를 사용하세요. 마우스 선택은 소스 텍스트가 아닌 하드 래핑된 터미널 렌더링을 캡처합니다. |
+| `f` | 부모 대화와 이 질문 및 답변을 상속하는 [포크된 서브에이전트](https://code.claude.com/docs/ko/sub-agents.md#fork-the-current-conversation)를 시작하여 전체 도구 접근으로 계속할 수 있습니다. 현재 세션에 머물러 있으며 프롬프트 아래의 [패널](https://code.claude.com/docs/ko/sub-agents.md#observe-and-steer-running-forks)에서 포크를 찾습니다. 로컬 세션에서만 사용 가능합니다. |
+| `x` | 현재 답변 위에 표시된 이전 `/btw` 교환 목록을 지웁니다. |
 
-* `Ctrl+T`를 눌러 작업 목록 보기를 토글하세요. 디스플레이는 한 번에 최대 5개의 작업을 표시합니다. Claude가 아직 체크리스트 항목을 생성하지 않았을 때는 표시할 것이 없기 때문에 토글이 눈에 띄는 효과가 없습니다
-* 모든 작업을 보거나 지우려면 Claude에 직접 요청하세요: "show me all tasks" 또는 "clear all tasks"
-* 작업은 컨텍스트 압축 전체에서 지속되어 Claude가 더 큰 프로젝트에서 조직화된 상태를 유지하도록 도와줍니다
-* 세션 간에 작업 목록을 공유하려면 `CLAUDE_CODE_TASK_LIST_ID`를 `~/.claude/tasks/`의 명명된 디렉토리로 사용하도록 설정하세요: `CLAUDE_CODE_TASK_LIST_ID=my-project claude`
+연결된 [백그라운드 세션](https://code.claude.com/docs/ko/agent-view.md#attach-to-a-session)에서 `Left`는 분리하고 에이전트 뷰로 돌아갑니다. 답변이 아직 도착 중이어도 분리됩니다. 곁질문은 떠나 있는 동안 계속 실행됩니다. 다음에 세션에 연결하면 오버레이는 곁질문 또는 그 답변으로 다시 열립니다. v2.1.257 이전에는 `Left`가 거기서 분리되지 않았습니다.
 
-<h2 id="session-recap">
-  세션 요약
-</h2>
+`/btw`는 전체 대화를 보지만 도구가 없습니다. [서브에이전트](https://code.claude.com/docs/ko/sub-agents.md)는 도구를 가지고 있으며 받은 프롬프트에서 시작하거나, [포크](https://code.claude.com/docs/ko/sub-agents.md#fork-the-current-conversation)의 경우 이 대화의 복사본에서 시작합니다. `/btw`를 사용하여 Claude가 이 세션에서 이미 알고 있는 것에 대해 질문하세요. 서브에이전트를 사용하여 새로운 것을 찾아내세요.
 
-터미널에서 떠난 후 돌아오면 Claude Code는 지금까지 세션에서 일어난 일에 대한 한 줄 요약을 표시합니다. 요약은 마지막 완료된 턴 이후 최소 3분이 경과하고 터미널이 포커스를 잃으면 백그라운드에서 생성되므로 다시 전환할 때 준비됩니다. 요약은 세션에 최소 3개의 턴이 있을 때만 나타나며 연속으로 두 번 나타나지 않습니다.
+## 작업 목록
 
-`/recap`을 실행하여 요약을 요청 시 생성합니다. 자동 요약을 끄려면 `/config`를 열고 **세션 요약**을 비활성화하세요.
+작업 목록은 Claude의 할 일 체크리스트입니다. Claude가 다단계 작업을 계획하기 위해 생성한 항목이며, 보류 중, 진행 중 또는 완료된 항목을 나타내는 표시기가 있습니다. 백그라운드 작업 보기와는 별개입니다. 실행 중인 셸과 서브에이전트를 보려면 대신 [`/tasks`](https://code.claude.com/docs/ko/commands)를 사용하십시오.
 
-세션 요약은 모든 요금제 및 제공자에 대해 기본적으로 켜져 있습니다. 요약은 항상 비대화형 모드에서 건너뜁니다.
+이 목록은 Claude Code가 기본적으로 제공하는 작업 추적 도구가 있는 세션에만 채워집니다([Opus 4.7, Sonnet 4.6, Haiku 4.5 및 이전 모델](https://code.claude.com/docs/ko/tools-reference.md#task-tool-availability)). 다른 모든 모델(Claude Code가 인식하지 못하는 모델 ID 포함)에서는 `CLAUDE_CODE_ENABLE_TODO_TOOLS=1`을 사용하여 옵트인하거나 [작업 도구 가용성](https://code.claude.com/docs/ko/tools-reference.md#task-tool-availability)의 다른 방법 중 하나를 사용하지 않는 한 목록이 비어 있습니다. 세션에 도구가 있으면 작업 목록은 다음과 같이 작동합니다.
 
-<h2 id="pr-review-status">
-  PR 검토 상태
-</h2>
+* `Ctrl+T`를 눌러 작업 목록 보기를 전환합니다. 디스플레이는 한 번에 최대 5개의 작업을 표시합니다. Claude가 아직 체크리스트 항목을 생성하지 않았으면 표시할 항목이 없으므로 전환이 눈에 띄는 효과가 없습니다.
+* 목록을 확장된 상태로 두면 Claude Code는 `--resume` 또는 `--continue`와 같이 여전히 작업이 있는 세션으로 다시 시작할 때 확장된 보기를 복원합니다. 작업 목록이 비어 있으면 Claude Code는 축소된 상태로 시작합니다.
+* 모든 작업을 보거나 지우려면 Claude에 직접 요청하십시오. "모든 작업 표시" 또는 "모든 작업 지우기"
+* 작업은 컨텍스트 압축 전체에서 유지되어 Claude가 더 큰 프로젝트에서 조직화된 상태를 유지하도록 도와줍니다.
+* 세션 간에 작업 목록을 공유하려면 `CLAUDE_CODE_TASK_LIST_ID`를 `~/.claude/tasks/`의 명명된 디렉터리를 사용하도록 설정합니다. `CLAUDE_CODE_TASK_LIST_ID=my-project claude`
 
-열린 풀 요청이 있는 브랜치에서 작업할 때 Claude Code는 바닥글에 클릭 가능한 PR 링크를 표시합니다 (예: "PR #446"). 링크에는 검토 상태를 나타내는 색상 있는 밑줄이 있습니다:
+## 세션 요약
+
+터미널에서 잠시 자리를 비웠다가 돌아오면, Claude Code는 지금까지 세션에서 일어난 일에 대한 한 줄짜리 요약을 표시합니다. 요약은 마지막으로 완료된 턴 이후 최소 3분이 경과하고 터미널이 포커스를 잃으면 백그라운드에서 생성되므로, 다시 전환할 때 준비가 되어 있습니다. 요약은 세션에 최소 3개의 턴이 있을 때만 나타나며, 연속으로 두 번 나타나지 않습니다.
+
+`/recap`을 실행하여 요청 시 요약을 생성합니다. 이 명령은 사용자가 직접 요청할 때만 실행됩니다. Slack, Teams 또는 프로젝트 스레드에서 전달된 메시지를 통해 들어온 경우에는 요약 대신 [알림](https://code.claude.com/docs/ko/errors.md#recap-only-runs-when-you-ask-for-it-yourself)이 표시됩니다. 클라우드 예약 작업이 보낸 프롬프트를 통해 `/recap`이 들어온 경우에도 알림이 표시됩니다.
+
+세션 요약은 모든 플랜과 제공자에 대해 기본적으로 활성화되어 있습니다. 자동 요약을 끄려면 `/config`를 열고 **세션 요약**을 끕니다. 자동 요약은 비대화형 모드에서는 절대 나타나지 않습니다. Claude Code는 자동 요약과 `/recap` 출력을 모두 400자로 제한합니다.
+
+## 사용량 제한이 재설정될 때까지 대기
+
+claude.ai [사용량 제한](https://code.claude.com/docs/ko/errors.md#youve-hit-your-session-limit)이 Claude를 작업 중간에 중단시킬 때, Claude Code는 열린 세션에서 대기하고 제한이 재설정된 후 자동으로 작업을 계속합니다. 자동 계속은 claude.ai 구독으로 로그인한 대화형 세션에서 기본적으로 켜져 있습니다. Claude Code v2.1.234 이상이 필요합니다.
+
+Claude Code가 대기하는 동안 세션 하단의 줄에 한도가 재설정되는 시각과 Claude가 작업을 계속할 시각이 표시됩니다:
+
+```text theme={null}
+Usage limit reached · limit resets 3:45pm
+Continuing automatically at 3:45pm · Esc to cancel
+```
+
+두 줄 모두 이 문구 뒤에 내용이 더 붙을 수 있습니다. 예를 들어 첫 번째 줄에는 도움말 링크가, 두 번째 줄에는 `/usage-credits to continue now`가 붙을 수 있습니다. 대기가 자동으로 시작되면 대화에도 `Usage limit reached · continuing automatically at 3:45pm · esc to cancel`이라는 줄이 기록됩니다.
+
+세션을 열린 상태로 유지하십시오. 다음에 일어나는 일은 대기가 어떻게 끝나는지에 따라 달라집니다:
+
+* **재설정 시**: 두 번째 줄이 `Continuing shortly · Esc to cancel`로 바뀝니다. 그런 다음 대화에 `Usage limit reset · Continuing automatically`가 표시되고, Claude Code는 Claude에게 중단된 지점부터 작업을 이어 가도록 요청합니다. 마지막 메시지를 다시 보내지는 않습니다.
+* **컴퓨터가 절전 모드로 전환된 후**: 약 30분 이상 절전 모드였고 절전 중에 한도가 재설정된 경우, 첫 번째 줄에 `Your usage limit has reset`, 두 번째 줄에 `Press enter to continue`가 표시됩니다. `Enter`를 눌러 계속하십시오. 절전 시간이 더 짧았거나 재설정 전에 절전이 끝난 경우에는 Claude Code가 자동으로 계속합니다.
+* **조기**: `/usage-credits`로 [사용량 크레딧](https://code.claude.com/docs/ko/costs.md#add-usage-credits-to-your-subscription)을 추가하거나, `/upgrade` 후 다시 로그인하거나, 대기 중에 `/model`로 모델을 전환할 때, Claude Code는 사용량을 다시 사용할 수 있는지 확인하고 가능하면 즉시 계속합니다. 브라우저에서 직접 수행하는 업그레이드 또는 구매 후에는 확인하지 않습니다. [`opusplan`](https://code.claude.com/docs/ko/model-config#opusplan-model-setting) 및 다른 모델에서 플랜 모드를 다른 모델에서 실행하는 기타 모델 설정에서는 Claude Code가 재설정을 대기합니다.
+
+계속된 작업은 다른 턴처럼 실행됩니다. Claude Code는 여전히 평소대로 [권한](https://code.claude.com/docs/ko/permissions.md)을 요청하므로 작업이 당신이 없는 동안 프롬프트에서 중단될 수 있습니다. 다시 제한에 도달하면, Claude Code는 최대 2번 연속으로 대기를 다시 활성화한 다음 중단하고 `Automatic continue stopped after repeated usage-limit hits · /rate-limit-options to try again`을 표시합니다.
+
+### 대기 취소
+
+줄이 표시되는 동안 빈 프롬프트에서 `Esc`를 누르거나 `Ctrl+C`를 누르거나, [`/rate-limit-options`](https://code.claude.com/docs/ko/commands#all-commands)를 실행하고 **Don't continue automatically**를 선택하십시오. Claude Code는 `Automatic continue cancelled`로 시작하는 줄로 취소를 확인합니다.
+
+취소 후, `/rate-limit-options`에서 **Wait here, then continue automatically**로 시작하는 행을 다시 선택할 때까지 아무것도 계속되지 않습니다. Claude Code는 해당 재설정 창에 대해 자동으로 대기를 시작하지 않습니다. 다음 재설정 창은 새로 시작됩니다.
+
+대기는 또한 다음의 경우에 작업을 계속하지 않고 끝납니다:
+
+* **프롬프트를 보냅니다**: Claude Code는 대기하는 대신 프롬프트를 보냅니다. 보낸 프롬프트도 한도에 도달하면 프롬프트는 대화에 남아 있고 Claude Code가 다시 대기를 시작합니다.
+* **Claude Code를 종료합니다**: 세션을 재개할 때 대기가 다시 시작되지 않습니다.
+* **대화가 다른 사람에게 넘어갑니다**: `/login`으로 계정을 전환하거나, 대화를 지우거나 되돌리거나, `/resume`로 다른 세션을 계속하거나, `/teleport`로 하나를 가져오거나, `/tui` 또는 [`/restart`](https://code.claude.com/docs/ko/commands#all-commands)로 다시 시작하거나, 세션을 Claude Desktop, 백그라운드 세션 또는 클라우드로 넘깁니다.
+* **설정이 꺼지거나 재설정이 24시간을 지나갑니다**: 이는 Claude Code가 자동으로 시작한 대기만 끝냅니다. `/rate-limit-options`에서 선택한 대기는 계속 카운트다운됩니다.
+* **계속이 차단됩니다**: 계속 프롬프트를 차단하는 [`UserPromptSubmit` 훅](https://code.claude.com/docs/ko/hooks#userpromptsubmit) 또는 모델에 도달하기 전의 실패가 대기를 끝냅니다. Claude Code는 계속이 실행되지 않았음을 알려줍니다. 계속하려면 프롬프트를 보내십시오.
+
+### 직접 대기 시작
+
+Claude Code는 다음의 경우에 자동으로 대기를 시작하지 않습니다:
+
+* **원격 제어 및 에이전트 팀 팀원 세션**: 해당 터미널의 사람이 여전히 하나를 시작할 수 있습니다.
+* **24시간 이상 떨어진 재설정**: 주간 제한은 며칠 후에 재설정될 수 있습니다.
+* **해당 제품군 외부의 모델을 실행하는 동안 Opus 또는 Sonnet 제한**: 다음 턴이 해당 제한에 도달하지 않을 수 있습니다. [`opusplan`](https://code.claude.com/docs/ko/model-config#opusplan-model-setting) 및 제한된 제품군에서 플랜 모드를 실행하는 기타 모델 설정은 이 예외를 받지 않습니다.
+
+이러한 경우와 자동 계속이 꺼져 있을 때마다, Claude Code는 자신의 터미널에서 제한에 도달할 때 재설정 창당 한 번 사용량 제한 옵션 메뉴를 엽니다. **Wait here, then continue automatically**로 시작하는 행을 선택하여 대기를 시작하십시오. [원격 제어](https://code.claude.com/docs/ko/remote-control.md) 또는 [에이전트 팀](https://code.claude.com/docs/ko/agent-teams.md) 팀원 세션에서는 메뉴를 열기 위해 직접 `/rate-limit-options`를 실행하십시오.
+
+Claude Code는 다음의 경우에 대기를 제공하지 않습니다:
+
+* **백그라운드 세션 및 `-p` 실행**: 메뉴 행을 사용할 수 없습니다.
+* **API 키, 클라우드 제공자 및 사용량 기반 청구**: 해당 사용량은 요청당 측정되므로 대기할 재설정이 없습니다.
+* **저장된 claude.ai 로그인이 없는 [LLM 게이트웨이](https://code.claude.com/docs/ko/llm-gateway#subscriptions-and-gateways)**: Claude Code는 저장된 claude.ai 로그인이 활성 자격증명일 때만 대기를 제공합니다.
+
+### 자동 계속 끄기
+
+`/config`에서 **Continue automatically at usage limit**을 끄거나, 사용자 설정에서 [`autoContinueAtUsageLimit`](https://code.claude.com/docs/ko/settings-reference#autocontinueatusagelimit)을 `false`로 설정하십시오. `/config autoContinueAtUsageLimit=false`도 작동하며, `-p`를 포함하지만, `key=value` 형식은 설정이 무인 실행을 부여하기 때문에 다시 켤 수 없습니다. Claude Code가 이 키에 대해 읽는 설정 파일은 [설정 참조](https://code.claude.com/docs/ko/settings-reference.md#autocontinueatusagelimit)에 있습니다.
+
+## PR 검토 상태
+
+열린 풀 요청이 있는 브랜치에서 작업할 때, Claude Code는 "PR #446"과 같은 클릭 가능한 PR 링크를 바닥글에 표시합니다. 링크에는 검토 상태를 나타내는 색상 있는 밑줄이 있습니다:
 
 * 녹색: 승인됨
 * 노란색: 검토 대기 중
 * 빨간색: 변경 요청됨
 * 회색: 초안
 
-풀 요청이 병합되거나 닫히면 배지가 사라집니다. `Cmd+click` (macOS) 또는 `Ctrl+click` (Windows/Linux)으로 링크를 클릭하여 브라우저에서 풀 요청을 열 수 있습니다. 상태는 60초마다 새로 고쳐지며, `gh pr` 또는 `git push` 명령이 세션에서 실행된 직후에 즉시 새로 고쳐집니다.
+풀 요청이 병합되거나 닫히면 배지가 사라집니다.
 
-<Note>
-  PR 상태는 `gh` CLI가 설치되고 인증되어야 합니다 (`gh auth login`).
-</Note>
+`Cmd+click` (macOS) 또는 `Ctrl+click` (Windows/Linux)으로 링크를 클릭하여 브라우저에서 풀 요청을 엽니다.
 
-<h2 id="see-also">
-  참고 항목
-</h2>
+상태는 `git push` 또는 `gh pr create` 또는 `gh pr merge`와 같이 풀 요청을 변경하는 `gh pr` 명령이 세션에서 성공하는 즉시 새로 고쳐집니다.
 
-* [Skills](/docs/ko/skills) - 사용자 정의 프롬프트 및 워크플로우
-* [Checkpointing](/docs/ko/checkpointing) - Claude의 편집 되돌리기 및 이전 상태 복원
-* [CLI 참조](/docs/ko/cli-reference) - 명령줄 플래그 및 옵션
-* [설정](/docs/ko/settings) - 구성 옵션
-* [메모리 관리](/docs/ko/memory) - CLAUDE.md 파일 관리
+Claude Code는 SSH를 통해 또는 tmux에서 일반적으로 발생하는 터미널에서 하이퍼링크 지원을 감지할 수 없을 때도 배지를 하이퍼링크로 렌더링합니다. [`FORCE_HYPERLINK=0`](https://code.claude.com/docs/ko/env-vars)을 설정하여 배지를 일반 텍스트로 렌더링합니다.
+
+[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ko/env-vars)을 설정하면 Claude Code는 풀 요청 또는 병합 요청 상태를 확인하지 않습니다.
+
+> [!NOTE]
+>
+> GitHub 저장소의 PR 상태에는 GitHub 토큰이 필요합니다. Claude Code는 원격의 호스트를 기반으로 토큰을 찾습니다:
+>
+> * **github.com**: `GH_TOKEN` 또는 `GITHUB_TOKEN`, 또는 `gh auth login`으로 저장된 토큰. 없으면 `gh` CLI가 설치되지 않았을 때 바닥글에 `install gh for PR status`가 표시되거나, 설치되었을 때 `gh auth login for PR status`가 표시됩니다
+> * **`GH_HOST`로 설정된 GitHub Enterprise 호스트**: `GH_ENTERPRISE_TOKEN` 또는 `GITHUB_ENTERPRISE_TOKEN`, 또는 `gh auth login --hostname <host>`로 저장된 토큰. 없으면 바닥글에 동일한 힌트가 표시됩니다
+> * **다른 GitHub 호스트**: `gh auth login --hostname <host>`로 저장된 토큰. 없으면 Claude Code는 배지와 힌트를 표시하지 않습니다
+
+### GitLab 병합 요청
+
+GitLab 병합 요청이 열려 있는 브랜치에서 작업할 때, Claude Code는 GitHub PR 링크가 있는 바닥글 슬롯에 클릭 가능한 `MR !N` 배지를 표시합니다. `!N`은 병합 요청 번호 N에 대한 GitLab의 자체 참조 구문입니다. 색상 있는 밑줄은 병합 요청의 상태를 표시합니다:
+
+* 녹색: GitLab이 병합 요청을 병합 가능으로 보고함
+* 노란색: 다른 모든 열린 상태
+* 회색: 초안
+
+병합 요청이 병합되거나 닫히면 배지가 사라집니다.
+
+`git push` 또는 `glab mr create` 또는 `glab mr merge`와 같이 병합 요청을 변경하는 `glab mr` 명령이 세션에서 성공하는 즉시 새로 고쳐집니다.
+
+배지를 얻으려면 다음이 필요합니다:
+
+* Claude Code v2.1.234 이상
+* gitlab.com 또는 자체 관리 인스턴스 중 하나를 가리키는 저장소 원격
+* `PATH`에 있는 [`glab` CLI](https://gitlab.com/gitlab-org/cli), `glab auth login`으로 인증됨
+
+Claude Code는 상태를 확인할 때 `GITLAB_TOKEN`과 같은 `glab`의 토큰 환경 변수를 무시하므로 내보낸 토큰만으로는 배지를 얻을 수 없습니다. Claude Code는 또한 세션당 한 번씩 `glab`과 로그인을 찾으므로 `glab`을 설치하거나 `glab auth login`을 실행한 후 Claude Code를 다시 시작합니다.
+
+## 이슈 참조 링크
+
+Claude가 이슈를 `owner/repo#123`으로 언급할 때, 터미널이 하이퍼링크를 지원하는 한 참조를 클릭하여 열 수 있습니다. Claude Code가 터미널에서 하이퍼링크 지원을 감지하지 못하면, [`FORCE_HYPERLINK`](https://code.claude.com/docs/ko/env-vars)를 `1`로 설정하여 링크를 켜거나, `0`으로 설정하여 참조를 일반 텍스트로 유지할 수 있습니다.
+
+두 부분으로 된 `owner/repo#123` 형식에 대해서만 링크를 얻습니다. 다음은 일반 텍스트로 유지됩니다:
+
+* 단순한 `#123`
+* `group/subgroup/project#123`과 같은 중첩된 GitLab 경로
+* 코드 스팬 또는 코드 블록 내의 모든 참조
+* 약 1,000줄 또는 100,000자를 초과하는 응답 내의 모든 참조
+
+Claude Code는 참조가 지칭하는 저장소가 아니라, git 원격에서 식별한 저장소의 호스트에 맞춰 링크를 구성합니다:
+
+| 저장소의 호스트 | `owner/repo#123`이 링크되는 위치 |
+| :- | :- |
+| github.com, GitHub Enterprise 호스트, 또는 아래에 나열되지 않은 모든 호스트 | `https://<host>/owner/repo/issues/123` |
+| gitlab.com | `https://gitlab.com/owner/repo/-/issues/123` |
+| bitbucket.org, codeberg.org, 또는 gitea.com | 링크 없음; 참조는 일반 텍스트로 유지됨 |
+
+## 참고 항목
+
+* [Skills](https://code.claude.com/docs/ko/skills.md) - 사용자 정의 프롬프트 및 워크플로우
+* [Checkpointing](https://code.claude.com/docs/ko/checkpointing.md) - Claude의 편집 되돌리기 및 이전 상태 복원
+* [CLI 참조](https://code.claude.com/docs/ko/cli-reference.md) - 명령줄 플래그 및 옵션
+* [설정](https://code.claude.com/docs/ko/settings.md) - 구성 옵션
+* [메모리 관리](https://code.claude.com/docs/ko/memory.md) - CLAUDE.md 파일 관리

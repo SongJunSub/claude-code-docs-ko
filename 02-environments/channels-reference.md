@@ -6,9 +6,9 @@
 
 > 웹훅, 알림, 채팅 메시지를 Claude Code 세션으로 푸시하는 MCP 서버를 구축합니다. 채널 계약 참조: 기능 선언, 알림 이벤트, 회신 도구, 발신자 게이팅, 권한 릴레이.
 
-<Note>
-  채널은 [연구 미리보기](/docs/ko/channels#research-preview)에 있습니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](/docs/ko/channels#enterprise-controls)해야 합니다.
-</Note>
+> [!NOTE]
+>
+> 채널은 [연구 미리보기](https://code.claude.com/docs/ko/channels.md#research-preview)에 있습니다. 팀 및 엔터프라이즈 조직은 [명시적으로 활성화](https://code.claude.com/docs/ko/channels.md#enterprise-controls)해야 합니다.
 
 채널은 Claude Code 세션으로 이벤트를 푸시하는 MCP 서버이므로 Claude는 터미널 외부에서 발생하는 일에 반응할 수 있습니다.
 
@@ -25,22 +25,18 @@
 * [인바운드 메시지 게이팅](#gate-inbound-messages): 프롬프트 주입을 방지하기 위한 발신자 확인
 * [권한 프롬프트 릴레이](#relay-permission-prompts): 도구 승인 프롬프트를 원격 채널로 전달
 
-기존 채널을 사용하는 대신 구축하려면 [채널](/docs/ko/channels)을 참조하세요. Telegram, Discord, iMessage 및 fakechat은 연구 미리보기에 포함되어 있습니다.
+기존 채널을 사용하는 대신 구축하려면 [채널](https://code.claude.com/docs/ko/channels.md)을 참조하세요. Telegram, Discord, iMessage 및 fakechat은 연구 미리보기에 포함되어 있습니다.
 
-<h2 id="overview">
-  개요
-</h2>
+## 개요
 
 채널은 Claude Code와 동일한 머신에서 실행되는 [MCP](https://modelcontextprotocol.io) 서버입니다. Claude Code는 이를 서브프로세스로 생성하고 stdio를 통해 통신합니다. 채널 서버는 외부 시스템과 Claude Code 세션 간의 브리지입니다:
 
 * **채팅 플랫폼** (Telegram, Discord): 플러그인이 로컬에서 실행되고 플랫폼의 API를 폴링하여 새 메시지를 확인합니다. 누군가 봇에 DM을 보내면 플러그인이 메시지를 수신하고 Claude로 전달합니다. 노출할 URL이 없습니다.
 * **웹훅** (CI, 모니터링): 서버가 로컬 HTTP 포트에서 수신합니다. 외부 시스템이 해당 포트에 POST하고 서버가 페이로드를 Claude로 푸시합니다.
 
-<img src="https://mintcdn.com/claude-code/9FG0ZKj9uKYiHmbi/images/channel-architecture.svg?fit=max&auto=format&n=9FG0ZKj9uKYiHmbi&q=85&s=9a037b7da80184ae49015c0256b21a1f" alt="외부 시스템이 로컬 채널 서버에 연결되고 stdio를 통해 Claude Code와 통신하는 아키텍처 다이어그램" width="600" height="220" data-path="images/channel-architecture.svg" />
+![외부 시스템이 로컬 채널 서버에 연결되고 stdio를 통해 Claude Code와 통신하는 아키텍처 다이어그램](https://mintcdn.com/claude-code/9FG0ZKj9uKYiHmbi/images/channel-architecture.svg?fit=max\&auto=format\&n=9FG0ZKj9uKYiHmbi\&q=85\&s=9a037b7da80184ae49015c0256b21a1f)
 
-<h2 id="what-you-need">
-  필요한 것
-</h2>
+## 필요한 것
 
 유일한 하드 요구 사항은 [`@modelcontextprotocol/sdk`](https://www.npmjs.com/package/@modelcontextprotocol/sdk) 패키지와 Node.js 호환 런타임입니다. [Bun](https://bun.sh), [Node](https://nodejs.org), [Deno](https://deno.com) 모두 작동합니다. 연구 미리보기의 사전 구축된 플러그인은 Bun을 사용하지만 채널이 반드시 그럴 필요는 없습니다.
 
@@ -48,136 +44,134 @@
 
 1. `claude/channel` 기능을 선언하여 Claude Code가 알림 리스너를 등록하도록 함
 2. 무언가 발생할 때 `notifications/claude/channel` 이벤트를 내보냄
-3. [stdio 전송](https://modelcontextprotocol.io/docs/concepts/transports#standard-io)을 통해 연결 (Claude Code가 서버를 서브프로세스로 생성)
+3. [stdio 전송](https://modelcontextprotocol.io/docs/concepts/transports#standard-io)을 통해 연결
 
 [서버 옵션](#server-options) 및 [알림 형식](#notification-format) 섹션에서 각각을 자세히 다룹니다. 전체 연습은 [예: 웹훅 수신기 구축](#example-build-a-webhook-receiver)을 참조하세요.
 
-연구 미리보기 중에 사용자 정의 채널은 [승인된 허용 목록](/docs/ko/channels#supported-channels)에 없습니다. `--dangerously-load-development-channels`를 사용하여 로컬에서 테스트합니다. 자세한 내용은 [연구 미리보기 중 테스트](#test-during-the-research-preview)를 참조하세요.
+연구 미리보기 중에 사용자 정의 채널은 [승인된 허용 목록](https://code.claude.com/docs/ko/channels.md#supported-channels)에 없습니다. `--dangerously-load-development-channels`를 사용하여 로컬에서 테스트합니다. 자세한 내용은 [연구 미리보기 중 테스트](#test-during-the-research-preview)를 참조하세요.
 
-<h2 id="example-build-a-webhook-receiver">
-  예: 웹훅 수신기 구축
-</h2>
+## 예제: 웹훅 수신기 만들기
 
-이 연습은 HTTP 요청을 수신하고 Claude Code 세션으로 전달하는 단일 파일 서버를 구축합니다. 마지막에는 CI 파이프라인, 모니터링 알림 또는 `curl` 명령과 같이 HTTP POST를 보낼 수 있는 모든 것이 Claude로 이벤트를 푸시할 수 있습니다.
+이 안내에서는 HTTP 요청을 수신하고 이를 Claude Code 세션으로 전달하는 단일 파일 서버를 만듭니다. 완료하면 CI 파이프라인, 모니터링 알림, `curl` 명령 등 HTTP POST를 보낼 수 있는 모든 것이 Claude에 이벤트를 푸시할 수 있습니다.
 
-이 예제는 기본 제공 HTTP 서버 및 TypeScript 지원을 위해 [Bun](https://bun.sh)을 런타임으로 사용합니다. 대신 [Node](https://nodejs.org) 또는 [Deno](https://deno.com)를 사용할 수 있습니다. 유일한 요구 사항은 [MCP SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk)입니다.
+이 예제에서는 내장 HTTP 서버와 TypeScript 지원을 위해 [Bun](https://bun.sh)을 런타임으로 사용합니다. 대신 [Node](https://nodejs.org)나 [Deno](https://deno.com)를 사용할 수도 있으며, 유일한 요구 사항은 [MCP SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk)입니다.
 
-<Steps>
-  <Step title="프로젝트 생성">
-    새 디렉토리를 생성하고 MCP SDK를 설치합니다:
+**1. 프로젝트 생성**
 
-    ```bash theme={null}
-    mkdir webhook-channel && cd webhook-channel
-    bun add @modelcontextprotocol/sdk
-    ```
-  </Step>
+[권한 릴레이](#relay-permission-prompts) 예제는 `zod`를 직접 import하므로 MCP SDK와 함께 설치합니다. 새 디렉터리를 만들고 둘 다 설치합니다.
 
-  <Step title="채널 서버 작성">
-    `webhook.ts`라는 파일을 생성합니다. 이것이 전체 채널 서버입니다: stdio를 통해 Claude Code에 연결되고 포트 8788에서 HTTP POST를 수신합니다. 요청이 도착하면 본문을 채널 이벤트로 Claude로 푸시합니다.
+```bash theme={null}
+mkdir webhook-channel && cd webhook-channel
+bun add @modelcontextprotocol/sdk zod
+```
 
-    ```ts title="webhook.ts" theme={null}
-    #!/usr/bin/env bun
-    import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-    import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+**2. 채널 서버 작성**
 
-    // MCP 서버를 생성하고 채널로 선언합니다
-    const mcp = new Server(
-      { name: 'webhook', version: '0.0.1' },
-      {
-        // 이 키가 채널을 만드는 것입니다 — Claude Code가 이에 대한 리스너를 등록합니다
-        capabilities: { experimental: { 'claude/channel': {} } },
-        // Claude의 시스템 프롬프트에 추가되므로 이러한 이벤트를 처리하는 방법을 알 수 있습니다
-        instructions: 'Events from the webhook channel arrive as <channel source="webhook" ...>. They are one-way: read them and act, no reply expected.',
-      },
-    )
+`webhook.ts`라는 파일을 만듭니다. 이것이 채널 서버 전체입니다. stdio를 통해 Claude Code에 연결하고, 포트 8788에서 HTTP POST를 수신합니다. 요청이 도착하면 본문을 채널 이벤트로 Claude에 푸시합니다.
 
-    // stdio를 통해 Claude Code에 연결합니다 (Claude Code가 이 프로세스를 생성합니다)
-    await mcp.connect(new StdioServerTransport())
+```ts title="webhook.ts" theme={null}
+#!/usr/bin/env bun
+import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
-    // 모든 POST를 Claude로 전달하는 HTTP 서버를 시작합니다
-    Bun.serve({
-      port: 8788,  // 열려 있는 모든 포트가 작동합니다
-      // localhost 전용: 이 머신 외부의 아무것도 POST할 수 없습니다
-      hostname: '127.0.0.1',
-      async fetch(req) {
-        const body = await req.text()
-        await mcp.notification({
-          method: 'notifications/claude/channel',
-          params: {
-            content: body,  // <channel> 태그의 본문이 됩니다
-            // 각 키는 태그 속성이 됩니다. 예: <channel path="/" method="POST">
-            meta: { path: new URL(req.url).pathname, method: req.method },
-          },
-        })
-        return new Response('ok')
+// Create the MCP server and declare it as a channel
+const mcp = new Server(
+  { name: 'webhook', version: '0.0.1' },
+  {
+    // this key is what makes it a channel — Claude Code registers a listener for it
+    capabilities: { experimental: { 'claude/channel': {} } },
+    // Claude Code delivers this to Claude as context when the server connects, so it knows how to handle these events
+    instructions: 'Events from the webhook channel arrive as <channel source="webhook" ...>. They are one-way: read them and act, no reply expected.',
+  },
+)
+
+// Connect to Claude Code over stdio (Claude Code spawns this process)
+await mcp.connect(new StdioServerTransport())
+
+// Start an HTTP server that forwards every POST to Claude
+Bun.serve({
+  port: 8788,  // any open port works
+  // localhost-only: nothing outside this machine can POST
+  hostname: '127.0.0.1',
+  async fetch(req) {
+    const body = await req.text()
+    await mcp.notification({
+      method: 'notifications/claude/channel',
+      params: {
+        content: body,  // becomes the body of the <channel> tag
+        // each key becomes a tag attribute, e.g. <channel path="/" method="POST">
+        meta: { path: new URL(req.url).pathname, method: req.method },
       },
     })
-    ```
+    return new Response('ok')
+  },
+})
+```
 
-    파일은 순서대로 세 가지를 수행합니다:
+이 파일은 서버를 구성하고, stdio로 연결한 다음, HTTP 리스너를 시작하는 순서로 동작합니다.
 
-    * **서버 구성**: 기능에 `claude/channel`이 있는 MCP 서버를 생성합니다. 이것이 Claude Code에 이것이 채널임을 알려줍니다. [`instructions`](#server-options) 문자열은 Claude의 시스템 프롬프트로 이동합니다: Claude에 예상할 이벤트, 회신 여부, 회신해야 하는 경우 회신을 라우팅하는 방법을 알려줍니다.
-    * **Stdio 연결**: stdin/stdout을 통해 Claude Code에 연결합니다. 이는 모든 [MCP 서버](https://modelcontextprotocol.io/docs/concepts/transports#standard-io)에 표준입니다: Claude Code가 이를 서브프로세스로 생성합니다.
-    * **HTTP 리스너**: 포트 8788에서 로컬 웹 서버를 시작합니다. 모든 POST 본문은 `mcp.notification()`을 통해 채널 이벤트로 Claude로 전달됩니다. `content`는 이벤트 본문이 되고 각 `meta` 항목은 `<channel>` 태그의 속성이 됩니다. 리스너는 `mcp` 인스턴스에 액세스해야 하므로 동일한 프로세스에서 실행됩니다. 더 큰 프로젝트의 경우 별도의 모듈로 분할할 수 있습니다.
-  </Step>
+* **서버 구성**: capabilities에 `claude/channel`이 포함된 MCP 서버를 생성하며, 이것이 Claude Code에 이 서버가 채널임을 알려줍니다. Claude Code는 서버가 연결될 때 [`instructions`](#server-options) 문자열을 컨텍스트로 Claude에 전달합니다. 어떤 이벤트가 올지, 답장해야 하는지, 답장해야 한다면 어떻게 라우팅할지를 Claude에 알려주십시오.
+* **Stdio 연결**: stdin/stdout을 통해 Claude Code에 연결합니다. 이는 모든 [MCP 서버](https://modelcontextprotocol.io/docs/concepts/transports#standard-io)의 표준 방식입니다.
+* **HTTP 리스너**: 포트 8788에서 로컬 웹 서버를 시작합니다. 모든 POST 본문은 `mcp.notification()`을 통해 채널 이벤트로 Claude에 전달됩니다. `content`는 이벤트 본문이 되고, 각 `meta` 항목은 `<channel>` 태그의 속성이 됩니다. 리스너는 `mcp` 인스턴스에 접근해야 하므로 같은 프로세스에서 실행됩니다. 규모가 큰 프로젝트에서는 별도의 모듈로 분리할 수도 있습니다.
 
-  <Step title="Claude Code에 서버 등록">
-    Claude Code가 시작하는 방법을 알 수 있도록 MCP 구성에 서버를 추가합니다. 동일한 디렉토리의 프로젝트 수준 `.mcp.json`의 경우 상대 경로를 사용합니다. `~/.claude.json`의 사용자 수준 구성의 경우 모든 프로젝트에서 서버를 찾을 수 있도록 전체 절대 경로를 사용합니다:
+**3. Claude Code에 서버 등록**
 
-    ```json title=".mcp.json" theme={null}
-    {
-      "mcpServers": {
-        "webhook": { "command": "bun", "args": ["./webhook.ts"] }
-      }
-    }
-    ```
+Claude Code가 서버를 시작하는 방법을 알 수 있도록 MCP 구성에 서버를 추가합니다. 같은 디렉터리의 프로젝트 수준 `.mcp.json`에서는 상대 경로를 사용합니다. `~/.claude.json`의 사용자 수준 구성에서는 어느 프로젝트에서든 서버를 찾을 수 있도록 전체 절대 경로를 사용합니다.
 
-    Claude Code는 시작 시 MCP 구성을 읽고 각 서버를 서브프로세스로 생성합니다.
-  </Step>
+```json title=".mcp.json" theme={null}
+{
+  "mcpServers": {
+    "webhook": { "command": "bun", "args": ["./webhook.ts"] }
+  }
+}
+```
 
-  <Step title="테스트">
-    연구 미리보기 중에 사용자 정의 채널은 허용 목록에 없으므로 개발 플래그로 Claude Code를 시작합니다:
+Claude Code는 시작할 때 MCP 구성을 읽고 각 서버를 하위 프로세스로 실행합니다.
 
-    ```bash theme={null}
-    claude --dangerously-load-development-channels server:webhook
-    ```
+**4. 테스트**
 
-    이 프로젝트에서 처음으로 세션을 시작할 때 Claude Code는 `.mcp.json`의 새 서버를 사용하기 전에 동의를 요청합니다. 대화 상자는 "이 프로젝트에서 새 MCP 서버를 찾음: webhook"을 보고합니다. **이 MCP 서버 사용**을 선택하여 계속합니다.
+리서치 프리뷰 기간 동안 사용자 지정 채널은 허용 목록에 없으므로 개발 플래그와 함께 Claude Code를 시작합니다.
 
-    Claude Code가 시작되면 MCP 구성을 읽고 `webhook.ts`를 서브프로세스로 생성하며 구성한 포트(이 예제에서는 8788)에서 HTTP 리스너가 자동으로 시작됩니다. 서버를 직접 실행할 필요가 없습니다.
+```bash theme={null}
+claude --dangerously-load-development-channels server:webhook
+```
 
-    시작 배너 아래의 흐린 공지는 채널이 등록되었음을 확인합니다: `Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`.
+Claude Code는 먼저 로드 중인 개발 채널을 나열하는 전체 화면 경고 대화 상자를 표시합니다. 계속하려면 **I am using this for local development**를 선택하고, 종료하려면 **Exit**를 선택합니다.
 
-    "조직 정책에 의해 차단됨"이 표시되면 조직 관리자가 먼저 [채널을 활성화](/docs/ko/channels#enterprise-controls)해야 합니다.
+이 프로젝트에서 처음 세션을 시작할 때 Claude Code는 `.mcp.json`의 새 서버를 사용하기 전에 동의도 요청합니다. 대화 상자에 "New MCP server found in this project: webhook"이 표시됩니다. 계속하려면 **Use this MCP server**를 선택합니다.
 
-    별도의 터미널에서 HTTP POST를 메시지와 함께 서버로 보내 웹훅을 시뮬레이션합니다. 이 예제는 CI 실패 알림을 포트 8788로 보냅니다 (또는 구성한 포트):
+수락하면 Claude Code가 `webhook.ts`를 하위 프로세스로 실행하고, HTTP 리스너가 구성한 포트(이 예제에서는 8788)에서 자동으로 시작됩니다. 서버를 직접 실행할 필요는 없습니다.
 
-    ```bash theme={null}
-    curl -X POST localhost:8788 -d "build failed on main: https://ci.example.com/run/1234"
-    ```
+시작 배너 아래의 흐린 알림을 통해 채널이 등록되었음을 확인할 수 있습니다: `Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`.
 
-    페이로드는 Claude Code 세션에 `<channel>` 태그로 도착합니다:
+"blocked by org policy"가 표시되면 조직 관리자가 먼저 [채널을 활성화](https://code.claude.com/docs/ko/channels.md#enterprise-controls)해야 합니다.
 
-    ```text theme={null}
-    <channel source="webhook" path="/" method="POST">build failed on main: https://ci.example.com/run/1234</channel>
-    ```
+별도의 터미널에서 메시지가 담긴 HTTP POST를 서버로 보내 웹훅을 시뮬레이션합니다. 이 예제는 포트 8788(또는 구성한 포트)로 CI 실패 알림을 보냅니다.
 
-    Claude Code 터미널에서 Claude가 메시지를 수신하고 응답을 시작하는 것을 볼 수 있습니다: 파일 읽기, 명령 실행 또는 메시지가 요구하는 모든 작업. 이것은 단방향 채널이므로 Claude는 세션에서 작동하지만 웹훅을 통해 아무것도 다시 보내지 않습니다. 회신을 추가하려면 [회신 도구 노출](#expose-a-reply-tool)을 참조하세요.
+```bash theme={null}
+curl -X POST localhost:8788 -d "build failed on main: https://ci.example.com/run/1234"
+```
 
-    이벤트가 도착하지 않으면 진단은 `curl`이 반환한 것에 따라 달라집니다:
+페이로드는 `<channel>` 태그 형태로 Claude의 컨텍스트에 도착합니다.
 
-    * **`curl`은 성공하지만 Claude에 도달하지 않음**: 세션에서 `/mcp`를 실행하여 서버의 상태를 확인합니다. "연결 실패"는 일반적으로 서버 파일의 종속성 또는 가져오기 오류를 의미합니다. `~/.claude/debug/<session-id>.txt`의 디버그 로그에서 stderr 추적을 확인합니다.
-    * **`curl`이 "연결 거부"로 실패함**: 포트가 아직 바인딩되지 않았거나 이전 실행의 오래된 프로세스가 포트를 보유하고 있습니다. `lsof -i :<port>`는 수신 중인 것을 표시합니다. 세션을 다시 시작하기 전에 오래된 프로세스를 `kill`합니다.
-  </Step>
-</Steps>
+```text theme={null}
+<channel source="webhook" path="/" method="POST">
+build failed on main: https://ci.example.com/run/1234
+</channel>
+```
 
-[fakechat 서버](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)는 웹 UI, 파일 첨부 및 양방향 채팅을 위한 회신 도구로 이 패턴을 확장합니다.
+터미널에는 원시 태그 대신 한 줄 요약인 `← webhook: build failed on main: https://ci.example.com/run/1234`으로 이벤트가 표시됩니다. 그런 다음 Claude가 파일을 읽거나, 명령을 실행하거나, 메시지가 요구하는 작업을 수행하며 응답하기 시작하는 것을 볼 수 있습니다. 이것은 단방향 채널이므로 Claude는 세션에서 작업을 수행하지만 웹훅을 통해 아무것도 돌려보내지 않습니다. 답장 기능을 추가하려면 [답장 도구 노출](#expose-a-reply-tool)을 참조하십시오.
 
-<h2 id="test-during-the-research-preview">
-  연구 미리보기 중 테스트
-</h2>
+이벤트가 도착하지 않으면 `curl`이 반환한 결과에 따라 진단 방법이 달라집니다.
 
-연구 미리보기 중에 모든 채널은 등록하기 위해 [승인된 허용 목록](/docs/ko/channels#research-preview)에 있어야 합니다. 개발 플래그는 확인 프롬프트 후 특정 항목에 대한 허용 목록을 우회합니다. 이 예제는 두 항목 유형을 모두 보여줍니다:
+* **`curl`은 성공했지만 Claude에 아무것도 도달하지 않는 경우**: 세션에서 `/mcp`를 실행하여 서버 상태를 확인합니다. `failed` 상태는 대개 서버 파일의 의존성 또는 import 오류를 의미합니다. stderr 트레이스를 보려면 `claude --debug --dangerously-load-development-channels server:webhook`으로 다시 시작하고 `~/.claude/debug/<session-id>.txt`의 디버그 로그를 확인합니다.
+* **`curl`이 "connection refused"로 실패하는 경우**: 포트가 아직 바인딩되지 않았거나 이전 실행의 오래된 프로세스가 포트를 점유하고 있는 것입니다. `lsof -i :<port>`로 수신 중인 프로세스를 확인할 수 있습니다. 세션을 다시 시작하기 전에 오래된 프로세스를 `kill`하십시오.
+
+[fakechat 서버](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)는 웹 UI, 파일 첨부, 양방향 채팅을 위한 답장 도구로 이 패턴을 확장합니다.
+
+## 연구 미리보기 중 테스트
+
+연구 미리보기 중에 모든 채널은 등록하기 위해 [승인된 허용 목록](https://code.claude.com/docs/ko/channels.md#research-preview)에 있어야 합니다. 개발 플래그는 확인 프롬프트 후 특정 항목에 대한 허용 목록을 우회합니다. 이 예제는 두 항목 유형을 모두 보여줍니다:
 
 ```bash theme={null}
 # 개발 중인 플러그인 테스트
@@ -187,24 +181,24 @@ claude --dangerously-load-development-channels plugin:yourplugin@yourmarketplace
 claude --dangerously-load-development-channels server:webhook
 ```
 
-우회는 항목별입니다. 이 플래그를 `--channels`와 결합하면 우회가 `--channels` 항목으로 확장되지 않습니다. 연구 미리보기 중에 승인된 허용 목록은 Anthropic에서 큐레이션되므로 채널은 구축 및 테스트하는 동안 개발 플래그에 남아 있습니다.
+개발 플래그는 Claude Code가 확인 프롬프트를 표시할 수 있는 대화형 세션에서 실행하세요. `-p`를 사용한 비대화형 모드나 Agent SDK를 통해 전달하면 Claude Code는 플래그를 무시하고 채널이 등록되지 않습니다.
 
-<Note>
-  이 플래그는 허용 목록만 건너뜁니다. `channelsEnabled` 조직 정책은 여전히 적용됩니다. 신뢰할 수 없는 소스의 채널을 실행하는 데 사용하지 마세요.
-</Note>
+우회는 항목별입니다. 이 플래그를 `--channels`와 결합하면 우회가 `--channels` 항목으로 확장되지 않습니다. 연구 미리보기 중에 승인된 허용 목록에 채널이 없으므로 구축 및 테스트하는 동안 개발 플래그에 남아 있습니다.
 
-<h2 id="server-options">
-  서버 옵션
-</h2>
+> [!NOTE]
+>
+> 이 플래그는 허용 목록만 건너뜁니다. `channelsEnabled` 조직 정책은 여전히 적용됩니다. 신뢰할 수 없는 소스의 채널을 실행하는 데 사용하지 마세요.
 
-채널은 [`Server`](https://modelcontextprotocol.io/docs/concepts/servers) 생성자에서 이러한 옵션을 설정합니다. `instructions` 및 `capabilities.tools` 필드는 [표준 MCP](https://modelcontextprotocol.io/docs/concepts/servers)입니다. `capabilities.experimental['claude/channel']` 및 `capabilities.experimental['claude/channel/permission']`은 채널 특정 추가 사항입니다:
+## 서버 옵션
 
-| 필드                                                       | 유형       | 설명                                                                                                                                                                |
-| :------------------------------------------------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `capabilities.experimental['claude/channel']`            | `object` | 필수. 항상 `{}`. 존재는 알림 리스너를 등록합니다.                                                                                                                                   |
-| `capabilities.experimental['claude/channel/permission']` | `object` | 선택 사항. 항상 `{}`. 이 채널이 권한 릴레이 요청을 수신할 수 있음을 선언합니다. 선언되면 Claude Code는 도구 승인 프롬프트를 채널로 전달하므로 원격으로 승인하거나 거부할 수 있습니다. [권한 프롬프트 릴레이](#relay-permission-prompts)를 참조하세요. |
-| `capabilities.tools`                                     | `object` | 양방향만. 항상 `{}`. 표준 MCP 도구 기능. [회신 도구 노출](#expose-a-reply-tool)을 참조하세요.                                                                                             |
-| `instructions`                                           | `string` | 권장. Claude의 시스템 프롬프트에 추가됩니다. Claude에 예상할 이벤트, `<channel>` 태그 속성의 의미, 회신 여부, 회신해야 하는 경우 사용할 도구 및 전달할 속성(예: `chat_id`)을 알려줍니다.                                      |
+채널은 [`Server`](https://modelcontextprotocol.io/docs/learn/server-concepts) 생성자에서 이러한 옵션을 설정합니다. `instructions` 및 `capabilities.tools` 필드는 [표준 MCP](https://modelcontextprotocol.io/docs/learn/server-concepts)입니다. `capabilities.experimental['claude/channel']` 및 `capabilities.experimental['claude/channel/permission']`은 채널 특정 추가 사항입니다:
+
+| 필드 | 유형 | 설명 |
+| :- | :- | :- |
+| `capabilities.experimental['claude/channel']` | `object` | 필수. 항상 `{}`. 존재는 알림 리스너를 등록합니다. |
+| `capabilities.experimental['claude/channel/permission']` | `object` 또는 `false` | 선택 사항. 이 채널이 권한 릴레이 요청을 수신할 수 있음을 선언하려면 `{}`로 설정합니다. 선언되면 Claude Code는 도구 승인 프롬프트를 채널로 전달하므로 원격으로 승인하거나 거부할 수 있습니다. 옵트아웃하려면 키를 생략하거나 `false`로 설정합니다. v2.1.234 이전에는 Claude Code가 `false`를 선언된 것으로 취급했습니다. [권한 프롬프트 릴레이](#relay-permission-prompts)를 참조하세요. |
+| `capabilities.tools` | `object` | 양방향만. 항상 `{}`. 표준 MCP 도구 기능. [회신 도구 노출](#expose-a-reply-tool)을 참조하세요. |
+| `instructions` | `string` | 권장. Claude Code는 서버가 연결될 때 이를 Claude에 컨텍스트로 전달합니다. Claude에 예상할 이벤트, `<channel>` 태그 속성의 의미, 회신 여부, 회신해야 하는 경우 사용할 도구 및 전달할 속성(예: `chat_id`)을 알려줍니다. |
 
 단방향 채널을 생성하려면 `capabilities.tools`를 생략합니다. 이 예제는 채널 기능, 도구 및 설정된 지침이 있는 양방향 설정을 보여줍니다:
 
@@ -218,24 +212,20 @@ const mcp = new Server(
       experimental: { 'claude/channel': {} },  // 채널 리스너를 등록합니다
       tools: {},  // 단방향 채널의 경우 생략합니다
     },
-    // Claude의 시스템 프롬프트에 추가되므로 이벤트를 처리하는 방법을 알 수 있습니다
+    // Claude Code는 서버가 연결될 때 이를 Claude에 전달하므로 이벤트를 처리하는 방법을 알 수 있습니다
     instructions: 'Messages arrive as <channel source="your-channel" ...>. Reply with the reply tool.',
   },
 )
 ```
 
-이벤트를 푸시하려면 메서드 `notifications/claude/channel`으로 `mcp.notification()`을 호출합니다. 매개변수는 다음 섹션에 있습니다.
-
-<h2 id="notification-format">
-  알림 형식
-</h2>
+## 알림 형식
 
 서버는 두 개의 매개변수로 `notifications/claude/channel`을 내보냅니다:
 
-| 필드        | 유형                       | 설명                                                                                                                                           |
-| :-------- | :----------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
-| `content` | `string`                 | 이벤트 본문. `<channel>` 태그의 본문으로 전달됩니다.                                                                                                          |
-| `meta`    | `Record<string, string>` | 선택 사항. 각 항목은 채팅 ID, 발신자 이름 또는 알림 심각도와 같은 라우팅 컨텍스트를 위해 `<channel>` 태그의 속성이 됩니다. 키는 식별자여야 합니다: 문자, 숫자 및 밑줄만. 하이픈 또는 다른 문자를 포함하는 키는 자동으로 삭제됩니다. |
+| 필드 | 유형 | 설명 |
+| :- | :- | :- |
+| `content` | `string` | 이벤트 본문. `<channel>` 태그의 본문으로 전달됩니다. |
+| `meta` | `Record<string, string>` | 선택 사항. 각 항목은 채팅 ID, 발신자 이름 또는 알림 심각도와 같은 라우팅 컨텍스트를 위해 `<channel>` 태그의 속성이 됩니다. 키는 식별자여야 합니다: 문자, 숫자 및 밑줄만. 하이픈 또는 다른 문자를 포함하는 키는 자동으로 삭제됩니다. |
 
 서버는 `Server` 인스턴스에서 `mcp.notification()`을 호출하여 이벤트를 푸시합니다. 이 예제는 두 개의 메타 키가 있는 CI 실패 알림을 푸시합니다:
 
@@ -257,15 +247,13 @@ build failed on main: https://ci.example.com/run/1234
 </channel>
 ```
 
-알림은 승인되지 않습니다. `mcp.notification()`의 `await`는 메시지가 전송으로 기록될 때 해결되며, Claude가 처리했을 때가 아닙니다. 세션이 채널로 서버를 로드하지 않았거나 조직 정책이 이를 차단한 경우 이벤트는 서버로 반환된 오류 없이 자동으로 삭제됩니다.
+Claude Code는 알림을 승인하지 않습니다. `mcp.notification()`의 `await`는 메시지가 전송으로 기록될 때 해결되며, Claude가 처리했을 때가 아닙니다. 세션이 채널로 서버를 로드하지 않았거나 조직 정책이 이를 차단한 경우, Claude Code는 서버로 반환된 오류 없이 이벤트를 자동으로 삭제합니다.
 
 전달 확인이 필요한 경우 서버에서 이벤트 상태를 추적하고 Claude가 상태를 다시 보고하기 위해 호출할 수 있는 [회신 도구](#expose-a-reply-tool)를 노출합니다.
 
 이벤트는 세션으로 큐에 들어가고 순서대로 처리됩니다. Claude가 바쁜 동안 여러 알림이 도착하면 다음 턴에 함께 전달되고 Claude는 이들을 그룹으로 처리합니다. 독립적인 이벤트 스트림을 동시에 처리하려면 별도의 세션을 실행합니다.
 
-<h2 id="expose-a-reply-tool">
-  회신 도구 노출
-</h2>
+## 회신 도구 노출
 
 채널이 양방향인 경우(알림 포워더가 아닌 채팅 브리지), Claude가 메시지를 다시 보낼 수 있도록 표준 [MCP 도구](https://modelcontextprotocol.io/docs/concepts/tools)를 노출합니다. 도구 등록에 대해 채널 특정 사항은 없습니다. 회신 도구에는 세 가지 구성 요소가 있습니다:
 
@@ -275,64 +263,62 @@ build failed on main: https://ci.example.com/run/1234
 
 [위의 웹훅 수신기](#example-build-a-webhook-receiver)에 이를 추가하려면:
 
-<Steps>
-  <Step title="도구 발견 활성화">
-    `webhook.ts`의 `Server` 생성자에서 Claude Code가 서버가 도구를 제공함을 알 수 있도록 기능에 `tools: {}`를 추가합니다:
+**1. 도구 발견 활성화**
 
-    ```ts theme={null}
-    capabilities: {
-      experimental: { 'claude/channel': {} },
-      tools: {},  // 도구 발견을 활성화합니다
+`webhook.ts`의 `Server` 생성자에서 Claude Code가 서버가 도구를 제공함을 알 수 있도록 기능에 `tools: {}`를 추가합니다:
+
+```ts theme={null}
+capabilities: {
+  experimental: { 'claude/channel': {} },
+  tools: {},  // 도구 발견을 활성화합니다
+},
+```
+
+**2. 회신 도구 등록**
+
+다음을 `webhook.ts`에 추가합니다. `import`는 다른 가져오기와 함께 파일 맨 위로 이동합니다. 두 핸들러는 `Server` 생성자와 `mcp.connect()` 사이에 있습니다. 이것은 Claude가 `chat_id` 및 `text`로 호출할 수 있는 `reply` 도구를 등록합니다:
+
+```ts theme={null}
+// webhook.ts 맨 위에 이 가져오기를 추가합니다
+import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js'
+
+// Claude는 시작 시 이를 쿼리하여 서버가 제공하는 도구를 발견합니다
+mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
+  tools: [{
+    name: 'reply',
+    description: 'Send a message back over this channel',
+    // inputSchema는 Claude에 전달할 인수를 알려줍니다
+    inputSchema: {
+      type: 'object',
+      properties: {
+        chat_id: { type: 'string', description: 'The conversation to reply in' },
+        text: { type: 'string', description: 'The message to send' },
+      },
+      required: ['chat_id', 'text'],
     },
-    ```
-  </Step>
+  }],
+}))
 
-  <Step title="회신 도구 등록">
-    다음을 `webhook.ts`에 추가합니다. `import`는 다른 가져오기와 함께 파일 맨 위로 이동합니다. 두 핸들러는 `Server` 생성자와 `mcp.connect()` 사이에 있습니다. 이것은 Claude가 `chat_id` 및 `text`로 호출할 수 있는 `reply` 도구를 등록합니다:
+// Claude가 도구를 호출하려고 할 때 이를 호출합니다
+mcp.setRequestHandler(CallToolRequestSchema, async req => {
+  if (req.params.name === 'reply') {
+    const { chat_id, text } = req.params.arguments as { chat_id: string; text: string }
+    // send()는 아웃바운드입니다: 채팅 플랫폼에 POST하거나 로컬
+    // 아래 전체 예제에 표시된 SSE 브로드캐스트를 테스트합니다.
+    send(`Reply to ${chat_id}: ${text}`)
+    return { content: [{ type: 'text', text: 'sent' }] }
+  }
+  throw new Error(`unknown tool: ${req.params.name}`)
+})
+```
 
-    ```ts theme={null}
-    // webhook.ts 맨 위에 이 가져오기를 추가합니다
-    import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js'
+**3. 지침 업데이트**
 
-    // Claude는 시작 시 이를 쿼리하여 서버가 제공하는 도구를 발견합니다
-    mcp.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: [{
-        name: 'reply',
-        description: 'Send a message back over this channel',
-        // inputSchema는 Claude에 전달할 인수를 알려줍니다
-        inputSchema: {
-          type: 'object',
-          properties: {
-            chat_id: { type: 'string', description: 'The conversation to reply in' },
-            text: { type: 'string', description: 'The message to send' },
-          },
-          required: ['chat_id', 'text'],
-        },
-      }],
-    }))
+`Server` 생성자의 `instructions` 문자열을 업데이트하여 Claude가 회신을 도구를 통해 다시 라우팅하는 방법을 알 수 있도록 합니다. 이 예제는 Claude에 인바운드 태그에서 `chat_id`를 전달하도록 알려줍니다:
 
-    // Claude가 도구를 호출하려고 할 때 이를 호출합니다
-    mcp.setRequestHandler(CallToolRequestSchema, async req => {
-      if (req.params.name === 'reply') {
-        const { chat_id, text } = req.params.arguments as { chat_id: string; text: string }
-        // send()는 아웃바운드입니다: 채팅 플랫폼에 POST하거나 로컬
-        // 아래 전체 예제에 표시된 SSE 브로드캐스트를 테스트합니다.
-        send(`Reply to ${chat_id}: ${text}`)
-        return { content: [{ type: 'text', text: 'sent' }] }
-      }
-      throw new Error(`unknown tool: ${req.params.name}`)
-    })
-    ```
-  </Step>
-
-  <Step title="지침 업데이트">
-    `Server` 생성자의 `instructions` 문자열을 업데이트하여 Claude가 회신을 도구를 통해 다시 라우팅하는 방법을 알 수 있도록 합니다. 이 예제는 Claude에 인바운드 태그에서 `chat_id`를 전달하도록 알려줍니다:
-
-    ```ts theme={null}
-    instructions: 'Messages arrive as <channel source="webhook" chat_id="...">. Reply with the reply tool, passing the chat_id from the tag.'
-    ```
-  </Step>
-</Steps>
+```ts theme={null}
+instructions: 'Messages arrive as <channel source="webhook" chat_id="...">. Reply with the reply tool, passing the chat_id from the tag.'
+```
 
 다음은 양방향 지원이 있는 완전한 `webhook.ts`입니다. 아웃바운드 회신은 [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE)를 사용하여 `GET /events`를 통해 스트리밍되므로 `curl -N localhost:8788/events`는 실시간으로 볼 수 있습니다. 인바운드 채팅은 `POST /`에 도착합니다:
 
@@ -427,9 +413,7 @@ Bun.serve({
 
 [fakechat 서버](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)는 파일 첨부 및 메시지 편집이 있는 더 완전한 예제를 보여줍니다.
 
-<h2 id="gate-inbound-messages">
-  인바운드 메시지 게이팅
-</h2>
+## 인바운드 메시지 게이팅
 
 게이트되지 않은 채널은 프롬프트 주입 벡터입니다. 엔드포인트에 도달할 수 있는 모든 사람이 Claude 앞에 텍스트를 넣을 수 있습니다. 채팅 플랫폼 또는 공개 엔드포인트를 수신하는 채널은 무언가를 내보내기 전에 실제 발신자 확인이 필요합니다.
 
@@ -447,19 +431,17 @@ await mcp.notification({ ... })
 
 채팅 또는 방 ID가 아닌 발신자의 ID에 게이트합니다: 예제에서 `message.from.id`, `message.chat.id`가 아닙니다. 그룹 채팅에서 이들은 다르며 방에 게이트하면 허용 목록에 있는 그룹의 모든 사람이 세션에 메시지를 주입할 수 있습니다.
 
-[Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) 및 [Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord) 채널은 동일한 방식으로 발신자 허용 목록에 게이트합니다. 페어링으로 목록을 부트스트랩합니다: 사용자가 봇에 DM을 보내면 봇이 페어링 코드로 회신하고 사용자가 Claude Code 세션에서 승인하며 플랫폼 ID가 추가됩니다. 전체 페어링 흐름은 구현 중 하나를 참조하세요. [iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) 채널은 다른 접근 방식을 취합니다: 시작 시 메시지 데이터베이스에서 사용자의 자신의 주소를 감지하고 자동으로 통과시키며 다른 발신자는 핸들로 추가됩니다.
+[Telegram](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) 및 [Discord](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord) 채널은 동일한 방식으로 발신자 허용 목록에 게이트합니다. 이들은 [페어링](https://code.claude.com/docs/ko/channels.md#security)으로 목록을 부트스트랩합니다. 전체 페어링 흐름은 구현 중 하나를 참조하세요. [iMessage](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage) 채널은 다른 접근 방식을 취합니다: 시작 시 메시지 데이터베이스에서 사용자의 자신의 주소를 감지하고 자동으로 통과시키며 다른 발신자는 핸들로 추가됩니다.
 
-<h2 id="relay-permission-prompts">
-  권한 프롬프트 릴레이
-</h2>
+## 권한 프롬프트 릴레이
 
 Claude가 승인이 필요한 도구를 호출할 때 로컬 터미널 대화가 열리고 세션이 대기합니다. 양방향 채널은 동일한 프롬프트를 병렬로 수신하고 다른 장치의 사용자에게 릴레이하도록 선택할 수 있습니다. 둘 다 활성 상태로 유지됩니다: 터미널 또는 휴대폰에서 답변할 수 있으며 Claude Code는 먼저 도착하는 답변을 적용하고 다른 답변을 닫습니다.
 
 릴레이는 `Bash`, `Write` 및 `Edit`과 같은 도구 사용 승인을 다룹니다. 프로젝트 신뢰 및 MCP 서버 동의 대화는 릴레이되지 않습니다. 이들은 로컬 터미널에만 나타납니다.
 
-<h3 id="how-relay-works">
-  릴레이 작동 방식
-</h3>
+Claude Code v2.1.234 이상은 세션에 대해 채널로 등록한 서버에만 권한 요청을 보내므로 릴레이는 메시지 전달과 동일한 [세션 옵트인 및 조직 제어](https://code.claude.com/docs/ko/channels.md#security) 뒤에 있습니다. 릴레이는 또한 `--channels` 또는 개발 플래그로 서버를 옵트인하도록 요구하며 서버가 권한 기능을 선언하도록 요구합니다.
+
+### 릴레이 작동 방식
 
 권한 프롬프트가 열리면 릴레이 루프에는 네 가지 단계가 있습니다:
 
@@ -470,26 +452,40 @@ Claude가 승인이 필요한 도구를 호출할 때 로컬 터미널 대화가
 
 로컬 터미널 대화는 이 모든 과정을 통해 열려 있습니다. 터미널의 누군가가 원격 판정이 도착하기 전에 답변하면 해당 답변이 대신 적용되고 보류 중인 원격 요청이 삭제됩니다.
 
-<img src="https://mintcdn.com/claude-code/9FG0ZKj9uKYiHmbi/images/channel-permission-relay.svg?fit=max&auto=format&n=9FG0ZKj9uKYiHmbi&q=85&s=97d57f128f0da55f105ab1e3a7e10240" alt="시퀀스 다이어그램: Claude Code가 permission_request 알림을 채널 서버로 보내고, 서버가 프롬프트를 채팅 앱으로 포맷하고 보내며, 인간이 판정으로 회신하고, 서버가 해당 회신을 Claude Code로 다시 권한 알림으로 구문 분석합니다" width="600" height="230" data-path="images/channel-permission-relay.svg" />
+![시퀀스 다이어그램: Claude Code가 permission\_request 알림을 채널 서버로 보내고, 서버가 프롬프트를 채팅 앱으로 포맷하고 보내며, 인간이 판정으로 회신하고, 서버가 해당 회신을 Claude Code로 다시 권한 알림으로 구문 분석합니다](https://mintcdn.com/claude-code/9FG0ZKj9uKYiHmbi/images/channel-permission-relay.svg?fit=max\&auto=format\&n=9FG0ZKj9uKYiHmbi\&q=85\&s=97d57f128f0da55f105ab1e3a7e10240)
 
-<h3 id="permission-request-fields">
-  권한 요청 필드
-</h3>
+### 권한 요청 필드
 
 Claude Code의 아웃바운드 알림은 `notifications/claude/channel/permission_request`입니다. [채널 알림](#notification-format)과 같이 전송은 표준 MCP이지만 메서드 및 스키마는 Claude Code 확장입니다. `params` 객체에는 서버가 아웃바운드 프롬프트로 포맷하는 네 개의 문자열 필드가 있습니다:
 
-| 필드              | 설명                                                                                                                                                                                                   |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `request_id`    | `a`-`z`에서 그려진 5개의 소문자이며 `l`을 제외하므로 휴대폰에 입력할 때 `1` 또는 `I`로 읽히지 않습니다. 아웃바운드 프롬프트에 포함하여 회신에서 에코할 수 있도록 합니다. Claude Code는 발급한 ID를 가진 판정만 수락합니다. 로컬 터미널 대화는 이 ID를 표시하지 않으므로 아웃바운드 핸들러가 이를 학습하는 유일한 방법입니다. |
-| `tool_name`     | Claude가 사용하려는 도구의 이름(예: `Bash` 또는 `Write`).                                                                                                                                                          |
-| `description`   | 이 특정 도구 호출이 수행하는 작업의 인간이 읽을 수 있는 요약이며 로컬 터미널 대화가 표시하는 동일한 텍스트입니다. Bash 호출의 경우 이는 Claude의 명령 설명이거나 주어진 것이 없으면 명령 자체입니다.                                                                               |
-| `input_preview` | 도구의 인수를 JSON 문자열로 200자로 잘린 것입니다. Bash의 경우 명령입니다. Write의 경우 파일 경로 및 콘텐츠의 접두사입니다. 한 줄 메시지만 공간이 있는 경우 프롬프트에서 생략합니다. 서버가 표시할 내용을 결정합니다.                                                                  |
+| 필드 | 설명 |
+| - | - |
+| `request_id` | `a`-`z`에서 그려진 5개의 소문자이며 `l`을 제외하므로 휴대폰에 입력할 때 `1` 또는 `I`로 읽히지 않습니다. 아웃바운드 프롬프트에 포함하여 회신에서 에코할 수 있도록 합니다. Claude Code는 발급한 ID를 가진 판정만 수락합니다. 로컬 터미널 대화는 이 ID를 표시하지 않으므로 아웃바운드 핸들러가 이를 학습하는 유일한 방법입니다. |
+| `tool_name` | Claude가 사용하려는 도구의 이름(예: `Bash` 또는 `Write`). |
+| `description` | 이 특정 도구 호출이 수행하는 작업의 인간이 읽을 수 있는 요약이며 명령 자체가 아닙니다. Bash 호출의 경우 이는 Claude의 명령 설명이거나 모델이 설명을 제공하지 않으면 상수 `Run shell command`이며 명령 세부 정보를 포함하지 않습니다. 공간이 있을 때 `input_preview`를 렌더링합니다. |
+| `input_preview` | 도구의 인수를 JSON 형태의 표시 텍스트로, 최상위 필드별로 키가 지정됩니다. Bash의 경우 명령입니다. Write의 경우 파일 경로 및 콘텐츠입니다. 한 줄 메시지만 공간이 있는 경우 프롬프트에서 생략합니다. 서버가 표시할 내용을 결정합니다. |
 
-서버가 다시 보내는 판정은 `notifications/claude/channel/permission`이며 두 필드가 있습니다: 위의 ID를 에코하는 `request_id` 및 `'allow'` 또는 `'deny'`로 설정된 `behavior`. Allow는 도구 호출을 진행하도록 합니다. Deny는 이를 거부하며 로컬 대화에서 아니오로 답변하는 것과 동일합니다. 어느 판정도 향후 호출에 영향을 주지 않습니다.
+Claude Code v2.1.211 이상의 클라이언트는 릴레이하기 전에 `description` 및 `input_preview`를 정제합니다. 수신하는 텍스트에서 세 가지 변경을 예상합니다:
 
-<h3 id="add-relay-to-a-chat-bridge">
-  채팅 브리지에 릴레이 추가
-</h3>
+* Claude Code는 방향 재정의 문자, 보이지 않는 문자, 따옴표 및 꺾쇠 괄호 모양의 문자를 중립화합니다.
+* Claude Code는 각 공백 실행을 단일 공백으로 접습니다.
+* Claude Code는 최대 3,500개 코드 포인트까지 텍스트 전체를 릴레이합니다. 더 긴 값의 경우 계산된 `⋯ N code points elided ⋯` 마커 주위의 시작과 끝을 받습니다. 긴 명령의 끝은 여전히 승인자에게 도달합니다.
+
+`input_preview`의 경우 Claude Code는 3,500 제한을 인수의 각 최상위 필드에 별도로 적용하고 JSON의 자체 구조 따옴표를 유지합니다. v2.1.211 이전의 클라이언트는 `description`을 원본으로 릴레이하고 `input_preview`를 200 UTF-16 단위로 자르고 후행 줄임표를 붙입니다.
+
+Claude Code v2.1.234 이상의 클라이언트는 순환 구조 또는 극도로 큰 배열과 같이 안전하게 직렬화할 수 없는 `input_preview` 필드 값 대신 마커 `(value unserializable)`을 릴레이합니다. 여전히 필드의 키를 받으며 미리보기의 다른 필드는 변경되지 않습니다.
+
+Claude Code v2.1.234 이상의 클라이언트는 또한 `description` 및 `input_preview`의 자격 증명을 마스킹합니다. API 키 또는 개인 액세스 토큰과 같은 인식 가능한 공급자 자격 증명 토큰 대신 `[REDACTED]`를 받습니다. 필드를 렌더링할 때 마스킹의 세 가지 효과를 예상합니다:
+
+* Claude Code는 `input_preview` 내의 키 이름과 해당 값을 마스킹합니다. 표시하는 키 이름이 입력의 키 이름과 일치하지 않을 수 있습니다.
+* Claude Code는 셸 구문, 경로 문자 또는 URL 문자를 포함하는 범위를 마스킹하지 않습니다. 마스크는 승인되는 명령, 파일 경로 또는 대상을 숨길 수 없습니다.
+* Claude Code는 인식 가능한 접두사가 없는 비밀이나 공백에 걸쳐 있는 비밀(예: 개인 키 블록)을 마스킹하지 않습니다. 둘 다 마스킹되지 않은 상태로 서버에 도달합니다.
+
+마스킹은 필드를 수신하는 사람을 변경하지 않습니다. 마스킹되지 않은 상태로 유지되는 모든 것은 `--channels` 또는 개발 플래그로 옵트인한 서버에만 이동합니다. 클라이언트 플릿을 제어하지 않는 한 두 필드를 신뢰할 수 없는 것으로 취급합니다.
+
+서버가 다시 보내는 판정은 `notifications/claude/channel/permission`이며 두 필드가 있습니다: 위의 ID를 에코하는 `request_id` 및 `'allow'` 또는 `'deny'`로 설정된 `behavior`. Allow는 도구 호출을 진행하도록 합니다. Deny는 이를 거부합니다. 어느 판정도 향후 호출에 영향을 주지 않습니다.
+
+### 채팅 브리지에 릴레이 추가
 
 양방향 채널에 권한 릴레이를 추가하려면 세 가지 구성 요소가 필요합니다:
 
@@ -501,97 +497,98 @@ Claude Code의 아웃바운드 알림은 `notifications/claude/channel/permissio
 
 [회신 도구 노출](#expose-a-reply-tool)에서 조립된 양방향 채팅 브리지와 같은 것에 이를 추가하려면:
 
-<Steps>
-  <Step title="권한 기능 선언">
-    `Server` 생성자에서 `experimental` 아래 `claude/channel` 옆에 `claude/channel/permission: {}`를 추가합니다:
+**1. 권한 기능 선언**
 
-    ```ts theme={null}
-    capabilities: {
-      experimental: {
-        'claude/channel': {},
-        'claude/channel/permission': {},  // 권한 릴레이에 옵트인합니다
+`Server` 생성자에서 `experimental` 아래 `claude/channel` 옆에 `claude/channel/permission: {}`를 추가합니다:
+
+```ts theme={null}
+capabilities: {
+  experimental: {
+    'claude/channel': {},
+    'claude/channel/permission': {},  // 권한 릴레이에 옵트인합니다
+  },
+  tools: {},
+},
+```
+
+**2. 들어오는 요청 처리**
+
+`Server` 생성자와 `mcp.connect()` 사이에 알림 핸들러를 등록합니다. Claude Code는 권한 대화가 열릴 때 [4개의 요청 필드](#permission-request-fields)로 호출합니다. 핸들러는 플랫폼에 대한 프롬프트를 포맷하고 ID로 회신하기 위한 지침을 포함합니다:
+
+```ts theme={null}
+import { z } from 'zod'
+
+// setNotificationHandler는 메서드 필드의 z.literal로 라우팅하므로
+// 이 스키마는 검증자이자 디스패치 키입니다
+const PermissionRequestSchema = z.object({
+  method: z.literal('notifications/claude/channel/permission_request'),
+  params: z.object({
+    request_id: z.string(),     // 5개의 소문자, 프롬프트에 그대로 포함합니다
+    tool_name: z.string(),      // 예: "Bash", "Write"
+    description: z.string(),    // 이 호출의 요약. 신뢰할 수 없는 것으로 취급합니다.
+    input_preview: z.string(),  // 도구 인수를 JSON 형태의 텍스트로. 신뢰할 수 없는 것으로 취급합니다.
+  }),
+})
+
+mcp.setNotificationHandler(PermissionRequestSchema, async ({ params }) => {
+  // send()는 아웃바운드입니다: 채팅 플랫폼에 POST하거나 로컬
+  // 아래 전체 예제에 표시된 SSE 브로드캐스트를 테스트합니다.
+  send(
+    `Claude wants to run ${params.tool_name}: ${params.description}\n` +
+    // input_preview는 실제 인수를 전달합니다. 공간이 있을 때 렌더링합니다:
+    // Bash의 경우 설명만으로도 "Run shell command"일 수 있으며
+    // 명령 세부 정보가 없습니다
+    `${params.input_preview}\n\n` +
+    // 지침의 ID는 3단계에서 인바운드 핸들러가 구문 분석하는 것입니다
+    `Reply "yes ${params.request_id}" or "no ${params.request_id}"`,
+  )
+})
+```
+
+**3. 인바운드 핸들러에서 판정 가로채기**
+
+인바운드 핸들러는 플랫폼에서 메시지를 수신하는 루프 또는 콜백입니다: [발신자에 게이트](#gate-inbound-messages)하고 `notifications/claude/channel`을 내보내 채팅을 Claude로 전달하는 동일한 위치입니다. 채팅 전달 호출 전에 판정 형식을 인식하고 대신 권한 알림을 내보내는 확인을 추가합니다.
+
+정규식은 Claude Code가 생성하는 ID 형식과 일치합니다: 5개 문자, `l` 없음. `/i` 플래그는 휴대폰 자동 수정이 회신을 대문자로 만드는 것을 허용합니다. 다시 보내기 전에 캡처된 ID를 소문자로 만듭니다.
+
+```ts theme={null}
+// "y abcde", "yes abcde", "n abcde", "no abcde"와 일치합니다
+// [a-km-z]는 Claude Code가 사용하는 ID 알파벳입니다 (소문자, 'l' 건너뜀)
+// /i는 휴대폰 자동 수정을 허용합니다. 보내기 전에 캡처를 소문자로 만듭니다
+const PERMISSION_REPLY_RE = /^\s*(y|yes|n|no)\s+([a-km-z]{5})\s*$/i
+
+async function onInbound(message: PlatformMessage) {
+  if (!allowed.has(message.from.id)) return  // 먼저 발신자에 게이트합니다
+
+  const m = PERMISSION_REPLY_RE.exec(message.text)
+  if (m) {
+    // m[1]은 판정 단어, m[2]는 요청 ID입니다
+    // 채팅 대신 Claude Code로 판정 알림을 내보냅니다
+    await mcp.notification({
+      method: 'notifications/claude/channel/permission',
+      params: {
+        request_id: m[2].toLowerCase(),  // 자동 수정 대문자의 경우 정규화합니다
+        behavior: m[1].toLowerCase().startsWith('y') ? 'allow' : 'deny',
       },
-      tools: {},
-    },
-    ```
-  </Step>
-
-  <Step title="들어오는 요청 처리">
-    `Server` 생성자와 `mcp.connect()` 사이에 알림 핸들러를 등록합니다. Claude Code는 권한 대화가 열릴 때 [4개의 요청 필드](#permission-request-fields)로 호출합니다. 핸들러는 플랫폼에 대한 프롬프트를 포맷하고 ID로 회신하기 위한 지침을 포함합니다:
-
-    ```ts theme={null}
-    import { z } from 'zod'
-
-    // setNotificationHandler는 메서드 필드의 z.literal로 라우팅하므로
-    // 이 스키마는 검증자이자 디스패치 키입니다
-    const PermissionRequestSchema = z.object({
-      method: z.literal('notifications/claude/channel/permission_request'),
-      params: z.object({
-        request_id: z.string(),     // 5개의 소문자, 프롬프트에 그대로 포함합니다
-        tool_name: z.string(),      // 예: "Bash", "Write"
-        description: z.string(),    // 이 호출의 인간이 읽을 수 있는 요약
-        input_preview: z.string(),  // 도구 인수를 JSON으로, ~200자로 잘림
-      }),
     })
+    return  // 판정으로 처리됨, 채팅으로도 전달하지 마세요
+  }
 
-    mcp.setNotificationHandler(PermissionRequestSchema, async ({ params }) => {
-      // send()는 아웃바운드입니다: 채팅 플랫폼에 POST하거나 로컬
-      // 아래 전체 예제에 표시된 SSE 브로드캐스트를 테스트합니다.
-      send(
-        `Claude wants to run ${params.tool_name}: ${params.description}\n\n` +
-        // 지침의 ID는 3단계에서 인바운드 핸들러가 구문 분석하는 것입니다
-        `Reply "yes ${params.request_id}" or "no ${params.request_id}"`,
-      )
-    })
-    ```
-  </Step>
+  // 판정 형식과 일치하지 않음: 일반 채팅 경로로 넘어갑니다
+  await mcp.notification({
+    method: 'notifications/claude/channel',
+    params: { content: message.text, meta: { chat_id: String(message.chat.id) } },
+  })
+}
+```
 
-  <Step title="인바운드 핸들러에서 판정 가로채기">
-    인바운드 핸들러는 플랫폼에서 메시지를 수신하는 루프 또는 콜백입니다: [발신자에 게이트](#gate-inbound-messages)하고 `notifications/claude/channel`을 내보내 채팅을 Claude로 전달하는 동일한 위치입니다. 채팅 전달 호출 전에 판정 형식을 인식하고 대신 권한 알림을 내보내는 확인을 추가합니다.
+원격 회신이 아무런 효과가 없고 로컬 터미널 대화가 열린 상태로 유지되면 다음 원인을 확인합니다:
 
-    정규식은 Claude Code가 생성하는 ID 형식과 일치합니다: 5개 문자, `l` 없음. `/i` 플래그는 휴대폰 자동 수정이 회신을 대문자로 만드는 것을 허용합니다. 다시 보내기 전에 캡처된 ID를 소문자로 만듭니다.
+* **형식이 잘못됨**: 인바운드 핸들러의 정규식이 일치하지 않으므로 `approve it` 또는 ID 없는 `yes`와 같은 텍스트는 Claude로 일반 메시지로 넘어갑니다.
+* **ID가 잘못됨**: 서버가 판정을 내보내지만 Claude Code는 해당 ID를 가진 열린 요청을 찾지 못하고 자동으로 삭제합니다.
+* **이전 프롬프트에서 사용된 ID**: 서버가 요청의 ID로 판정을 내보내지만 세션의 이전 프롬프트에 동일한 ID가 있었습니다. ID가 반복되면 Claude Code는 해당 ID를 가진 모든 채널 판정을 삭제하므로 한 프롬프트를 위한 회신이 다른 프롬프트를 승인할 수 없습니다. ID는 5개의 무작위 문자이므로 반복은 드뭅니다. 대신 터미널에서 답변하세요.
 
-    ```ts theme={null}
-    // "y abcde", "yes abcde", "n abcde", "no abcde"와 일치합니다
-    // [a-km-z]는 Claude Code가 사용하는 ID 알파벳입니다 (소문자, 'l' 건너뜀)
-    // /i는 휴대폰 자동 수정을 허용합니다. 보내기 전에 캡처를 소문자로 만듭니다
-    const PERMISSION_REPLY_RE = /^\s*(y|yes|n|no)\s+([a-km-z]{5})\s*$/i
-
-    async function onInbound(message: PlatformMessage) {
-      if (!allowed.has(message.from.id)) return  // 먼저 발신자에 게이트합니다
-
-      const m = PERMISSION_REPLY_RE.exec(message.text)
-      if (m) {
-        // m[1]은 판정 단어, m[2]는 요청 ID입니다
-        // 채팅 대신 Claude Code로 판정 알림을 내보냅니다
-        await mcp.notification({
-          method: 'notifications/claude/channel/permission',
-          params: {
-            request_id: m[2].toLowerCase(),  // 자동 수정 대문자의 경우 정규화합니다
-            behavior: m[1].toLowerCase().startsWith('y') ? 'allow' : 'deny',
-          },
-        })
-        return  // 판정으로 처리됨, 채팅으로도 전달하지 마세요
-      }
-
-      // 판정 형식과 일치하지 않음: 일반 채팅 경로로 넘어갑니다
-      await mcp.notification({
-        method: 'notifications/claude/channel',
-        params: { content: message.text, meta: { chat_id: String(message.chat.id) } },
-      })
-    }
-    ```
-  </Step>
-</Steps>
-
-Claude Code는 로컬 터미널 대화도 열어 두므로 어느 쪽이든 답변할 수 있으며 먼저 도착하는 답변이 적용됩니다. 예상된 형식과 정확히 일치하지 않는 원격 회신은 두 가지 방식 중 하나로 실패하며 두 경우 모두 대화는 열려 있습니다:
-
-* **다른 형식**: 인바운드 핸들러의 정규식이 일치하지 않으므로 `approve it` 또는 ID 없는 `yes`와 같은 텍스트는 Claude로 일반 메시지로 넘어갑니다.
-* **올바른 형식, 잘못된 ID**: 서버가 판정을 내보내지만 Claude Code는 해당 ID를 가진 열린 요청을 찾지 못하고 자동으로 삭제합니다.
-
-<h3 id="full-example">
-  전체 예제
-</h3>
+### 전체 예제
 
 아래의 조립된 `webhook.ts`는 이 페이지의 세 가지 확장을 모두 결합합니다: 회신 도구, 발신자 게이팅 및 권한 릴레이. 여기서 시작하는 경우 초기 연습에서 [프로젝트 설정 및 `.mcp.json` 항목](#example-build-a-webhook-receiver)도 필요합니다.
 
@@ -600,7 +597,7 @@ curl에서 양쪽 방향을 테스트 가능하게 하려면 HTTP 리스너는 �
 * **`GET /events`**: SSE 스트림을 열어 두고 각 아웃바운드 메시지를 `data:` 줄로 푸시하므로 `curl -N`은 Claude의 회신 및 권한 프롬프트가 실시간으로 도착하는 것을 볼 수 있습니다.
 * **`POST /`**: 인바운드 측, 이전과 동일한 핸들러이지만 이제 채팅 전달 분기 전에 판정 형식 확인이 삽입되었습니다.
 
-```ts title="권한 릴레이가 있는 전체 webhook.ts' expandable theme={null}
+```ts title="권한 릴레이가 있는 전체 webhook.ts" expandable theme={null}
 #!/usr/bin/env bun
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
@@ -673,7 +670,8 @@ const PermissionRequestSchema = z.object({
 
 mcp.setNotificationHandler(PermissionRequestSchema, async ({ params }) => {
   send(
-    `Claude wants to run ${params.tool_name}: ${params.description}\n\n` +
+    `Claude wants to run ${params.tool_name}: ${params.description}\n` +
+    `${params.input_preview}\n\n` +
     `Reply "yes ${params.request_id}" or "no ${params.request_id}"`,
   )
 })
@@ -741,6 +739,8 @@ Bun.serve({
 claude --dangerously-load-development-channels server:webhook
 ```
 
+이 연습은 권한 대화 자체를 테스트하므로 세션이 열리면 `Shift+Tab`을 누르면 상태 표시줄에 `⏸ manual mode on`이 표시될 때까지 누릅니다. 자동 모드에서 분류기는 `reply` 호출을 결정하고 원격 측에서 답변할 대화가 열리지 않습니다.
+
 두 번째에서 아웃바운드 측을 스트리밍하여 Claude의 회신 및 권한 프롬프트가 실시간으로 도착하는 것을 볼 수 있습니다:
 
 ```bash theme={null}
@@ -753,7 +753,7 @@ curl -N localhost:8788/events
 curl -d "list the files in this directory" -H "X-Sender: dev" localhost:8788
 ```
 
-파일 나열은 읽기 전용이므로 Claude는 승인 없이 실행합니다. 권한 대화는 Claude가 `reply` 도구를 호출하여 답변을 다시 보낼 때 열립니다. 로컬 대화가 Claude Code 터미널에서 열립니다. 잠시 후 프롬프트가 `/events` 스트림에 나타나며 5자 ID를 포함합니다. 원격 측에서 승인합니다:
+파일 나열은 읽기 전용이므로 Claude는 승인 없이 실행합니다. 권한 대화는 Claude가 `reply` 도구를 호출하여 답변을 다시 보낼 때 열립니다. 로컬 대화가 Claude Code 터미널에서 열리고, 잠시 후 `mcp__webhook__reply`에 대한 프롬프트가 5자 ID를 포함하여 `/events` 스트림에 나타납니다. 원격 측에서 승인합니다:
 
 ```bash theme={null}
 curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
@@ -767,21 +767,17 @@ curl -d "yes <id>" -H "X-Sender: dev" localhost:8788
 * **아웃바운드 경로**: `reply` 도구 핸들러는 Claude가 대화형 응답을 위해 호출하는 것입니다. `PermissionRequestSchema` 알림 핸들러는 권한 대화가 열릴 때 Claude Code가 호출하는 것입니다. 둘 다 `send()`를 호출하여 `/events`를 통해 브로드캐스트하지만 시스템의 다른 부분에 의해 트리거됩니다.
 * **HTTP 핸들러**: `GET /events`는 SSE 스트림을 열어 두므로 curl이 아웃바운드를 실시간으로 볼 수 있습니다. `POST`는 인바운드이며 `X-Sender` 헤더에 게이트됩니다. `yes <id>` 또는 `no <id>` 본문은 Claude Code로 판정 알림으로 이동하며 Claude에 도달하지 않습니다. 다른 모든 것은 채널 이벤트로 Claude로 전달됩니다.
 
-<h2 id="package-as-a-plugin">
-  플러그인으로 패키징
-</h2>
+## 플러그인으로 패키징
 
-채널을 설치 가능하고 공유 가능하게 하려면 [플러그인](/docs/ko/plugins)으로 래핑하고 [마켓플레이스](/docs/ko/plugin-marketplaces)에 게시합니다. 사용자는 `/plugin install`로 설치한 다음 `--channels plugin:<name>@<marketplace>`로 세션별로 활성화합니다.
+채널을 설치 가능하고 공유 가능하게 하려면 [플러그인](https://code.claude.com/docs/ko/plugins/overview.md)으로 래핑하고 [마켓플레이스](https://code.claude.com/docs/ko/plugins/overview.md)에 게시합니다. 사용자는 `/plugin install`로 설치한 다음 `--channels plugin:<name>@<marketplace>`로 세션별로 활성화합니다.
 
-자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](/docs/ko/channels#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 기본 허용 목록은 `claude-plugins-official`의 채널 플러그인이며, Anthropic이 재량에 따라 관리합니다. [인앱 제출 양식](/docs/ko/plugins#submit-your-plugin-to-the-community-marketplace)은 플러그인을 커뮤니티 마켓플레이스에 추가하며, 이는 채널 허용 목록에 없습니다.
+자신의 마켓플레이스에 게시된 채널은 [승인된 허용 목록](https://code.claude.com/docs/ko/channels.md#supported-channels)에 없으므로 여전히 `--dangerously-load-development-channels`를 실행해야 합니다. 기본 허용 목록은 `claude-plugins-official`의 채널 플러그인입니다. 커뮤니티 마켓플레이스는 채널 허용 목록에 없습니다.
 
-Anthropic 파트너 담당자와 함께 작업 중인 경우 공식 마켓플레이스 목록을 조정하기 위해 연락합니다. Team 및 Enterprise 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](/docs/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
+Anthropic 파트너 담당자와 함께 작업 중인 경우 공식 마켓플레이스 목록을 조정하기 위해 연락합니다. Team 및 Enterprise 계획에서 관리자는 대신 조직의 자신의 [`allowedChannelPlugins`](https://code.claude.com/docs/ko/channels#restrict-which-channel-plugins-can-run) 목록에 플러그인을 포함할 수 있으며, 이는 기본 Anthropic 허용 목록을 대체합니다.
 
-<h2 id="see-also">
-  참고 항목
-</h2>
+## 참고 항목
 
-* [채널](/docs/ko/channels)을 설치하고 Telegram, Discord, iMessage 또는 fakechat 데모를 사용하며 팀 또는 엔터프라이즈 조직에 대해 채널을 활성화합니다
+* [채널](https://code.claude.com/docs/ko/channels.md)을 설치하고 Telegram, Discord, iMessage 또는 fakechat 데모를 사용하며 팀 또는 엔터프라이즈 조직에 대해 채널을 활성화합니다
 * [작동하는 채널 구현](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins)은 페어링 흐름, 회신 도구 및 파일 첨부가 있는 완전한 서버 코드입니다
-* [MCP](/docs/ko/mcp)는 채널 서버가 구현하는 기본 프로토콜입니다
-* [플러그인](/docs/ko/plugins)을 사용하여 채널을 패키징하면 사용자가 `/plugin install`로 설치할 수 있습니다
+* [MCP](https://code.claude.com/docs/ko/mcp.md)는 채널 서버가 구현하는 기본 프로토콜입니다
+* [플러그인](https://code.claude.com/docs/ko/plugins/overview.md)을 사용하여 채널을 패키징하면 사용자가 `/plugin install`로 설치할 수 있습니다

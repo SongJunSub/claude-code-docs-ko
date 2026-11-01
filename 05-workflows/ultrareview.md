@@ -6,77 +6,149 @@
 
 > /code-review ultra를 사용하여 클라우드에서 심층적인 다중 에이전트 코드 리뷰를 실행하여 병합 전에 버그를 찾고 검증합니다.
 
-<Note>
-  Ultrareview는 연구 미리보기 기능입니다. 기능, 가격 책정 및 가용성은 피드백에 따라 변경될 수 있습니다. 이제 명령어는 `/code-review ultra`로 호출되며, `/ultrareview`는 별칭으로 유지됩니다.
-</Note>
+> [!NOTE]
+>
+> Ultrareview는 연구 미리보기 기능입니다. 기능, 가격 책정 및 가용성은 피드백에 따라 변경될 수 있습니다. 명령어는 `/code-review ultra`입니다. Ultrareview를 사용할 수 있는 계정에서는 `/ultrareview`가 별칭입니다.
 
-Ultrareview는 Claude Code 웹 인프라에서 실행되는 심층 코드 리뷰입니다. `/code-review ultra`를 실행하면 Claude Code는 원격 샌드박스에서 리뷰어 에이전트 플릿을 시작하여 브랜치 또는 풀 요청의 버그를 찾습니다.
+Ultrareview는 [클라우드 세션](https://code.claude.com/docs/ko/claude-code-on-the-web.md)으로 Anthropic의 인프라에서 실행되는 심층 코드 리뷰입니다. `/code-review ultra`를 실행하면 Claude Code는 클라우드 샌드박스에서 리뷰어 에이전트 플릿을 시작하여 브랜치 또는 풀 요청의 버그를 찾습니다.
 
-로컬 `/code-review` 또는 `/review`와 비교하여 ultrareview는 다음을 제공합니다:
+로컬 `/code-review`와 비교하여 ultrareview는 다음을 제공합니다:
 
 * **더 높은 신호**: 보고된 모든 발견 사항이 독립적으로 재현되고 검증되므로 결과는 스타일 제안보다는 실제 버그에 초점을 맞춥니다
 * **더 광범위한 범위**: 더 큰 리뷰어 에이전트 플릿이 변경 사항을 병렬로 탐색하므로 로컬 리뷰에서 놓칠 수 있는 문제를 표면화합니다
-* **로컬 리소스 사용 없음**: 리뷰가 원격 샌드박스에서 완전히 실행되므로 실행 중에 터미널이 다른 작업을 위해 자유로워집니다
+* **로컬 리소스 사용 없음**: 리뷰가 클라우드 샌드박스에서 완전히 실행되므로 실행 중에 터미널이 다른 작업을 위해 자유로워집니다
 
-Ultrareview는 Claude Code 웹 인프라에서 실행되기 때문에 Claude.ai 계정으로 인증이 필요합니다. API 키만으로 로그인한 경우 `/login`을 실행하고 먼저 Claude.ai로 인증하세요. Ultrareview는 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry와 함께 Claude Code를 사용할 때 사용할 수 없으며, Zero Data Retention을 활성화한 조직에서도 사용할 수 없습니다.
+Ultrareview는 Anthropic의 인프라에서 클라우드 세션으로 실행되기 때문에 claude.ai 계정으로 인증이 필요합니다. API 키만으로 로그인한 경우 `/login`을 실행하고 먼저 claude.ai로 인증하세요. Ultrareview는 Amazon Bedrock, Google Cloud의 Agent Platform 또는 Microsoft Foundry와 함께 Claude Code를 사용할 때 사용할 수 없으며, Zero Data Retention을 활성화했거나 [HIPAA 구성](https://code.claude.com/docs/ko/hipaa-setup.md)이 적용된 조직에서도 사용할 수 없습니다. 이러한 경우 `/code-review ultra`는 대신 세션에서 로컬 리뷰를 실행합니다. [고객 관리형 암호화 키](https://platform.claude.com/docs/en/manage-claude/cmek)(CMEK)를 사용하는 조직은 ultrareview를 실행할 수 없습니다. 변경 사항을 로컬에서 리뷰하려면 `/code-review`를 실행하세요.
 
-<h2 id="run-ultrareview-from-the-cli">
-  CLI에서 ultrareview 실행
-</h2>
+## CLI에서 ultrareview 실행하기
 
-Claude Code CLI의 모든 git 저장소에서 리뷰를 시작합니다.
+모든 git 저장소에서 리뷰를 시작할 수 있습니다.
 
 ```text theme={null}
 /code-review ultra
 ```
 
-인수 없이 ultrareview는 현재 브랜치와 기본 브랜치 간의 차이를 검토하며, 작업 트리의 커밋되지 않은 변경 사항과 스테이징된 변경 사항을 포함합니다. Claude Code는 저장소 상태를 번들로 묶고 리뷰를 위해 원격 샌드박스에 업로드합니다.
+인수 없이 실행하면 ultrareview는 커밋되지 않은 변경 사항과 스테이징된 변경 사항을 포함하여 현재 브랜치와 기본 브랜치 사이의 diff를 리뷰합니다.
 
-대신 GitHub 풀 요청을 검토하려면 PR 번호를 전달합니다.
+브랜치 리뷰의 경우 Claude Code는 저장소 상태를 번들로 묶어 [로컬 저장소를 클라우드 세션에 업로드](https://code.claude.com/docs/ko/claude-code-on-the-web.md#send-local-repositories-without-github)하는 규칙에 따라 클라우드 샌드박스에 업로드합니다. 이 규칙은 크기 제한, 체크아웃 요구 사항, 그리고 `.env` 및 `*.tfvars` 파일처럼 자격 증명이나 키와 같은 이름을 가진 파일의 커밋되지 않은 변경 사항이 어떻게 처리되는지를 다룹니다. [풀 리퀘스트를 리뷰](#review-a-pull-request)하는 경우 Claude Code는 사용자의 머신에서 아무것도 업로드하지 않습니다.
+
+실행하기 전에 Claude Code는 리뷰 범위, 남은 무료 실행 횟수, 예상 비용을 보여 주는 확인 대화 상자를 표시합니다. 브랜치 리뷰의 경우 범위에는 파일 수와 줄 수가 포함됩니다. 확인하면 사용자가 세션을 계속 사용하는 동안 리뷰가 백그라운드에서 진행됩니다.
+
+이 명령은 `/code-review ultra`로 호출할 때만 실행되며, Claude가 스스로 ultrareview를 시작하지는 않습니다.
+
+### 다른 기준과 비교하여 리뷰하기
+
+기본 브랜치가 아닌 다른 기준과 비교하려면 브랜치 이름을 전달합니다. 다음 예시는 기본 브랜치 대신 `develop`을 기준으로 현재 브랜치를 리뷰합니다.
+
+```text theme={null}
+/code-review ultra develop
+```
+
+기준 브랜치가 로컬 클론에 존재할 필요는 없으며, Claude Code가 `origin`에서 가져옵니다. 이름에 오타가 있으면 Claude Code는 오류 메시지에서 가장 가까운 브랜치 이름을 제안합니다.
+
+커밋 ID나 태그도 기준으로 사용할 수 있으며, 이 경우 리뷰는 해당 커밋 이후 브랜치에 적용된 변경 사항을 다룹니다.
+
+### 풀 리퀘스트 리뷰하기
+
+로컬 브랜치 대신 `github.com`의 풀 리퀘스트를 리뷰하려면 PR 번호를 전달합니다.
 
 ```text theme={null}
 /code-review ultra 1234
 ```
 
-PR 모드에서 원격 샌드박스는 로컬 작업 트리를 번들로 묶는 대신 호스트에서 직접 풀 요청을 복제합니다. PR 모드는 `github.com`의 저장소 및 관리자가 Claude Code에 연결한 [GitHub Enterprise Server](/docs/ko/github-enterprise-server) 인스턴스에서 작동합니다.
+이 명령은 `#1234`, `PR 1234`, 붙여 넣은 PR URL도 허용합니다. 붙여 넣은 URL은 현재 디렉터리의 저장소를 가리켜야 합니다.
 
-<Tip>
-  저장소가 너무 커서 번들로 묶을 수 없는 경우 Claude Code는 대신 PR 모드를 사용하도록 요청합니다. 브랜치를 푸시하고 초안 PR을 열고 `/code-review ultra <PR-number>`를 실행합니다.
+PR 모드에는 `github.com`의 저장소가 필요합니다. [GitHub Enterprise Server](https://code.claude.com/docs/ko/github-enterprise-server.md) 인스턴스의 저장소라면 PR 번호 없이 `/code-review ultra`를 실행하여 대신 로컬 브랜치를 리뷰합니다.
 
-  풀 요청의 차이가 너무 큰 경우 Claude Code는 리뷰 작업이 실행되기 전에 범위 지정 힌트와 함께 리뷰를 거부합니다.
-</Tip>
+PR 모드에서는 클라우드 샌드박스가 작업 트리를 업로드하는 대신 `github.com`에서 풀 리퀘스트를 클론합니다. 이때 Claude 계정에 연결된 GitHub 계정을 사용하므로, 해당 계정에 저장소 읽기 권한이 있어야 합니다.
 
-시작하기 전에 Claude Code는 리뷰 범위(브랜치를 검토할 때 파일 및 라인 수 포함), 남은 무료 실행 횟수 및 예상 비용이 포함된 확인 대화를 표시합니다. 확인한 후 리뷰는 백그라운드에서 계속되며 세션을 계속 사용할 수 있습니다. 명령은 `/code-review ultra`로 호출할 때만 실행되며, Claude는 자동으로 ultrareview를 시작하지 않습니다.
+[`/web-setup`](https://code.claude.com/docs/ko/web-quickstart#connect-from-your-terminal)을 실행하여 GitHub CLI 로그인을 Claude 계정에 연결합니다.
 
-<h2 id="pricing-and-free-runs">
-  가격 책정 및 무료 실행
-</h2>
+### 풀 리퀘스트에 결과 게시하기
+
+Claude Code v2.1.227 이상에서는 `github.com`의 풀 리퀘스트를 리뷰할 때, 완료된 결과를 Claude가 사용자 본인의 GitHub 계정으로 PR에 단일 일반 댓글로 게시하도록 할 수 있습니다. 이 댓글은 리뷰나 승인이 아니며, 끝에 "Generated by Claude Code" 문구가 붙습니다. 브랜치를 리뷰하는 경우 Claude Code는 결과를 세션에만 표시합니다.
+
+Claude Code는 사용자가 해당 실행에서 게시를 선택하지 않는 한 절대 게시하지 않으며, 기본값은 `--no-post`입니다. 게시 여부는 실행할 때마다 선택합니다.
+
+* **대화형**: 실행 대화 상자에서 **Run and post the findings to the PR as me**를 선택합니다. `/code-review ultra 1234 --post`처럼 명령에 `--post`를 추가하면 Claude Code가 해당 옵션을 미리 선택해 두지만, 실행 전에 여전히 확인을 요청합니다.
+* **비대화형**: [`claude ultrareview` 하위 명령](#run-ultrareview-non-interactively)을 `--post`와 함께 실행합니다. 플래그와 함께 하위 명령을 실행하는 것이 게시에 대한 동의이므로 Claude Code는 묻지 않고 게시합니다. `claude -p '/code-review ultra'` 실행에서는 결과가 도착하기 전에 Claude Code가 종료되므로 아무것도 게시하지 않습니다. 대신 하위 명령을 사용합니다.
+
+Claude Code는 사용자의 머신에서 게시하지 않습니다. 리뷰의 세션 ID를 Anthropic API로 보내면, API가 Claude에 연결된 GitHub 계정을 통해 저장된 리뷰 결과를 댓글로 게시합니다. 게시에는 리뷰 자체와 동일한 claude.ai 로그인이 필요하며, 서드파티 제공업체를 사용하거나 [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ko/env-vars)를 설정한 경우에는 사용할 수 없습니다.
+
+대화형 세션에서는 결과가 도착하면 Claude Code가 게시를 시작하므로, 리뷰가 끝날 때까지 세션을 열어 두어야 합니다. Claude Code는 게시 선택을 해당 세션에서만 유지합니다. 리뷰가 끝나기 전에 세션이 종료되면, 나중에 대화를 재개하더라도 Claude Code는 아무것도 게시하지 않습니다.
+
+게시가 완료되면 Claude가 결과를 알려 줍니다.
+
+* **Posted**: Claude가 댓글 링크를 제공합니다.
+* **Already posted**: 같은 리뷰의 이전 게시로 이미 PR에 댓글이 달려 있으므로, Claude는 다시 게시하는 대신 풀 리퀘스트 링크를 제공합니다.
+* **Failed**: Claude가 그 이유를 알려 주며, 결과는 터미널에 남아 있으므로 직접 게시할 수 있습니다.
+
+### 일반 문장으로 요청 전달하기
+
+작업 중인 내용을 일반 문장으로 설명할 수도 있습니다.
+
+```text theme={null}
+/code-review ultra check my auth changes
+```
+
+이 경우에도 리뷰는 인수 없이 실행할 때와 같은 범위인 현재 브랜치를 다룹니다. Claude는 입력한 텍스트를 메모로 보관하여 실행 대화 상자에 표시하고, 결과가 도착하면 결과를 해당 메모와 연관 지어 설명합니다.
+
+Claude Code는 텍스트가 두 단어 이상이고 브랜치 이름이나 PR 참조가 아닌 경우에만 메모로 취급합니다. 한 단어는 브랜치 이름이나 PR 참조로 읽으므로, 브랜치 이름을 잘못 입력하면 메모와 함께 실행되는 대신 [다른 기준과 비교하여 리뷰하기](#review-against-a-different-base)에서 설명한 가장 가까운 브랜치 오류가 표시됩니다. `check PR 123 again`처럼 텍스트에 PR 참조와 다른 단어가 섞여 있는 경우에도 Claude Code는 실행하지 않습니다. 대신 해당 PR을 리뷰하려면 PR 번호만으로, 현재 브랜치를 리뷰하려면 참조 없이 다시 실행하도록 요청합니다.
+
+> [!TIP]
+>
+> 저장소가 너무 커서 번들로 묶을 수 없으면 Claude Code가 대신 PR 모드를 사용하라고 안내합니다. `github.com`의 저장소라면 브랜치를 푸시하고 초안 PR을 연 다음 `/code-review ultra <PR-number>`를 실행합니다.
+
+### diff 제한 및 폴백
+
+Ultrareview는 리뷰 작업을 실행하기 전에 diff를 확인하고, 있는 그대로 리뷰할 수 없는 경우 이를 알려 줍니다.
+
+* **diff가 너무 큰 경우**: 브랜치 리뷰에는 기본적으로 최대 500개의 변경된 파일과 8,000개의 변경된 줄을 포함할 수 있습니다. 정확한 값은 달라질 수 있으며, [거부 메시지](https://code.claude.com/docs/ko/errors.md#diff-is-too-large-for-ultrareview)에 현재 적용 중인 값, diff의 크기, 변경된 줄이 가장 많은 파일이 표시됩니다. Claude Code는 너무 큰 풀 리퀘스트도 같은 방식으로 거부하며, 파일 수와 줄 수는 표시하지만 파일별 내역은 표시하지 않습니다
+* **리뷰할 내용이 없는 경우**: 기준과의 diff가 비어 있으면 ultrareview는 거부하면서 비교 대상이 된 브랜치나 커밋, 그리고 현재 상황을 알려 줍니다. 예를 들어 커밋되지 않은 변경 사항 없이 기준 브랜치 자체에 있는 경우나, 브랜치의 모든 커밋이 이미 기준에 포함된 경우입니다. 또한 작업 중인 브랜치로 전환하기, 로컬 편집 사항을 스테이징하거나 커밋하기, 다른 기준 전달하기 등 해당 상황의 해결 방법도 제안합니다
+* **첫 번째 커밋**: 저장소의 첫 번째 커밋에는 비교할 이전 내용이 없으므로, 실행 대화 상자에서 확인하면 ultrareview가 그 안의 모든 파일을 리뷰합니다. 추적되지 않는 파일이 있으면 대신 거부하고, 리뷰하려는 파일을 `git add`하라고 안내합니다. 동일한 크기 제한이 적용됩니다.
+
+  첫 번째 커밋은 이 확인을 거친 후에만 전체 리뷰되므로, `claude ultrareview` 하위 명령과 `claude -p`는 이를 거부하고 대신 대화형 세션을 사용하도록 안내합니다. Claude Code v2.1.277 이상이 필요합니다
+* **병합 기준이 없는 경우**: 브랜치가 기준 브랜치와 공유하는 히스토리가 없거나 저장소에 비교할 기준 브랜치가 없으면, ultrareview는 대신 저장소의 추적되는 모든 파일을 리뷰합니다. 이 폴백에는 전체 클론이 필요하며 동일한 크기 제한이 적용됩니다. 실행 대화 상자에서 확인하거나 사용자가 직접 `claude ultrareview` 하위 명령을 실행한 경우에만 실행됩니다. `claude -p`를 비롯하여 둘 다 해당하지 않는 경우에는 ultrareview가 거부하면서 리뷰가 모든 파일을 다루게 된다고 알리고, 대화형 세션을 사용하도록 안내합니다.
+
+  URL을 가져온 후 `FETCH_HEAD`를 체크아웃하여 생성된 detached HEAD처럼 브랜치나 다른 ref가 없는 체크아웃에서는 Claude Code가 [리뷰를 거부](https://code.claude.com/docs/ko/errors.md#your-checkout-has-no-branches)하고 먼저 브랜치를 만들도록 제안합니다
+
+## 가격 책정 및 무료 실행
 
 Ultrareview는 플랜의 포함된 사용량이 아닌 사용량 크레딧에 대해 청구되는 프리미엄 기능입니다.
 
-| 플랜                | 포함된 무료 실행 | 무료 실행 후                                                                                            |
-| ----------------- | --------- | -------------------------------------------------------------------------------------------------- |
-| Pro               | 3회 무료 실행  | [사용량 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)으로 청구됨 |
-| Max               | 3회 무료 실행  | [사용량 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)으로 청구됨 |
-| Team 및 Enterprise | 없음        | [사용량 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)으로 청구됨 |
+| 플랜 | 포함된 무료 실행 | 무료 실행 후 |
+| - | - | - |
+| Pro | 3회 무료 실행 | [사용량 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)으로 청구됨 |
+| Max | 3회 무료 실행 | [사용량 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)으로 청구됨 |
+| Ultra | 3회 무료 실행 | [사용량 크레딧](https://support.claude.com/ko/articles/12429409-extra-usage-for-paid-claude-plans)으로 청구됨 |
 
-Pro 및 Max 구독자는 기능을 시도하기 위해 3회의 무료 ultrareview 실행을 받습니다. 이 3회 실행은 계정당 일회성 할당이며 새로 고쳐지지 않습니다. 3회를 모두 사용한 후 또는 무료 실행 기간이 끝난 후 각 리뷰는 사용량 크레딧으로 청구되며 일반적으로 변경 사항의 크기에 따라 $5에서 $20의 비용이 듭니다. 원격 세션이 시작되면 실행이 계산되므로 조기에 중단하거나 완료되지 않은 리뷰도 무료 실행을 사용합니다. 유료 리뷰의 경우 사용량 크레딧은 실행된 부분에 대해서만 청구됩니다.
+* **무료 실행**: Pro, Max 및 Ultra의 3회 실행은 계정당 일회성 할당이며 새로 고쳐지지 않습니다.
+* **리뷰당 비용**: 무료 실행을 모두 사용한 후 일반적으로 변경 사항의 크기에 따라 $5에서 $25의 사용량 크레딧이 소요되며, 각 실행 전에 시작 대화 상자에 표시되는 예상 비용과 일치합니다.
+* **실행이 계산되는 시점**: 클라우드 세션이 시작되면입니다. 조기에 중단하거나 완료되지 않은 리뷰도 무료 실행을 사용합니다. 유료 리뷰의 경우 사용량 크레딧은 실행된 부분에 대해서만 청구됩니다.
 
-Ultrareview는 항상 무료 실행 외에 사용량 크레딧으로 청구되기 때문에 계정 또는 조직은 유료 리뷰를 시작하기 전에 사용량 크레딧을 활성화해야 합니다. 사용량 크레딧이 활성화되지 않은 경우 Claude Code는 시작을 차단하고 켤 수 있는 청구 설정으로 연결합니다. `/usage-credits`를 실행하여 현재 설정을 확인하거나 변경할 수도 있습니다.
+Ultrareview는 항상 무료 실행 외에 사용량 크레딧으로 청구되기 때문에 계정 또는 조직은 유료 리뷰를 시작하기 전에 사용량 크레딧을 활성화해야 합니다. 사용량 크레딧이 활성화되지 않은 경우 Claude Code는 시작을 차단합니다. 계정의 청구를 관리할 수 있는 경우 Claude Code는 사용량 크레딧을 켤 수 있는 청구 설정으로 연결합니다.
 
-<h2 id="track-a-running-review">
-  실행 중인 리뷰 추적
-</h2>
+`/usage-credits`를 실행하여 사용량 크레딧 설정을 확인하거나 변경할 수도 있습니다.
 
-리뷰는 일반적으로 5\~10분이 소요됩니다. 리뷰는 백그라운드 작업으로 실행되므로 세션에서 계속 작업하고, 다른 명령을 시작하거나, 터미널을 완전히 닫을 수 있습니다.
+Claude Code는 대화당 한 번 사용량 크레딧 청구를 확인하도록 요청합니다. 예를 들어 `/clear`로 새 대화를 시작할 때 Claude Code는 다음 유료 리뷰에 대해 확인을 다시 표시합니다.
 
-`/tasks`를 사용하여 실행 중이고 완료된 리뷰를 보고, 리뷰의 상세 보기를 열거나, 진행 중인 리뷰를 중지합니다. 리뷰를 중지하면 클라우드 세션이 보관되고 부분 발견 사항은 반환되지 않습니다. 리뷰가 완료되면 검증된 발견 사항이 세션의 알림으로 나타납니다. 각 발견 사항에는 파일 위치와 문제에 대한 설명이 포함되어 있으므로 Claude에 직접 수정을 요청할 수 있습니다.
+## 실행 중인 리뷰 추적
 
-<h2 id="run-ultrareview-non-interactively">
-  비대화형으로 ultrareview 실행
-</h2>
+리뷰는 일반적으로 5\~15분이 소요됩니다. 리뷰는 백그라운드 작업으로 실행되므로 세션에서 계속 작업하거나 다른 명령을 시작할 수 있습니다. [발견 사항을 풀 리퀘스트에 게시](#post-findings-to-the-pull-request)하도록 선택한 경우 리뷰가 완료될 때까지 세션을 열어 두십시오. 세션이 먼저 종료되면 Claude Code는 아무것도 게시하지 않습니다.
 
-`claude ultrareview` 하위 명령을 사용하여 대화형 세션 없이 CI 또는 스크립트에서 ultrareview를 시작합니다. 하위 명령은 `/code-review ultra`와 동일한 리뷰를 시작하고, 원격 리뷰가 완료될 때까지 차단하고, 발견 사항을 stdout으로 인쇄하고, 성공 시 코드 0으로 종료하거나 실패 시 코드 1로 종료합니다.
+`/tasks`를 사용하여 실행 중이고 완료된 리뷰를 보고, 리뷰의 상세 보기를 열거나, 진행 중인 리뷰를 중지합니다. 리뷰를 중지하면 Claude Code는 클라우드 세션을 보관하고 부분 발견 사항은 반환하지 않습니다.
+
+Claude는 리뷰가 중지되었거나 해당 세션을 찾을 수 없다는 사실도 알려 줄 수 있습니다.
+
+* 리뷰가 완료되기 전에 claude.ai에서 리뷰의 클라우드 세션이 중지되거나 [보관](https://code.claude.com/docs/ko/claude-code-on-the-web.md#archive-sessions)되면 Claude는 리뷰가 중지되었다고 알려 줍니다.
+* 리뷰의 클라우드 세션이 삭제되었거나, 리뷰를 시작한 이후 다른 Claude 계정 또는 조직으로 로그인한 경우 Claude는 세션을 찾을 수 없다고 알려 줍니다.
+* 계정을 전환한 경우에도 리뷰는 리뷰를 시작한 계정에서 계속 완료될 수 있습니다. 리뷰가 아직 실행 중이라면 해당 계정으로 다시 로그인한 후 `claude --resume`으로 대화를 재개하여 리뷰를 다시 연결하십시오.
+
+리뷰가 완료되면 Claude Code는 검증된 발견 사항을 세션의 알림으로 표시합니다. 각 발견 사항에는 파일 위치와 문제에 대한 설명이 포함되어 있으므로 Claude에 직접 수정을 요청할 수 있습니다.
+
+## 비대화형으로 ultrareview 실행
+
+`claude ultrareview` 하위 명령을 사용하여 대화형 세션 없이 CI 또는 스크립트에서 ultrareview를 시작합니다. 하위 명령은 `/code-review ultra`와 동일한 리뷰를 시작하고, 원격 리뷰가 완료될 때까지 차단하고, 발견 사항을 stdout으로 인쇄합니다. 실행이 `Error: Workspace not trusted`로 종료되면 [리뷰 실행 전에 폴더 신뢰하기](#trust-the-folder-before-the-review-runs)를 참조하세요.
 
 ```bash theme={null}
 claude ultrareview
@@ -84,40 +156,69 @@ claude ultrareview 1234
 claude ultrareview origin/main
 ```
 
-인수 없이 하위 명령은 현재 브랜치와 기본 브랜치 간의 차이를 검토합니다. PR 번호를 전달하여 풀 요청을 검토하거나, 기본 브랜치를 전달하여 대신 해당 브랜치에 대한 차이를 검토합니다. 하위 명령을 호출하면 대화형 명령이 표시하는 청구 및 약관 프롬프트에 대한 동의로 간주됩니다.
+인수 없이 하위 명령은 현재 브랜치와 기본 브랜치 간의 diff를 검토하며, 병합 기반이 없을 때 `/code-review ultra`와 동일한 [전체 저장소 폴백](#diff-limits-and-fallbacks)을 사용합니다. PR 번호를 전달하여 [`github.com`의 풀 리퀘스트를 리뷰](#review-a-pull-request)하거나, 기본 브랜치를 전달하여 해당 브랜치에 대해 검토합니다. [기본 브랜치 처리](#review-against-a-different-base)는 대화형 명령과 일치합니다.
 
-진행 메시지 및 라이브 세션 URL은 stderr로 이동하므로 stdout은 구문 분석 가능한 상태로 유지됩니다. 이 플래그를 사용하여 출력 및 시간 초과를 제어합니다:
+서브커맨드를 직접 실행하면 전체 리포지토리 폴백과 청구 및 약관 프롬프트에 동의한 것으로 간주되므로, 실행이 중간에 멈춰 확인을 요청하지 않습니다. 사용자가 직접 실행하는 것 자체가 동의로 간주됩니다. 반면 Claude가 사용자를 대신해 서브커맨드를 실행하는 경우(예: Bash 도구를 통해 실행하는 경우) Claude Code는 전체 리포지토리 리뷰를 거부합니다.
 
-| 플래그                   | 설명                                          |
-| --------------------- | ------------------------------------------- |
-| `--json`              | 형식이 지정된 발견 사항 대신 원본 `bugs.json` 페이로드를 인쇄합니다 |
-| `--timeout <minutes>` | 리뷰가 완료될 때까지 기다릴 최대 분 수입니다. 기본값은 30입니다       |
+> [!NOTE]
+>
+> `claude -p '/code-review ultra'`로는 발견 사항을 받을 수 없으므로 스크립트에서는 `claude ultrareview`를 사용합니다. `-p` 실행은 클라우드 리뷰를 시작한 후 기다리지 않고 종료됩니다. 리뷰가 사용량 크레딧을 청구하는 경우 `-p` 실행은 리뷰를 시작하지 않고 중지됩니다.
 
-`claude ultrareview` 실행은 `/code-review ultra`와 동일한 인증 및 사용량 크레딧 구성이 필요합니다. 하위 명령은 리뷰가 발견 사항 유무와 관계없이 완료될 때 코드 0으로 종료되고, 리뷰가 시작되지 않거나 원격 세션에 오류가 발생하거나 시간 초과가 경과할 때 코드 1로 종료되며, Ctrl-C로 중단될 때 코드 130으로 종료됩니다. 하위 명령을 중단하면 원격 리뷰는 계속 실행됩니다. stderr로 인쇄된 세션 URL을 따라 브라우저에서 시청합니다.
+| 플래그 | 설명 |
+| - | - |
+| `--json` | 형식이 지정된 발견 사항 대신 원본 `bugs.json` 페이로드를 인쇄합니다 |
+| `--timeout <minutes>` | 리뷰가 완료될 때까지 기다릴 최대 분 수입니다. 기본값은 45입니다 |
+| `--post` | [완료된 발견 사항을 풀 리퀘스트에 게시](#post-findings-to-the-pull-request)하여 GitHub 계정에서 하나의 일반 댓글로 게시합니다. `github.com` 풀 리퀘스트 대상에서 작동합니다. 다른 대상에서는 Claude Code가 플래그를 무시하고 그렇게 알립니다. Claude Code v2.1.227 이상이 필요합니다 |
+| `--no-post` | 발견 사항을 게시하지 않습니다. 이것이 기본값이며, 두 플래그를 모두 전달하면 Claude Code는 게시하지 않습니다. Claude Code v2.1.227 이상이 필요합니다 |
+| `--trust-workspace` | 묻지 않고 이번 실행에 한해서만 [현재 폴더를 신뢰](#trust-the-folder-before-the-review-runs)하므로, 스크립트나 CI 작업에서 신뢰하지 않은 체크아웃을 리뷰할 수 있습니다. 값을 받지 않으므로 PR 번호나 기본 브랜치는 이 플래그 앞에 두어야 합니다. Claude Code v2.1.309 이상이 필요합니다 |
 
-GitHub 풀 요청에 대한 자동 리뷰의 경우, [Code Review](/docs/ko/code-review)는 저장소와 직접 통합되고 CLI 단계 없이 발견 사항을 인라인 PR 댓글로 게시합니다.
+`claude ultrareview`는 stdout이 구문 분석 가능한 상태로 유지되도록 진행 메시지를 stderr에 씁니다.
 
-<h2 id="how-ultrareview-compares-to-/code-review-and-/review">
-  ultrareview와 /code-review 및 /review의 비교
-</h2>
+`claude ultrareview` 실행은 `/code-review ultra`와 동일한 인증 및 사용량 크레딧 구성이 필요합니다.
 
-세 명령 모두 코드를 검토하지만 워크플로우의 다른 단계를 대상으로 합니다.
+하위 명령은 다음 세 가지 코드 중 하나로 종료됩니다:
 
-|       | `/code-review` | `/review <pr>`       | `/code-review ultra`         |
-| ----- | -------------- | -------------------- | ---------------------------- |
-| 대상    | 작업 중인 diff     | GitHub 풀 요청          | 작업 중인 diff 또는 풀 요청           |
-| 실행    | 세션에서 로컬로       | 세션에서 로컬로             | 클라우드 샌드박스에서 원격으로             |
-| 깊이    | 노력 인수에 따라 확장   | 세션의 노력 수준에서 단일 패스 검토 | 독립적 검증이 있는 다중 에이전트 플릿        |
-| 기간    | 몇 초에서 몇 분      | 몇 초에서 몇 분            | 대략 5\~10분                    |
-| 비용    | 일반 사용량으로 계산됨   | 일반 사용량으로 계산됨         | 무료 실행, 그 후 대략 $5~$20 사용량 크레딧 |
-| 최적 용도 | 반복하는 동안 빠른 피드백 | 승인하기 전에 팀원의 PR 검토    | 실질적인 변경 사항을 병합하기 전에 신뢰도 향상   |
+* **0**: 리뷰가 완료되었으며, 발견 사항이 있거나 없습니다
+* **1**: 리뷰가 시작되지 않았거나 완료되기 전에 중지되었거나, 클라우드 세션에 오류가 발생했거나, 타임아웃이 경과했습니다. [폴더가 신뢰되지 않은](#trust-the-folder-before-the-review-runs) 경우에도 코드는 1이며, 신뢰 질문에 `n`으로 답하거나 Enter를 누르거나 Ctrl-C를 누른 경우도 포함됩니다.
+* **130**: 신뢰 질문이 아니라, 하위 명령이 리뷰를 시작하거나 발견 사항을 기다리거나 `--post` 댓글을 보내는 동안 Ctrl-C를 눌렀습니다
 
-작업하는 동안 빠른 피드백을 위해 `/code-review`를 사용합니다. 풀 요청을 승인하기 전에 검토하는 방식으로 살펴보려면 `/review <pr>`을 사용합니다. 로컬 검토에서 놓칠 수 있는 문제를 포착하는 더 깊은 패스를 원할 때 실질적인 변경 사항을 병합하기 전에 `/code-review ultra`를 사용합니다.
+발견 사항이 도착하기 전에 하위 명령이 종료되면 발견 사항은 터미널에 전달되지 않습니다. 리뷰는 클라우드에서 계속 실행 중일 수 있습니다. 하위 명령을 다시 실행하면 해당 리뷰를 재개하는 대신 새 리뷰가 시작되며, 새 리뷰는 [무료 실행을 사용하거나 사용량 크레딧으로 청구](#pricing-and-free-runs)됩니다.
 
-<h2 id="related-resources">
-  관련 리소스
-</h2>
+`--post`를 사용하면 하위 명령은 발견 사항을 인쇄한 직후 게시를 시작하고, 링크를 stderr로 인쇄합니다.
 
-* [Claude Code on the web](/docs/ko/claude-code-on-the-web): 클라우드 세션 및 클라우드 샌드박스의 작동 방식 알아보기
-* [ultraplan으로 복잡한 변경 사항 계획](/docs/ko/ultraplan): 사전 설계 작업을 위한 ultrareview의 계획 대응
-* [비용 효과적으로 관리](/docs/ko/costs): 사용량 추적 및 지출 한도 설정
+* 실행이 실패하거나, 중지되거나, 시간 초과되면 하위 명령은 아무것도 게시하지 않습니다.
+* 리뷰가 완료되었지만 댓글이 게시되지 않으면 Claude Code는 이유를 stderr로 인쇄하고, 발견 사항은 stdout에 유지되므로 수동으로 게시할 수 있습니다.
+
+GitHub 풀 리퀘스트에 대한 자동 리뷰의 경우, [Code Review](https://code.claude.com/docs/ko/code-review.md)는 저장소와 직접 통합되고 CLI 단계 없이 발견 사항을 인라인 PR 댓글로 게시합니다.
+
+### 리뷰 실행 전에 폴더 신뢰하기
+
+`claude ultrareview`가 `Trust <folder>? [y/N]`를 물으면 `y`로 답하여 [폴더를 신뢰](https://code.claude.com/docs/ko/permissions.md#project-allow-rules-and-workspace-trust)합니다. 폴더를 신뢰하면 git과 Claude Code가 해당 폴더의 git 구성과 프로젝트 설정에 지정된 프로그램을 실행할 수 있으므로, 그 코드를 신뢰하는 경우에만 폴더를 신뢰하세요.
+
+CI 작업이나 출력을 파일로 보내는 경우처럼 사용자에게 물을 수 없을 때는 [`Error: Workspace not trusted`](https://code.claude.com/docs/ko/errors#workspace-not-trusted-when-running-claude-ultrareview)와 함께 종료됩니다. 해당 실행에 한해 폴더를 신뢰하려면 `--trust-workspace`를 덧붙입니다:
+
+```bash theme={null}
+claude ultrareview 1234 --trust-workspace
+```
+
+신뢰하지 않는 풀 리퀘스트를 리뷰하려면 신뢰하는 브랜치에서 `claude ultrareview <PR number> --trust-workspace`를 실행합니다. PR은 [클라우드에서 복제](#review-a-pull-request)되므로 해당 브랜치가 로컬에 없어도 됩니다.
+
+## ultrareview와 /code-review의 비교
+
+두 검토 모두 코드를 검토하지만 워크플로우의 다른 단계에서 사용합니다.
+
+| | `/code-review` | `/code-review ultra` |
+| - | - | - |
+| 대상 | 작업 중인 diff, 풀 요청, 브랜치 또는 경로 | 작업 중인 diff 또는 풀 요청 |
+| 실행 | 세션에서 로컬로 | 클라우드 샌드박스에서 |
+| 깊이 | 노력 인수에 따라 확장 | 독립적 검증이 있는 다중 에이전트 플릿 |
+| 기간 | 몇 초에서 몇 분 | 대략 5\~15분 |
+| 비용 | 일반 사용량으로 계산됨 | 무료 실행, 그 후 대략 $5~$25 사용량 크레딧 |
+| 최적 용도 | 반복하는 동안 빠른 피드백 | 실질적인 변경 사항을 병합하기 전에 신뢰도 향상 |
+
+작업하는 동안 빠른 피드백을 위해 `/code-review`를 사용하거나, PR 번호를 전달하여 승인하기 전에 팀원의 풀 요청을 검토합니다. 로컬 검토에서 놓칠 수 있는 문제를 포착하는 더 깊은 패스를 원할 때 실질적인 변경 사항을 병합하기 전에 `/code-review ultra`를 사용합니다.
+
+## 관련 리소스
+
+* [클라우드에서 Claude Code 사용](https://code.claude.com/docs/ko/claude-code-on-the-web.md): 클라우드 세션 및 클라우드 샌드박스의 작동 방식 알아보기
+* [비용 효과적으로 관리](https://code.claude.com/docs/ko/costs.md): 사용량 추적 및 지출 한도 설정

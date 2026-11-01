@@ -8,35 +8,24 @@
 
 시스템 프롬프트는 Claude의 동작, 기능 및 응답 스타일을 정의합니다. CLI 또는 IDE와 같은 코딩 도구에서 인간이 작업을 감시하고 조종하는 경우 `claude_code` 프리셋으로 시작합니다. 다른 표면, 정체성 또는 권한 모델을 가진 에이전트의 경우 자신의 프롬프트를 작성합니다.
 
-이 페이지에서 다루는 내용:
-
-* [시스템 프롬프트 작동 방식](#how-system-prompts-work), 프리셋, `append`가 있는 프리셋, 사용자 정의 프롬프트 중에서 선택하기 위한 결정 테이블 포함
-* [에이전트 동작 사용자 정의](#customize-agent-behavior) CLAUDE.md 파일, 출력 스타일, `append`, 또는 사용자 정의 문자열 사용
-* [네 가지 접근 방식 비교](#compare-the-four-approaches) 지속성, 범위 및 보존되는 항목별
-* [접근 방식 결합](#combine-approaches) 사용자 정의 방법을 함께 계층화
-
-<h2 id="how-system-prompts-work">
-  시스템 프롬프트 작동 방식
-</h2>
+## 시스템 프롬프트 작동 방식
 
 시스템 프롬프트는 대화 전체에서 Claude의 동작 방식을 형성하는 초기 명령 집합입니다. Agent SDK에는 이에 대한 세 가지 시작점이 있습니다:
 
-* **최소 기본값**: TypeScript에서 `systemPrompt`를 설정하지 않거나 Python에서 `system_prompt`를 설정하지 않으면, SDK는 도구 호출을 다루지만 Claude Code의 코딩 지침, 응답 스타일 및 프로젝트 컨텍스트를 생략하는 최소 프롬프트를 사용합니다. 이는 기본적으로 전체 Claude Code 프롬프트를 사용하는 `claude -p`와 다릅니다. CLI에서 마이그레이션하고 일치하는 동작을 원하면 `claude_code` 프리셋을 설정합니다.
-* **`claude_code` 프리셋**: Claude Code CLI가 사용하는 전체 시스템 프롬프트로, 도구 사용 명령, 코드 스타일 및 형식 지침, 응답 톤 및 상세도 규칙, 보안 및 안전 명령, 작업 디렉토리 및 환경에 대한 컨텍스트를 포함합니다. TypeScript에서 `systemPrompt: { type: "preset", preset: "claude_code" }`를 설정하거나 Python에서 `system_prompt={"type": "preset", "preset": "claude_code"}`를 설정하고, 선택적으로 `append`를 사용하여 끝에 자신의 명령을 추가합니다.
+* **최소 기본값**: TypeScript에서 `systemPrompt`를 설정하지 않거나 Python에서 `system_prompt`를 설정하지 않으면, SDK는 도구 호출을 다루지만 `claude_code` 프리셋의 나머지 콘텐츠(보안 및 안전 명령 포함)를 생략하는 최소 프롬프트를 사용합니다. 이는 기본적으로 Claude Code 시스템 프롬프트를 사용하는 `claude -p`와 다릅니다. CLI에서 마이그레이션하고 일치하는 동작을 원하면 `claude_code` 프리셋을 설정합니다.
+* **`claude_code` 프리셋**: Claude Code CLI가 사용하는 시스템 프롬프트로, 도구 사용 명령 및 보안과 안전 명령을 포함합니다. TypeScript에서 `systemPrompt: { type: "preset", preset: "claude_code" }`를 설정하거나 Python에서 `system_prompt={"type": "preset", "preset": "claude_code"}`를 설정하고, 선택적으로 `append`를 사용하여 끝에 자신의 명령을 추가합니다.
 * **사용자 정의 문자열**: 직접 작성한 프롬프트입니다. SDK는 제공하는 것만 전송합니다.
 
-<h3 id="decide-on-a-starting-point">
-  시작점 결정
-</h3>
+### 시작점 결정
 
 결정 요소는 에이전트가 Claude Code와 얼마나 유사한지입니다: 저장소에서 작동하는 코딩 에이전트로, 인간이 스트리밍 출력을 보고 작업을 조종합니다. 제품이 그것으로부터 멀어질수록, 자신의 프롬프트를 더 많이 작성하고 싶을 것입니다.
 
-| 구축 중인 것                                                     | 사용                             | 얻을 수 있는 것                                                    |
-| :---------------------------------------------------------- | :----------------------------- | :----------------------------------------------------------- |
-| 인간이 보고 조종하는 CLI 또는 IDE와 같은 코딩 도구이며, Claude Code의 기본값이 원하는 것 | `claude_code` 프리셋              | 전체 Claude Code 프롬프트: 도구 지침, 안전 규칙, 터미널 친화적 응답, 저장소 규칙 인식     |
-| 동일한 종류의 도구에 코딩 표준, 출력 형식 또는 도메인 컨텍스트와 같은 제품별 규칙 추가          | `append`가 있는 `claude_code` 프리셋 | 위의 모든 것에 프리셋 후에 추가된 명령. 제거되는 것이 없으므로 이것이 가장 낮은 위험의 사용자 정의입니다 |
-| 다른 표면, 정체성 또는 권한 모델을 가진 에이전트, 또는 비코딩 에이전트                   | 사용자 정의 프롬프트 문자열                | 작성한 것만. 에이전트가 여전히 필요로 하는 도구 지침 및 안전 명령을 교체할 책임이 있습니다         |
-| 에이전트 페르소나가 없는 얇은 도구 호출 루프로, 사용자 프롬프트에서 모든 동작을 제공합니다         | `systemPrompt` 옵션 없음           | 최소 기본값: 도구 호출 지원 및 그 이상 없음                                   |
+| 구축 중인 것 | 사용 | 얻을 수 있는 것 |
+| :- | :- | :- |
+| 인간이 보고 조종하는 CLI 또는 IDE와 같은 코딩 도구이며, Claude Code의 기본값이 원하는 것 | `claude_code` 프리셋 | Claude Code 프롬프트(도구 지침 및 안전 규칙 포함) |
+| 동일한 종류의 도구에 코딩 표준, 출력 형식 또는 도메인 컨텍스트와 같은 제품별 규칙 추가 | `append`가 있는 `claude_code` 프리셋 | 위의 모든 것에 프리셋 후에 추가된 명령. 제거되는 것이 없으므로 이것이 가장 낮은 위험의 사용자 정의입니다 |
+| 다른 표면, 정체성 또는 권한 모델을 가진 에이전트, 또는 비코딩 에이전트 | 사용자 정의 프롬프트 문자열 | 작성한 것만. 에이전트가 여전히 필요로 하는 도구 지침 및 안전 명령을 교체할 책임이 있습니다 |
+| 에이전트 페르소나가 없는 얇은 도구 호출 루프로, 사용자 프롬프트에서 모든 동작을 제공합니다 | `systemPrompt` 옵션 없음 | 최소 기본값: 도구 호출 지원 및 그 이상 없음 |
 
 "Claude Code와 다름"은 일반적으로 다음 중 하나를 의미합니다:
 
@@ -47,84 +36,81 @@
 
 [비교 표](#compare-the-four-approaches)는 각 사용자 정의 방법이 보존하는 것을 보여줍니다.
 
-<h2 id="customize-agent-behavior">
-  에이전트 동작 사용자 정의
-</h2>
+## 에이전트 동작 사용자 정의
 
-출력 스타일, `append`, 그리고 사용자 정의 프롬프트 문자열은 각각 시스템 프롬프트를 직접 변경합니다. CLAUDE.md는 다른 경로를 따릅니다: SDK가 이를 읽고 그 내용을 시스템 프롬프트가 아닌 프로젝트 컨텍스트로 대화에 주입하므로, 선택한 시스템 프롬프트와 함께 동작을 형성합니다. [Skills](/docs/ko/agent-sdk/skills), [hooks](/docs/ko/agent-sdk/hooks), 그리고 [permissions](/docs/ko/agent-sdk/permissions)도 시스템 프롬프트 외부에서 동작을 형성하며 자체 페이지에서 다룹니다.
+`append`와 사용자 정의 프롬프트 문자열은 각각 시스템 프롬프트를 직접 변경하며, 출력 스타일은 Claude Code가 모든 응답에 대해 Claude에 제공하는 명령을 변경합니다. CLAUDE.md는 다른 경로를 따릅니다: SDK가 이를 읽고 그 내용을 프로젝트 컨텍스트로 대화에 주입하므로, 선택한 시스템 프롬프트와 함께 동작을 형성합니다. [Skills](https://code.claude.com/docs/ko/agent-sdk/skills.md), [hooks](https://code.claude.com/docs/ko/agent-sdk/hooks.md), 그리고 [permissions](https://code.claude.com/docs/ko/agent-sdk/permissions.md)도 시스템 프롬프트 외부에서 동작을 형성하며 자체 페이지에서 다룹니다.
 
-<h3 id="claude-md-files-for-project-level-instructions">
-  프로젝트 수준 명령을 위한 CLAUDE.md 파일
-</h3>
+### 프로젝트 수준 명령을 위한 CLAUDE.md 파일
 
-CLAUDE.md 파일은 Claude에 지속적인 프로젝트 컨텍스트와 명령을 제공합니다. SDK는 그 내용을 시스템 프롬프트가 아닌 대화에 주입하므로, 모든 시스템 프롬프트 구성과 함께 작동합니다. CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 그리고 효과적인 명령을 작성하는 방법에 대해서는 [Claude가 프로젝트를 기억하는 방법](/docs/ko/memory)을 참조하십시오. 이 섹션은 SDK에 특정한 내용을 다룹니다: CLAUDE.md가 로드되는 방식입니다.
+CLAUDE.md 파일은 Claude에 지속적인 프로젝트 컨텍스트와 명령을 제공합니다. SDK는 그 내용을 대화에 주입하고 시스템 프롬프트는 건드리지 않으므로, 모든 시스템 프롬프트 구성과 함께 작동합니다. CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 그리고 효과적인 명령을 작성하는 방법에 대해서는 [When to add to CLAUDE.md](https://code.claude.com/docs/ko/memory.md#when-to-add-to-claude-md)와 [How Claude remembers your project](https://code.claude.com/docs/ko/memory.md)의 나머지 부분을 참조하십시오. 이 섹션은 SDK에 특정한 내용을 다룹니다: CLAUDE.md가 로드되는 방식입니다.
 
 SDK는 일치하는 설정 소스가 활성화될 때 CLAUDE.md를 읽습니다: `'project'`는 작업 디렉토리에서 `CLAUDE.md` 또는 `.claude/CLAUDE.md`를 로드하고, `'user'`는 `~/.claude/CLAUDE.md`를 로드합니다. 기본 `query()` 옵션은 두 소스를 모두 활성화하므로 CLAUDE.md가 자동으로 로드됩니다. TypeScript에서 `settingSources`를 명시적으로 설정하거나 Python에서 `setting_sources`를 명시적으로 설정하면, 필요한 소스를 포함하십시오. CLAUDE.md 로딩은 `claude_code` 프리셋이 아닌 설정 소스에 의해 제어됩니다.
 
-<h4 id="load-claude-md-with-the-sdk">
-  SDK와 함께 CLAUDE.md 로드
-</h4>
+#### SDK와 함께 CLAUDE.md 로드
 
 CLAUDE.md를 로드하려면, `settingSources`를 CLAUDE.md가 있는 수준을 포함하도록 설정하십시오. 아래 예제는 프로젝트 수준 CLAUDE.md를 `claude_code` 프리셋과 함께 로드하므로, Claude는 전체 코딩 에이전트 프롬프트와 프로젝트의 규칙을 모두 가지고 있습니다:
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { query } from "@anthropic-ai/claude-agent-sdk";
+```typescript TypeScript theme={null}
+import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  const messages = [];
+const messages = [];
 
-  for await (const message of query({
-    prompt: "Add a new React component for user profiles",
-    options: {
-      systemPrompt: {
-        type: "preset",
-        preset: "claude_code" // Use Claude Code's system prompt
-      },
-      settingSources: ["project"] // Loads CLAUDE.md from project
-    }
-  })) {
-    messages.push(message);
+for await (const message of query({
+  prompt: "Add a new React component for user profiles",
+  options: {
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code" // Use Claude Code's system prompt
+    },
+    settingSources: ["project"] // Loads CLAUDE.md from project
   }
+})) {
+  messages.push(message);
+}
 
-  // Now Claude has access to your project guidelines from CLAUDE.md
-  ```
+// Now Claude has access to your project guidelines from CLAUDE.md
+```
 
-  ```python Python theme={null}
-  from claude_agent_sdk import query, ClaudeAgentOptions
+```python Python theme={null}
+import asyncio
 
-  messages = []
+from claude_agent_sdk import query, ClaudeAgentOptions
 
-  async for message in query(
-      prompt="Add a new React component for user profiles",
-      options=ClaudeAgentOptions(
-          system_prompt={
-              "type": "preset",
-              "preset": "claude_code",  # Use Claude Code's system prompt
-          },
-          setting_sources=["project"],  # Loads CLAUDE.md from project
-      ),
-  ):
-      messages.append(message)
+messages = []
 
-  # Now Claude has access to your project guidelines from CLAUDE.md
-  ```
-</CodeGroup>
+
+async def main():
+    async for message in query(
+        prompt="Add a new React component for user profiles",
+        options=ClaudeAgentOptions(
+            system_prompt={
+                "type": "preset",
+                "preset": "claude_code",  # Use Claude Code's system prompt
+            },
+            setting_sources=["project"],  # Loads CLAUDE.md from project
+        ),
+    ):
+        messages.append(message)
+
+
+asyncio.run(main())
+
+# Now Claude has access to your project guidelines from CLAUDE.md
+```
+
+예제를 실행하면, SDK는 Claude가 작업할 때 메시지를 스트리밍합니다: 시스템 초기화 메시지, 어시스턴트 메시지, 도구 결과를 전달하는 사용자 메시지, 그리고 세션 결과를 포함하는 최종 결과 메시지입니다.
 
 CLAUDE.md는 프로젝트의 모든 세션에서 지속되며, git을 통해 팀과 공유되고, 코드 변경 없이 자동으로 검색됩니다. 빈 `settingSources` 배열을 전달하면 로드되지 않습니다.
 
-<h3 id="output-styles-for-persistent-configurations">
-  지속적인 구성을 위한 출력 스타일
-</h3>
+### 지속적인 구성을 위한 출력 스타일
 
-출력 스타일은 Claude의 시스템 프롬프트를 수정하는 저장된 구성입니다. 마크다운 파일로 저장되며 세션 및 프로젝트 전체에서 재사용할 수 있습니다.
+출력 스타일은 Claude의 역할, 톤, 그리고 출력 형식을 변경하는 저장된 명령 집합입니다. 마크다운 파일로 저장되며 세션 및 프로젝트 전체에서 재사용할 수 있습니다.
 
-<h4 id="create-an-output-style">
-  출력 스타일 생성
-</h4>
+#### 출력 스타일 생성
 
-출력 스타일은 [frontmatter](/docs/ko/output-styles#frontmatter)에 메타데이터가 있는 마크다운 파일이며, 그 뒤에 프롬프트 내용이 있습니다. 모든 프로젝트에서 사용 가능한 사용자 수준 스타일의 경우 `~/.claude/output-styles/`에 저장하거나, 팀과 커밋하고 공유할 수 있는 프로젝트 수준 스타일의 경우 저장소의 `.claude/output-styles/`에 저장하십시오.
+출력 스타일은 [frontmatter](https://code.claude.com/docs/ko/output-styles.md#frontmatter)에 메타데이터가 있는 마크다운 파일이며, 그 뒤에 프롬프트 내용이 있습니다. 모든 프로젝트에서 사용 가능한 사용자 수준 스타일의 경우 `~/.claude/output-styles/`에 저장하거나, 팀과 커밋하고 공유할 수 있는 프로젝트 수준 스타일의 경우 저장소의 `.claude/output-styles/`에 저장하십시오.
 
-기본적으로, 사용자 정의 출력 스타일은 `claude_code` 프리셋의 소프트웨어 엔지니어링 명령을 자신의 명령으로 바꿉니다. 이를 유지하고 명령을 그 위에 계층화하려면, frontmatter에서 `keep-coding-instructions: true`를 설정하십시오. 에이전트가 여전히 소프트웨어 엔지니어링 작업을 수행할 때 이를 유지하십시오. 역할을 완전히 바꿀 때는 이를 제외하십시오.
+사용자 정의 출력 스타일은 `claude_code` 프리셋의 소프트웨어 엔지니어링 명령을 자신의 명령으로 바꿉니다. 이를 유지하고 명령을 그 위에 계층화하려면, frontmatter에서 `keep-coding-instructions: true`를 설정하십시오. 이러한 명령은 Claude Code의 전체 시스템 프롬프트에만 있으므로, 더 짧은 시스템 프롬프트를 사용하는 세션에서는 이 설정이 효과가 없습니다. 모든 모델에서 전체 프롬프트를 선택하려면 [`CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`](https://code.claude.com/docs/ko/env-vars#variables)를 `0`으로 설정하십시오. 에이전트가 여전히 소프트웨어 엔지니어링 작업을 수행할 때 이를 유지하십시오. 역할을 완전히 바꿀 때는 이를 제외하십시오.
 
 아래 예제는 코딩 명령을 유지하는 코드 리뷰 담당자 페르소나를 정의합니다. 코드 리뷰는 Claude Code의 보안 및 코드 품질 지침의 이점을 여전히 얻기 때문입니다. 프로젝트 전체에서 사용 가능하도록 `~/.claude/output-styles/code-reviewer.md`로 저장하십시오:
 
@@ -144,13 +130,11 @@ For every code submission:
 4. Rate code quality (1-10)
 ```
 
-<h4 id="activate-an-output-style">
-  출력 스타일 활성화
-</h4>
+#### 출력 스타일 활성화
 
 생성되면, 다음을 통해 출력 스타일을 활성화합니다:
 
-* **CLI**: `/config`를 실행하고 출력 스타일을 선택합니다
+* **CLI**: `/output-style <style>`을 실행합니다. 예를 들어 `/output-style concise`를 실행하거나, `/config`를 실행하고 하나를 선택합니다. `/output-style` 명령은 Claude Code v2.1.269 이상이 필요합니다.
 * **설정**: `.claude/settings.local.json`에서 `outputStyle`을 설정합니다
 * **TypeScript SDK**: `query()`에 전달된 인라인 `settings` 객체 내에서 `outputStyle`을 설정하거나, `settings`가 이를 설정하는 설정 파일을 가리키도록 합니다. `outputStyle`은 최상위 `Options` 필드가 아닙니다:
 
@@ -158,321 +142,438 @@ For every code submission:
   const options = { settings: { outputStyle: "Explanatory" } };
   ```
 
-Python SDK는 프로그래밍 방식으로 출력 스타일을 선택하는 옵션이 없습니다. `.claude/settings.local.json`에 쓸 수 없는 코드 전용 배포의 경우, `append` 또는 사용자 정의 프롬프트 문자열을 대신 사용하십시오.
+Python SDK에서는 `settings` 옵션을 통해 `outputStyle`을 설정하며, 이는 `'{"outputStyle": "Explanatory"}'`와 같은 JSON 문자열 또는 이를 설정하는 설정 파일의 경로를 사용합니다.
 
 **SDK 사용자를 위한 참고:** 출력 스타일은 `settingSources: ['user']` 또는 `settingSources: ['project']`(TypeScript) / `setting_sources=["user"]` 또는 `setting_sources=["project"]`(Python)을 옵션에 포함할 때 로드됩니다.
 
-<h3 id="append-to-the-claude_code-preset">
-  `claude_code` 프리셋에 추가
-</h3>
+### `claude_code` 프리셋에 추가
 
 Claude Code 프리셋을 `append` 속성과 함께 사용하여 모든 기본 제공 기능을 유지하면서 사용자 정의 명령을 추가할 수 있습니다.
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { query } from "@anthropic-ai/claude-agent-sdk";
+```typescript TypeScript theme={null}
+import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  const messages = [];
+const messages = [];
 
-  for await (const message of query({
-    prompt: "Help me write a Python function to calculate fibonacci numbers",
-    options: {
-      systemPrompt: {
-        type: "preset",
-        preset: "claude_code",
-        append: "Always include detailed docstrings and type hints in Python code."
-      }
-    }
-  })) {
-    messages.push(message);
-    if (message.type === "assistant") {
-      console.log(message.message.content);
+for await (const message of query({
+  prompt: "Help me write a Python function to calculate fibonacci numbers",
+  options: {
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append: "Always include detailed docstrings and type hints in Python code."
     }
   }
-  ```
-
-  ```python Python theme={null}
-  from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage
-
-  messages = []
-
-  async for message in query(
-      prompt="Help me write a Python function to calculate fibonacci numbers",
-      options=ClaudeAgentOptions(
-          system_prompt={
-              "type": "preset",
-              "preset": "claude_code",
-              "append": "Always include detailed docstrings and type hints in Python code.",
-          }
-      ),
-  ):
-      messages.append(message)
-      if isinstance(message, AssistantMessage):
-          print(message.content)
-  ```
-</CodeGroup>
-
-<h4 id="improve-prompt-caching-across-users-and-machines">
-  사용자 및 머신 전체에서 프롬프트 캐싱 개선
-</h4>
-
-기본적으로, 동일한 `claude_code` 프리셋과 `append` 텍스트를 사용하는 두 세션은 다른 작업 디렉토리에서 실행되는 경우 프롬프트 캐시 항목을 공유할 수 없습니다. 이는 프리셋이 `append` 텍스트 앞의 시스템 프롬프트에 세션별 컨텍스트를 포함하기 때문입니다: 작업 디렉토리, git 저장소 여부, 플랫폼, 활성 셸, OS 버전, 그리고 자동 메모리 경로. 해당 컨텍스트의 차이는 다른 시스템 프롬프트를 생성하고 캐시 미스를 초래합니다. CLAUDE.md 내용은 SDK가 이를 시스템 프롬프트가 아닌 대화에 주입하기 때문에 시스템 프롬프트 캐시에 영향을 주지 않습니다.
-
-세션 전체에서 시스템 프롬프트를 동일하게 만들려면, TypeScript에서 `excludeDynamicSections: true`를 설정하거나 Python에서 `"exclude_dynamic_sections": True`를 설정하십시오. 세션별 컨텍스트는 첫 번째 사용자 메시지로 이동하여, 정적 프리셋과 `append` 텍스트만 시스템 프롬프트에 남으므로 동일한 구성이 사용자 및 머신 전체에서 캐시 항목을 공유합니다.
-
-<Note>
-  `excludeDynamicSections`는 `@anthropic-ai/claude-agent-sdk` v0.2.98 이상 또는 Python의 경우 `claude-agent-sdk` v0.1.58 이상이 필요합니다. 프리셋 객체 형식에만 적용되며 `systemPrompt`가 문자열일 때는 효과가 없습니다.
-</Note>
-
-다음 예제는 공유 `append` 블록을 `excludeDynamicSections`와 쌍으로 만들어 다양한 디렉토리에서 실행되는 에이전트 플릿이 동일한 캐시된 시스템 프롬프트를 재사용할 수 있도록 합니다:
-
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { query } from "@anthropic-ai/claude-agent-sdk";
-
-  for await (const message of query({
-    prompt: "Triage the open issues in this repo",
-    options: {
-      systemPrompt: {
-        type: "preset",
-        preset: "claude_code",
-        append: "You operate Acme's internal triage workflow. Label issues by component and severity.",
-        excludeDynamicSections: true
-      }
-    }
-  })) {
-    // ...
+})) {
+  messages.push(message);
+  if (message.type === "assistant") {
+    console.log(message.message.content);
   }
-  ```
+}
+```
 
-  ```python Python theme={null}
-  from claude_agent_sdk import query, ClaudeAgentOptions
+```python Python theme={null}
+import asyncio
 
-  async for message in query(
-      prompt="Triage the open issues in this repo",
-      options=ClaudeAgentOptions(
-          system_prompt={
-              "type": "preset",
-              "preset": "claude_code",
-              "append": "You operate Acme's internal triage workflow. Label issues by component and severity.",
-              "exclude_dynamic_sections": True,
-          },
-      ),
-  ):
-      ...
-  ```
-</CodeGroup>
+from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage
 
-**트레이드오프:** 작업 디렉토리, git 저장소 플래그, 플랫폼, 활성 셸, OS 버전, 그리고 자동 메모리 경로는 여전히 Claude에 도달하지만, 시스템 프롬프트가 아닌 첫 번째 사용자 메시지의 일부로 도달합니다. 사용자 메시지의 명령은 시스템 프롬프트의 동일한 텍스트보다 약간 덜 가중치를 가지므로, Claude는 현재 디렉토리 또는 자동 메모리 경로에 대해 추론할 때 이를 덜 강하게 의존할 수 있습니다. 교차 세션 캐시 재사용이 최대한 권위 있는 환경 컨텍스트보다 더 중요할 때 이 옵션을 활성화하십시오.
+messages = []
 
-비대화형 CLI 모드의 동등한 플래그는 [`--exclude-dynamic-system-prompt-sections`](/docs/ko/cli-reference)를 참조하십시오.
 
-<h3 id="custom-system-prompts">
-  사용자 정의 시스템 프롬프트
-</h3>
+async def main():
+    async for message in query(
+        prompt="Help me write a Python function to calculate fibonacci numbers",
+        options=ClaudeAgentOptions(
+            system_prompt={
+                "type": "preset",
+                "preset": "claude_code",
+                "append": "Always include detailed docstrings and type hints in Python code.",
+            }
+        ),
+    ):
+        messages.append(message)
+        if isinstance(message, AssistantMessage):
+            print(message.content)
+
+
+asyncio.run(main())
+```
+
+#### 사용자 및 머신 전체에서 프롬프트 캐싱 개선
+
+기본적으로, 동일한 `claude_code` 프리셋과 `append` 텍스트를 사용하는 두 세션은 자동 메모리 위치가 다를 때 프롬프트 캐시 항목을 공유할 수 없습니다. 프리셋은 `append` 텍스트 앞의 시스템 프롬프트에 해당 위치를 포함하므로, 사용자, 머신, 체크아웃 전체에서 다릅니다.
+
+CLAUDE.md 내용과 작업 디렉토리, 플랫폼, 셸, OS 버전과 같은 환경 세부 정보는 Claude Code가 이를 시스템 프롬프트가 아닌 대화에 전달하기 때문에 시스템 프롬프트 캐시에 영향을 주지 않습니다.
+
+세션 전체에서 시스템 프롬프트를 동일하게 만들려면, TypeScript에서 `excludeDynamicSections: true`를 설정하거나 Python에서 `"exclude_dynamic_sections": True`를 설정하십시오. 사용자별 컨텍스트는 첫 번째 사용자 메시지로 이동하여, 정적 프리셋과 `append` 텍스트만 시스템 프롬프트에 남으므로 동일한 구성이 사용자 및 머신 전체에서 캐시 항목을 공유합니다.
+
+> [!NOTE]
+>
+> `excludeDynamicSections`는 `@anthropic-ai/claude-agent-sdk` v0.2.98 이상 또는 Python의 경우 `claude-agent-sdk` v0.1.58 이상이 필요합니다. 프리셋 객체 형식에만 설정하십시오. SDK는 사용자 정의 프롬프트 대신 프리셋을 전달할 때 이를 무시합니다. 사용자 정의 프롬프트의 명령을 TypeScript SDK에서 캐시된 상태로 유지하려면, [Cache the static part of a custom prompt](#cache-the-static-part-of-a-custom-prompt)를 참조하십시오.
+
+다음 예제는 공유 `append` 블록을 `excludeDynamicSections`와 쌍으로 만들어 에이전트 플릿이 동일한 캐시된 시스템 프롬프트를 재사용할 수 있도록 합니다:
+
+```typescript TypeScript theme={null}
+import { query } from "@anthropic-ai/claude-agent-sdk";
+
+for await (const message of query({
+  prompt: "Triage the open issues in this repo",
+  options: {
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append: "You operate Acme's internal triage workflow. Label issues by component and severity.",
+      excludeDynamicSections: true
+    }
+  }
+})) {
+  // ...
+}
+```
+
+```python Python theme={null}
+import asyncio
+
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+
+async def main():
+    async for message in query(
+        prompt="Triage the open issues in this repo",
+        options=ClaudeAgentOptions(
+            system_prompt={
+                "type": "preset",
+                "preset": "claude_code",
+                "append": "You operate Acme's internal triage workflow. Label issues by component and severity.",
+                "exclude_dynamic_sections": True,
+            },
+        ),
+    ):
+        ...
+
+
+asyncio.run(main())
+```
+
+**트레이드오프:** 시스템 프롬프트 밖으로 이동한 텍스트는 여전히 Claude에 도달하지만, 사용자 메시지에서입니다. 그 텍스트는 최소한 자동 메모리 디렉토리의 위치이며, 종종 전체 자동 메모리 섹션입니다. 사용자 메시지의 명령은 시스템 프롬프트의 동일한 텍스트보다 약간 덜 가중치를 가지므로, Claude는 자동 메모리 지침을 덜 일관되게 따를 수 있습니다. 교차 세션 캐시 재사용이 그보다 더 중요할 때 이 옵션을 활성화하십시오.
+
+비대화형 CLI 모드의 동등한 플래그는 [`--exclude-dynamic-system-prompt-sections`](https://code.claude.com/docs/ko/cli-reference)를 참조하십시오.
+
+### 사용자 정의 시스템 프롬프트
 
 사용자 정의 문자열을 `systemPrompt`로 제공하여 기본값을 완전히 자신의 명령으로 바꿀 수 있습니다.
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { query } from "@anthropic-ai/claude-agent-sdk";
+```typescript TypeScript theme={null}
+import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  const customPrompt = `You are a Python coding specialist.
-  Follow these guidelines:
-  - Write clean, well-documented code
-  - Use type hints for all functions
-  - Include comprehensive docstrings
-  - Prefer functional programming patterns when appropriate
-  - Always explain your code choices`;
+const customPrompt = `You are a Python coding specialist.
+Follow these guidelines:
+- Write clean, well-documented code
+- Use type hints for all functions
+- Include comprehensive docstrings
+- Prefer functional programming patterns when appropriate
+- Always explain your code choices`;
 
-  const messages = [];
+const messages = [];
 
-  for await (const message of query({
-    prompt: "Create a data processing pipeline",
-    options: {
-      systemPrompt: customPrompt
-    }
-  })) {
-    messages.push(message);
-    if (message.type === "assistant") {
-      console.log(message.message.content);
-    }
+for await (const message of query({
+  prompt: "Create a data processing pipeline",
+  options: {
+    systemPrompt: customPrompt
   }
-  ```
+})) {
+  messages.push(message);
+  if (message.type === "assistant") {
+    console.log(message.message.content);
+  }
+}
+```
 
-  ```python Python theme={null}
-  from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage
+```python Python theme={null}
+import asyncio
 
-  custom_prompt = """You are a Python coding specialist.
-  Follow these guidelines:
-  - Write clean, well-documented code
-  - Use type hints for all functions
-  - Include comprehensive docstrings
-  - Prefer functional programming patterns when appropriate
-  - Always explain your code choices"""
+from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage
 
-  messages = []
+custom_prompt = """You are a Python coding specialist.
+Follow these guidelines:
+- Write clean, well-documented code
+- Use type hints for all functions
+- Include comprehensive docstrings
+- Prefer functional programming patterns when appropriate
+- Always explain your code choices"""
 
-  async for message in query(
-      prompt="Create a data processing pipeline",
-      options=ClaudeAgentOptions(system_prompt=custom_prompt),
-  ):
-      messages.append(message)
-      if isinstance(message, AssistantMessage):
-          print(message.content)
-  ```
-</CodeGroup>
+messages = []
 
-<h2 id="compare-the-four-approaches">
-  네 가지 방식 모두 비교
-</h2>
+
+async def main():
+    async for message in query(
+        prompt="Create a data processing pipeline",
+        options=ClaudeAgentOptions(system_prompt=custom_prompt),
+    ):
+        messages.append(message)
+        if isinstance(message, AssistantMessage):
+            print(message.content)
+
+
+asyncio.run(main())
+```
+
+Python에서는 문자열로 전달하는 대신 `system_prompt={"type": "file", "path": "..."}` 형식으로 파일에서 큰 사용자 정의 프롬프트를 로드합니다. Python SDK는 문자열 프롬프트를 CLI 서브프로세스에 대한 하나의 명령줄 인수로 전달하므로, OS 인수 길이 제한을 초과하는 프롬프트는 API 요청이 전송되기 전에 프로세스 생성 시 실패합니다. Linux에서 오류는 `Argument list too long`입니다. 플랫폼 임계값 및 Windows 동작은 [`SystemPromptFile`](https://code.claude.com/docs/ko/agent-sdk/python#systempromptfile)을 참조하십시오.
+
+#### 사용자 정의 프롬프트의 정적 부분 캐시
+
+TypeScript SDK에서는 사용자 정의 프롬프트를 하나의 문자열 대신 문자열 배열로 전달할 수 있으며, 정적 부분과 나머지 부분 사이에 `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` 마커를 포함합니다. 프롬프트가 모든 요청에서 동일한 명령과 요청마다 변경되는 컨텍스트(예: 에이전트가 처리하는 고객 또는 티켓)를 결합할 때 이를 사용합니다. 두 부분을 하나의 문자열로 전달하면, 요청별 부분의 변경이 전체 시스템 프롬프트를 변경하므로 정적 명령도 캐시를 놓칩니다. 배열 형식은 Python SDK에서 사용할 수 없습니다. [`ClaudeAgentOptions`](https://code.claude.com/docs/ko/agent-sdk/python#claudeagentoptions)는 `system_prompt`가 허용하는 형식을 나열합니다.
+
+> [!NOTE]
+>
+> SDK는 Claude API를 직접 호출하거나 [Claude Platform on AWS](https://code.claude.com/docs/ko/claude-platform-on-aws.md)에서 실행할 때만 프롬프트를 분할합니다. Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry, 또는 [LLM gateway](https://code.claude.com/docs/ko/llm-gateway-connect.md)와 같은 다른 모든 구성에서, 그리고 [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](https://code.claude.com/docs/ko/llm-gateway-protocol#disable-pre-release-capabilities)을 설정할 때마다, SDK는 전체 프롬프트를 하나의 블록으로 전송하며, 이는 하나의 문자열을 전달하는 것과 같습니다.
+
+프롬프트를 분할하려면, `@anthropic-ai/claude-agent-sdk`에서 `SYSTEM_PROMPT_DYNAMIC_BOUNDARY`를 가져오고 두 부분 사이의 배열 요소로 전달합니다. SDK는 마커 앞의 문자열을 하나의 텍스트 블록으로 전송하고 마커 뒤의 문자열을 두 번째 블록으로 전송하며, 각각 자체 캐시 중단점을 가집니다. 아래 예제에서 지원 에이전트는 분류 명령을 파일에서 로드하고 각 요청에서 하나의 티켓에 대한 세부 정보를 받으므로, 명령은 캐시된 상태로 유지되고 티켓 세부 정보는 변경됩니다:
+
+```typescript TypeScript theme={null}
+import { readFile } from "node:fs/promises";
+import { query, SYSTEM_PROMPT_DYNAMIC_BOUNDARY } from "@anthropic-ai/claude-agent-sdk";
+
+// Identical on every request
+const instructions = await readFile("triage-instructions.md", "utf8");
+// Different on every request
+const ticketContext = "Customer plan: Enterprise. Other open tickets from this customer: 3.";
+
+for await (const message of query({
+  prompt: "Triage ticket 4821",
+  options: {
+    systemPrompt: [instructions, SYSTEM_PROMPT_DYNAMIC_BOUNDARY, ticketContext]
+  }
+})) {
+  // ...
+}
+```
+
+[Track cache tokens](https://code.claude.com/docs/ko/agent-sdk/cost-tracking.md#track-cache-tokens)는 각 결과 메시지의 `cache_creation_input_tokens` 및 `cache_read_input_tokens` 필드를 설명합니다.
+
+SDK는 다음과 같이 배열의 블록을 조립합니다:
+
+* SDK는 마커의 각 측면에 있는 문자열을 그 사이에 빈 줄과 함께 조인하고 마커 자체를 제거하므로, 마커 텍스트는 Claude에 도달하지 않습니다.
+* 마커를 두 번 이상 포함하면, 첫 번째가 분할이고 SDK는 나머지를 제거합니다.
+* 마커를 생략하면, SDK는 모든 문자열을 하나의 블록으로 조인하며, 이는 하나의 문자열을 전달하는 것과 같습니다.
+
+CLI의 [`--system-prompt` 또는 `--system-prompt-file` 플래그](https://code.claude.com/docs/ko/cli-reference#system-prompt-flags)를 사용하면, 프롬프트는 하나의 문자열이므로 마커를 전달할 배열이 없습니다. 정적 부분과 요청별 부분 사이에 `__SYSTEM_PROMPT_DYNAMIC_BOUNDARY__`만 포함된 줄을 포함하십시오. Claude Code는 프롬프트를 첫 번째 줄에서 동일한 두 블록으로 분할하고 해당 줄을 제거합니다. Claude Code v2.1.275 이상이 필요합니다.
+
+SDK에서는 배열 형식을 선호하십시오. 이는 마커 줄 없이 경계를 전달합니다.
+
+### 기존 세션의 프롬프트 변경
+
+기본적으로, `resume` 또는 `continue`로 세션으로 돌아간 후 다른 `append` 또는 사용자 정의 프롬프트를 전달하면, Claude는 다음 턴에서 이를 보지 못합니다. Claude Code는 세션의 첫 번째 요청에서 시스템 프롬프트를 기록하고 세션이 압축될 때까지 해당 기록을 재사용합니다. 새 텍스트는 그 압축 후 또는 새 세션에서 적용됩니다.
+
+#### Claude의 명령을 세션 중간에 업데이트
+
+시스템 프롬프트에 넣은 명령이 세션이 실행되는 동안 변경되어야 하는 경우, 예를 들어 사용자가 에이전트를 읽기 전용 모드로 전환했거나 앱에서 구성을 편집한 경우, `systemPrompt`를 변경하는 대신 대화에 새 명령을 보내십시오:
+
+* **다음 메시지에서**: 보내는 다음 사용자 메시지에 새 명령을 포함합니다.
+* **hook에서**: `UserPromptSubmit` 또는 `PostToolUse` [hook callback](https://code.claude.com/docs/ko/agent-sdk/hooks.md#outputs)에서 [`additionalContext`](https://code.claude.com/docs/ko/hooks#add-context-for-claude)를 반환하며, "작업 공간이 이제 읽기 전용입니다"와 같은 사실 진술로 작성합니다. SDK는 hook이 발생한 지점에서 텍스트를 대화에 삽입하므로, 기록된 프롬프트는 변경되지 않습니다.
+
+#### 표현을 반복할 때 기록 끄기
+
+프롬프트 표현을 반복하고 각 편집이 재개하는 세션에 도달하기를 원할 때, 시스템 프롬프트의 객체 형식에서 `snapshot`을 false로 설정하십시오. Claude Code는 모든 요청에서 프롬프트를 다시 빌드합니다. 필드는 TypeScript의 [`systemPrompt`](https://code.claude.com/docs/ko/agent-sdk/typescript#options)의 프리셋 및 사용자 정의 형식과 Python의 [`system_prompt`](https://code.claude.com/docs/ko/agent-sdk/python#systempromptpreset)에서 사용 가능하며, `@anthropic-ai/claude-agent-sdk` v0.3.257 이상 또는 `claude-agent-sdk` v0.2.153 이상이 필요합니다.
+
+프로덕션에서는 기록을 켜진 상태로 유지하십시오. 기록이 꺼져 있으면, 재개된 세션에서 다른 `append` 또는 사용자 정의 프롬프트가 다음 턴에서 Claude에 도달하며, 해당 요청은 세션의 [프롬프트 캐시](https://code.claude.com/docs/ko/prompt-caching.md#how-the-cache-is-organized)를 재사용할 수 없습니다. API가 [preserved thinking](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)을 적용하는 경우, Claude는 이전 턴의 사고도 잃습니다.
+
+[cloud sessions](https://code.claude.com/docs/ko/cloud-environments.md) 외부에서, `extraArgs`를 통해 `--bare`를 전달하거나 `CLAUDE_CODE_SIMPLE=1`을 설정하여 Claude Code를 [bare mode](https://code.claude.com/docs/ko/headless.md#start-faster-with-bare-mode)에서 시작하면, `snapshot: true`를 설정하지 않는 한 기록이 꺼집니다.
+
+기본적으로 `append` 또는 사용자 정의 프롬프트를 기록하려면 Claude Code v2.1.265 이상이 필요하며, TypeScript Agent SDK는 v0.3.265부터 이를 번들로 제공하고 Python Agent SDK는 v0.2.153부터 제공합니다. Claude Code v2.1.268 이전에는 [feature flags를 가져오지 않는](https://code.claude.com/docs/ko/env-vars.md#features-that-need-feature-flag-fetching) 세션(Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry의 세션 포함)이 모든 요청에서 프롬프트를 다시 빌드했으며 `snapshot`은 효과가 없었습니다.
+
+## Claude Code가 시스템 프롬프트 외부에 추가하는 컨텍스트
+
+시스템 리마인더는 Claude Code가 세션 중에 대화에 추가하는 메시지로, CLAUDE.md 파일의 내용이나 파일이 디스크에서 변경되었다는 메모와 같은 컨텍스트를 Claude에 제공합니다. Claude Code는 이를 시스템 프롬프트가 아닌 대화에 전송하므로, `claude_code` 사전 설정을 사용하든 `systemPrompt`로 자체 문자열을 전달하든 대부분 Claude에 도달합니다.
+
+이 섹션에서는 [에이전트의 동작을 변경할 가능성이 가장 높은 알림](#reminders-claude-code-adds-to-the-conversation), [에이전트가 대체하는 컨텍스트를 끄는 방법](#turn-off-the-context-your-agent-replaces), 그리고 [특정 요청에서 Claude가 받은 내용을 확인하는 방법](#see-what-claude-received)을 다룹니다.
+
+### Claude Code가 대화에 추가하는 알림
+
+시스템 알림은 Claude Code가 코드에서 전송하는 프롬프트와 함께 대화에 추가하는 텍스트입니다. 다음 알림들은 에이전트의 동작을 변경할 가능성이 가장 높은 것들입니다:
+
+* **프로젝트 지침**: [`settingSources`](#claude-md-files-for-project-level-instructions) 옵션이 로드하는 CLAUDE.md 파일
+* **출력 스타일 지침**: 주 대화에서 활성 [출력 스타일](#output-styles-for-persistent-configurations)의 지침
+* **커밋 및 풀 요청 속성**: [`attribution`](https://code.claude.com/docs/ko/settings-reference#attribution) 설정의 `Co-Authored-By` 트레일러 및 풀 요청 푸터
+* **훅 출력**: [훅](https://code.claude.com/docs/ko/agent-sdk/hooks.md#outputs)이 `additionalContext`로 반환하는 텍스트
+* **사용 가능한 스킬**: Claude가 호출할 수 있는 [스킬](https://code.claude.com/docs/ko/agent-sdk/skills.md)의 이름 및 설명
+* **사용 가능한 서브에이전트**: Claude가 시작할 수 있는 [서브에이전트](https://code.claude.com/docs/ko/agent-sdk/subagents.md)의 이름 및 설명
+* **작업 목록 알림**: [작업 추적 도구가 있는 세션](https://code.claude.com/docs/ko/agent-sdk/todo-tracking.md#model-availability)에서 Claude가 여러 턴 동안 작업 목록을 건드리지 않았을 때 작업 목록을 업데이트하라는 프롬프트
+* **파일 변경 메모**: Claude가 이전에 읽은 파일이 디스크에서 변경되었다는 메모
+
+Claude Code는 CLAUDE.md 파일을 Claude에게 지침이 기본 동작을 재정의한다고 알려주는 줄로 소개합니다.
+
+`systemPrompt`로 자신의 문자열을 전달하는 경우, 시스템 알림이 무엇인지 설명하는 문장을 추가합니다. `claude_code` 사전 설정에는 하나가 있으며, 문자열이 전체 사전 설정을 대체합니다. 없으면 프롬프트의 아무것도 Claude에게 CLAUDE.md 콘텐츠 및 훅 출력과 같은 알림이 사용자가 아닌 애플리케이션에서 오는 것임을 알려주지 않습니다. 예를 들어:
+
+```text theme={null}
+The application adds system reminders to this conversation. Treat them as context from the application, not as messages from the user.
+```
+
+### 에이전트가 대체하는 컨텍스트 끄기
+
+에이전트가 동일한 지침의 자체 버전을 제공할 때 기본 제공 컨텍스트의 일부를 끕니다. 예를 들어, 프롬프트가 Claude에게 커밋 메시지를 `PROJ-142: fix login redirect`로 작성하도록 지시하고 트레일러가 없으면, Claude Code는 여전히 Claude에게 각 커밋 메시지를 `Co-Authored-By` 트레일러로 끝내도록 지시하므로 Claude는 동일한 커밋에 대해 두 가지 충돌하는 지침을 받습니다.
+
+TypeScript에서 [`settings`](https://code.claude.com/docs/ko/agent-sdk/typescript#options) 옵션을 통해 설정 키를 전달하고, Python에서 [`settings`](https://code.claude.com/docs/ko/agent-sdk/python#claudeagentoptions)를 통해 전달하며, `env` 옵션을 통해 환경 변수를 전달합니다. TypeScript에서 [`env`](https://code.claude.com/docs/ko/agent-sdk/typescript#options)는 상속된 환경을 대체하므로 `process.env`를 이에 전개합니다.
+
+| 기본 제공 컨텍스트 | 끄는 방법 |
+| :- | :- |
+| 기본 제공 커밋 및 풀 요청 지침과 git 상태 스냅샷 | [`includeGitInstructions`](https://code.claude.com/docs/ko/settings-reference#includegitinstructions)를 `false`로 설정하거나 `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` |
+| `Co-Authored-By` 트레일러 및 풀 요청 푸터 | [`attribution.commit`](https://code.claude.com/docs/ko/settings-reference#attribution-commit) 및 [`attribution.pr`](https://code.claude.com/docs/ko/settings-reference#attribution-pr)을 자신의 텍스트로 설정하거나 제거하려면 빈 문자열로 설정 |
+| 사용자 또는 프로젝트 설정 소스(CLAUDE.md 포함) | [`settingSources`](https://code.claude.com/docs/ko/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources)에서 `'user'` 또는 `'project'` 제외 |
+| 모든 CLAUDE.md 파일 | `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1` 설정 |
+| 작업 목록 알림, 파일 변경 메모 및 스킬 목록 | `CLAUDE_CODE_DISABLE_ATTACHMENTS=1` 설정 |
+
+기본 제공 커밋 및 풀 리퀘스트 지침을 제외하려면 `includeGitInstructions`를 `false`로 설정합니다. 이 지침은 Bash 도구 설명의 일부이므로 사용자 정의 `systemPrompt`를 사용할 때도 Claude에 도달합니다. 다만 최소 기본값, 사용자 정의 `systemPrompt`, 또는 자체 프롬프트가 있는 사용자 정의 메인 스레드 에이전트를 사용하는 경우에는 git 상태 스냅샷 없이 세션이 시작됩니다.
+
+* `CLAUDE_CODE_DISABLE_ATTACHMENTS`를 설정하면, Claude Code는 또한 `@` 파일 언급을 파일 콘텐츠로 확장하는 대신 일반 텍스트로 전송합니다. 사용 가능한 서브에이전트 목록 및 백그라운드 작업 알림은 여전히 도착합니다.
+* `@` 파일 언급의 확장만 중지하려면 Claude Code v2.1.299 이상에서 대신 [`CLAUDE_CODE_DISABLE_FILE_MENTIONS=1`](https://code.claude.com/docs/ko/env-vars#variables)을 설정합니다. 그러면 Claude는 언급된 경로와 함께 파일 도구로 해당 경로를 읽으라는 메모를 받고, `PreToolUse` 훅은 각 파일 읽기를 도구 호출로 인식합니다.
+
+다음 예제는 `append`에 자체 커밋 규칙을 포함하는 에이전트용입니다. 트레일러 및 푸터를 제거하기 위해 두 `attribution` 키를 빈 문자열로 설정하고, Claude Code의 자체 커밋 워크플로우 지침이 귀하의 지침과 경쟁하지 않도록 `includeGitInstructions`를 끕니다:
+
+```typescript TypeScript theme={null}
+import { query } from "@anthropic-ai/claude-agent-sdk";
+
+for await (const message of query({
+  prompt: "Commit the staged changes for ticket PROJ-142",
+  options: {
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append: "Write commit messages as: <ticket id>: <summary>. Add no trailers."
+    },
+    settings: {
+      includeGitInstructions: false,
+      attribution: { commit: "", pr: "" }
+    },
+    allowedTools: ["Bash(git *)"]
+  }
+})) {
+  if (message.type === "result") console.log(message.subtype);
+}
+```
+
+```python Python theme={null}
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+
+async def main():
+    async for message in query(
+        prompt="Commit the staged changes for ticket PROJ-142",
+        options=ClaudeAgentOptions(
+            system_prompt={
+                "type": "preset",
+                "preset": "claude_code",
+                "append": "Write commit messages as: <ticket id>: <summary>. Add no trailers.",
+            },
+            settings='{"includeGitInstructions": false, "attribution": {"commit": "", "pr": ""}}',
+            allowed_tools=["Bash(git *)"],
+        ),
+    ):
+        print(message)
+
+
+asyncio.run(main())
+```
+
+변경 사항을 확인하려면 스테이징된 변경 사항이 있는 저장소에서 예제를 실행하고 `git log -1`로 새 커밋을 확인합니다. 메시지는 `Co-Authored-By` 트레일러 없이 끝납니다.
+
+### Claude가 받은 내용 확인
+
+SDK 메시지 스트림에는 시스템 알림이 포함되지 않으므로, 코드가 받는 메시지를 읽으면 Claude가 본 내용을 보여주지 않습니다. 이를 확인하려면 Claude Code가 전송하는 요청을 기록합니다:
+
+* **원본 요청 로깅**: [`OTEL_LOG_RAW_API_BODIES`](https://code.claude.com/docs/ko/monitoring-usage#api-request-body-event)를 `file:<dir>`로 설정합니다. Claude Code는 각 요청 본문을 해당 디렉토리에 씁니다.
+* **제어하는 게이트웨이**: [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ko/llm-gateway)을 요청 본문을 기록하는 프록시로 지정합니다.
+
+기록된 요청에서 `messages` 배열을 확인합니다. 알림은 `<system-reminder>` 태그로 래핑된 사용자 메시지 내에 나타나거나, 일부 모델에서는 `system` 역할을 가진 별도의 메시지로 나타납니다.
+
+## 네 가지 방식 모두 비교
 
 네 가지 사용자 정의 방법은 위치, 공유 방식, `claude_code` 사전에서 보존되는 내용이 다릅니다.
 
-| 기능            | CLAUDE.md | 출력 스타일        | `systemPrompt`과 함께 추가 | 사용자 정의 `systemPrompt` |
-| ------------- | --------- | ------------- | --------------------- | --------------------- |
-| **지속성**       | 프로젝트별 파일  | 파일로 저장        | 세션만                   | 세션만                   |
-| **재사용성**      | 프로젝트별     | 프로젝트 전체       | 코드 중복                 | 코드 중복                 |
-| **관리**        | 파일 시스템    | CLI + 파일      | 코드에서                  | 코드에서                  |
-| **기본 도구**     | 유지됨       | 유지됨           | 유지됨                   | 손실됨(포함되지 않은 경우)       |
-| **기본 제공 안전**  | 유지됨       | 유지됨           | 유지됨                   | 추가해야 함                |
-| **환경 컨텍스트**   | 자동        | 자동            | 자동                    | 제공해야 함                |
-| **사용자 정의 수준** | 추가만       | 기본값 바꾸기 또는 확장 | 추가만                   | 완전 제어                 |
-| **버전 제어**     | 프로젝트와 함께  | 예             | 코드와 함께                | 코드와 함께                |
-| **범위**        | 프로젝트별     | 사용자 또는 프로젝트   | 코드 세션                 | 코드 세션                 |
+| 기능 | CLAUDE.md | 출력 스타일 | `systemPrompt`과 함께 추가 | 사용자 정의 `systemPrompt` |
+| - | - | - | - | - |
+| **지속성** | 프로젝트별 파일 | 파일로 저장 | 세션만 | 세션만 |
+| **재사용성** | 프로젝트별 | 프로젝트 전체 | 코드 중복 | 코드 중복 |
+| **관리** | 파일 시스템 | CLI + 파일 | 코드에서 | 코드에서 |
+| **기본 도구** | 유지됨 | 유지됨 | 유지됨 | 손실됨(포함되지 않은 경우) |
+| **기본 제공 안전** | 유지됨 | 유지됨 | 유지됨 | 추가해야 함 |
+| **사용자 정의 수준** | 추가만 | 추가, 코딩 지침 생략 가능 | 추가만 | 완전 제어 |
+| **버전 제어** | 프로젝트와 함께 | 예 | 코드와 함께 | 코드와 함께 |
+| **범위** | 프로젝트별 | 사용자 또는 프로젝트 | 코드 세션 | 코드 세션 |
 
 "추가와 함께"는 TypeScript에서 `systemPrompt: { type: "preset", preset: "claude_code", append: "..." }`를 사용하거나 Python에서 `system_prompt={"type": "preset", "preset": "claude_code", "append": "..."}`를 사용하는 것을 의미합니다. CLAUDE.md는 시스템 프롬프트 자체를 변경하지 않습니다. SDK는 프로젝트 컨텍스트로 대화에 내용을 주입합니다.
 
-<h2 id="use-cases-and-best-practices">
-  사용 사례 및 모범 사례
-</h2>
+## 접근 방식 결합
 
-<h3 id="when-to-use-claude-md">
-  CLAUDE.md를 사용할 때
-</h3>
+접근 방식들은 구성됩니다. 지속적인 출력 스타일 또는 CLAUDE.md는 장기적인 동작을 설정하고, `append`는 저장된 구성을 건드리지 않으면서 세션별 지침을 그 위에 계층화합니다.
 
-CLAUDE.md는 세션에서 사용하는 시스템 프롬프트와 관계없이 프로젝트의 모든 세션에 적용되어야 하는 지침에 사용합니다: 코딩 표준, 일반적인 명령, 아키텍처 컨텍스트, 팀 규칙. CLAUDE.md는 저장소에 커밋되므로 설명하는 코드와 동기화된 상태를 유지합니다. 전체 지침은 [CLAUDE.md에 추가할 때](/docs/ko/memory#when-to-add-to-claude-md)를 참조하십시오.
-
-CLAUDE.md 파일은 `project` 설정 소스가 활성화될 때 로드되며, 이는 기본 `query()` 옵션에 대해 활성화됩니다. TypeScript에서 `settingSources`를 명시적으로 설정하거나 Python에서 `setting_sources`를 명시적으로 설정하는 경우, 프로젝트 수준 CLAUDE.md 로드를 유지하기 위해 `'project'`를 포함합니다.
-
-<h3 id="when-to-use-output-styles">
-  출력 스타일을 사용할 때
-</h3>
-
-출력 스타일은 애플리케이션 코드를 변경하지 않고 CLI와 SDK 전체에서 재사용하려는 페르소나를 위한 것입니다. `.claude/output-styles`의 파일로 존재하므로 동일한 페르소나는 CLI의 `/config`에서 그리고 일치하는 설정 소스를 로드하는 모든 SDK 세션에서 사용할 수 있습니다.
-
-**최적의 용도:**
-
-* 세션 전체에서 지속적인 동작 변경
-* 팀 공유 구성
-* 코드 검토자, 데이터 과학자 또는 DevOps 어시스턴트와 같은 전문화된 어시스턴트
-* 버전 관리가 필요한 복잡한 프롬프트 수정
-
-**예제:**
-
-* 전용 SQL 최적화 어시스턴트 생성
-* 보안 중심 코드 검토자 구축
-* 특정 교육학을 가진 교육 어시스턴트 개발
-
-<h3 id="when-to-use-systemprompt-with-append">
-  `systemPrompt`과 함께 추가를 사용할 때
-</h3>
-
-`claude_code` 프리셋이 이미 제품에 맞고 추가 지침만 계층화하면 되는 경우 `append`를 사용합니다. 프리셋의 도구 지침, 안전 규칙, 코딩 규칙을 다시 구현하지 않고도 유지합니다.
-
-**최적의 용도:**
-
-* 특정 코딩 표준 또는 선호도 추가
-* 출력 형식 사용자 정의
-* 도메인별 지식 추가
-* 응답 상세도 수정
-* 도구 지침을 잃지 않고 Claude Code의 기본 동작 향상
-
-<h3 id="when-to-use-custom-systemprompt">
-  사용자 정의 `systemPrompt`를 사용할 때
-</h3>
-
-[시작점 결정](#decide-on-a-starting-point)에 설명된 대로 에이전트의 표면, 정체성 또는 권한 모델이 Claude Code의 것과 다른 경우 사용자 정의 프롬프트를 사용합니다. 에이전트가 필요한 도구 지침 및 안전 규칙을 포함하여 전체 지침 집합을 정의합니다.
-
-**최적의 용도:**
-
-* Claude의 동작에 대한 완전한 제어
-* 전문화된 단일 세션 작업
-* 새로운 프롬프트 전략 테스트
-* 기본 도구가 필요하지 않은 상황
-* 고유한 동작을 가진 전문화된 에이전트 구축
-
-<h2 id="combine-approaches">
-  방식 결합
-</h2>
-
-이러한 방식들은 구성됩니다. 지속적인 출력 스타일 또는 CLAUDE.md는 장기적인 동작을 설정하고, `append`는 저장된 구성을 건드리지 않으면서 세션별 지침을 그 위에 계층화합니다.
-
-<h3 id="combine-an-output-style-with-session-specific-additions">
-  출력 스타일과 세션별 추가 결합
-</h3>
+### 출력 스타일과 세션별 추가 사항 결합
 
 아래 예제는 Code Reviewer 출력 스타일이 이미 활성화되어 있다고 가정합니다. `append` 블록은 세션별 초점 영역을 페르소나 위에 계층화하므로, 단일 검토 세션이 저장된 출력 스타일을 변경하지 않으면서 OAuth 및 토큰 저장소에 우선순위를 지정할 수 있습니다:
 
-<CodeGroup>
-  ```typescript TypeScript theme={null}
-  import { query } from "@anthropic-ai/claude-agent-sdk";
+```typescript TypeScript theme={null}
+import { query } from "@anthropic-ai/claude-agent-sdk";
 
-  // Assuming "Code Reviewer" output style is active (via /config or settings)
-  // Add session-specific focus areas
-  const messages = [];
+// Assuming "Code Reviewer" output style is active (via /config or settings)
+// Add session-specific focus areas
+const messages = [];
 
-  for await (const message of query({
-    prompt: "Review this authentication module",
-    options: {
-      systemPrompt: {
-        type: "preset",
-        preset: "claude_code",
-        append: `
-          For this review, prioritize:
-          - OAuth 2.0 compliance
-          - Token storage security
-          - Session management
-        `
-      }
+for await (const message of query({
+  prompt: "Review this authentication module",
+  options: {
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append: `
+        For this review, prioritize:
+        - OAuth 2.0 compliance
+        - Token storage security
+        - Session management
+      `
     }
-  })) {
-    messages.push(message);
   }
-  ```
+})) {
+  messages.push(message);
+}
+```
 
-  ```python Python theme={null}
-  from claude_agent_sdk import query, ClaudeAgentOptions
+```python Python theme={null}
+import asyncio
 
-  # Assuming "Code Reviewer" output style is active (via /config or settings)
-  # Add session-specific focus areas
-  messages = []
+from claude_agent_sdk import query, ClaudeAgentOptions
 
-  async for message in query(
-      prompt="Review this authentication module",
-      options=ClaudeAgentOptions(
-          system_prompt={
-              "type": "preset",
-              "preset": "claude_code",
-              "append": """
-              For this review, prioritize:
-              - OAuth 2.0 compliance
-              - Token storage security
-              - Session management
-              """,
-          }
-      ),
-  ):
-      messages.append(message)
-  ```
-</CodeGroup>
+# Assuming "Code Reviewer" output style is active (via /config or settings)
+# Add session-specific focus areas
+messages = []
 
-<h2 id="see-also">
-  참고 항목
-</h2>
 
-* [출력 스타일](/docs/ko/output-styles): CLI용 출력 스타일을 생성, 관리 및 공유합니다. 파일 형식 및 저장 위치를 포함합니다.
-* [Claude가 프로젝트를 기억하는 방식](/docs/ko/memory): CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 효과적인 프로젝트 지침을 작성하는 방법
-* [TypeScript SDK 참조](/docs/ko/agent-sdk/typescript): `systemPrompt`, `settingSources`, `settings`를 포함한 전체 `Options` 타입
-* [Python SDK 참조](/docs/ko/agent-sdk/python): `system_prompt` 및 `setting_sources`를 포함한 전체 `ClaudeAgentOptions` 타입
-* [설정](/docs/ko/settings): 출력 스타일 및 기타 구성이 저장되는 위치를 포함한 `settings.json` 참조
+async def main():
+    async for message in query(
+        prompt="Review this authentication module",
+        options=ClaudeAgentOptions(
+            system_prompt={
+                "type": "preset",
+                "preset": "claude_code",
+                "append": """
+                For this review, prioritize:
+                - OAuth 2.0 compliance
+                - Token storage security
+                - Session management
+                """,
+            }
+        ),
+    ):
+        messages.append(message)
+
+
+asyncio.run(main())
+```
+
+## 참고 항목
+
+* [출력 스타일](https://code.claude.com/docs/ko/output-styles.md): CLI용 출력 스타일을 생성, 관리 및 공유합니다. 파일 형식 및 저장 위치를 포함합니다.
+* [Claude가 프로젝트를 기억하는 방식](https://code.claude.com/docs/ko/memory.md): CLAUDE.md에 무엇을 넣을지, 어디에 배치할지, 효과적인 프로젝트 지침을 작성하는 방법
+* [TypeScript SDK 참조](https://code.claude.com/docs/ko/agent-sdk/typescript.md): `systemPrompt`, `settingSources`, `settings`를 포함한 전체 `Options` 타입
+* [Python SDK 참조](https://code.claude.com/docs/ko/agent-sdk/python.md): `system_prompt` 및 `setting_sources`를 포함한 전체 `ClaudeAgentOptions` 타입
+* [설정](https://code.claude.com/docs/ko/settings.md): 출력 스타일 및 기타 구성이 저장되는 위치를 포함한 `settings.json` 참조
